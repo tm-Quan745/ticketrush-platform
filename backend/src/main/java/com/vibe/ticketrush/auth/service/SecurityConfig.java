@@ -63,6 +63,7 @@ public class SecurityConfig {
                     if (!environment.matchesProfiles("prod")) {
                         auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     }
+                    auth.requestMatchers(HttpMethod.GET, "/api/v1/events", "/api/v1/events/*").permitAll();
                     auth.requestMatchers("/actuator/**", "/api/v1/admin/**").hasRole("ADMIN");
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/me").hasAnyRole("USER", "ADMIN");
                     auth.anyRequest().denyAll();

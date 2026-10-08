@@ -1,4 +1,11 @@
 spring:
+  config:
+    import:
+      - "optional:file:../.env[.properties]"
+      - "optional:file:./.env[.properties]"
+  jackson:
+    deserialization:
+      accept-float-as-int: false
   application:
     name: ticketrush
   profiles:

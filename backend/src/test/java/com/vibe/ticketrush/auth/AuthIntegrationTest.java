@@ -172,7 +172,7 @@ class AuthIntegrationTest {
     @Test
     void schemaConstraintsHealthAndOpenApi() throws Exception {
         UUID event = UUID.randomUUID();
-        jdbc.update("INSERT INTO events(id, name, starts_at) VALUES (?, ?, now())", event, "Launch");
+        jdbc.update("INSERT INTO events(id, title, start_time, end_time, sale_start_time, sale_end_time) VALUES (?, ?, now(), now() + interval '1 hour', now() - interval '1 day', now())", event, "Launch");
         assertThatThrownBy(() -> jdbc.update("INSERT INTO ticket_tiers(id, event_id, name, price, total_quantity, available_quantity) VALUES (?, ?, ?, ?, ?, ?)",
                 UUID.randomUUID(), event, "VIP", 10, 10, -1)).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
         assertThatThrownBy(() -> jdbc.update("INSERT INTO ticket_tiers(id, event_id, name, price, total_quantity, available_quantity) VALUES (?, ?, ?, ?, ?, ?)",

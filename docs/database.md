@@ -9,6 +9,7 @@ erDiagram
     roles ||--o{ user_roles : grants
     users ||--o{ refresh_tokens : owns
     events ||--o{ ticket_tiers : offers
+    users |o--o{ events : creates
     users {
         UUID id PK
         VARCHAR email UK
@@ -33,19 +34,33 @@ erDiagram
     }
     events {
         UUID id PK
-        VARCHAR name
+        VARCHAR title
         TEXT description
-        TIMESTAMPTZ starts_at
+        VARCHAR venue_name
+        VARCHAR venue_address
+        VARCHAR image_url
+        TIMESTAMPTZ start_time
+        TIMESTAMPTZ end_time
+        TIMESTAMPTZ sale_start_time
+        TIMESTAMPTZ sale_end_time
+        VARCHAR status
+        UUID created_by FK
         TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
     }
     ticket_tiers {
         UUID id PK
         UUID event_id FK
         VARCHAR name
-        NUMERIC price
+        TEXT description
+        BIGINT price
+        VARCHAR currency
         INTEGER total_quantity
         INTEGER available_quantity
+        INTEGER max_per_order
         BIGINT version
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
     }
 ```
 
@@ -59,7 +74,17 @@ erDiagram
   Indexes on `user_id` and `expires_at` support session lookup and future cleanup.
   Expiry must follow creation. Revoked rows are retained; scheduled cleanup is
   deferred, so operators must plan retention before production use.
-- `events.starts_at` supports chronological lookup.
+- V2 renames `events.name` to `title` and `starts_at` to `start_time`. V1 is unchanged.
+- `events(status, start_time)` supports public chronological lists;
+  `events(sale_start_time)` supports sale-window lookup. The V1 single start index
+  remains valid after the rename. `ticket_tiers(event_id)` is explicitly indexed.
+- Event date CHECK requires end > start and sale_start < sale_end <= start.
+  Titles and tier names must not be blank. Status is restricted to DRAFT,
+  PUBLISHED, CANCELLED, ENDED; transition rules are enforced by the service.
+- `created_by` references users; null is reserved for legacy rows/system fixtures.
+  API-created events always record the ADMIN's UUID.
+- V2 converts decimal prices to BIGINT minor units (legacy USD assumption), adds
+  uppercase currency, max_per_order >=1, description and timestamps.
 - `ticket_tiers` enforces nonnegative price, total quantity, available quantity,
   and version, plus `available_quantity <= total_quantity`.
   Unique `(event_id, name)` also indexes the event foreign key (leftmost prefix).
@@ -75,3 +100,21 @@ Refresh performs `SELECT ... FOR UPDATE` on the hash, validates expiry/revocatio
 revokes the old row, and inserts the next token in one transaction. A concurrent
 loser sees the committed revocation and receives 401. Logout locks the same row.
 No booking concurrency behavior is implemented by V1 alone.
+
+
+## Week 2 capacity updates
+
+`available_quantity` is the authoritative remaining counter. Initial available is
+exactly total. Atomic conditional UPDATE adjusts available by new_total-old_total
+and rejects new_total < old_total-available. See ADR 0004 for SQL and locking.
+No sold/held columns are introduced: their combined quantity is derived from the
+counters until later milestones add the corresponding business records.
+
+Native updates increment version and updated_at in PostgreSQL and clear the JPA
+persistence context. All event/tier administrative mutations lock the owning event
+row to serialize lifecycle/price-window checks. Foreign keys restrict deletion of
+creators/events referenced by event/tier rows.
+
+V2 backfills existing events as DRAFT with a one-hour duration and one-day sale
+window. Review legacy data before publication. Dev fixtures use deterministic IDs,
+batched INSERT ON CONFLICT and a single transaction; restarts preserve inventory.
