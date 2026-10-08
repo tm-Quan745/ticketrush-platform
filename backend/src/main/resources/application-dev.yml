@@ -1,3 +1,13 @@
 logging:
   level:
     com.vibe.ticketrush: DEBUG
+app:
+  seed:
+    enabled: ${DEV_SEED_ENABLED:true}
+    events: ${DEV_SEED_EVENTS:50}
+    tiers-per-event: ${DEV_SEED_TIERS_PER_EVENT:3}
+spring:
+  datasource:
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true

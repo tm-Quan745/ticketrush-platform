@@ -48,6 +48,9 @@ services:
     build: ./backend
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      DEV_SEED_ENABLED: ${DEV_SEED_ENABLED:-true}
+      DEV_SEED_EVENTS: ${DEV_SEED_EVENTS:-50}
+      DEV_SEED_TIERS_PER_EVENT: ${DEV_SEED_TIERS_PER_EVENT:-3}
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-ticketrush}
       POSTGRES_USER: ${POSTGRES_USER:-ticketrush}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}

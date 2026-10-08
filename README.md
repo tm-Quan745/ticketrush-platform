@@ -64,17 +64,24 @@ Secrets are generated at test runtime. Tests include auth lifecycle, input/error
 contracts, authorization, expiry, concurrent registration/rotation, and concurrent
 Redis rate limiting. GitHub Actions runs the same Maven command on Java 21.
 
-To run the backend on the host, start the dependencies, export the variables from
-`.env` into your shell (Maven does not load `.env`), then run:
+To run the backend on the host, fill the root `.env`, start the dependencies,
+and run Maven. Spring Boot imports `.env` automatically from the repository root
+or its parent when the working directory is `backend/`; no manual shell export
+is needed. OS environment variables still take precedence over file values.
 
 ```sh
 docker compose up -d postgres redis rabbitmq
+docker compose stop backend
 mvn -f backend/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-When `POSTGRES_PORT` differs from 5432, also export
+When `POSTGRES_PORT` differs from 5432, set
 `DB_URL=jdbc:postgresql://localhost:15432/ticketrush` (adjust port/database) for
-host-side backend development.
+host-side backend development in `.env`. Stopping the Compose backend avoids a
+port 8080 conflict while the host backend runs. Use plain `KEY=value` entries in
+`.env`, without shell `export` or surrounding quotes; Spring reads it as a
+properties file. Missing `.env` is allowed for deployments that supply all
+required settings through environment variables.
 
 `DB_URL`, `REDIS_HOST`, `REDIS_PORT`, `RABBITMQ_HOST`, and `SPRING_PROFILES_ACTIVE`
 can override defaults. Production must use `prod`, TLS, managed secrets, and a
