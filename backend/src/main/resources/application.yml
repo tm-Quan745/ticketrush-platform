@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: ticketrush
+  profiles:
+    default: dev
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ticketrush}
+    username: ${POSTGRES_USER:ticketrush}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      timeout: 2s
+      connect-timeout: 2s
+      repositories:
+        enabled: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    username: ${RABBITMQ_USER:ticketrush}
+    password: ${RABBITMQ_PASSWORD}
+server:
+  forward-headers-strategy: none
+  error:
+    include-message: never
+    include-stacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+app:
+  auth:
+    jwt-secret: ${JWT_SECRET}
+    issuer: ticketrush
+    access-ttl: 15m
+    refresh-ttl: 7d
+    login-limit: 10
+    login-window: 1m
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
