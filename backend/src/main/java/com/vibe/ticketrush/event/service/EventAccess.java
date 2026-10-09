@@ -11,4 +11,5 @@ public interface EventAccess {
     }
     SaleState lockForTierChange(UUID id);
     void requireExists(UUID id);
+    void requireOnSale(UUID id, Instant now);
 }

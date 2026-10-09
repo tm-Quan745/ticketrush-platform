@@ -15,4 +15,13 @@ public interface TicketTierRepository extends JpaRepository<TicketTier, UUID> {
             WHERE id = :id AND :total >= total_quantity - available_quantity
             """, nativeQuery = true)
     int updateCapacity(UUID id, String name, String description, long price, String currency, int maxPerOrder, int total);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(value="UPDATE ticket_tiers SET available_quantity=available_quantity-:quantity, version=version+1, updated_at=:now WHERE id=:id AND available_quantity>=:quantity", nativeQuery=true)
+    int take(UUID id, int quantity, java.time.Instant now);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(value="UPDATE ticket_tiers SET available_quantity=available_quantity+:quantity, version=version+1, updated_at=:now WHERE id=:id", nativeQuery=true)
+    int restore(UUID id, int quantity, java.time.Instant now);
+    @Query(value="SELECT * FROM ticket_tiers WHERE id=:id FOR UPDATE", nativeQuery=true)
+    Optional<TicketTier> lockForReservation(UUID id);
 }

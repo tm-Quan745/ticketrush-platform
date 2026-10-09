@@ -13,9 +13,10 @@ import java.util.*;
 @Service
 @Transactional(readOnly = true)
 public class InventoryService implements InventoryRead {
+    private final java.time.Clock clock;
     private final TicketTierRepository tiers;
     private final EventAccess events;
-    public InventoryService(TicketTierRepository tiers, EventAccess events) { this.tiers = tiers; this.events = events; }
+    public InventoryService(TicketTierRepository tiers, EventAccess events, java.time.Clock clock) { this.tiers = tiers; this.events = events; this.clock=clock; }
     public List<PublicTier> publicTiers(UUID eventId) {
         return tiers.findByEventIdOrderByNameAsc(eventId).stream().map(TierMapper::publicView).toList();
     }
@@ -26,11 +27,11 @@ public class InventoryService implements InventoryRead {
     @Transactional
     public InventoryView create(UUID eventId, WriteTier r) {
         validateCurrency(r.currency());
-        if (events.lockForTierChange(eventId).saleStarted(Instant.now())) throw saleConflict();
+        if (events.lockForTierChange(eventId).saleStarted(clock.instant())) throw saleConflict();
         TicketTier t = new TicketTier(); t.setId(UUID.randomUUID()); t.setEventId(eventId);
         t.setName(r.name().trim()); t.setDescription(r.description()); t.setPrice(r.price()); t.setCurrency(r.currency());
         t.setTotalQuantity(r.totalQuantity()); t.setAvailableQuantity(r.totalQuantity()); t.setMaxPerOrder(r.maxPerOrder());
-        t.setCreatedAt(Instant.now()); t.setUpdatedAt(t.getCreatedAt());
+        t.setCreatedAt(clock.instant()); t.setUpdatedAt(t.getCreatedAt());
         return TierMapper.inventory(tiers.saveAndFlush(t));
     }
     @Transactional
@@ -40,7 +41,7 @@ public class InventoryService implements InventoryRead {
         var state = events.lockForTierChange(eventId);
         // Load mutable tier fields only after acquiring the event lock.
         TicketTier t = tiers.findById(id).orElseThrow(InventoryService::missing);
-        if (state.saleStarted(Instant.now()) && (t.getPrice() != r.price() || !t.getCurrency().equals(r.currency())))
+        if (state.saleStarted(clock.instant()) && (t.getPrice() != r.price() || !t.getCurrency().equals(r.currency())))
             throw saleConflict();
         if (tiers.updateCapacity(id, r.name().trim(), r.description(), r.price(), r.currency(), r.maxPerOrder(), r.totalQuantity()) != 1)
             throw new ApiException(HttpStatus.CONFLICT, "CAPACITY_BELOW_COMMITTED", "Total quantity cannot be below sold plus held tickets");

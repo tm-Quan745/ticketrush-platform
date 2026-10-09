@@ -1,3 +1,7 @@
 logging:
   level:
     com.vibe.ticketrush: INFO
+
+ticketrush:
+  reservation:
+    expiry-enabled: false

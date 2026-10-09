@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.test.context.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.*;
 import java.time.Instant;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Testcontainers
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class EventInventoryIntegrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine");
     @DynamicPropertySource
@@ -281,7 +283,7 @@ class EventInventoryIntegrationTest {
         assertThat(context.getBeansOfType(DevDataSeeder.class)).isEmpty();
         assertThat(context.getBeansOfType(EventSeed.class)).isEmpty();
         assertThat(context.getBeansOfType(InventorySeed.class)).isEmpty();
-        var seeder = new DevDataSeeder(new DevEventSeed(jdbc), new DevInventorySeed(jdbc), 170, 3);
+        var seeder = new DevDataSeeder(new DevEventSeed(jdbc, java.time.Clock.systemUTC()), new DevInventorySeed(jdbc), 170, 3);
         seeder.run(new DefaultApplicationArguments());
         jdbc.update("UPDATE ticket_tiers SET available_quantity = 50");
         seeder.run(new DefaultApplicationArguments());
