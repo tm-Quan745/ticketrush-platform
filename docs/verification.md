@@ -191,3 +191,83 @@ for review at http://127.0.0.1:28080/swagger-ui/index.html.
 No reservations, orders, payments, booking Redis usage, business RabbitMQ queues,
 or later milestones were implemented. No production deployment or git commit was
 made. Pre-existing working-tree changes were preserved; V1 is unchanged.
+
+
+## Week 3 verification — 2026-10-09
+
+Command: `./infrastructure/week3-verify.ps1 -Benchmark`.
+Build/lint uses the existing Maven compiler configuration (`-Xlint:unchecked,deprecation`, `-Werror`).
+All database behavior runs against real PostgreSQL 17.11 Testcontainers; reservation
+concurrency tests use platform threads, CountDownLatch barriers and bounded deadlines.
+No database logic is mocked. The automatic scheduler is disabled in test profile;
+expiry workers are invoked explicitly from real concurrent threads.
+
+### Build and full suite (real output summary)
+
+```text
+[INFO] Tests run: 56, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:18 min
+```
+
+### Five consecutive concurrency runs (real output summaries)
+
+All three strategies execute the same six concurrency cases per run: 200 users / 50
+tickets, mixed quantities, duplicate holds, four expiry workers over batches of seven,
+cancel versus expiry, and confirm versus expiry. Every case checks reconciliation
+and nonnegative inventory after all worker transactions finish.
+
+```text
+Concurrency run 1
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  59.918 s
+Concurrency run 2
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  55.464 s
+Concurrency run 3
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  42.770 s
+Concurrency run 4
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  43.148 s
+Concurrency run 5
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  41.539 s
+```
+
+Result: 5/5 consecutive passes, 90 concurrency test executions, no observed flakiness.
+This does not prove the absence of every possible concurrency interleaving.
+
+### Real HTTP smoke
+
+Commands: isolated Compose startup and `python infrastructure/week3-smoke.py`
+with project `ticketrush-week3-check`, override `infrastructure/compose.week3-check.yml`,
+port 28081. The script uses real login-issued JWTs and HTTP, separate from MockMvc tests.
+
+```text
+PASS: login -> reserve -> /me -> cancel -> inventory restored; reconcile empty
+PASS: USER denied; ADMIN create event/tier, publish, exact inventory; anonymous list/detail
+PASS: draft hidden; public quantities hidden; OpenAPI 13 paths; Swagger UI HTTP 200
+Cleanup: removed only this run's account/event/tier fixtures
+```
+
+The isolated Compose services were stopped after verification. Their volumes are
+preserved; existing development Compose containers and volumes were not changed.
+See `infrastructure/README.md` for the full reproducible commands.
+
+Benchmark profile: 3 tests, 0 failures/errors/skips; BUILD SUCCESS (31.937 s).
+Each benchmark test runs both tier distributions and checks inventory consistency.
+
+Benchmark output and hardware/configuration notes: [week3 rough comparison](benchmarks/week3.md).
+Local full logs: `backend/target/week3-final-verify.log`, `week3-concurrency-1.log`
+through `week3-concurrency-5.log`, `week3-benchmark.log`, `week3-smoke.log`.
+Logs under target are intentionally untracked.
+
+Scope: PostgreSQL reservations only. No orders, payment endpoint, reservation Redis,
+RabbitMQ consumer, or outbox implementation was added. Internal confirmation is
+covered now for the future payment flow. The k6 load test remains Week 7 work.

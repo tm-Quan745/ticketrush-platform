@@ -16,12 +16,13 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 public class EventService implements EventAccess {
+    private final java.time.Clock clock;
     private final EventRepository events;
-    public EventService(EventRepository events) { this.events = events; }
+    public EventService(EventRepository events, java.time.Clock clock) { this.events = events; this.clock=clock; }
     public EventPage list(int page, int size, String keyword, Instant from, Instant to, boolean onSale) {
         if (page < 0 || size < 1 || size > 50 || (from != null && to != null && from.isAfter(to)))
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_FILTER", "page >= 0, size 1..50, and from <= to required");
-        Instant now = Instant.now();
+        Instant now = clock.instant();
         Specification<Event> spec = (root, query, cb) -> cb.equal(root.get("status"), EventStatus.PUBLISHED);
         if (keyword != null && !keyword.isBlank()) {
             String pattern = "%" + keyword.trim().toLowerCase(java.util.Locale.ROOT)
@@ -45,7 +46,7 @@ public class EventService implements EventAccess {
     public EventView create(WriteEvent r, UUID creator) {
         validate(r);
         Event e = new Event(); e.setId(UUID.randomUUID()); e.setCreatedBy(creator);
-        e.setStatus(EventStatus.DRAFT); e.setCreatedAt(Instant.now()); e.setUpdatedAt(e.getCreatedAt());
+        e.setStatus(EventStatus.DRAFT); e.setCreatedAt(clock.instant()); e.setUpdatedAt(e.getCreatedAt());
         EventMapper.apply(e, r);
         return EventMapper.view(events.save(e));
     }
@@ -54,10 +55,10 @@ public class EventService implements EventAccess {
         validate(r);
         Event e = lock(id);
         // Once sales begin, moving the window forward would bypass the tier price rule.
-        if (e.getStatus() == EventStatus.PUBLISHED && !Instant.now().isBefore(e.getSaleStartTime())
+        if (e.getStatus() == EventStatus.PUBLISHED && !clock.instant().isBefore(e.getSaleStartTime())
                 && !r.saleStartTime().equals(e.getSaleStartTime()))
             throw new ApiException(HttpStatus.CONFLICT, "SALE_ALREADY_STARTED", "Cannot move sale start after sales have started");
-        EventMapper.apply(e, r); e.setUpdatedAt(Instant.now());
+        EventMapper.apply(e, r); e.setUpdatedAt(clock.instant());
         return EventMapper.view(e);
     }
     @Transactional
@@ -65,7 +66,7 @@ public class EventService implements EventAccess {
         Event e = lock(id);
         if (!e.getStatus().canTransitionTo(next))
             throw new ApiException(HttpStatus.CONFLICT, "INVALID_EVENT_TRANSITION", "Cannot transition from " + e.getStatus() + " to " + next);
-        e.setStatus(next); e.setUpdatedAt(Instant.now());
+        e.setStatus(next); e.setUpdatedAt(clock.instant());
         return EventMapper.view(e);
     }
     @Override
@@ -82,5 +83,12 @@ public class EventService implements EventAccess {
         if (!r.endTime().isAfter(r.startTime()) || r.saleEndTime().isAfter(r.startTime())
                 || !r.saleStartTime().isBefore(r.saleEndTime()))
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_EVENT_DATES", "Require endTime > startTime and saleStartTime < saleEndTime <= startTime");
+    }
+
+    @Override
+    public void requireOnSale(UUID id, Instant now) {
+        Event event = find(id);
+        if (event.getStatus() != EventStatus.PUBLISHED || now.isBefore(event.getSaleStartTime()) || now.isAfter(event.getSaleEndTime()))
+            throw new ApiException(HttpStatus.CONFLICT, "SALE_NOT_OPEN", "Event is not on sale");
     }
 }
