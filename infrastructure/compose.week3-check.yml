@@ -1,0 +1,12 @@
+# Use a separate Compose project to preserve existing development volumes.
+services:
+  postgres:
+    ports: !reset []
+  redis:
+    ports: !reset []
+  rabbitmq:
+    ports: !reset []
+  backend:
+    ports: !override
+      - "127.0.0.1:28081:8080"
+

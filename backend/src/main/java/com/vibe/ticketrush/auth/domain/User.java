@@ -20,11 +20,11 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     protected User() {}
-    public User(String email, String passwordHash, Role role) {
+    public User(String email, String passwordHash, Role role, Instant now) {
         this.id = UUID.randomUUID();
         this.email = email;
         this.passwordHash = passwordHash;
-        this.createdAt = Instant.now();
+        this.createdAt = now;
         this.roles.add(role);
     }
     public UUID getId() { return id; }

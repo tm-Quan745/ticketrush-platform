@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
+    private final java.time.Clock clock;
     private final UserRepository users;
     private final RoleRepository roles;
     private final RefreshTokenRepository refreshTokens;
@@ -24,7 +25,8 @@ public class AuthService {
     private final String dummyHash;
 
     public AuthService(UserRepository users, RoleRepository roles, RefreshTokenRepository refreshTokens,
-                       PasswordEncoder passwords, TokenService tokens, AuthProperties properties) {
+                       PasswordEncoder passwords, TokenService tokens, AuthProperties properties, java.time.Clock clock) {
+        this.clock=clock;
         this.users = users;
         this.roles = roles;
         this.refreshTokens = refreshTokens;
@@ -38,7 +40,7 @@ public class AuthService {
     public UserResponse register(Credentials request) {
         validatePassword(request.password());
         User user = new User(normalize(request.email()), passwords.encode(request.password()),
-                roles.findByName("USER").orElseThrow());
+                roles.findByName("USER").orElseThrow(), clock.instant());
         users.saveAndFlush(user);
         return response(user);
     }
@@ -49,14 +51,14 @@ public class AuthService {
         var user = users.findByEmail(normalize(request.email()));
         boolean matches = passwords.matches(request.password(), user.map(User::getPasswordHash).orElse(dummyHash));
         if (!matches || user.isEmpty()) throw unauthorized("Invalid email or password");
-        return issue(user.get(), Instant.now());
+        return issue(user.get(), clock.instant());
     }
 
     @Transactional
     public TokenResponse refresh(String rawToken) {
         var token = refreshTokens.findForUpdate(TokenService.hash(rawToken))
                 .orElseThrow(() -> unauthorized("Invalid refresh token"));
-        Instant now = Instant.now();
+        Instant now = clock.instant();
         if (!token.isActive(now)) throw unauthorized("Invalid refresh token");
         token.revoke(now);
         return issue(token.getUser(), now);
@@ -64,7 +66,7 @@ public class AuthService {
 
     @Transactional
     public void logout(String rawToken) {
-        refreshTokens.findForUpdate(TokenService.hash(rawToken)).ifPresent(t -> t.revoke(Instant.now()));
+        refreshTokens.findForUpdate(TokenService.hash(rawToken)).ifPresent(t -> t.revoke(clock.instant()));
     }
 
     @Transactional(readOnly = true)

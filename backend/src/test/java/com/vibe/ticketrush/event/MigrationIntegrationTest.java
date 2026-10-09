@@ -22,9 +22,12 @@ class MigrationIntegrationTest {
             try (var ps = c.prepareStatement("INSERT INTO ticket_tiers(id, event_id, name, price, total_quantity, available_quantity) VALUES (?, ?, 'Legacy tier', 12.34, 100, 40)")) {
                 ps.setObject(1, tier); ps.setObject(2, event); ps.executeUpdate();
             }
-            var flyway = Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load();
+            var flyway = Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).target("2").load();
             assertThat(flyway.migrate().migrationsExecuted).isEqualTo(1);
             flyway.validate();
+            var latest = Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load();
+            assertThat(latest.migrate().migrationsExecuted).isEqualTo(1);
+            latest.validate();
             try (var statement = c.createStatement(); var rs = statement.executeQuery("SELECT title, status, end_time > start_time AS valid, created_by FROM events")) {
                 assertThat(rs.next()).isTrue(); assertThat(rs.getString("title")).isEqualTo("Legacy");
                 assertThat(rs.getString("status")).isEqualTo("DRAFT"); assertThat(rs.getBoolean("valid")).isTrue();

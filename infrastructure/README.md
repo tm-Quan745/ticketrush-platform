@@ -36,3 +36,34 @@ volume's database password.
 Host-side Spring Boot uses `DB_URL`; Compose overrides it with the internal
 PostgreSQL hostname. If changing POSTGRES_PORT for host access, update the local
 DB_URL accordingly. Keep secrets in the ignored `.env`, never in source control.
+
+
+## Week 3 verification
+
+Run build/lint/tests and five consecutive concurrency runs:
+
+```powershell
+./infrastructure/week3-verify.ps1
+# Include the separately tagged rough comparison:
+./infrastructure/week3-verify.ps1 -Benchmark
+```
+
+Logs are written to `backend/target/week3-*.log`. Docker Desktop must be running.
+The benchmark can also run alone with `mvn -B -ntp -f backend/pom.xml -Pweek3-benchmark test`.
+
+Isolated HTTP smoke flow (existing `.env` secrets are required):
+
+```powershell
+$env:COMPOSE_PROJECT_NAME = 'ticketrush-week3-check'
+$env:COMPOSE_FILE = 'docker-compose.yml;infrastructure/compose.week3-check.yml'
+$env:BACKEND_PORT = '28081'
+docker compose up --build -d --wait
+python infrastructure/week3-smoke.py
+docker compose down
+Remove-Item Env:COMPOSE_PROJECT_NAME, Env:COMPOSE_FILE, Env:BACKEND_PORT
+```
+
+This uses an isolated project and localhost port 28081. The script deletes only
+its temporary account, reservations, event and tier. Compose down preserves volumes.
+Reservation code uses PostgreSQL only; Redis and RabbitMQ remain existing platform
+services, with Redis still serving the pre-existing login rate limiter.

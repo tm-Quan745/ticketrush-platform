@@ -10,11 +10,12 @@ import java.util.*;
 @Service
 @Profile("dev & !prod & !test")
 public class DevEventSeed implements EventSeed {
+    private final java.time.Clock clock;
     private final JdbcTemplate jdbc;
-    public DevEventSeed(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+    public DevEventSeed(JdbcTemplate jdbc, java.time.Clock clock) { this.jdbc = jdbc; this.clock=clock; }
     public List<UUID> seedEvents(int count) {
         List<Integer> numbers = java.util.stream.IntStream.range(0, count).boxed().toList();
-        Instant base = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant base = clock.instant().truncatedTo(ChronoUnit.SECONDS);
         jdbc.batchUpdate("""
                 INSERT INTO events(id, title, description, venue_name, venue_address, start_time,
                     end_time, sale_start_time, sale_end_time, status)

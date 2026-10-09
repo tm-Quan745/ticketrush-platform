@@ -118,3 +118,52 @@ active in dev. All seed batches share one transaction. Fixture events are public
 with an open sale window, USD prices, and 1000 tickets per tier.
 No passwords or ADMIN account are seeded. These trusted fixtures bypass lifecycle
 creation rules; no production endpoint can invoke the seeder.
+
+
+## Week 3: reservations (USER)
+
+All reservation routes require a JWT with role USER. ADMIN alone does not grant USER.
+
+| Method | Path | Result |
+|---|---|---|
+| POST | `/api/v1/reservations` | 201: create a hold |
+| GET | `/api/v1/reservations/me?page=0&size=20&status=HELD` | 200: own reservations; optional status; size 1..100 |
+| GET | `/api/v1/reservations/{id}` | 200: owner detail; 403 for another owner; 404 if missing |
+| DELETE | `/api/v1/reservations/{id}` | 204: cancel HELD; 409 if terminal or expired |
+| GET | `/api/v1/admin/events/{id}/inventory/reconcile` | ADMIN only; 200: array of violating tiers, empty when consistent; 404 for missing event |
+
+Create body: `{"tierId":"<UUID>","quantity":2}`.
+Response: `{"id":"<UUID>","status":"HELD","quantity":2,"expires_at":"2030-01-01T00:10:00Z","seconds_remaining":600}`.
+Terminal reservations report zero seconds remaining. Pagination returns `content`,
+`page`, `size`, `totalElements`, `totalPages`, sorted by created time and ID descending.
+Reads persist lazy expiry before applying a status filter. An expired cancellation
+returns 409 after committing the expiry and inventory restoration.
+
+Creation requires a PUBLISHED event, inclusive sale window `[start,end]`, and
+quantity 1..max_per_order. 409 codes: `SALE_NOT_OPEN`, `ALREADY_HELD`, `SOLD_OUT`.
+No exact stock is disclosed in sold-out errors. Invalid quantities are 400.
+Optimistic retry exhaustion or inventory lock timeout returns 503 `INVENTORY_BUSY`.
+There is no confirm endpoint; confirmation is an internal transition for Week 4.
+
+Reconciliation rows: `tierId`, `available`, `held`, `confirmed`, `total`.
+The query uses one PostgreSQL statement snapshot and only reports inconsistencies;
+it does not change inventory.
+
+### Run the Week 3 checks
+
+```powershell
+mvn -B -ntp -f backend/pom.xml verify
+1..5 | ForEach-Object {
+    mvn -B -ntp -f backend/pom.xml '-Dtest=*ReservationIntegrationTest' '-Dgroups=concurrency' test
+    if ($LASTEXITCODE -ne 0) { throw "Concurrency run failed" }
+}
+mvn -B -ntp -f backend/pom.xml -Pweek3-benchmark test
+python infrastructure/week3-smoke.py
+```
+
+The smoke script requires a running Compose backend and an initialized `.env`.
+It registers a temporary account, logs in, grants ADMIN to that account through
+local development database access, creates event/tier, reserves, lists, cancels,
+checks restored inventory, checks OpenAPI and Swagger UI, then removes its fixtures.
+For an isolated Compose project, set `COMPOSE_PROJECT_NAME` and `COMPOSE_FILE`
+for both Compose startup and the smoke script. See `docs/verification.md`.

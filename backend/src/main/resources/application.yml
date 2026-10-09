@@ -61,3 +61,12 @@ app:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+ticketrush:
+  reservation:
+    strategy: ${RESERVATION_STRATEGY:conditional-update}
+    hold-duration: ${RESERVATION_HOLD_DURATION:10m}
+    job-interval: ${RESERVATION_JOB_INTERVAL:30s}
+    batch-size: ${RESERVATION_BATCH_SIZE:100}
+    optimistic-attempts: ${RESERVATION_OPTIMISTIC_ATTEMPTS:20}
+    expiry-enabled: ${RESERVATION_EXPIRY_ENABLED:true}
