@@ -224,3 +224,19 @@ Late success can honor an expired/cancelled order only within grace and after
 atomic stock reacquisition; otherwise it requests refund. See
 [late payment policy](decisions/0013-late-payment-and-refunds.md) and
 [state/sequence diagrams](week4-flow.md).
+
+## Week 5 operations (ADMIN)
+
+| Method | Path | Result |
+|---|---|---|
+| GET | `/admin/outbox?status=FAILED&page=0&size=20` | Failed (or selected) outbox rows |
+| POST | `/admin/outbox/{id}/retry` | Requeues a FAILED row; 204 |
+| GET | `/admin/notifications?status=FAILED&page=0&size=20` | Failed email notification records |
+| POST | `/admin/notifications/{id}/resend` | Marks a failed notification pending; 204 |
+
+All operational endpoints require ADMIN. RabbitMQ Management is available in local
+Compose at `http://localhost:15672`; Mailpit at `http://localhost:8025`.
+The outbox relay exposes `outbox_pending_count`,
+`outbox_oldest_pending_age_seconds`, and `outbox_publish_total`; consumer/email
+metrics are exposed through Actuator metrics. RabbitMQ outage does not make the
+application health DOWN: pending rows safely absorb it.
