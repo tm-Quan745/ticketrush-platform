@@ -259,3 +259,38 @@ Configuration: `RESERVATION_STRATEGY=conditional-update|optimistic|pessimistic`,
 `RESERVATION_HOLD_DURATION=10m`, `RESERVATION_JOB_INTERVAL=30s`,
 `RESERVATION_BATCH_SIZE=100`, `RESERVATION_OPTIMISTIC_ATTEMPTS=20`,
 `RESERVATION_EXPIRY_ENABLED=true`. Clock defaults to UTC and tests replace it.
+
+## Week 5: outbox and notifications
+
+```mermaid
+erDiagram
+    OUTBOX_EVENTS {
+        UUID id PK
+        VARCHAR aggregate_type
+        UUID aggregate_id
+        VARCHAR event_type
+        JSONB payload
+        VARCHAR status
+        INTEGER attempts
+        TIMESTAMPTZ next_attempt_at
+    }
+    PROCESSED_MESSAGES {
+        VARCHAR consumer_name PK
+        UUID message_id PK
+        TIMESTAMPTZ processed_at
+    }
+    EMAIL_NOTIFICATIONS {
+        UUID id PK
+        UUID event_id
+        UUID user_id FK
+        VARCHAR type
+        VARCHAR status
+    }
+    USERS ||--o{ EMAIL_NOTIFICATIONS : receives
+```
+
+V5 writes outbox rows in the same transaction as reservation, order, payment and
+ticket transitions. `idx_outbox_relay(status,next_attempt_at,created_at)` supports
+the relay. Processed-message and email uniqueness enforce idempotency; FAILED
+outbox rows are retained for operator retry while only old PUBLISHED rows are
+cleaned up.

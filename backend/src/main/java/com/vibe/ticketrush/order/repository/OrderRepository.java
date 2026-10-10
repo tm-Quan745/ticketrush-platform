@@ -23,6 +23,9 @@ public class OrderRepository {
         return jdbc.query("SELECT * FROM orders WHERE id=?",(rs,n) -> row(rs),id).stream().findFirst()
             .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"ORDER_NOT_FOUND","Order not found"));
     }
+    public Row getByReservation(UUID reservation) {
+        return jdbc.query("SELECT * FROM orders WHERE reservation_id=?",(rs,n) -> row(rs),reservation).stream().findFirst().orElse(null);
+    }
     public Row lock(UUID id) {
         return jdbc.query("SELECT * FROM orders WHERE id=? FOR UPDATE",(rs,n) -> row(rs),id).stream().findFirst().orElseThrow();
     }
@@ -40,8 +43,8 @@ public class OrderRepository {
         if (jdbc.update("UPDATE orders SET status=?,updated_at=?,version=version+1 WHERE id=? AND status=?",next.name(),Timestamp.from(now),id,expected.name())!=1)
             throw new ApiException(HttpStatus.CONFLICT,"ORDER_TRANSITION_CONFLICT","Order state changed");
     }
-    public void reservationReleased(UUID reservation,String next,Instant now) {
-        jdbc.update("UPDATE orders SET status=?,updated_at=?,version=version+1 WHERE reservation_id=? AND status='PENDING_PAYMENT'",next,Timestamp.from(now),reservation);
+    public boolean reservationReleased(UUID reservation,String next,Instant now) {
+        return jdbc.update("UPDATE orders SET status=?,updated_at=?,version=version+1 WHERE reservation_id=? AND status='PENDING_PAYMENT'",next,Timestamp.from(now),reservation)==1;
     }
     public void review(UUID id) { jdbc.update("UPDATE orders SET manual_review=true WHERE id=?",id); }
     public View view(Row r,String reference) {
