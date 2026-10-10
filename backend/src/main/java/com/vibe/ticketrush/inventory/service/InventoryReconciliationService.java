@@ -9,7 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class InventoryReconciliationService {
     private final InventoryReconciliationRepository repository;
     private final EventAccess events;
-    public InventoryReconciliationService(InventoryReconciliationRepository repository, EventAccess events) { this.repository=repository; this.events=events; }
-    @Transactional(readOnly=true)
-    public List<InventoryViolation> reconcile(UUID eventId) { events.requireExists(eventId); return repository.violations(eventId); }
+    private final com.vibe.ticketrush.order.service.TicketInventoryAudit tickets;
+    public InventoryReconciliationService(InventoryReconciliationRepository repository, EventAccess events,
+            com.vibe.ticketrush.order.service.TicketInventoryAudit tickets) { this.repository=repository; this.events=events; this.tickets=tickets; }
+    @Transactional(readOnly=true,isolation=org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
+    public List<InventoryViolation> reconcile(UUID eventId) {
+        events.requireExists(eventId);
+        var counts=tickets.validTickets(eventId);
+        return repository.violations(eventId).stream().map(v -> new InventoryViolation(v.tierId(),v.available(),v.held(),v.confirmed(),v.total(),counts.getOrDefault(v.tierId(),0L)))
+            .filter(v -> v.available()+v.held()+v.confirmed()!=v.total() || v.validTickets()!=v.confirmed()).toList();
+    }
 }

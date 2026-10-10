@@ -101,7 +101,12 @@ abstract class ReservationTestFixture {
         } finally {start.countDown();pool.shutdownNow();assertThat(pool.awaitTermination(10,TimeUnit.SECONDS)).isTrue();}
     }
     void invariant() {
-        assertThat(reconciliation.reconcile(event)).isEmpty();
+        // These Week 3 tests call the internal confirmation hook without a purchase.
+        // Week 4 purchase tests additionally assert the ticket reconciliation invariant.
+        assertThat(jdbc.queryForObject("""
+            SELECT count(*) FROM ticket_tiers t WHERE t.event_id=? AND
+            t.available_quantity+COALESCE((SELECT sum(r.quantity) FROM reservations r WHERE r.tier_id=t.id AND r.status IN ('HELD','CONFIRMED')),0)<>t.total_quantity
+            """,Long.class,event)).isZero();
         assertThat(jdbc.queryForObject("SELECT min(available_quantity) FROM ticket_tiers",Integer.class)).isGreaterThanOrEqualTo(0);
     }
     void assertAvailable(int expected) {assertThat(jdbc.queryForObject("SELECT available_quantity FROM ticket_tiers WHERE id=?",Integer.class,tier)).isEqualTo(expected);}

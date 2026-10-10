@@ -20,10 +20,12 @@ public class ReservationTransactions {
     private final ReservationProperties properties;
     private final Clock clock;
     private final EntityManager em;
+    private final org.springframework.context.ApplicationEventPublisher events;
     public ReservationTransactions(ReservationRepository reservations, ReservationInventory inventory,
-            InventoryReservationStrategy strategy, ReservationProperties properties, Clock clock, EntityManager em) {
+            InventoryReservationStrategy strategy, ReservationProperties properties, Clock clock, EntityManager em,
+            org.springframework.context.ApplicationEventPublisher events) {
         this.reservations=reservations; this.inventory=inventory; this.strategy=strategy;
-        this.properties=properties; this.clock=clock; this.em=em;
+        this.properties=properties; this.clock=clock; this.em=em; this.events=events;
     }
     private void lockTimeout() { em.createNativeQuery("SET LOCAL lock_timeout = '3s'").executeUpdate(); }
     public View create(UUID user, UUID tier, int quantity) {
@@ -79,6 +81,7 @@ public class ReservationTransactions {
         if (!r.getStatus().canTransitionTo(next)) return false;
         if (reservations.transition(r.getId(),next.name(),now)!=1) return false;
         inventory.restore(r.getTierId(),r.getQuantity(),now);
+        events.publishEvent(new ReservationChanged(r.getId(),next));
         r.setStatus(next); return true;
     }
     private Reservation locked(UUID id) {

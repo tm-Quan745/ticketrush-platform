@@ -67,3 +67,39 @@ This uses an isolated project and localhost port 28081. The script deletes only
 its temporary account, reservations, event and tier. Compose down preserves volumes.
 Reservation code uses PostgreSQL only; Redis and RabbitMQ remain existing platform
 services, with Redis still serving the pre-existing login rate limiter.
+
+## Week 4 verification
+
+Populate `.env` from `.env.example`, including a random PAYMENT_WEBHOOK_SECRET
+(at least 32 characters) and a random MOCK_PAYMENT_TEST_TOKEN. Never commit secrets.
+
+```powershell
+./infrastructure/week4-verify.ps1
+# Optional destructive-to-test-schema mutations; source is restored in finally:
+./infrastructure/week4-mutation.ps1
+# Always build again after mutation to restore compiled artifacts:
+mvn -B -ntp -f backend/pom.xml verify
+```
+
+The compiler runs `-Xlint:unchecked,deprecation -Werror`; this is the project's
+Java lint check. PostgreSQL/Testcontainers and real thread/HTTP tests need Docker.
+No separate style-lint plugin is configured.
+
+For the isolated Compose smoke (reads the configured test token without printing it):
+
+```powershell
+$env:COMPOSE_PROJECT_NAME = 'ticketrush-week4-check'
+$env:COMPOSE_FILE = 'docker-compose.yml;infrastructure/compose.week4-check.yml'
+$env:BACKEND_PORT = '28082'
+$week4TokenLine = Get-Content .env | Where-Object { $_ -match '^MOCK_PAYMENT_TEST_TOKEN=' } | Select-Object -Last 1
+$env:MOCK_PAYMENT_TEST_TOKEN = $week4TokenLine.Split('=', 2)[1]
+docker compose up --build -d --wait
+python infrastructure/week4-smoke.py
+docker compose down
+Remove-Item Env:COMPOSE_PROJECT_NAME, Env:COMPOSE_FILE, Env:BACKEND_PORT, Env:MOCK_PAYMENT_TEST_TOKEN
+```
+
+Open Swagger at `http://localhost:28082/swagger-ui/index.html` before stopping the
+stack. Smoke registers a temporary account, uses real login JWTs, checks SUCCESS,
+FAILURE and DUPLICATE_WEBHOOK, replays idempotent creation, checks tickets and
+reconciliation, and removes only its own fixtures. Compose down keeps volumes.

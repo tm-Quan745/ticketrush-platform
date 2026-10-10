@@ -1,4 +1,4 @@
-# Database — migration V1
+# Database — migrations V1–V4
 
 PostgreSQL 17; UUID application identifiers; UTC timestamps stored as TIMESTAMPTZ.
 Flyway owns schema changes; Hibernate uses `ddl-auto=validate`.
@@ -11,6 +11,81 @@ erDiagram
     events ||--o{ ticket_tiers : offers
     users ||--o{ reservations : owns
     ticket_tiers ||--o{ reservations : holds
+    reservations ||--o| orders : purchases
+    users ||--o{ orders : owns
+    orders ||--|{ order_items : snapshots
+    orders ||--|| payments : initiates
+    payments ||--o{ payment_events : deduplicates
+    orders ||--o{ tickets : issues
+    users ||--o{ idempotency_keys : claims
+    orders {
+        UUID id PK
+        UUID user_id FK
+        UUID reservation_id FK,UK
+        VARCHAR status
+        BIGINT total_amount
+        VARCHAR currency
+        TIMESTAMPTZ payment_deadline
+        BOOLEAN manual_review
+        BIGINT version
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+    order_items {
+        UUID id PK
+        UUID order_id FK
+        UUID tier_id FK
+        UUID event_id FK
+        VARCHAR tier_name
+        BIGINT unit_price
+        INTEGER quantity
+    }
+    payments {
+        UUID id PK
+        UUID order_id FK,UK
+        VARCHAR provider
+        VARCHAR provider_payment_id UK
+        BIGINT amount
+        VARCHAR currency
+        VARCHAR status
+        VARCHAR scenario
+        TIMESTAMPTZ next_dispatch_at
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+    payment_events {
+        UUID id PK
+        VARCHAR provider_event_id UK
+        UUID payment_id FK
+        VARCHAR type
+        TEXT payload
+        BOOLEAN review_required
+        TIMESTAMPTZ received_at
+    }
+    tickets {
+        UUID id PK
+        UUID order_id FK
+        UUID user_id FK
+        UUID event_id FK
+        UUID tier_id FK
+        INTEGER ticket_index
+        VARCHAR ticket_code UK
+        VARCHAR status
+        TIMESTAMPTZ issued_at
+    }
+    idempotency_keys {
+        UUID id PK
+        UUID user_id FK
+        VARCHAR endpoint
+        UUID key
+        VARCHAR request_hash
+        VARCHAR status
+        INTEGER response_status
+        TEXT response_body
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ expires_at
+        TIMESTAMPTZ lease_until
+    }
     reservations {
         UUID id PK
         UUID user_id FK
@@ -78,6 +153,18 @@ erDiagram
 ```
 
 ## Constraints and indexes
+
+- V4: UNIQUE orders(reservation_id), payments(order_id), payments(provider_payment_id),
+  payment_events(provider_event_id), order_items(order_id,tier_id),
+  tickets(order_id,ticket_index), tickets(ticket_code), and
+  idempotency_keys(user_id,endpoint,key). Ticket codes contain two random UUID v4
+  values (244 random bits), encoded as 64 hexadecimal characters.
+- V4 status/quantity/amount CHECK constraints reject invalid stored values.
+  Order user/time/status and payment dispatch indexes support pagination and
+  recovery; ticket tier/status supports reconciliation; key expiry supports cleanup.
+- The inventory audit checks both `available + HELD + CONFIRMED = total` and
+  `VALID tickets = CONFIRMED quantity` in one REPEATABLE_READ snapshot.
+  State transitions and the purchase sequence are in [Week 4 flow](week4-flow.md).
 
 - `users.email` is unique and must equal `lower(trim(email))`; the application
   validates syntax and length. `password_hash` stores BCrypt, never plaintext.
