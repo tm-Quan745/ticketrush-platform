@@ -4,6 +4,8 @@ import com.vibe.ticketrush.reservation.repository.ReservationRepository;
 import com.vibe.ticketrush.reservation.dto.ReservationDtos.*;
 import com.vibe.ticketrush.inventory.service.*;
 import com.vibe.ticketrush.common.service.ApiException;
+import com.vibe.ticketrush.common.events.EventPayloads;
+import com.vibe.ticketrush.outbox.service.OutboxPublisher;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
@@ -21,11 +23,12 @@ public class ReservationTransactions {
     private final Clock clock;
     private final EntityManager em;
     private final org.springframework.context.ApplicationEventPublisher events;
+    private final OutboxPublisher outbox;
     public ReservationTransactions(ReservationRepository reservations, ReservationInventory inventory,
             InventoryReservationStrategy strategy, ReservationProperties properties, Clock clock, EntityManager em,
-            org.springframework.context.ApplicationEventPublisher events) {
+            org.springframework.context.ApplicationEventPublisher events, OutboxPublisher outbox) {
         this.reservations=reservations; this.inventory=inventory; this.strategy=strategy;
-        this.properties=properties; this.clock=clock; this.em=em; this.events=events;
+        this.properties=properties; this.clock=clock; this.em=em; this.events=events; this.outbox=outbox;
     }
     private void lockTimeout() { em.createNativeQuery("SET LOCAL lock_timeout = '3s'").executeUpdate(); }
     public View create(UUID user, UUID tier, int quantity) {
@@ -41,6 +44,7 @@ public class ReservationTransactions {
         r.setQuantity(quantity); r.setStatus(ReservationStatus.HELD); r.setExpiresAt(now.plus(properties.holdDuration()));
         r.setCreatedAt(now); r.setUpdatedAt(now);
         reservations.saveAndFlush(r);
+        outbox.publish("reservation.created","reservation",r.getId(),new EventPayloads.Reservation(r.getId(),r.getUserId()));
         return view(r,now);
     }
     public View get(UUID user, UUID id) {
@@ -81,6 +85,7 @@ public class ReservationTransactions {
         if (!r.getStatus().canTransitionTo(next)) return false;
         if (reservations.transition(r.getId(),next.name(),now)!=1) return false;
         inventory.restore(r.getTierId(),r.getQuantity(),now);
+        outbox.publish(next==ReservationStatus.EXPIRED ? "reservation.expired" : "reservation.cancelled","reservation",r.getId(),new EventPayloads.Reservation(r.getId(),r.getUserId()));
         events.publishEvent(new ReservationChanged(r.getId(),next));
         r.setStatus(next); return true;
     }

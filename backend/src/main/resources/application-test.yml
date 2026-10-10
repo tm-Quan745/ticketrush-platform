@@ -5,3 +5,13 @@ logging:
 ticketrush:
   reservation:
     expiry-enabled: false
+  outbox:
+    relay-interval: 1h
+  notification:
+    concurrency: 1
+    prefetch: 1
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false

@@ -35,6 +35,23 @@ spring:
     host: ${RABBITMQ_HOST:localhost}
     username: ${RABBITMQ_USER:ticketrush}
     password: ${RABBITMQ_PASSWORD}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        auto-startup: ${RABBITMQ_LISTENER_ENABLED:true}
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    properties:
+      mail.smtp.connectiontimeout: ${MAIL_CONNECT_TIMEOUT:2000}
+      mail.smtp.timeout: ${MAIL_TIMEOUT:5000}
+      mail.smtp.writetimeout: ${MAIL_WRITE_TIMEOUT:5000}
+  task:
+    scheduling:
+      shutdown:
+        await-termination: true
+        await-termination-period: 30s
 server:
   forward-headers-strategy: none
   error:
@@ -44,12 +61,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
   endpoint:
     health:
       show-details: never
       probes:
         enabled: true
+  health:
+    rabbit:
+      enabled: false
 app:
   auth:
     jwt-secret: ${JWT_SECRET}
@@ -80,3 +100,16 @@ ticketrush:
     batch-size: ${RESERVATION_BATCH_SIZE:100}
     optimistic-attempts: ${RESERVATION_OPTIMISTIC_ATTEMPTS:20}
     expiry-enabled: ${RESERVATION_EXPIRY_ENABLED:true}
+  outbox:
+    relay-interval: ${OUTBOX_RELAY_INTERVAL:1s}
+    batch-size: ${OUTBOX_BATCH_SIZE:100}
+    max-attempts: ${OUTBOX_MAX_ATTEMPTS:10}
+    initial-backoff: ${OUTBOX_INITIAL_BACKOFF:1s}
+    max-backoff: ${OUTBOX_MAX_BACKOFF:5m}
+    confirm-timeout: ${OUTBOX_CONFIRM_TIMEOUT:5s}
+    cleanup-interval: ${OUTBOX_CLEANUP_INTERVAL:24h}
+    retention-days: ${OUTBOX_RETENTION_DAYS:7}
+  notification:
+    max-retries: ${NOTIFICATION_MAX_RETRIES:5}
+    concurrency: ${NOTIFICATION_CONCURRENCY:2}
+    prefetch: ${NOTIFICATION_PREFETCH:10}
