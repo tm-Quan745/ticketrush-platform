@@ -14,7 +14,7 @@ public class OutboxRepository {
     public void insert(OutboxEvent event) {
         jdbc.update("""
             INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)
-            VALUES (?,?,?,?,?,CAST(? AS jsonb),CAST(? AS jsonb),?,?,?,?,?)""",
+            VALUES (?,?,?,?,?,CAST(? AS jsonb),CAST(? AS jsonb),?,?,?,?)""",
             event.id(),event.aggregateType(),event.aggregateId(),event.eventType(),event.schemaVersion(),event.payload(),event.headers(),
             event.status().name(),event.attempts(),Timestamp.from(event.nextAttemptAt()),Timestamp.from(event.createdAt()));
     }
