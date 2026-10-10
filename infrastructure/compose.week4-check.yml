@@ -1,0 +1,14 @@
+# Isolated project; never reuse development database volumes for verification.
+services:
+  postgres:
+    ports: !reset []
+  redis:
+    ports: !reset []
+  rabbitmq:
+    ports: !reset []
+  backend:
+    ports: !override
+      - "127.0.0.1:28082:8080"
+    environment:
+      DEV_SEED_ENABLED: "false"
+      MOCK_PAYMENT_SCENARIOS_ENABLED: "true"
