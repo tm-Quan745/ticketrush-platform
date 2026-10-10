@@ -26,7 +26,7 @@ class MigrationIntegrationTest {
             assertThat(flyway.migrate().migrationsExecuted).isEqualTo(1);
             flyway.validate();
             var latest = Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load();
-            assertThat(latest.migrate().migrationsExecuted).isEqualTo(2);
+            assertThat(latest.migrate().migrationsExecuted).isEqualTo(3);
             latest.validate();
             try (var statement = c.createStatement(); var rs = statement.executeQuery("SELECT title, status, end_time > start_time AS valid, created_by FROM events")) {
                 assertThat(rs.next()).isTrue(); assertThat(rs.getString("title")).isEqualTo("Legacy");

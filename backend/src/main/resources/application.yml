@@ -68,6 +68,8 @@ management:
       probes:
         enabled: true
   health:
+    mail:
+      enabled: false
     rabbit:
       enabled: false
 app:
