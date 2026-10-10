@@ -63,6 +63,16 @@ springdoc:
     path: /swagger-ui.html
 
 ticketrush:
+  payment:
+    webhook-secret: ${PAYMENT_WEBHOOK_SECRET:}
+    webhook-url: ${PAYMENT_WEBHOOK_URL:http://127.0.0.1:8080/api/v1/payments/webhook}
+    delay: ${MOCK_PAYMENT_DELAY:500ms}
+    delayed-success-delay: ${MOCK_PAYMENT_DELAYED_SUCCESS:11m}
+    duplicate-count: ${MOCK_PAYMENT_DUPLICATE_COUNT:20}
+    timestamp-tolerance: ${PAYMENT_TIMESTAMP_TOLERANCE:5m}
+    late-grace: ${PAYMENT_LATE_GRACE:5m}
+    test-scenarios-enabled: ${MOCK_PAYMENT_SCENARIOS_ENABLED:false}
+    test-token: ${MOCK_PAYMENT_TEST_TOKEN:}
   reservation:
     strategy: ${RESERVATION_STRATEGY:conditional-update}
     hold-duration: ${RESERVATION_HOLD_DURATION:10m}

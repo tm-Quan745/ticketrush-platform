@@ -14,8 +14,7 @@ public class InventoryReconciliationRepository {
                 COALESCE(SUM(r.quantity) FILTER (WHERE r.status='CONFIRMED'),0) confirmed
             FROM ticket_tiers t LEFT JOIN reservations r ON r.tier_id=t.id
             WHERE t.event_id=? GROUP BY t.id
-            HAVING t.available_quantity + COALESCE(SUM(r.quantity) FILTER (WHERE r.status IN ('HELD','CONFIRMED')),0) <> t.total_quantity
             ORDER BY t.id
-            """, (rs,n) -> new InventoryViolation(rs.getObject("id",UUID.class),rs.getLong("available_quantity"),rs.getLong("held"),rs.getLong("confirmed"),rs.getLong("total_quantity")),eventId);
+            """, (rs,n) -> new InventoryViolation(rs.getObject("id",UUID.class),rs.getLong("available_quantity"),rs.getLong("held"),rs.getLong("confirmed"),rs.getLong("total_quantity"),0),eventId);
     }
 }

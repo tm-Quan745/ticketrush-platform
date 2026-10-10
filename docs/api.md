@@ -145,8 +145,8 @@ No exact stock is disclosed in sold-out errors. Invalid quantities are 400.
 Optimistic retry exhaustion or inventory lock timeout returns 503 `INVENTORY_BUSY`.
 There is no confirm endpoint; confirmation is an internal transition for Week 4.
 
-Reconciliation rows: `tierId`, `available`, `held`, `confirmed`, `total`.
-The query uses one PostgreSQL statement snapshot and only reports inconsistencies;
+Reconciliation rows: `tierId`, `available`, `held`, `confirmed`, `total`, `validTickets`.
+The audit uses one PostgreSQL REPEATABLE_READ transaction snapshot and only reports inconsistencies;
 it does not change inventory.
 
 ### Run the Week 3 checks
@@ -167,3 +167,60 @@ local development database access, creates event/tier, reserves, lists, cancels,
 checks restored inventory, checks OpenAPI and Swagger UI, then removes its fixtures.
 For an isolated Compose project, set `COMPOSE_PROJECT_NAME` and `COMPOSE_FILE`
 for both Compose startup and the smoke script. See `docs/verification.md`.
+
+## Week 4 orders and mock payment
+
+All paths below start with `/api/v1`. USER endpoints require JWT with USER role;
+admin endpoints require ADMIN. A known resource owned by another user returns 403;
+a nonexistent resource returns 404. All timestamps are UTC ISO 8601. Totals and
+unit prices are integer minor units, calculated by the server.
+
+| Method | Path | Access | Behavior |
+|---|---|---|---|
+| POST | /orders | USER owner | Create from `{ "reservationId": "UUID" }`; 201 |
+| GET | /orders/me | USER | `status`, `page=0`, `size=20` (1..100) |
+| GET | /orders/{id} | USER owner | Order with item price snapshots |
+| POST | /orders/{id}/cancel | USER owner | Pending only, 200; incompatible state 409 |
+| GET | /orders/{id}/tickets | USER owner | PAID only; otherwise 409 |
+| POST | /payments/webhook | Signed provider | Commit/dedup then 200; no JWT |
+| GET | /admin/orders | ADMIN | `userId`, `status`, `page`, `size` filters |
+| POST | /admin/orders/{id}/refund | ADMIN | PAID to REFUND_PENDING, 200; otherwise 409 |
+
+`POST /orders` requires UUID `Idempotency-Key`: missing/invalid returns 400.
+Same key and canonical payload returns the exact original status/body and
+`Idempotency-Replayed: true`; in-progress requests return 409 `IDEMPOTENCY_BUSY`;
+changed payload returns 422 `IDEMPOTENCY_PAYLOAD_MISMATCH`. Keys are scoped to
+user and endpoint and retained for 24h. Do not change scenario headers when
+retrying. A different key for an already ordered reservation returns 409.
+Other create conflicts include `RESERVATION_NOT_HELD`; wrong owner is 403.
+Unrecognized client fields such as totalAmount never affect pricing.
+
+Order response: `id`, `userId`, `reservationId`, `status`, `totalAmount`, `currency`,
+`paymentDeadline`, `paymentReference`, `manualReview`, and `items`
+(`tierId`, `tierName`, `unitPrice`, `quantity`). Ticket responses contain `id`,
+`eventId`, `tierId`, `ticketCode`, `status`, `issuedAt`. Lists use `content`, `page`,
+`size`, `totalElements`, `totalPages`, ordered by created time then ID descending.
+
+Mock scenarios require `MOCK_PAYMENT_SCENARIOS_ENABLED=true` and a nonempty
+`MOCK_PAYMENT_TEST_TOKEN`. Send `X-Mock-Scenario` and `X-Mock-Test-Token` headers.
+Values: SUCCESS (default), FAILURE, DELAYED_SUCCESS, DUPLICATE_WEBHOOK,
+OUT_OF_ORDER, INVALID_SIGNATURE, AMOUNT_MISMATCH. Prod rejects scenario headers
+even if enabled. Missing/invalid scenario token returns 403; unknown scenario 400.
+Set PAYMENT_WEBHOOK_SECRET to at least 32 random characters; unconfigured payments
+return 503. Duplicate callbacks are parallel real HTTP requests. Delayed success
+defaults to 11m, hold to 10m, late grace to 5m.
+
+Webhook headers: `X-Payment-Timestamp` (Unix seconds), `X-Payment-Signature`
+(lower/uppercase hexadecimal HMAC-SHA256 of timestamp + '.' + raw JSON bytes).
+Body: `providerEventId`, `providerPaymentId`, `type` (SUCCEEDED/FAILED/REFUNDED),
+`amount`, `currency`. Default freshness tolerance is ±5m. Invalid signature or
+timestamp: 401; malformed/unsupported event: 400; unknown reference: 404;
+unexpected refund: 422; transient failure: 500, retry same event ID. Valid
+amount/currency mismatch commits manual-review flags and never marks PAID.
+Duplicates and ignored out-of-order failures return 200. The application never
+acknowledges successful processing before the transaction commits.
+
+Late success can honor an expired/cancelled order only within grace and after
+atomic stock reacquisition; otherwise it requests refund. See
+[late payment policy](decisions/0013-late-payment-and-refunds.md) and
+[state/sequence diagrams](week4-flow.md).

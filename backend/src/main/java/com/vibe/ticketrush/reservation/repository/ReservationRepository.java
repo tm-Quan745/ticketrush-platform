@@ -5,6 +5,12 @@ import java.util.*;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
+    @Modifying(flushAutomatically=true,clearAutomatically=true)
+    @Query(value="UPDATE reservations SET status='CONFIRMED',updated_at=:now,version=version+1 WHERE id=:id AND status IN ('EXPIRED','CANCELLED')",nativeQuery=true)
+    int confirmReleased(UUID id,Instant now);
+    @Modifying(flushAutomatically=true,clearAutomatically=true)
+    @Query(value="UPDATE reservations SET status='CANCELLED',updated_at=:now,version=version+1 WHERE id=:id AND status='CONFIRMED'",nativeQuery=true)
+    int cancelConfirmed(UUID id,Instant now);
     boolean existsByUserIdAndTierIdAndStatus(UUID userId, UUID tierId, ReservationStatus status);
     @Query(value="SELECT * FROM reservations WHERE id=:id FOR UPDATE", nativeQuery=true)
     Optional<Reservation> lock(UUID id);

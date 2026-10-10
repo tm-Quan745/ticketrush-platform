@@ -121,3 +121,16 @@ ON CONFLICT DO NOTHING;
 
 No reservation, payment, outbox, event CRUD, queue consumer, k6 scenario, or
 Prometheus/Grafana deployment is implemented in Week 1.
+
+## Week 4 orders and payments
+
+The current backend includes Week 2 events/inventory, Week 3 PostgreSQL
+reservations, and Week 4 orders, signed mock payment webhooks, idempotency,
+tickets and refunds. Configure `PAYMENT_WEBHOOK_SECRET` with at least 32 random
+characters before creating orders. Development mock scenarios require explicit
+enablement and a test token; they are rejected in prod.
+
+Run `./infrastructure/week4-verify.ps1` for build/compiler lint/all tests and five
+concurrency repetitions. See [API](docs/api.md), [purchase diagrams](docs/week4-flow.md),
+[verification](docs/verification.md), and [isolated Compose smoke instructions](infrastructure/README.md).
+Week 5 Redis reservation features, RabbitMQ consumers, outbox and email remain deferred.

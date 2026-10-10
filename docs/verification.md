@@ -193,7 +193,7 @@ or later milestones were implemented. No production deployment or git commit was
 made. Pre-existing working-tree changes were preserved; V1 is unchanged.
 
 
-## Week 3 verification � 2026-10-09
+## Week 3 verification — 2026-10-09
 
 Command: `./infrastructure/week3-verify.ps1 -Benchmark`.
 Build/lint uses the existing Maven compiler configuration (`-Xlint:unchecked,deprecation`, `-Werror`).
@@ -271,3 +271,111 @@ Logs under target are intentionally untracked.
 Scope: PostgreSQL reservations only. No orders, payment endpoint, reservation Redis,
 RabbitMQ consumer, or outbox implementation was added. Internal confirmation is
 covered now for the future payment flow. The k6 load test remains Week 7 work.
+
+## Week 4 verification — 2026-10-09
+
+Final commands ran on Windows with Java 21.0.8, Maven 3.10.0, Docker Desktop
+29.3.1 engine, Testcontainers 1.21.4, and PostgreSQL 17-alpine. No concurrency
+behavior was mocked. Compiler lint is `-Xlint:unchecked,deprecation -Werror`;
+there is no separate style-lint plugin. `git diff --check` passed.
+
+### Final full build, compiler lint and tests
+
+Command: `mvn -B -ntp -f backend/pom.xml verify`.
+
+Actual final output:
+
+```text
+[INFO] Tests run: 72, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  02:40 min
+[INFO] Finished at: 2026-10-09T16:41:30+07:00
+```
+
+Week 4 contributes 15 order/payment integration tests and one end-to-end gateway
+test which runs all seven scenarios, register/login, real HTTP, automatic refund,
+durable callback redispatch and OpenAPI schemas. The other tests are the existing
+auth/event/migration/reservation regression suite. A real PostgreSQL CHECK failure
+during ticket issuance proves the event, payment and order roll back together and
+the same event can retry successfully. Authorization/pagination and active-lease
+fencing are included. The migration regression checks both V3 and V4 after V2.
+
+### Five consecutive concurrency runs
+
+Command for each run:
+`mvn -B -ntp -f backend/pom.xml '-Dtest=OrderPaymentIntegrationTest' '-Dgroups=concurrency' test`.
+
+Each run produced this actual summary:
+
+```text
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+| Run | Actual Maven total time | Result |
+|---|---|---|
+| 1 | 40.942 s | 6 passed |
+| 2 | 45.014 s | 6 passed |
+| 3 | 45.650 s | 6 passed |
+| 4 | 29.758 s | 6 passed |
+| 5 | 27.169 s | 6 passed |
+
+The six tests cover 20 concurrent create requests sharing one key, 20 duplicate
+webhooks, duplicate failures/out-of-order events, 100 payment/expiry races,
+payment/cancel race and active-lease recovery contention. CyclicBarrier starts
+the race workers; Clock is controllable and waits have fixed timeouts. Total:
+30 concurrency test executions and 500 payment/expiry race iterations across
+five consecutive passes. This does not prove every possible interleaving.
+
+### Mutation sanity check
+
+Command: `./infrastructure/week4-mutation.ps1`.
+
+```text
+Mutation dedup: exit 1 (expected nonzero)
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] BUILD FAILURE
+Restored backend/src/main/resources/db/migration/V4__orders_payments_idempotency.sql
+Mutation guard: exit 1 (expected nonzero)
+expected: "SUCCEEDED"
+ but was: "FAILED"
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] BUILD FAILURE
+Restored backend/src/main/java/com/vibe/ticketrush/payment/repository/PaymentRepository.java
+```
+
+Removing event uniqueness makes PostgreSQL reject the ON CONFLICT target, so
+duplicate callback assertions see 500 instead of 200. Removing the payment
+expected-status guard lets the late FAILED event overwrite SUCCEEDED. Both
+mutations were restored, then normal verification was run again. Detailed
+review-ready wording is in [Week 4 PR notes](week4-pr-notes.md); no PR was published.
+
+### Final Compose HTTP smoke and Swagger
+
+Used isolated project `ticketrush-week4-check`, localhost port 28082, and
+`infrastructure/compose.week4-check.yml`. Secrets were generated at runtime into
+ignored `backend/target/week4-compose.env`; the development `.env` was unchanged.
+`docker compose ... up --build -d --wait` reported all four services Healthy.
+Then `python infrastructure/week4-smoke.py` produced:
+
+```text
+PASS: SUCCESS register/login -> reserve -> order/replay -> signed HTTP webhook -> PAID
+PASS: FAILURE register/login -> reserve -> order/replay -> signed HTTP webhook -> PAYMENT_FAILED
+PASS: DUPLICATE_WEBHOOK register/login -> reserve -> order/replay -> signed HTTP webhook -> PAID
+PASS: Swagger UI HTTP 200; OpenAPI contains all eight Week 4 paths; reconcile empty
+Cleanup: removed only this smoke run's fixtures
+```
+
+The final smoke checked OrderView/OrderCreate schemas to prevent collisions with
+reservation DTO names. Only smoke fixtures were deleted. The isolated stack was
+stopped with compose down; volumes were preserved. Final compose listing was
+empty. Reproduction commands are in [infrastructure notes](../infrastructure/README.md).
+
+Full local logs (ignored): `backend/target/week4-final-verify.log`,
+`week4-concurrency-1.log` through `week4-concurrency-5.log`,
+`week4-mutation-dedup.log`, `week4-mutation-guard.log`,
+`week4-compose-final.log`, `week4-smoke.log` and `week4-compose-down.log`.
+
+Scope: Week 4 only. No new Redis reservation usage, RabbitMQ events/consumers,
+outbox, or email sending. Week 5 publication sites are explicit TODO comments.
+No commit, push or pull request was created.
