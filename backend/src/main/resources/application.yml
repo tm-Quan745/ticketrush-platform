@@ -11,6 +11,8 @@ spring:
   profiles:
     default: dev
   datasource:
+    hikari:
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:10}
     url: ${DB_URL:jdbc:postgresql://localhost:5432/ticketrush}
     username: ${POSTGRES_USER:ticketrush}
     password: ${POSTGRES_PASSWORD}
@@ -53,15 +55,30 @@ spring:
         await-termination: true
         await-termination-period: 30s
 server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+    threads:
+      max: ${TOMCAT_MAX_THREADS:200}
   forward-headers-strategy: none
   error:
     include-message: never
     include-stacktrace: never
 management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        lettuce.command.completion: true
+        hikaricp.connections.acquire: true
+      percentiles:
+        http.server.requests: 0.5,0.95,0.99
+    tags:
+      application: ticketrush
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: never
@@ -83,6 +100,11 @@ app:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+logging:
+  structured:
+    format:
+      console: ecs
 
 ticketrush:
   rate-limit:

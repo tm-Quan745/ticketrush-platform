@@ -21,6 +21,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     ResponseEntity<ApiError> api(ApiException ex, HttpServletRequest request) {
+        request.setAttribute("metric.error", ex.getCode());
         return ResponseEntity.status(ex.getStatus()).body(ApiError.of(ex.getStatus().value(),
                 ex.getCode(), ex.getMessage(), request.getRequestURI()));
     }

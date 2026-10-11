@@ -41,6 +41,8 @@ public class WaitingRoomService implements ReservationAdmission {
         this.redis=redis; this.script=waitingRoomScript; this.keys=keys; this.properties=properties; this.events=events;
         this.inventory=inventory; this.guard=guard; this.json=json; this.clock=clock; this.metrics=metrics;
         metrics.gauge("waiting_room_size",size);
+        metrics.counter("waiting_room_admitted_total");
+        io.micrometer.core.instrument.Timer.builder("waiting_room_wait_seconds").publishPercentileHistogram().register(metrics);
     }
     private String execute(WaitingRoomEvents.Settings event,String op,UUID user,boolean open,String... tokens) {
         List<String> names=List.of(keys.key("queue",event.id(),"waiting"),keys.key("queue",event.id(),"heartbeat"),

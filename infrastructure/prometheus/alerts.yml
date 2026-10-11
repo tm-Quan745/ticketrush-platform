@@ -1,0 +1,22 @@
+groups:
+  - name: ticketrush
+    rules:
+      - alert: HighServerErrors
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[1m])) / clamp_min(sum(rate(http_server_requests_seconds_count[1m])), 0.01) > 0.01
+        for: 1m
+        labels: {severity: warning}
+        annotations: {summary: 'HTTP 5xx rate exceeds 1%'}
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.95, sum by (le,uri) (rate(http_server_requests_seconds_bucket[1m]))) > 1
+        for: 1m
+        annotations: {summary: 'Endpoint p95 exceeds one second'}
+      - alert: HikariPending
+        expr: hikaricp_connections_pending > 0
+        for: 1m
+        annotations: {summary: 'Database pool has waiting threads for one minute'}
+      - alert: OutboxDelayed
+        expr: outbox_oldest_pending_age_seconds > 60
+        annotations: {summary: 'Oldest pending outbox event exceeds 60 seconds'}
+      - alert: DeadLetterQueueNotEmpty
+        expr: rabbitmq_queue_messages{queue=~".*dlq"} > 0
+        annotations: {summary: 'Dead-letter queue requires investigation'}

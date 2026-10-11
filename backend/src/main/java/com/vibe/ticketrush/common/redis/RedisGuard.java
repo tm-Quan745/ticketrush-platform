@@ -20,6 +20,7 @@ public class RedisGuard implements InfoContributor {
         this.properties = properties; this.metrics = metrics;
         this.strategy=reservations.strategy();
         metrics.gauge("redis_gate_active", this, g -> !"redis-gate".equals(strategy) || g.isOpen() ? 0 : 1);
+        metrics.gauge("redis_circuit_open", this, g -> g.isOpen() ? 1 : 0);
     }
     public synchronized boolean isOpen() { return openUntil != 0; }
     private synchronized Long permit() {
