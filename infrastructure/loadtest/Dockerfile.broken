@@ -1,0 +1,11 @@
+# Deliberately incorrect image for verifier mutation testing, never used by normal Compose.
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+COPY backend/pom.xml .
+COPY backend/src ./src
+RUN sed -i 's/ AND available_quantity>=:quantity//g' src/main/java/com/vibe/ticketrush/inventory/repository/TicketTierRepository.java \
+    && mvn -B -ntp -DskipTests package
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+COPY --from=build /workspace/target/ticketrush-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,0 +1,6 @@
+services:
+  backend:
+    image: ticketrush-week7-broken:local
+    build:
+      context: .
+      dockerfile: infrastructure/loadtest/Dockerfile.broken

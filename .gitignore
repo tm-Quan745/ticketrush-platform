@@ -4,3 +4,6 @@
 .idea/
 *.iml
 *.log
+loadtest/.data/
+**/__pycache__/
+docs/performance/results/*.jfr
