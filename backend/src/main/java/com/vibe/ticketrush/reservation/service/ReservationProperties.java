@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 @Validated
 @ConfigurationProperties("ticketrush.reservation")
 public record ReservationProperties(
-    @DefaultValue("conditional-update") @Pattern(regexp="conditional-update|optimistic|pessimistic") String strategy,
+    @DefaultValue("conditional-update") @Pattern(regexp="conditional-update|optimistic|pessimistic|redis-gate") String strategy,
     @DefaultValue("10m") Duration holdDuration,
     @DefaultValue("100") @Min(1) @Max(10000) int batchSize,
     @DefaultValue("20") @Min(1) @Max(100) int optimisticAttempts) {

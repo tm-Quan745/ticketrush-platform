@@ -7,6 +7,16 @@ import org.springframework.stereotype.Repository;
 public class InventoryReconciliationRepository {
     private final JdbcTemplate jdbc;
     public InventoryReconciliationRepository(JdbcTemplate jdbc) { this.jdbc=jdbc; }
+    public Long expected(UUID tier) {
+        return jdbc.query("""
+            SELECT t.total_quantity-COALESCE(SUM(r.quantity) FILTER (WHERE r.status IN ('HELD','CONFIRMED')),0) expected
+            FROM ticket_tiers t LEFT JOIN reservations r ON r.tier_id=t.id WHERE t.id=? GROUP BY t.id
+            """, rs -> rs.next() ? rs.getLong(1) : null,tier);
+    }
+    public List<UUID> tierIds(UUID event) {
+        if (event == null) return jdbc.query("SELECT id FROM ticket_tiers ORDER BY id",(rs,n) -> rs.getObject(1,UUID.class));
+        return jdbc.query("SELECT id FROM ticket_tiers WHERE event_id=? ORDER BY id",(rs,n) -> rs.getObject(1,UUID.class),event);
+    }
     public List<InventoryViolation> violations(UUID eventId) {
         return jdbc.query("""
             SELECT t.id,t.available_quantity,t.total_quantity,

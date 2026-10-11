@@ -12,13 +12,32 @@ public class ReservationService {
     private final ReservationTransactions transactions;
     private final ReservationProperties properties;
     private final LongAdder retries=new LongAdder();
-    public ReservationService(ReservationTransactions transactions, ReservationProperties properties) {
-        this.transactions=transactions; this.properties=properties;
+    private final com.vibe.ticketrush.inventory.service.InventoryAdmission gate;
+    private final LongAdder databaseAttempts=new LongAdder();
+    private final com.vibe.ticketrush.queue.service.ReservationAdmission queue;
+    public ReservationService(ReservationTransactions transactions, ReservationProperties properties,
+            com.vibe.ticketrush.inventory.service.InventoryAdmission gate, com.vibe.ticketrush.queue.service.ReservationAdmission queue) {
+        this.transactions=transactions; this.properties=properties; this.gate=gate; this.queue=queue;
     }
+    public long databaseAttempts() { return databaseAttempts.sum(); }
     public long retryCount() { return retries.sum(); }
     public View create(UUID user, UUID tier, int quantity) {
+        return create(user,tier,quantity,null);
+    }
+    public View create(UUID user, UUID tier, int quantity,String token) {
+        var admission="redis-gate".equals(properties.strategy()) ? gate.begin(tier,quantity) : null;
+        boolean committed=false;
+        try {
+            queue.requireAdmission(tier,user,token);
+            View result=createInDatabase(user,tier,quantity);
+            committed=true;
+            if (admission==null) gate.afterCommit(tier,-quantity);
+            return result;
+        } finally { gate.complete(admission,committed); }
+    }
+    private View createInDatabase(UUID user, UUID tier, int quantity) {
         for (int attempt=1; ; attempt++) {
-            try { return transactions.create(user,tier,quantity); }
+            try { databaseAttempts.increment(); return transactions.create(user,tier,quantity); }
             catch (DataIntegrityViolationException e) {
                 if (hasConstraint(e,"uq_reservations_active")) throw ReservationTransactions.duplicate();
                 throw e;

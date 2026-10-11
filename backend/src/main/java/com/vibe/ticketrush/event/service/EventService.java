@@ -18,7 +18,9 @@ import java.util.UUID;
 public class EventService implements EventAccess {
     private final java.time.Clock clock;
     private final EventRepository events;
-    public EventService(EventRepository events, java.time.Clock clock) { this.events = events; this.clock=clock; }
+    private final PublicEventCache cache;
+    private final com.vibe.ticketrush.queue.service.QueueProperties queue;
+    public EventService(EventRepository events, java.time.Clock clock,PublicEventCache cache,com.vibe.ticketrush.queue.service.QueueProperties queue) { this.events = events; this.clock=clock; this.cache=cache; this.queue=queue; }
     public EventPage list(int page, int size, String keyword, Instant from, Instant to, boolean onSale) {
         if (page < 0 || size < 1 || size > 50 || (from != null && to != null && from.isAfter(to)))
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_FILTER", "page >= 0, size 1..50, and from <= to required");
@@ -46,6 +48,7 @@ public class EventService implements EventAccess {
     public EventView create(WriteEvent r, UUID creator) {
         validate(r);
         Event e = new Event(); e.setId(UUID.randomUUID()); e.setCreatedBy(creator);
+        e.setWaitingRoomEnabled(queue.enabledByDefault());
         e.setStatus(EventStatus.DRAFT); e.setCreatedAt(clock.instant()); e.setUpdatedAt(e.getCreatedAt());
         EventMapper.apply(e, r);
         return EventMapper.view(events.save(e));
@@ -59,6 +62,7 @@ public class EventService implements EventAccess {
                 && !r.saleStartTime().equals(e.getSaleStartTime()))
             throw new ApiException(HttpStatus.CONFLICT, "SALE_ALREADY_STARTED", "Cannot move sale start after sales have started");
         EventMapper.apply(e, r); e.setUpdatedAt(clock.instant());
+        cache.invalidate();
         return EventMapper.view(e);
     }
     @Transactional
@@ -67,6 +71,7 @@ public class EventService implements EventAccess {
         if (!e.getStatus().canTransitionTo(next))
             throw new ApiException(HttpStatus.CONFLICT, "INVALID_EVENT_TRANSITION", "Cannot transition from " + e.getStatus() + " to " + next);
         e.setStatus(next); e.setUpdatedAt(clock.instant());
+        cache.invalidate();
         return EventMapper.view(e);
     }
     @Override

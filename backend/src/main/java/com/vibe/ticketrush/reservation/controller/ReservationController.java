@@ -18,8 +18,9 @@ public class ReservationController {
     private final ReservationTransactions transactions;
     public ReservationController(ReservationService service, ReservationTransactions transactions) { this.service=service; this.transactions=transactions; }
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
-    public View create(@AuthenticationPrincipal Jwt jwt,@Valid @RequestBody Create request) {
-        return service.create(UUID.fromString(jwt.getSubject()),request.tierId(),request.quantity());
+    public View create(@AuthenticationPrincipal Jwt jwt,@Valid @RequestBody Create request,
+            @RequestHeader(name="X-Admission-Token",required=false) String token) {
+        return service.create(UUID.fromString(jwt.getSubject()),request.tierId(),request.quantity(),token);
     }
     @GetMapping("/me")
     public Listing mine(@AuthenticationPrincipal Jwt jwt,@RequestParam(required=false) ReservationStatus status,

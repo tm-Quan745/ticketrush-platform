@@ -9,6 +9,15 @@ import java.util.UUID;
 public class Event {
     @Id
     private UUID id;
+    private boolean waitingRoomEnabled;
+    private Integer waitingRoomRate;
+    private String waitingRoomMode;
+    public boolean isWaitingRoomEnabled() { return waitingRoomEnabled; }
+    public void setWaitingRoomEnabled(boolean value) { waitingRoomEnabled=value; }
+    public Integer getWaitingRoomRate() { return waitingRoomRate; }
+    public void setWaitingRoomRate(Integer value) { waitingRoomRate=value; }
+    public String getWaitingRoomMode() { return waitingRoomMode; }
+    public void setWaitingRoomMode(String value) { waitingRoomMode=value; }
     private String title;
     private String description;
     private String venueName;

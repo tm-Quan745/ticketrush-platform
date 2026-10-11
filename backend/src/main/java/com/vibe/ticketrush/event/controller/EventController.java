@@ -22,7 +22,8 @@ import java.util.UUID;
 public class EventController {
     private final EventService events;
     private final InventoryRead inventory;
-    public EventController(EventService events, InventoryRead inventory) { this.events = events; this.inventory = inventory; }
+    private final com.vibe.ticketrush.event.service.PublicEventCache cache;
+    public EventController(EventService events, InventoryRead inventory,com.vibe.ticketrush.event.service.PublicEventCache cache) { this.events = events; this.inventory = inventory; this.cache=cache; }
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = true)
     @Operation(summary = "List published events", description = "Zero-based page; size 1..50. Sorted by startTime ascending, then id. from/to are inclusive UTC instants. onSale uses [saleStartTime, saleEndTime).")
@@ -31,10 +32,14 @@ public class EventController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
             @RequestParam(defaultValue = "false") boolean onSale) {
+        if (page==0) {
+            String cacheId="first-page-"+com.vibe.ticketrush.auth.service.TokenService.hash(size+":"+from+":"+to+":"+onSale+":"+(keyword==null ? "absent":"present:"+keyword));
+            return cache.get(cacheId,EventPage.class,() -> events.list(page,size,keyword,from,to,onSale));
+        }
         return events.list(page, size, keyword, from, to, onSale);
     }
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = true)
     @Operation(summary = "Published event with ticket tiers", description = "Availability is AVAILABLE, LOW (<10%), or SOLD_OUT; exact quantities are private. Unpublished events return 404.")
-    public Detail detail(@PathVariable UUID id) { return new Detail(events.publicDetail(id), inventory.publicTiers(id)); }
+    public Detail detail(@PathVariable UUID id) { return cache.get(id.toString(),Detail.class,() -> new Detail(events.publicDetail(id), inventory.publicTiers(id))); }
 }

@@ -3,6 +3,12 @@ logging:
     com.vibe.ticketrush: INFO
 
 ticketrush:
+  rate-limit:
+    enabled: false
+  redis:
+    reconcile-interval: 1h
+  queue:
+    initial-delay: 1h
   reservation:
     expiry-enabled: false
   outbox:

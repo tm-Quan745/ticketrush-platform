@@ -1,5 +1,9 @@
 # Event contract
 
+Week 6 adds no broker event types. Redis gate synchronization uses after-commit
+callbacks; queue admission and cache invalidation have no downstream consumer.
+Existing business/outbox events remain unchanged. See [Redis operations](redis.md).
+
 All events use JSON envelope version 1:
 
 ```json
