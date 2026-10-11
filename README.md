@@ -133,4 +133,28 @@ enablement and a test token; they are rejected in prod.
 Run `./infrastructure/week4-verify.ps1` for build/compiler lint/all tests and five
 concurrency repetitions. See [API](docs/api.md), [purchase diagrams](docs/week4-flow.md),
 [verification](docs/verification.md), and [isolated Compose smoke instructions](infrastructure/README.md).
-Week 5 Redis reservation features, RabbitMQ consumers, outbox and email remain deferred.
+Week 5 outbox/RabbitMQ/email and Week 6 Redis admission features are now included.
+
+## Week 6 Redis
+
+Select `RESERVATION_STRATEGY=redis-gate` to enable the Redis admission gate in front
+of PostgreSQL. The default remains `conditional-update`. Waiting room is disabled
+per event by default. Rate limits and public event cache use Redis with documented
+outage behavior. Compose enables Redis AOF and noeviction.
+
+- [Redis keys, configuration, failure modes and diagrams](docs/redis.md)
+- [API](docs/api.md), [database migration](docs/database.md), ADRs 0021–0026
+- [Single-machine benchmark](docs/benchmarks/week6.md)
+- [Week 6 verification](docs/week6-verification.md)
+
+```powershell
+cd backend
+./mvnw.cmd -B -ntp verify
+./mvnw.cmd -B -ntp -Pweek6-benchmark test
+```
+
+From the repository root, `./infrastructure/week6-smoke.ps1` creates a disposable
+Compose project, exercises gate/queue/outage/login behavior, then removes only
+that project's containers and volumes. `week6-mutations.ps1` temporarily mutates
+sources and restores their original bytes in `finally`; run it without other builds
+or edits in progress. k6, dashboards and frontend remain outside Week 6.

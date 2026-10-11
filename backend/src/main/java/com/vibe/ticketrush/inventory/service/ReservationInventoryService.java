@@ -12,7 +12,8 @@ import java.util.UUID;
 public class ReservationInventoryService implements ReservationInventory {
     private final TicketTierRepository tiers;
     private final EventAccess events;
-    public ReservationInventoryService(TicketTierRepository tiers, EventAccess events) { this.tiers=tiers; this.events=events; }
+    private final RedisInventoryGate gate;
+    public ReservationInventoryService(TicketTierRepository tiers, EventAccess events, RedisInventoryGate gate) { this.tiers=tiers; this.events=events; this.gate=gate; }
     public void validateSale(UUID id, int quantity, Instant now) {
         var tier=tiers.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"TIER_NOT_FOUND","Ticket tier not found"));
         events.requireOnSale(tier.getEventId(), now);
@@ -21,5 +22,6 @@ public class ReservationInventoryService implements ReservationInventory {
     }
     public void restore(UUID id, int quantity, Instant now) {
         if (tiers.restore(id, quantity, now) != 1) throw new IllegalStateException("Missing inventory tier");
+        gate.afterCommit(id,quantity);
     }
 }

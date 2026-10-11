@@ -294,3 +294,15 @@ ticket transitions. `idx_outbox_relay(status,next_attempt_at,created_at)` suppor
 the relay. Processed-message and email uniqueness enforce idempotency; FAILED
 outbox rows are retained for operator retry while only old PUBLISHED rows are
 cleaned up.
+
+## V6: Waiting-room event configuration
+
+`V6__waiting_room.sql` adds `events.waiting_room_enabled` (NOT NULL, default false),
+nullable `waiting_room_rate` (CHECK 1..1000), and nullable `waiting_room_mode`
+(CHECK fifo/lottery). Null rate/mode inherit application defaults; new application
+events can opt into the configured enabled default. Existing rows remain disabled.
+V1–V5 are unchanged.
+
+No business tables moved to Redis. Reconciliation derives expected available stock
+from total quantity minus HELD and CONFIRMED reservations in one SQL statement.
+Redis counters, queues, tokens and caches are described in [Redis key catalog](redis.md).

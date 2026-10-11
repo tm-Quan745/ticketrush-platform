@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,properties="ticketrush.rate-limit.enabled=true")
 @ActiveProfiles("test")
 @Testcontainers
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -161,13 +161,14 @@ class AuthIntegrationTest {
         assertThat(results.stream().filter(r -> r.getStatusCode().value() == 429).count()).isEqualTo(7);
         var limited = login("missing@example.com", PASSWORD);
         assertError(limited, 429, "RATE_LIMITED");
-        assertThat(limited.getHeaders().getFirst("Retry-After")).isEqualTo("60");
-        Set<String> keys = redis.keys("auth:login:*");
-        assertThat(keys).hasSize(1);
-        String key = keys.iterator().next();
-        assertThat(redis.getExpire(key)).isBetween(1L, 60L);
-        redis.expire(key, Duration.ofMillis(1));
-        org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(3)).until(() -> !redis.hasKey(key));
+        assertThat(Long.parseLong(limited.getHeaders().getFirst("Retry-After"))).isBetween(1L,12L);
+        Set<String> keys = redis.keys("ticketrush:*:rate-limit:*:login-*");
+        assertThat(keys).hasSize(2);
+        for (String key:keys) {
+            assertThat(redis.getExpire(key)).isBetween(1L,120L);
+            redis.expire(key,Duration.ofMillis(1));
+        }
+        org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(3)).until(() -> redis.keys("ticketrush:*:rate-limit:*:login-*").isEmpty());
         assertThat(login("missing@example.com", PASSWORD).getStatusCode().value()).isEqualTo(401);
     }
 

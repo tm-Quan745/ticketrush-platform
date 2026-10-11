@@ -12,10 +12,15 @@ import java.util.UUID;
 @Transactional(propagation=Propagation.MANDATORY)
 public class PurchaseInventoryService implements PurchaseInventory {
     private final TicketTierRepository tiers;
-    public PurchaseInventoryService(TicketTierRepository tiers) { this.tiers=tiers; }
+    private final RedisInventoryGate gate;
+    public PurchaseInventoryService(TicketTierRepository tiers, RedisInventoryGate gate) { this.tiers=tiers; this.gate=gate; }
     public Price snapshot(UUID tierId) {
         var tier=tiers.findById(tierId).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"TIER_NOT_FOUND","Tier not found"));
         return new Price(tier.getEventId(),tier.getName(),tier.getPrice(),tier.getCurrency());
     }
-    public boolean reacquire(UUID tierId,int quantity,Instant now) { return tiers.take(tierId,quantity,now)==1; }
+    public boolean reacquire(UUID tierId,int quantity,Instant now) {
+        boolean taken=tiers.take(tierId,quantity,now)==1;
+        if (taken) gate.afterCommit(tierId,-quantity);
+        return taken;
+    }
 }
