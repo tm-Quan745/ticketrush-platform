@@ -27,6 +27,7 @@ public class PurchaseReservationService implements PurchaseReservation {
         this.reservations=reservations; this.inventory=inventory; this.purchaseInventory=purchaseInventory; this.events=events;
         this.transactions=transactions; this.outbox=outbox;
     }
+    @Transactional(propagation=Propagation.NOT_SUPPORTED)
     public void expireOwned(UUID user,UUID id) { transactions.get(user,id); }
     public Hold lock(UUID id) {
         var r=reservations.lock(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"RESERVATION_NOT_FOUND","Reservation not found"));

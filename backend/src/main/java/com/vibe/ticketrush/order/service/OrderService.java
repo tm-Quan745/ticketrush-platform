@@ -36,9 +36,9 @@ public class OrderService {
         this.inventory=inventory; this.payments=payments; this.idempotency=idempotency; this.json=json; this.clock=clock; this.outbox=outbox;
     }
     public IdempotencyService.StoredResponse create(UUID user,UUID reservation,UUID key,PaymentScenario scenario) {
-        return idempotency.execute(user,"POST /api/v1/orders",key,reservation+":"+scenario,() -> {
-            // Lazy expiry must commit even when an expired reservation is rejected below.
-            reservations.expireOwned(user,reservation);
+        // Lazy expiry commits independently before the business transaction borrows a connection.
+        return idempotency.execute(user,"POST /api/v1/orders",key,reservation+":"+scenario,
+            () -> reservations.expireOwned(user,reservation),() -> {
             var hold=reservations.lock(reservation);
             if (!hold.userId().equals(user)) throw forbidden();
             if (orders.exists(reservation)) throw conflict("RESERVATION_ALREADY_ORDERED");
