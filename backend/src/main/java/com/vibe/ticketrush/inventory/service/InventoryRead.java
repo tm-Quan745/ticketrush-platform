@@ -3,4 +3,5 @@ import com.vibe.ticketrush.inventory.dto.TierDtos.PublicTier;
 import java.util.*;
 public interface InventoryRead {
     List<PublicTier> publicTiers(UUID eventId);
+    UUID eventId(UUID tierId);
 }

@@ -240,3 +240,36 @@ The outbox relay exposes `outbox_pending_count`,
 `outbox_oldest_pending_age_seconds`, and `outbox_publish_total`; consumer/email
 metrics are exposed through Actuator metrics. RabbitMQ outage does not make the
 application health DOWN: pending rows safely absorb it.
+
+## Week 6 Redis gate, waiting room and rate limits
+
+All paths below use `/api/v1`.
+
+| Method | Path | Role | Result |
+|---|---|---|---|
+| PUT | `/admin/events/{id}/waiting-room` | ADMIN | Configure enabled, rate (1..1000), mode (fifo/lottery) |
+| POST | `/events/{id}/waiting-room/join` | USER | Idempotent join; 200, allowed before sale opens |
+| GET | `/events/{id}/waiting-room/status` | USER | Heartbeat, live rank, admission status/token |
+| DELETE | `/events/{id}/waiting-room/leave` | USER | Remove position and revoke token; 204 |
+| POST | `/admin/events/{id}/inventory/redis-reconcile` | ADMIN | Per-tier observed/expected counter and healing result |
+
+Queue status: `state` (WAITING, ADMITTED, NOT_IN_QUEUE, EXPIRED), `position` (1-based
+while waiting, otherwise 0), `estimatedWaitSeconds`, `pollIntervalSeconds`, `soldOut`,
+`token`, `expiresAt`. Response includes `Retry-After: 2` and `Cache-Control: no-store`.
+Sold-out waiting users retain WAITING but receive `soldOut:true`; admission pauses.
+
+`POST /reservations` accepts `X-Admission-Token`. For an enabled event, an accepted
+gate attempt requires an owner/event-bound token: missing => 403 WAITING_ROOM_REQUIRED;
+wrong/expired => 403 INVALID_ADMISSION_TOKEN. Queue-disabled events need no token.
+Redis-gate SOLD_OUT is an earlier rejection that avoids SQL entirely. Redis failure
+falls back to SQL for gate-only events, but token validation requires Redis (503
+WAITING_ROOM_UNAVAILABLE). See [failure semantics](redis.md).
+
+Rate-limited requests return 429 RATE_LIMITED with the common error body and
+Retry-After, X-RateLimit-Limit/Remaining/Reset headers. Reset is Unix seconds to a
+full token bucket. Login is limited by IP and normalized email; reservation/order
+creation and queue polling by user; public event GET by IP. The signed payment
+webhook is excluded. Only configured trusted proxies can supply forwarded IPs.
+
+Public event detail and page zero are cached for 5–10 seconds with a bounded stale
+window. Public tiers still contain availability buckets, never exact inventory.

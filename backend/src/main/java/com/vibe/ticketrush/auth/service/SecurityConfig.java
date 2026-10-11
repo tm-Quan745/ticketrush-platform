@@ -46,7 +46,11 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain security(HttpSecurity http, StringRedisTemplate redis, AuthProperties properties,
-                                 SecurityErrorWriter errors, Environment environment) throws Exception {
+                                 SecurityErrorWriter errors, Environment environment,
+                                 com.vibe.ticketrush.common.ratelimit.RedisRateLimiter limiter,
+                                 com.vibe.ticketrush.common.ratelimit.RateLimitProperties limits,
+                                 com.vibe.ticketrush.common.ratelimit.ClientAddress addresses,
+                                 com.fasterxml.jackson.databind.ObjectMapper json) throws Exception {
         var authorities = new JwtGrantedAuthoritiesConverter();
         authorities.setAuthoritiesClaimName("roles");
         authorities.setAuthorityPrefix("ROLE_");
@@ -64,6 +68,7 @@ public class SecurityConfig {
                         auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     }
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/events", "/api/v1/events/*").permitAll();
+                    auth.requestMatchers("/api/v1/events/*/waiting-room/**").hasRole("USER");
                     auth.requestMatchers(HttpMethod.POST, "/api/v1/payments/webhook").permitAll();
                     auth.requestMatchers("/api/v1/orders", "/api/v1/orders/**").hasRole("USER");
                     auth.requestMatchers("/actuator/**", "/api/v1/admin/**").hasRole("ADMIN");
@@ -77,7 +82,8 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(converter))
                         .authenticationEntryPoint((req, res, e) -> errors.write(req, res, 401, "UNAUTHORIZED", "Invalid access token"))
                         .accessDeniedHandler((req, res, e) -> errors.write(req, res, 403, "FORBIDDEN", "Access denied")))
-                .addFilterBefore(new LoginRateLimitFilter(redis, properties, errors), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new com.vibe.ticketrush.common.ratelimit.RateLimitFilter(limiter,limits,addresses,properties,errors,json),
+                    org.springframework.security.web.access.intercept.AuthorizationFilter.class);
         return http.build();
     }
 }

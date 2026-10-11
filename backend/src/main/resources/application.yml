@@ -27,8 +27,8 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD}
-      timeout: 2s
-      connect-timeout: 2s
+      timeout: ${REDIS_COMMAND_TIMEOUT:300ms}
+      connect-timeout: ${REDIS_CONNECT_TIMEOUT:300ms}
       repositories:
         enabled: false
   rabbitmq:
@@ -85,6 +85,21 @@ springdoc:
     path: /swagger-ui.html
 
 ticketrush:
+  rate-limit:
+    trusted-proxies: ${TRUSTED_PROXIES:}
+  redis:
+    environment: ${REDIS_ENV:dev}
+    cooldown: ${REDIS_CIRCUIT_COOLDOWN:5s}
+    attempt-lease: ${REDIS_ATTEMPT_LEASE:1m}
+    fallback-enabled: ${REDIS_FALLBACK_ENABLED:true}
+    reconcile-interval: ${REDIS_RECONCILE_INTERVAL:30s}
+  queue:
+    enabled-by-default: ${WAITING_ROOM_DEFAULT:false}
+    mode: ${WAITING_ROOM_MODE:fifo}
+    rate: ${WAITING_ROOM_RATE:10}
+    interval: ${WAITING_ROOM_INTERVAL:1s}
+    heartbeat-ttl: ${WAITING_ROOM_HEARTBEAT_TTL:30s}
+    token-ttl: ${WAITING_ROOM_TOKEN_TTL:10m}
   payment:
     webhook-secret: ${PAYMENT_WEBHOOK_SECRET:}
     webhook-url: ${PAYMENT_WEBHOOK_URL:http://127.0.0.1:8080/api/v1/payments/webhook}
