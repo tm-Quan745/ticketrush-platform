@@ -1,0 +1,547 @@
+[
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/LinkedTransferQueue$DualNode.await",
+      "java/util/concurrent/LinkedTransferQueue.xfer",
+      "java/util/concurrent/SynchronousQueue.xfer"
+    ],
+    "samples": 1009
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.park",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer.acquire",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer.acquire",
+      "java/util/concurrent/locks/ReentrantLock$Sync.lock"
+    ],
+    "samples": 242
+  },
+  {
+    "event": "jdk.SocketRead",
+    "stack": [
+      "java/net/Socket$SocketInputStream.read",
+      "org/postgresql/core/VisibleBufferedInputStream.readMore",
+      "org/postgresql/core/VisibleBufferedInputStream.ensureBytes",
+      "org/postgresql/core/VisibleBufferedInputStream.ensureBytes",
+      "org/postgresql/core/VisibleBufferedInputStream.read"
+    ],
+    "samples": 191
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/CompletableFuture$Signaller.block",
+      "java/util/concurrent/ForkJoinPool.unmanagedBlock",
+      "java/util/concurrent/ForkJoinPool.managedBlock"
+    ],
+    "samples": 186
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/LinkedTransferQueue$DualNode.await",
+      "java/util/concurrent/SynchronousQueue$Transferer.xferLifo",
+      "java/util/concurrent/SynchronousQueue.xfer"
+    ],
+    "samples": 105
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "org/springframework/boot/web/embedded/tomcat/TomcatEmbeddedWebappClassLoader.loadClass",
+      "org/apache/catalina/loader/WebappClassLoaderBase.loadClass",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.loadClass",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.bestEffortLoadClass",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.computeBySTEP"
+    ],
+    "samples": 70
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/LinkedBlockingQueue.poll",
+      "java/util/concurrent/ThreadPoolExecutor.getTask"
+    ],
+    "samples": 66
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/LinkedBlockingQueue.poll",
+      "org/springframework/amqp/rabbit/listener/BlockingQueueConsumer.nextMessage"
+    ],
+    "samples": 66
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/ScheduledThreadPoolExecutor$DelayedWorkQueue.take",
+      "java/util/concurrent/ScheduledThreadPoolExecutor$DelayedWorkQueue.take"
+    ],
+    "samples": 60
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.park",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionNode.block",
+      "java/util/concurrent/ForkJoinPool.unmanagedBlock",
+      "java/util/concurrent/ForkJoinPool.managedBlock"
+    ],
+    "samples": 48
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/nio/ByteBuffer.allocate",
+      "org/apache/tomcat/util/net/SocketBufferHandler.<init>",
+      "org/apache/tomcat/util/net/NioEndpoint.setSocketOptions",
+      "org/apache/tomcat/util/net/NioEndpoint.setSocketOptions",
+      "org/apache/tomcat/util/net/Acceptor.run"
+    ],
+    "samples": 21
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "sun/security/provider/SecureRandom.engineNextBytes",
+      "sun/security/provider/NativePRNG$RandomIO.implNextBytes",
+      "sun/security/provider/NativePRNG.engineNextBytes",
+      "java/security/SecureRandom.nextBytes",
+      "java/util/UUID.randomUUID"
+    ],
+    "samples": 13
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.park",
+      "java/util/concurrent/CompletableFuture$Signaller.block",
+      "java/util/concurrent/ForkJoinPool.unmanagedBlock",
+      "java/util/concurrent/ForkJoinPool.managedBlock"
+    ],
+    "samples": 12
+  },
+  {
+    "event": "jdk.SocketRead",
+    "stack": [
+      "java/net/Socket$SocketInputStream.read",
+      "java/io/BufferedInputStream.fill",
+      "java/io/BufferedInputStream.implRead",
+      "java/io/BufferedInputStream.read",
+      "java/io/DataInputStream.readUnsignedByte"
+    ],
+    "samples": 11
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/nio/charset/CharsetEncoder.encode",
+      "sun/nio/cs/StreamEncoder.implWrite",
+      "sun/nio/cs/StreamEncoder.implWrite",
+      "sun/nio/cs/StreamEncoder.lockedWrite",
+      "sun/nio/cs/StreamEncoder.write"
+    ],
+    "samples": 7
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "org/HdrHistogram/DoubleHistogram.autoAdjustRangeForValueSlowPath",
+      "org/HdrHistogram/DoubleHistogram.autoAdjustRangeForValue",
+      "org/HdrHistogram/DoubleHistogram.recordSingleValue",
+      "org/HdrHistogram/DoubleHistogram.recordValue",
+      "org/HdrHistogram/DoubleRecorder.recordValue"
+    ],
+    "samples": 7
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.await",
+      "java/lang/ref/ReferenceQueue.await",
+      "java/lang/ref/ReferenceQueue.remove0"
+    ],
+    "samples": 5
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "org/apache/tomcat/util/collections/SynchronizedStack.push",
+      "org/apache/coyote/AbstractProtocol$RecycledProcessors.push",
+      "org/apache/coyote/AbstractProtocol$ConnectionHandler.release",
+      "org/apache/coyote/AbstractProtocol$ConnectionHandler.process",
+      "org/apache/tomcat/util/net/NioEndpoint$SocketProcessor.doRun"
+    ],
+    "samples": 5
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "sun/nio/cs/StreamEncoder.write",
+      "java/io/OutputStreamWriter.write",
+      "java/io/Writer.append",
+      "java/io/Writer.append",
+      "org/springframework/boot/json/JsonValueWriter.writeString"
+    ],
+    "samples": 4
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/LinkedBlockingQueue.poll",
+      "org/apache/tomcat/util/threads/TaskQueue.poll"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/orm/jpa/JpaTransactionManager.doBegin",
+      "org/springframework/transaction/support/AbstractPlatformTransactionManager.startTransaction",
+      "org/springframework/transaction/support/AbstractPlatformTransactionManager.getTransaction",
+      "org/springframework/transaction/interceptor/TransactionAspectSupport.createTransactionIfNecessary",
+      "org/springframework/transaction/interceptor/TransactionAspectSupport.invokeWithinTransaction"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/apache/tomcat/util/net/NioEndpoint$Poller.timeout",
+      "org/apache/tomcat/util/net/NioEndpoint$Poller.run",
+      "java/lang/Thread.runWith",
+      "java/lang/Thread.run"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "java/lang/ClassLoader.loadClass",
+      "org/springframework/boot/loader/net/protocol/jar/JarUrlClassLoader.loadClass",
+      "org/springframework/boot/loader/launch/LaunchedClassLoader.loadClass",
+      "java/lang/ClassLoader.loadClass",
+      "org/hibernate/exception/internal/SQLExceptionTypeDelegate.convert"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "io/micrometer/core/instrument/MeterRegistry.getOrCreateMeter",
+      "io/micrometer/core/instrument/MeterRegistry.registerMeterIfNecessary",
+      "io/micrometer/core/instrument/MeterRegistry.timer",
+      "io/micrometer/core/instrument/Timer$Builder.register",
+      "io/micrometer/core/instrument/Timer$Builder.register"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/web/method/HandlerMethod.createWithResolvedBean",
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.getHandlerInternal",
+      "org/springframework/web/servlet/mvc/method/RequestMappingInfoHandlerMapping.getHandlerInternal",
+      "org/springframework/web/servlet/mvc/method/RequestMappingInfoHandlerMapping.getHandlerInternal",
+      "org/springframework/web/servlet/handler/AbstractHandlerMapping.getHandler"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/util/ConcurrentReferenceHashMap$Segment.getReference",
+      "org/springframework/util/ConcurrentReferenceHashMap.getReference",
+      "org/springframework/util/ConcurrentReferenceHashMap.get",
+      "java/util/concurrent/ConcurrentMap.computeIfAbsent",
+      "org/springframework/core/annotation/AnnotationTypeMappings$Cache.get"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/sql/exec/spi/JdbcSelectExecutor.list",
+      "org/hibernate/loader/ast/internal/SingleIdLoadPlan.load",
+      "org/hibernate/loader/ast/internal/SingleIdLoadPlan.load",
+      "org/hibernate/loader/ast/internal/SingleIdEntityLoaderStandardImpl.load",
+      "org/hibernate/persister/entity/AbstractEntityPersister.doLoad"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "io/micrometer/observation/Observation.createNotStarted",
+      "org/springframework/security/web/ObservationFilterChainDecorator$ObservationFilter.parent",
+      "org/springframework/security/web/ObservationFilterChainDecorator$ObservationFilter.doFilter",
+      "org/springframework/security/web/ObservationFilterChainDecorator$VirtualFilterChain.doFilter",
+      "org/springframework/security/web/FilterChainProxy.doFilterInternal"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/internal/SessionImpl.<init>",
+      "org/hibernate/internal/SessionFactoryImpl$SessionBuilderImpl.openSession",
+      "org/hibernate/internal/SessionFactoryImpl$SessionBuilderImpl.openSession",
+      "org/hibernate/internal/SessionFactoryImpl.buildEntityManager",
+      "org/hibernate/internal/SessionFactoryImpl.createEntityManager"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/Thread.run"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/event/internal/DefaultPreLoadEventListener.onPreLoad",
+      "org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl$$Lambda/0x000078c7eb0fa590.accept",
+      "org/hibernate/event/service/internal/EventListenerGroupImpl.fireEventOnEachListener",
+      "org/hibernate/sql/results/graph/entity/internal/EntityInitializerImpl.preLoad",
+      "org/hibernate/sql/results/graph/entity/internal/EntityInitializerImpl.initializeEntityInstance"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/web/bind/annotation/RequestMethod.resolve",
+      "org/springframework/web/servlet/mvc/condition/RequestMethodsRequestCondition.matchRequestMethod",
+      "org/springframework/web/servlet/mvc/condition/RequestMethodsRequestCondition.getMatchingCondition",
+      "org/springframework/web/servlet/mvc/method/RequestMappingInfo.getMatchingCondition",
+      "org/springframework/web/servlet/mvc/method/RequestMappingInfoHandlerMapping.getMatchingMapping"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.addMatchingMappings",
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.lookupHandlerMethod",
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.getHandlerInternal",
+      "org/springframework/web/servlet/mvc/method/RequestMappingInfoHandlerMapping.getHandlerInternal",
+      "org/springframework/web/servlet/mvc/method/RequestMappingInfoHandlerMapping.getHandlerInternal"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl$StatementPreparationTemplate.<init>",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl$QueryStatementPreparationTemplate.<init>",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl$4.<init>",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl.prepareQueryStatement",
+      "org/hibernate/sql/exec/internal/StandardStatementCreator.createStatement"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/amqp/rabbit/support/DefaultMessagePropertiesConverter.toMessageProperties",
+      "org/springframework/amqp/rabbit/connection/PublisherCallbackChannelImpl.findConfirm",
+      "org/springframework/amqp/rabbit/connection/PublisherCallbackChannelImpl.handle",
+      "com/rabbitmq/client/impl/ChannelN.lambda$addReturnListener$0",
+      "com.rabbitmq.client.impl.ChannelN$$Lambda/0x000078c7eaf1ad48.handleReturn"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/StackTraceElement.equals",
+      "ch/qos/logback/classic/spi/STEUtil.findNumberOfCommonFrames",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.populateFrames",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.calculate",
+      "ch/qos/logback/classic/spi/ThrowableProxy.calculatePackagingData"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/beans/factory/support/DefaultListableBeanFactory.doGetBeanNamesForType",
+      "org/springframework/beans/factory/support/DefaultListableBeanFactory.getBeanNamesForType",
+      "org/springframework/beans/factory/support/DefaultListableBeanFactory.getBeanNamesForType",
+      "org/springframework/beans/factory/BeanFactoryUtils.beanNamesForTypeIncludingAncestors",
+      "org/springframework/beans/factory/support/DefaultListableBeanFactory.beanNamesForStream"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "sun/security/provider/NativePRNG$RandomIO.implNextBytes",
+      "sun/security/provider/NativePRNG.engineNextBytes",
+      "java/security/SecureRandom.nextBytes",
+      "java/util/UUID.randomUUID",
+      "com/vibe/ticketrush/common/service/CorrelationIdFilter.doFilter"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/util/regex/Matcher.reset",
+      "java/util/regex/Matcher.<init>",
+      "java/util/regex/Pattern.matcher",
+      "org/springframework/security/web/firewall/StrictHttpFirewall.lambda$static$1",
+      "org.springframework.security.web.firewall.StrictHttpFirewall$$Lambda/0x000078c7eaed0830.test"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/util/concurrent/locks/LockSupport.unpark",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer.signalNext",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer.release",
+      "java/util/concurrent/locks/ReentrantLock.unlock",
+      "jdk/internal/misc/InternalLock.unlock"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.bestEffortLoadClass",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.computeBySTEP",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.populateFrames",
+      "ch/qos/logback/classic/spi/PackagingDataCalculator.calculate",
+      "ch/qos/logback/classic/spi/ThrowableProxy.calculatePackagingData"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/StackTraceElement.toString",
+      "ch/qos/logback/classic/spi/StackTraceElementProxy.getSTEAsString",
+      "ch/qos/logback/classic/spi/StackTraceElementProxy.toString",
+      "ch/qos/logback/classic/pattern/ThrowableProxyConverter.subjoinSTEPArray",
+      "ch/qos/logback/classic/pattern/ThrowableProxyConverter.recursiveAppend"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/util/zip/ZipEntry.<init>",
+      "java/util/jar/JarEntry.<init>",
+      "java/util/jar/JarEntry.<init>",
+      "org/springframework/boot/loader/net/protocol/jar/UrlJarEntry.<init>",
+      "org/springframework/boot/loader/net/protocol/jar/UrlJarEntry.of"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/invoke/DirectMethodHandle$Holder.invokeSpecial",
+      "java.lang.invoke.LambdaForm$MH/0x000078c7eb17d400.invoke",
+      "java/lang/invoke/Invokers$Holder.invokeExact_MT",
+      "jdk/internal/reflect/DirectMethodHandleAccessor.invokeImpl",
+      "jdk/internal/reflect/DirectMethodHandleAccessor.invoke"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/engine/spi/EntityKey.generateHashCode",
+      "org/hibernate/engine/spi/EntityKey.<init>",
+      "org/hibernate/sql/results/graph/entity/internal/EntityInitializerImpl.resolveEntityKey",
+      "org/hibernate/sql/results/graph/entity/internal/EntityInitializerImpl.resolveKey",
+      "org/hibernate/sql/results/graph/entity/internal/EntityInitializerImpl.resolveKey"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "jdk/jfr/internal/PlatformRecorder.periodicTask",
+      "jdk/jfr/internal/PlatformRecorder.lambda$startDiskMonitor$1",
+      "jdk.jfr.internal.PlatformRecorder$$Lambda/0x000078c7eb056458.run",
+      "java/lang/Thread.runWith",
+      "java/lang/Thread.run"
+    ],
+    "samples": 1
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/boot/json/JsonWriter$Members.write",
+      "org/springframework/boot/json/JsonWriter$Member.lambda$getValueToWrite$6",
+      "org.springframework.boot.json.JsonWriter$Member$$Lambda/0x000078c7ea1b1230.to",
+      "org/springframework/boot/json/WritableJson$1.to",
+      "org/springframework/boot/json/JsonValueWriter.write"
+    ],
+    "samples": 1
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "jdk/proxy2/$Proxy193.annotationType",
+      "org/springframework/core/annotation/AnnotationFilter.matches",
+      "org/springframework/core/annotation/TypeMappedAnnotations$MergedAnnotationFinder.doWithAnnotations",
+      "org/springframework/core/annotation/TypeMappedAnnotations$MergedAnnotationFinder.doWithAnnotations",
+      "org/springframework/core/annotation/AnnotationsScanner.processMethodAnnotations"
+    ],
+    "samples": 1
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/CharacterDataLatin1.getType",
+      "java/lang/Character.getType",
+      "java/util/regex/CharPredicates.lambda$ASSIGNED$4",
+      "java.util.regex.CharPredicates$$Lambda/0x000078c7ead619c8.is",
+      "java/util/regex/Pattern.lambda$and$2"
+    ],
+    "samples": 1
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/internal/SessionImpl.checkSessionFactoryOpen",
+      "org/hibernate/internal/SessionImpl.isOpen",
+      "org/hibernate/engine/transaction/internal/TransactionImpl.<init>",
+      "org/hibernate/internal/AbstractSharedSessionContract.accessTransaction",
+      "org/hibernate/internal/AbstractSharedSessionContract.getTransaction"
+    ],
+    "samples": 1
+  }
+]

@@ -1,0 +1,2009 @@
+{
+  "start": 1791744890.6678755,
+  "end": 1791744933.8952377,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=iteration1-C-1"
+  ],
+  "series": {
+    "request_rate": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {},
+            "values": [
+              [
+                1791744890.668,
+                "10.6"
+              ],
+              [
+                1791744895.668,
+                "6.29874025194961"
+              ],
+              [
+                1791744900.668,
+                "1.2522495500899817"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "k6_request_rate": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {},
+            "values": [
+              [
+                1791744890.668,
+                "8.13340953194805"
+              ],
+              [
+                1791744895.668,
+                "5.369987995198079"
+              ],
+              [
+                1791744900.668,
+                "0.4"
+              ],
+              [
+                1791744905.668,
+                "2.2992869875222812"
+              ],
+              [
+                1791744910.668,
+                "4.020653095843936"
+              ],
+              [
+                1791744915.668,
+                "50.49458423147258"
+              ],
+              [
+                1791744920.668,
+                "77.75291658371492"
+              ],
+              [
+                1791744925.668,
+                "88.2911708829117"
+              ],
+              [
+                1791744930.668,
+                "54.227852960936744"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "hikari_pending": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "hikaricp_connections_pending",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "pool": "HikariPool-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "hikari_active": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "hikaricp_connections_active",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "pool": "HikariPool-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "db_lock_waits": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "ticketrush_database_lock_waits",
+              "instance": "postgres-exporter:9187",
+              "job": "postgres",
+              "server": "postgres:5432"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ],
+              [
+                1791744900.668,
+                "0"
+              ],
+              [
+                1791744905.668,
+                "6"
+              ],
+              [
+                1791744910.668,
+                "5"
+              ],
+              [
+                1791744915.668,
+                "5"
+              ],
+              [
+                1791744920.668,
+                "6"
+              ],
+              [
+                1791744925.668,
+                "5"
+              ],
+              [
+                1791744930.668,
+                "8"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "backend_cpu": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "process_cpu_usage",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.022358396820139115"
+              ],
+              [
+                1791744895.668,
+                "0.1104346355487908"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "heap": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {},
+            "values": [
+              [
+                1791744890.668,
+                "114304136"
+              ],
+              [
+                1791744895.668,
+                "63953072"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "gc_pause": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "jvm_gc_pause_seconds_max",
+              "action": "end of minor GC",
+              "application": "ticketrush",
+              "cause": "CodeCache GC Threshold",
+              "gc": "G1 Young Generation",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791744895.668,
+                "0.053"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "jvm_gc_pause_seconds_max",
+              "action": "end of minor GC",
+              "application": "ticketrush",
+              "cause": "G1 Evacuation Pause",
+              "gc": "G1 Young Generation",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.028"
+              ],
+              [
+                1791744895.668,
+                "0.028"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "tomcat_busy": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "tomcat_threads_busy_threads",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "name": "http-nio-8080"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "1"
+              ],
+              [
+                1791744895.668,
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "outbox_pending": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "outbox_pending_count",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "474"
+              ],
+              [
+                1791744895.668,
+                "480"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "outbox_age": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "outbox_oldest_pending_age_seconds",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "58"
+              ],
+              [
+                1791744895.668,
+                "63"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "redis_memory": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "redis_memory_used_bytes",
+              "instance": "redis-exporter:9121",
+              "job": "redis"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "1702400"
+              ],
+              [
+                1791744895.668,
+                "1681928"
+              ],
+              [
+                1791744900.668,
+                "1747984"
+              ],
+              [
+                1791744905.668,
+                "1773888"
+              ],
+              [
+                1791744910.668,
+                "1792976"
+              ],
+              [
+                1791744915.668,
+                "1805112"
+              ],
+              [
+                1791744920.668,
+                "1812320"
+              ],
+              [
+                1791744925.668,
+                "1847632"
+              ],
+              [
+                1791744930.668,
+                "1857880"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "redis_latency": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "lettuce_command_completion_seconds_max",
+              "application": "ticketrush",
+              "command": "CLIENT",
+              "instance": "backend:8080",
+              "job": "backend",
+              "local": "local:any",
+              "remote": "redis/172.20.0.6:6379"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.005866148"
+              ],
+              [
+                1791744895.668,
+                "0.005866148"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "lettuce_command_completion_seconds_max",
+              "application": "ticketrush",
+              "command": "EVALSHA",
+              "instance": "backend:8080",
+              "job": "backend",
+              "local": "local:any",
+              "remote": "redis/172.20.0.6:6379"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.045114622"
+              ],
+              [
+                1791744895.668,
+                "0.045114622"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "lettuce_command_completion_seconds_max",
+              "application": "ticketrush",
+              "command": "HELLO",
+              "instance": "backend:8080",
+              "job": "backend",
+              "local": "local:any",
+              "remote": "redis/172.20.0.6:6379"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.038037608"
+              ],
+              [
+                1791744895.668,
+                "0.038037608"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "lettuce_command_completion_seconds_max",
+              "application": "ticketrush",
+              "command": "INFO",
+              "instance": "backend:8080",
+              "job": "backend",
+              "local": "local:any",
+              "remote": "redis/172.20.0.6:6379"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.016647572"
+              ],
+              [
+                1791744895.668,
+                "0.016647572"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "container_memory": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "2088f9b930d51a256436829f34665d6f6425966d5a24327a8d48812795d0c3bc",
+              "container_label_com_docker_compose_image": "sha256:1f8701561e19d06f00cd5b9236e099e9db1200220fb2be789669201aa19339fd",
+              "container_label_com_docker_compose_oneoff": "True",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "tools",
+              "container_label_com_docker_compose_slug": "adfd46028c427bd6ba289894405af38a07c569be2a46a6a8e010c9936a7437fb",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\loadtest",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/tool",
+              "container_label_desktop_docker_io_binds_1_Source": "D:\\My pro\\ticketrush-platform\\loadtest\\.data",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/data",
+              "container_label_desktop_docker_io_binds_2_Source": "D:\\My pro\\ticketrush-platform\\docs\\performance\\results",
+              "container_label_desktop_docker_io_binds_2_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_2_Target": "/results",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/0f08b4381c5a15605db41fd529ec6521c8b432970ffad803af5ea49658492830",
+              "image": "ticketrush-week7-tools",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-tools-run-adfd46028c42"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "4366336"
+              ],
+              [
+                1791744895.668,
+                "4366336"
+              ],
+              [
+                1791744900.668,
+                "4366336"
+              ],
+              [
+                1791744905.668,
+                "4366336"
+              ],
+              [
+                1791744910.668,
+                "4366336"
+              ],
+              [
+                1791744915.668,
+                "4366336"
+              ],
+              [
+                1791744920.668,
+                "4366336"
+              ],
+              [
+                1791744925.668,
+                "4366336"
+              ],
+              [
+                1791744930.668,
+                "4366336"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "24dd1e0285e5848b8c2285f38276ab05d3a4097dbe993eea9ae2a21d9965fed9",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "rabbitmq",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_1_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\rabbitmq\\enabled_plugins",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/etc/rabbitmq/enabled_plugins",
+              "container_label_desktop_docker_io_ports_15672_tcp": "127.0.0.1:25687",
+              "container_label_desktop_docker_io_ports_5672_tcp": "127.0.0.1:25677",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/fa2a1493a510ae6a505a671f6214cd402f61615d3c93d93d232e402af2bbbfea",
+              "image": "rabbitmq:4.1-management-alpine",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-rabbitmq-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "84746240"
+              ],
+              [
+                1791744895.668,
+                "84746240"
+              ],
+              [
+                1791744900.668,
+                "84746240"
+              ],
+              [
+                1791744905.668,
+                "89735168"
+              ],
+              [
+                1791744910.668,
+                "89735168"
+              ],
+              [
+                1791744915.668,
+                "89735168"
+              ],
+              [
+                1791744920.668,
+                "202690560"
+              ],
+              [
+                1791744925.668,
+                "202690560"
+              ],
+              [
+                1791744930.668,
+                "202690560"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "69e5c8b11f53c1c1f3f78379f202543756cfb35974a9a0fcdd2539031f929550",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:38606faa38c54787525fb0ff2fd6b41b4cfb75d455c1df294927c5f611699b17",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "postgres-exporter",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\postgres\\queries.yml",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/etc/exporter/queries.yml",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_maintainer": "The Prometheus Authors <prometheus-developers@googlegroups.com>",
+              "id": "/docker/ad648f0102a13c77a75d689f645c1d6bc3da7f21322dedce9e6efc2398b8232b",
+              "image": "prometheuscommunity/postgres-exporter:v0.17.1",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-postgres-exporter-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "11862016"
+              ],
+              [
+                1791744895.668,
+                "11862016"
+              ],
+              [
+                1791744900.668,
+                "11862016"
+              ],
+              [
+                1791744905.668,
+                "12365824"
+              ],
+              [
+                1791744910.668,
+                "12365824"
+              ],
+              [
+                1791744915.668,
+                "13631488"
+              ],
+              [
+                1791744920.668,
+                "13631488"
+              ],
+              [
+                1791744925.668,
+                "13459456"
+              ],
+              [
+                1791744930.668,
+                "13459456"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "7a354dc20b22850368337eded324afe81414a145d884930a171eba3b5d91bf4b",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:a1701c2180249361737a99a01bc770db39381640e4d631825d38ff4535efa47d",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "grafana",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\grafana\\provisioning",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/etc/grafana/provisioning",
+              "container_label_desktop_docker_io_binds_1_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\grafana\\dashboards",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/var/lib/grafana/dashboards",
+              "container_label_desktop_docker_io_ports_3000_tcp": "127.0.0.1:23007",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_maintainer": "Grafana Labs <hello@grafana.com>",
+              "container_label_org_opencontainers_image_source": "https://github.com/grafana/grafana",
+              "id": "/docker/c34ca5b462683bc64b4e2f578e014f8bcdf515eb6c7fa77ba6ced85d8ec7b98e",
+              "image": "grafana/grafana:12.1.1",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-grafana-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "172429312"
+              ],
+              [
+                1791744895.668,
+                "172429312"
+              ],
+              [
+                1791744900.668,
+                "174202880"
+              ],
+              [
+                1791744905.668,
+                "174202880"
+              ],
+              [
+                1791744910.668,
+                "174202880"
+              ],
+              [
+                1791744915.668,
+                "174202880"
+              ],
+              [
+                1791744920.668,
+                "171470848"
+              ],
+              [
+                1791744925.668,
+                "171470848"
+              ],
+              [
+                1791744930.668,
+                "168501248"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "881c4b77f3189289c03a4fb1770abc19b035c6f78614a00937d43204e377dd0c",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "redis",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_ports_6379_tcp": "127.0.0.1:26387",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/1cad55ce34623055d425287e1b96a5579af14412eb92ce13a85733b6552ccc53",
+              "image": "redis:7.4-alpine",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-redis-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "13152256"
+              ],
+              [
+                1791744895.668,
+                "13152256"
+              ],
+              [
+                1791744900.668,
+                "13152256"
+              ],
+              [
+                1791744905.668,
+                "13152256"
+              ],
+              [
+                1791744910.668,
+                "13430784"
+              ],
+              [
+                1791744915.668,
+                "13430784"
+              ],
+              [
+                1791744920.668,
+                "13430784"
+              ],
+              [
+                1791744925.668,
+                "14495744"
+              ],
+              [
+                1791744930.668,
+                "14495744"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "8d8298cf420b2b0505d0c47261e34e1210be0610e3414c77e193959388275805",
+              "container_label_com_docker_compose_image": "sha256:3ddc8b1a33a2c3d8edc6e99b6a762ae36cba08788463458f5e6a7703e14eb77d",
+              "container_label_com_docker_compose_oneoff": "True",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "k6",
+              "container_label_com_docker_compose_slug": "df194cb272fa808544ad4b1e09a016aec894396e466ea6811ff0421077cb893c",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "D:\\My pro\\ticketrush-platform\\docs\\performance\\results",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/results",
+              "container_label_desktop_docker_io_binds_1_Source": "D:\\My pro\\ticketrush-platform\\loadtest",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/scripts",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/a5817ed8b7e6599373a5d223f6cca30aab7cf92779ae5d16b993397b06f69f50",
+              "image": "grafana/k6:1.3.0",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-k6-run-df194cb272fa"
+            },
+            "values": [
+              [
+                1791744895.668,
+                "4218880"
+              ],
+              [
+                1791744900.668,
+                "4218880"
+              ],
+              [
+                1791744905.668,
+                "4218880"
+              ],
+              [
+                1791744910.668,
+                "4218880"
+              ],
+              [
+                1791744915.668,
+                "332967936"
+              ],
+              [
+                1791744920.668,
+                "332967936"
+              ],
+              [
+                1791744925.668,
+                "332967936"
+              ],
+              [
+                1791744930.668,
+                "379674624"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "ae3ecc4b909741a5dac510738908e64e4599a34e7d4e6ba00e98b4ef29491868",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:079759020faa42e243a07aaa3e31086de70e93e78b02b844e4149e0108dd5428",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "mailpit",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_ports_1025_tcp": "127.0.0.1:21027",
+              "container_label_desktop_docker_io_ports_8025_tcp": "127.0.0.1:28027",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_org_opencontainers_image_description": "An email and SMTP testing tool with API for developers",
+              "container_label_org_opencontainers_image_documentation": "https://mailpit.axllent.org/docs/",
+              "container_label_org_opencontainers_image_licenses": "MIT",
+              "container_label_org_opencontainers_image_source": "https://github.com/axllent/mailpit",
+              "container_label_org_opencontainers_image_title": "Mailpit",
+              "container_label_org_opencontainers_image_url": "https://mailpit.axllent.org",
+              "id": "/docker/116c43a42f646a4dddc6a10974539b74bdb3d2d475fd2d90c2c02ac1b7b1593b",
+              "image": "axllent/mailpit:v1.26",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-mailpit-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "28971008"
+              ],
+              [
+                1791744895.668,
+                "28971008"
+              ],
+              [
+                1791744900.668,
+                "27328512"
+              ],
+              [
+                1791744905.668,
+                "27328512"
+              ],
+              [
+                1791744910.668,
+                "26914816"
+              ],
+              [
+                1791744915.668,
+                "26914816"
+              ],
+              [
+                1791744920.668,
+                "27062272"
+              ],
+              [
+                1791744925.668,
+                "27062272"
+              ],
+              [
+                1791744930.668,
+                "27062272"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "b30280855f6d1a4682149b47b28bb561682f01d263421e2e93d5ec6ba06b8e88",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "prometheus",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\prometheus",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/etc/prometheus",
+              "container_label_desktop_docker_io_ports_9090_tcp": "127.0.0.1:29097",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_maintainer": "The Prometheus Authors <prometheus-developers@googlegroups.com>",
+              "container_label_org_opencontainers_image_source": "https://github.com/prometheus/prometheus",
+              "id": "/docker/713aa9a3e14d1204fa687fa6712227cafe5d99aa5099b5a45fd101ab9ba10620",
+              "image": "prom/prometheus:v3.5.0",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-prometheus-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "145776640"
+              ],
+              [
+                1791744895.668,
+                "149508096"
+              ],
+              [
+                1791744900.668,
+                "149508096"
+              ],
+              [
+                1791744905.668,
+                "142663680"
+              ],
+              [
+                1791744910.668,
+                "142663680"
+              ],
+              [
+                1791744915.668,
+                "142663680"
+              ],
+              [
+                1791744920.668,
+                "145358848"
+              ],
+              [
+                1791744925.668,
+                "145358848"
+              ],
+              [
+                1791744930.668,
+                "153976832"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "c46e43194d18a1c94535cc49d3dd02ac130dd46ae94f7892afa2cb9e841da754",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:4c8000eb3525e0f6ed1327499861e272fcce358a9e7a87dd9db74c44607e6d8e",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "redis-exporter",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_org_opencontainers_image_created": "2025-09-12T05:59:29.148Z",
+              "container_label_org_opencontainers_image_description": "Prometheus Exporter for Valkey & Redis Metrics. Supports Valkey 7.x & 8.x and Redis 2.x, 3.x, 4.x, 5.x, 6.x, 7.x, and 8.x",
+              "container_label_org_opencontainers_image_licenses": "MIT",
+              "container_label_org_opencontainers_image_revision": "5a93c3e5e266cff1a42ca4e69af6181aeab03c4e",
+              "container_label_org_opencontainers_image_source": "https://github.com/oliver006/redis_exporter",
+              "container_label_org_opencontainers_image_title": "redis_exporter",
+              "container_label_org_opencontainers_image_url": "https://github.com/oliver006/redis_exporter",
+              "container_label_org_opencontainers_image_version": "v1.77.0",
+              "id": "/docker/b9926b2fe803db8d81873822ac9c3272ee3214ff48730e226decadc409e79d31",
+              "image": "oliver006/redis_exporter:v1.77.0",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-redis-exporter-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "11341824"
+              ],
+              [
+                1791744895.668,
+                "11341824"
+              ],
+              [
+                1791744900.668,
+                "11550720"
+              ],
+              [
+                1791744905.668,
+                "11550720"
+              ],
+              [
+                1791744910.668,
+                "11665408"
+              ],
+              [
+                1791744915.668,
+                "11665408"
+              ],
+              [
+                1791744920.668,
+                "11665408"
+              ],
+              [
+                1791744925.668,
+                "11665408"
+              ],
+              [
+                1791744930.668,
+                "11403264"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "dfea601b886339eb07a8b49a89260806f4405f5fd4713724e290915850d36cf1",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "postgres",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_1_Source": "D:\\My pro\\ticketrush-platform\\infrastructure\\postgres\\init-observability.sql",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/docker-entrypoint-initdb.d/observability.sql",
+              "container_label_desktop_docker_io_ports_5432_tcp": "127.0.0.1:25437",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/fe9290bf9f4a5f32bdca2d5748cce3eab46ddc099f7605179594baf54c54f186",
+              "image": "postgres:17-alpine",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-postgres-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "90009600"
+              ],
+              [
+                1791744895.668,
+                "90009600"
+              ],
+              [
+                1791744900.668,
+                "90009600"
+              ],
+              [
+                1791744905.668,
+                "94789632"
+              ],
+              [
+                1791744910.668,
+                "94789632"
+              ],
+              [
+                1791744915.668,
+                "94789632"
+              ],
+              [
+                1791744920.668,
+                "96313344"
+              ],
+              [
+                1791744925.668,
+                "96313344"
+              ],
+              [
+                1791744930.668,
+                "99344384"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "e631f1def12172ed80b4f44e300cd716e9d3a4eae93b1d2bd47e029f2c6120c3",
+              "container_label_com_docker_compose_image": "sha256:3ddc8b1a33a2c3d8edc6e99b6a762ae36cba08788463458f5e6a7703e14eb77d",
+              "container_label_com_docker_compose_oneoff": "True",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_service": "k6",
+              "container_label_com_docker_compose_slug": "6427e417c3efd15db780d6cdeb40738615c6eb5afc43aa13242ece1110550270",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "D:\\My pro\\ticketrush-platform\\loadtest",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/scripts",
+              "container_label_desktop_docker_io_binds_1_Source": "D:\\My pro\\ticketrush-platform\\docs\\performance\\results",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/results",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/9fe930dc72889b306053f403e5c8d290a6d06bdcab5efcf11ed660c555e51759",
+              "image": "grafana/k6:1.3.0",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-k6-run-6427e417c3ef"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "204931072"
+              ],
+              [
+                1791744895.668,
+                "204931072"
+              ],
+              [
+                1791744900.668,
+                "204931072"
+              ],
+              [
+                1791744905.668,
+                "204931072"
+              ],
+              [
+                1791744910.668,
+                "204931072"
+              ],
+              [
+                1791744915.668,
+                "204931072"
+              ],
+              [
+                1791744920.668,
+                "204931072"
+              ],
+              [
+                1791744925.668,
+                "204931072"
+              ],
+              [
+                1791744930.668,
+                "204931072"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "e9dbc34797a68dadea8d6c9b1d72e7b272a250723458ed56700acceec8f3f195",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_image": "sha256:961ec2cf4499943514beff7b56799521429275b881e6a718733b178d8a553a52",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_replace": "cadvisor-1",
+              "container_label_com_docker_compose_service": "cadvisor",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_binds_0_Source": "/var/lib/docker",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_0_Target": "/var/lib/docker",
+              "container_label_desktop_docker_io_binds_1_Source": "/dev/disk",
+              "container_label_desktop_docker_io_binds_1_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_1_Target": "/dev/disk",
+              "container_label_desktop_docker_io_binds_2_Source": "/",
+              "container_label_desktop_docker_io_binds_2_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_2_Target": "/rootfs",
+              "container_label_desktop_docker_io_binds_3_Source": "/var/run",
+              "container_label_desktop_docker_io_binds_3_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_3_Target": "/var/run",
+              "container_label_desktop_docker_io_binds_4_Source": "/sys",
+              "container_label_desktop_docker_io_binds_4_SourceKind": "hostFile",
+              "container_label_desktop_docker_io_binds_4_Target": "/sys",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_org_opencontainers_image_created": "2025-12-02T22:00:32.582Z",
+              "container_label_org_opencontainers_image_description": "Analyzes resource usage and performance characteristics of running containers.",
+              "container_label_org_opencontainers_image_licenses": "NOASSERTION",
+              "container_label_org_opencontainers_image_revision": "4b231e63d840f2212b11ed7b9e6150d96d26cd97",
+              "container_label_org_opencontainers_image_source": "https://github.com/google/cadvisor",
+              "container_label_org_opencontainers_image_title": "cadvisor",
+              "container_label_org_opencontainers_image_url": "https://github.com/google/cadvisor",
+              "container_label_org_opencontainers_image_version": "0.54.0",
+              "id": "/docker/8175697d8904aed8422074219d55113e71230bc6546571194d948bac76739ae9",
+              "image": "ghcr.io/google/cadvisor:0.54.0",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-cadvisor-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "28200960"
+              ],
+              [
+                1791744895.668,
+                "30334976"
+              ],
+              [
+                1791744900.668,
+                "30334976"
+              ],
+              [
+                1791744905.668,
+                "30334976"
+              ],
+              [
+                1791744910.668,
+                "31834112"
+              ],
+              [
+                1791744915.668,
+                "31834112"
+              ],
+              [
+                1791744920.668,
+                "29683712"
+              ],
+              [
+                1791744925.668,
+                "29683712"
+              ],
+              [
+                1791744930.668,
+                "29683712"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "fb05e09e45b49d7653e20541dc32b247b5499f3e4570771c4f5a9627505daf70",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_depends_on": "mailpit:service_healthy:false,postgres:service_healthy:false,redis:service_healthy:false,rabbitmq:service_healthy:false",
+              "container_label_com_docker_compose_image": "sha256:8df234452baa3a41af17a4d99e9f9ceb86603ab684bf3ae095639e886ad9f1e1",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_replace": "backend-1",
+              "container_label_com_docker_compose_service": "backend",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_ports_8080_tcp": "127.0.0.1:28087",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/7deb9fcd0d7e96c34c1ae36c819bc59d3085b261ffbc1fe13bfba981869aae80",
+              "image": "ticketrush-week7-backend",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-backend-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "609714176"
+              ],
+              [
+                1791744895.668,
+                "609714176"
+              ],
+              [
+                1791744900.668,
+                "609714176"
+              ],
+              [
+                1791744905.668,
+                "609714176"
+              ],
+              [
+                1791744910.668,
+                "609714176"
+              ],
+              [
+                1791744915.668,
+                "609714176"
+              ],
+              [
+                1791744920.668,
+                "609714176"
+              ],
+              [
+                1791744925.668,
+                "609714176"
+              ],
+              [
+                1791744930.668,
+                "609714176"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_com_docker_compose_config_hash": "fb05e09e45b49d7653e20541dc32b247b5499f3e4570771c4f5a9627505daf70",
+              "container_label_com_docker_compose_container_number": "1",
+              "container_label_com_docker_compose_depends_on": "rabbitmq:service_healthy:false,mailpit:service_healthy:false,postgres:service_healthy:false,redis:service_healthy:false",
+              "container_label_com_docker_compose_image": "sha256:1198497438d777b18c06ffc91e0daa5a689d05b08c90b250bc962ad537043bf4",
+              "container_label_com_docker_compose_oneoff": "False",
+              "container_label_com_docker_compose_project": "ticketrush-week7",
+              "container_label_com_docker_compose_project_config_files": "D:\\My pro\\ticketrush-platform\\docker-compose.yml,D:\\My pro\\ticketrush-platform\\infrastructure\\compose.loadtest.yml",
+              "container_label_com_docker_compose_project_environment_file": "D:\\My pro\\ticketrush-platform\\.tools\\week7.env",
+              "container_label_com_docker_compose_project_working_dir": "D:\\My pro\\ticketrush-platform",
+              "container_label_com_docker_compose_replace": "backend-1",
+              "container_label_com_docker_compose_service": "backend",
+              "container_label_com_docker_compose_version": "5.1.1",
+              "container_label_desktop_docker_io_ports_8080_tcp": "127.0.0.1:28087",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "id": "/docker/62b26cb605e3c12fd32291c17771a8b6af38e093f4e866b834e05abc4e1a3a9f",
+              "image": "ticketrush-week7-backend",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "ticketrush-week7-backend-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "571494400"
+              ],
+              [
+                1791744895.668,
+                "581951488"
+              ],
+              [
+                1791744900.668,
+                "581951488"
+              ],
+              [
+                1791744905.668,
+                "581951488"
+              ],
+              [
+                1791744910.668,
+                "638066688"
+              ],
+              [
+                1791744915.668,
+                "638066688"
+              ],
+              [
+                1791744920.668,
+                "638066688"
+              ],
+              [
+                1791744925.668,
+                "638066688"
+              ],
+              [
+                1791744930.668,
+                "710107136"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_desktop_docker_io_binds_0_Source": "//var/run/docker.sock",
+              "container_label_desktop_docker_io_binds_0_SourceKind": "dockerSocketProxied",
+              "container_label_desktop_docker_io_binds_0_Target": "/var/run/docker.sock",
+              "container_label_desktop_docker_io_ports_8080_tcp": ":",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_org_testcontainers": "true",
+              "container_label_org_testcontainers_lang": "java",
+              "container_label_org_testcontainers_ryuk": "true",
+              "container_label_org_testcontainers_version": "1.21.4",
+              "id": "/docker/7e85ce8e3fff98fff5276dca12c8ad30a4b11b0613fd1a6d5690a487165e9c1a",
+              "image": "testcontainers/ryuk:0.12.0",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "testcontainers-ryuk-22609c88-c4c7-4466-9534-869017cea592"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "3555328"
+              ],
+              [
+                1791744895.668,
+                "3555328"
+              ],
+              [
+                1791744900.668,
+                "3555328"
+              ],
+              [
+                1791744905.668,
+                "3555328"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_desktop_docker_io_ports_5432_tcp": ":",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_org_testcontainers": "true",
+              "container_label_org_testcontainers_lang": "java",
+              "container_label_org_testcontainers_sessionId": "22609c88-c4c7-4466-9534-869017cea592",
+              "container_label_org_testcontainers_version": "1.21.4",
+              "id": "/docker/4ea444dd0e232c7db67bf4871547df020772e68349b9fae5b8205483eaa76eb2",
+              "image": "postgres:17-alpine",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "naughty_jones"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "67944448"
+              ],
+              [
+                1791744895.668,
+                "67944448"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "container_memory_working_set_bytes",
+              "container_label_desktop_docker_io_ports_6379_tcp": ":29661",
+              "container_label_desktop_docker_io_ports_scheme": "v2",
+              "container_label_org_testcontainers": "true",
+              "container_label_org_testcontainers_lang": "java",
+              "container_label_org_testcontainers_sessionId": "22609c88-c4c7-4466-9534-869017cea592",
+              "container_label_org_testcontainers_version": "1.21.4",
+              "id": "/docker/830165ece21b5808561b5ea0016e88a72aa86a8348d9859fec925a67d31b6ced",
+              "image": "redis:7.4-alpine",
+              "instance": "cadvisor:8080",
+              "job": "containers",
+              "name": "goofy_ardinghelli"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "4911104"
+              ],
+              [
+                1791744895.668,
+                "4911104"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "container_cpu": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "name": "ticketrush-week7-backend-1"
+            },
+            "values": [
+              [
+                1791744895.668,
+                "0.8194215647729503"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-cadvisor-1"
+            },
+            "values": [
+              [
+                1791744920.668,
+                "0.09388707729468457"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-grafana-1"
+            },
+            "values": [
+              [
+                1791744930.668,
+                "0.5379472336911649"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-mailpit-1"
+            },
+            "values": [
+              [
+                1791744910.668,
+                "0.07491394560634733"
+              ],
+              [
+                1791744920.668,
+                "0.12849851749357932"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-postgres-1"
+            },
+            "values": [
+              [
+                1791744930.668,
+                "0.8508405822365583"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-postgres-exporter-1"
+            },
+            "values": [
+              [
+                1791744915.668,
+                "0.043478892904074584"
+              ],
+              [
+                1791744925.668,
+                "0.033334188112462644"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-prometheus-1"
+            },
+            "values": [
+              [
+                1791744895.668,
+                "0.03891759938248417"
+              ],
+              [
+                1791744905.668,
+                "0.09822519345675651"
+              ],
+              [
+                1791744930.668,
+                "0.1696433572792628"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-redis-1"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0.017283427776121456"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "name": "ticketrush-week7-redis-exporter-1"
+            },
+            "values": [
+              [
+                1791744910.668,
+                "0.02949585044116326"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "error_rate": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": []
+      }
+    },
+    "reservation_results": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "reservation_attempts_total",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "result": "error"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "reservation_attempts_total",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "result": "rate_limited"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "reservation_attempts_total",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "result": "sold_out"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "reservation_attempts_total",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "result": "success"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "119"
+              ],
+              [
+                1791744895.668,
+                "120"
+              ]
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "reservation_attempts_total",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "result": "waiting_room_required"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "waiting_size": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "waiting_room_size",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "0"
+              ],
+              [
+                1791744895.668,
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "paid": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "ticketrush_funnel_orders_paid",
+              "instance": "postgres-exporter:9187",
+              "job": "postgres",
+              "server": "postgres:5432"
+            },
+            "values": [
+              [
+                1791744890.668,
+                "115"
+              ],
+              [
+                1791744895.668,
+                "120"
+              ],
+              [
+                1791744900.668,
+                "120"
+              ],
+              [
+                1791744905.668,
+                "120"
+              ],
+              [
+                1791744910.668,
+                "120"
+              ],
+              [
+                1791744915.668,
+                "120"
+              ],
+              [
+                1791744920.668,
+                "121"
+              ],
+              [
+                1791744925.668,
+                "123"
+              ],
+              [
+                1791744930.668,
+                "127"
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "runtime_configuration": {
+    "TOMCAT_MAX_THREADS": "200",
+    "WAITING_ROOM_DEFAULT": "false",
+    "HIKARI_MAX_POOL_SIZE": "10",
+    "PAYMENT_LATE_GRACE": "5s",
+    "RESERVATION_HOLD_DURATION": "60s",
+    "RESERVATION_JOB_INTERVAL": "5s",
+    "WAITING_ROOM_RATE": "10",
+    "MOCK_PAYMENT_DELAY": "500ms",
+    "JAVA_TOOL_OPTIONS": "-Xms256m -Xmx768m",
+    "RESERVATION_STRATEGY": "conditional-update",
+    "SPRING_THREADS_VIRTUAL_ENABLED": "false",
+    "RESERVATION_BATCH_SIZE": "100"
+  },
+  "backend_image_id": "sha256:1198497438d777b18c06ffc91e0daa5a689d05b08c90b250bc962ad537043bf4",
+  "targets": {
+    "status": "success",
+    "data": {
+      "activeTargets": [
+        {
+          "discoveredLabels": {
+            "__address__": "backend:8080",
+            "__metrics_path__": "/actuator/prometheus",
+            "__scheme__": "http",
+            "__scrape_interval__": "5s",
+            "__scrape_timeout__": "5s",
+            "job": "backend"
+          },
+          "labels": {
+            "instance": "backend:8080",
+            "job": "backend"
+          },
+          "scrapePool": "backend",
+          "scrapeUrl": "http://backend:8080/actuator/prometheus",
+          "globalUrl": "http://backend:8080/actuator/prometheus",
+          "lastError": "",
+          "lastScrape": "2026-10-11T18:56:13.52823938Z",
+          "lastScrapeDuration": 0.089338379,
+          "health": "up",
+          "scrapeInterval": "5s",
+          "scrapeTimeout": "5s"
+        },
+        {
+          "discoveredLabels": {
+            "__address__": "cadvisor:8080",
+            "__metrics_path__": "/metrics",
+            "__scheme__": "http",
+            "__scrape_interval__": "5s",
+            "__scrape_timeout__": "5s",
+            "job": "containers"
+          },
+          "labels": {
+            "instance": "cadvisor:8080",
+            "job": "containers"
+          },
+          "scrapePool": "containers",
+          "scrapeUrl": "http://cadvisor:8080/metrics",
+          "globalUrl": "http://cadvisor:8080/metrics",
+          "lastError": "",
+          "lastScrape": "2026-10-11T18:56:09.479260341Z",
+          "lastScrapeDuration": 0.103582524,
+          "health": "up",
+          "scrapeInterval": "5s",
+          "scrapeTimeout": "5s"
+        },
+        {
+          "discoveredLabels": {
+            "__address__": "postgres-exporter:9187",
+            "__metrics_path__": "/metrics",
+            "__scheme__": "http",
+            "__scrape_interval__": "5s",
+            "__scrape_timeout__": "5s",
+            "job": "postgres"
+          },
+          "labels": {
+            "instance": "postgres-exporter:9187",
+            "job": "postgres"
+          },
+          "scrapePool": "postgres",
+          "scrapeUrl": "http://postgres-exporter:9187/metrics",
+          "globalUrl": "http://postgres-exporter:9187/metrics",
+          "lastError": "",
+          "lastScrape": "2026-10-11T18:56:12.341978195Z",
+          "lastScrapeDuration": 0.216474078,
+          "health": "up",
+          "scrapeInterval": "5s",
+          "scrapeTimeout": "5s"
+        },
+        {
+          "discoveredLabels": {
+            "__address__": "localhost:9090",
+            "__metrics_path__": "/metrics",
+            "__scheme__": "http",
+            "__scrape_interval__": "5s",
+            "__scrape_timeout__": "5s",
+            "job": "prometheus"
+          },
+          "labels": {
+            "instance": "localhost:9090",
+            "job": "prometheus"
+          },
+          "scrapePool": "prometheus",
+          "scrapeUrl": "http://localhost:9090/metrics",
+          "globalUrl": "http://713aa9a3e14d:9090/metrics",
+          "lastError": "",
+          "lastScrape": "2026-10-11T18:56:10.336475406Z",
+          "lastScrapeDuration": 0.048098743,
+          "health": "up",
+          "scrapeInterval": "5s",
+          "scrapeTimeout": "5s"
+        },
+        {
+          "discoveredLabels": {
+            "__address__": "rabbitmq:15692",
+            "__metrics_path__": "/metrics/per-object",
+            "__scheme__": "http",
+            "__scrape_interval__": "5s",
+            "__scrape_timeout__": "5s",
+            "job": "rabbitmq"
+          },
+          "labels": {
+            "instance": "rabbitmq:15692",
+            "job": "rabbitmq"
+          },
+          "scrapePool": "rabbitmq",
+          "scrapeUrl": "http://rabbitmq:15692/metrics/per-object",
+          "globalUrl": "http://rabbitmq:15692/metrics/per-object",
+          "lastError": "",
+          "lastScrape": "2026-10-11T18:56:13.149967685Z",
+          "lastScrapeDuration": 0.230089863,
+          "health": "up",
+          "scrapeInterval": "5s",
+          "scrapeTimeout": "5s"
+        },
+        {
+          "discoveredLabels": {
+            "__address__": "redis-exporter:9121",
+            "__metrics_path__": "/metrics",
+            "__scheme__": "http",
+            "__scrape_interval__": "5s",
+            "__scrape_timeout__": "5s",
+            "job": "redis"
+          },
+          "labels": {
+            "instance": "redis-exporter:9121",
+            "job": "redis"
+          },
+          "scrapePool": "redis",
+          "scrapeUrl": "http://redis-exporter:9121/metrics",
+          "globalUrl": "http://redis-exporter:9121/metrics",
+          "lastError": "",
+          "lastScrape": "2026-10-11T18:56:09.787886904Z",
+          "lastScrapeDuration": 0.050688362,
+          "health": "up",
+          "scrapeInterval": "5s",
+          "scrapeTimeout": "5s"
+        }
+      ],
+      "droppedTargets": [],
+      "droppedTargetCounts": {
+        "backend": 0,
+        "containers": 0,
+        "postgres": 0,
+        "prometheus": 0,
+        "rabbitmq": 0,
+        "redis": 0
+      }
+    }
+  },
+  "git_sha": "31e3d7e18d33dcdd0d0a264d7f1d4413dde961cb",
+  "tracked_diff_sha256": "68b2e958cbaad26fd71d7d6a192d6698c278aef725ab0e5e04f57e40723a9c38",
+  "working_tree_dirty": true
+}

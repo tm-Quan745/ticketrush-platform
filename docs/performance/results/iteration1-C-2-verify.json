@@ -1,0 +1,4218 @@
+{
+  "passed": false,
+  "checks": {
+    "1_inventory_conservation": {
+      "violations": 0,
+      "tiers_checked": 205,
+      "passed": true
+    },
+    "2_ticket_conservation": {
+      "violations": 0,
+      "sold": 2386,
+      "oversold": 0,
+      "passed": true
+    },
+    "3_idempotency": {
+      "orders": 985,
+      "successful_keys": 985,
+      "distinct_keys": 985,
+      "distinct_effects": 985,
+      "violations": 0,
+      "passed": true
+    },
+    "4_paid_consistency": {
+      "paid_without_tickets": 0,
+      "confirmed_without_paid": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "5_outbox": {
+      "pending": 4142,
+      "failed": 0,
+      "published": 0,
+      "violations": 4142,
+      "passed": false
+    },
+    "6_emails": {
+      "paid_orders": 936,
+      "exactly_one": 0,
+      "sent_confirmations": 0,
+      "violations": 936,
+      "passed": false
+    },
+    "8_expiry": {
+      "overdue_orders": 0,
+      "overdue_holds": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "7_redis_drift": {
+      "tiers_checked": 205,
+      "before_mismatches": 205,
+      "after_mismatches": 0,
+      "before": [
+        {
+          "tierId": "a3ceeaec-5947-5a50-9e53-f9601e508e18",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8082dedb-3a66-5970-a4aa-14beb61764fa",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "06fd003c-a47b-58ea-be6e-cca4bda8c603",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "05bdf804-f958-50cb-939a-0f4c3df39ea7",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7c11f40d-859c-518c-ad79-df86f92f36fb",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b2006bf7-f107-5f12-a87a-49389a10a861",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "686613b3-057c-5988-9294-d0862186b95c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e0eeae0e-c6f2-59d8-add3-66bf0419d0a1",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "187b8619-a2d6-51f3-8374-75fc3bac9fed",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b6ecdc99-b4af-5e3a-8a42-8d2b4b9fad3d",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d809157e-4148-5a2d-9b08-8eac3f061b85",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "c71eacb5-c1a4-51e2-ac58-5b949ef0586c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0bee3382-3b65-5318-ac1c-8103f97a7150",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "06d57b4f-4b85-502b-b173-06c88835ec2a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "de6691e2-1c11-537d-b03f-245ec6bcf34b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2c3c3c8b-3fe4-5486-bc1f-d1192213b07e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "599dd42b-3279-5ec9-9f29-a3a83a756d71",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b209ae8d-cc9f-551c-b1d5-0faf9c5d7301",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2b2bd2d4-3838-5d3d-9910-8bfef6541980",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "10468041-6136-50d1-aa4f-ad88e7a190d7",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "ece0bc65-b70b-5750-8f66-2327a960d060",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6f3fbc40-0e65-5beb-b87a-d3457e21e210",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "689445f6-dc4b-51f8-9ba1-22f0b6400bae",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "267002ed-be91-5599-9e9c-529eae6cc6bc",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4fae4297-0a35-58d9-ba0d-1993c3c0fdb6",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f283de31-4942-5d78-bedd-c90002ec24bb",
+          "observed": null,
+          "expected": 2914,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "340fafd3-314a-5125-b986-ece654017ca6",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d78c9f36-d45b-5320-8f21-8d4d6e779ea5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bfdca02d-28d2-5545-9449-65044f31a93a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "39324046-fd90-55fd-a9bb-da3b94a8ec4c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9d6b7df9-eecd-5b68-941d-ade10755caf7",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "221cacf1-0df5-596e-9473-b50c781360d8",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5520f6fe-441e-5c11-854d-4cf7c1713b00",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4bdcf280-ec62-5597-a2b3-5aafffbe39db",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6b1ab9d0-069a-5f5a-a434-6a3c3fc84227",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bddb7442-b9ae-5685-95fd-4ceda7b1e08e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "1cb60443-da54-539d-8394-1b2d7186e05f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b155744f-bd46-5303-9e7f-008a1c767e2b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7cafb6e9-447f-5914-ba69-644d9df7e5fd",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "33e177ea-fa72-57d3-b8a9-d808033ae733",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d76a0626-12e5-556a-b027-5b2bc6ca1ba5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6857a1e2-46bd-54ec-a105-5d150260900b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "28a87dbc-726d-57ae-8039-329e14141298",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "177e7060-3590-58a2-9045-1dc1d7bf6983",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ddc6ebd-d82f-543b-9f43-9d1f68a9d0b5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4bbd2aee-ea69-52b1-9f47-46eeae7d00ec",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "570fe3da-75d3-5e75-bc49-701c60681ae3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "47a1609f-7a4f-5eff-bc58-14b564e0322e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9184f22c-4bc4-5cc0-827e-0241eaae1e65",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7c56a8f2-2684-58ba-83b1-5337f8939681",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4886164d-2744-5a33-8f83-db94fd758065",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f86d4e37-2d30-50bc-82f6-0f2c61d6df10",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d2a4746e-a555-5b16-b068-bf6caf66b3be",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cdf0eacc-a0ca-5eb9-938c-f2f84cd23d89",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "ba8b8bb6-d711-5043-bfe9-48cd7f336023",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7966e3ef-2ff1-594b-8afb-8a15785b72f5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "302e5c5f-4e46-5b72-84b8-4d116e0dae3f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bf74a110-1822-5602-a639-c7b6e3cf1b9a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "02217852-e718-5fc9-9d82-34af84665098",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "94b654fe-d4b8-53ec-be8a-a53bbcc721e4",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3cdba217-ba63-5b14-8067-2b2501d72b7d",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "883be24b-e237-5aef-b0f2-bd764d5ff474",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "29ece239-92f1-50a3-9984-f746f41b6b78",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9368439d-4191-5304-b929-d6411feee78b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b74c977e-4594-5c61-89c1-b98c45786d04",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2f64071c-eedc-5765-9787-6e18b06dad8e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2df9b1fb-056a-541d-9653-c23c41065efb",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "56b1c3ea-a9e4-52c4-9cae-4cc3b5a24a61",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "29f551d5-d8b8-5e6f-a863-bf8f8fc66126",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "49c8b087-43e6-5394-8abf-7fd9866360d9",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0d894984-a84d-5f82-b1fb-aea65114c988",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b4ea0b3f-8ea6-56db-a0d9-dd72306ce74f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3bd236dc-9d50-50a3-ac5f-c555a79e70bf",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6172610b-1709-59c9-a89e-4734dd0fc78a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2716bf82-3aff-5911-a709-1b7dfec49f33",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "860d5857-bcc4-59e0-b2be-7e9519055522",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "29d9ba7e-818b-502f-b307-48cb6c95865d",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "20d672a6-717e-5d8e-8c85-a9fd24d87de0",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7b3667e9-8f9d-51e2-becf-2430acede9b9",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "71b67406-6e75-5c02-b117-889a6719c53b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "871d048c-a8fe-5136-954c-56473a0f948a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "600744df-06fb-50a3-9221-0d5dd6548d63",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "42a500ed-e158-5008-a50c-8515722f7653",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2fb733c-4283-549e-b926-4bbe20d4c54c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8431eba3-a54a-550a-a9b4-fb6fdad3e791",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "19d904cf-5574-527d-841d-a8e6ddc733c7",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a6d6bc63-ab7d-5d92-8656-c79e2342a391",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "05c31748-fa9f-5db5-99cd-cd2f37593d23",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a6573ef3-4e5f-5bc3-a34c-ed86f5fcd584",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5c0c6e7c-b736-591c-85bd-27f90bcce6c7",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3a563b77-6b21-5d6c-b608-eec7b6a85865",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5553066c-b99f-55a1-bc9b-a651779a35bc",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "fb30ae7c-a8d9-575f-a7de-f7894226a1a3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3b5e334c-8ca9-5a06-aa2e-55ec24387f88",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7a0c30cf-5490-521b-a745-643d9113df6e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a61e23e0-3319-55c3-952f-7e967b6a801b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8b7741ca-f444-5de6-8bf7-8c43d7b5f82f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a2484aa6-2a5f-5819-90be-8e1c992ed21b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f2cf218c-14bf-5ec0-b10d-83dd7babbf79",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "40a9de80-6e72-5fde-9380-0e08fd46a883",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "91d70c98-1566-50ca-908b-60c57b629380",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "93effd2e-f681-5f08-b8de-7b9707f8b055",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "47a4fcf8-14a4-5926-9f42-97e4ba5c0536",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f92e1e6f-58db-531a-9c83-a4853994cfcb",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5aa8b3e1-1ba4-513d-9122-77bd80cb4b0a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7df80eaa-6ab6-5511-854b-9543b8a6410f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d0be50f7-5f55-51c6-a47b-e1ae78588488",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "c08e454d-69a2-5db3-96d2-c5fd2db6b1d2",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2a54c58e-ac9b-5799-b4a8-cce186357a8f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d3f92591-2bc4-5c41-878e-adb1eecb576f",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3d47f826-69a0-5527-afb3-fdf1c9f5593b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a75bc875-6426-5a6b-b523-cd00f8e6f174",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cfc73f1c-3e99-52d3-b7ac-3fc8766f7476",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3abf3314-2a3c-59e5-9314-f06c0c7e13db",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6ab67402-1f57-5733-ae70-e44791ff76ee",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "66380c57-4cba-5e09-837d-21e38eb40b7d",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8aa741ef-c7bb-5f45-9315-afd3c7146533",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3d7d3511-bfb4-501a-90b9-7156a94e9cc4",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9d7ecda1-c364-5a3f-a51d-8ccf4fe95411",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "db042c9d-c7b2-54ae-aee1-d7cdc9fb300b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "fdb9d958-343b-5185-88c9-91ce4a5e61c4",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a149e4c0-e8e4-5e40-8914-2139cb2ba923",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e0f89be9-95f2-516f-92d3-1e056151cbd3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f5446e7f-5232-5da0-87d4-e1bfc8a216e0",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "23d1a166-8cd6-555d-88cc-aabd82c517cf",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "43f8a359-5e60-50a4-ae9e-61ce39df44a3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "384fc5a1-8242-50cc-aa38-cfb159461f46",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a83451ac-784a-5366-8466-4619ea2d251e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5f81bba4-98c8-53a5-9ed9-f334edf806d5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7268327a-71d3-50e2-82b5-0d4966767371",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b76c2b7b-18e5-5e4a-9933-0182eff4a5ed",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2f93635e-0c6e-5f0f-bec7-8d666ef89cbe",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "84a45d5f-d130-52ef-84a7-7555538f2aa0",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ea7e6d9-839a-5a56-b431-ddf34def5747",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ee54614-95b1-5ae5-bb36-282617adfd3c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "35598751-2253-5af3-82fa-904b80ed9c29",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9ab6bd8c-b0e6-5e0c-8d75-13de7cac8769",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3b190f31-d424-5a6a-b515-a722248135b6",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5d1a3ecb-ae52-5ae9-8337-955bb2434510",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b52c4900-e705-5c82-a9b5-f59c5b82e5d5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "67ccd08e-5c97-5fab-a563-cc2ffc10bb07",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7ce22369-7100-5f7f-ab92-62b11843e0d3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e98712a3-6c9c-518e-a9cc-0e9762d2f7d3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d1dc0c6b-dbdc-5aad-bcd2-0d01e331dbed",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3d776d5f-94ee-5d55-ba91-3c0200765ca3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "83ec5556-269e-54e2-8ef5-ec8dcfb77a1c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "21c5cd0e-fd67-5c74-bc29-cce1deed7e7b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2f425b7f-3c59-5969-abc8-0e708cfaaab3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3cea838e-3dca-561e-9632-9373df60f135",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "74217505-0dd4-5f3c-808b-f6c1e6790d9e",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "54de3b58-a451-5d19-8870-f56ea4b6d6a7",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "15f93e52-b74e-5029-b3be-b4b625f3e8fb",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "19817bf8-e52e-51cf-b048-21c00ed44105",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "58898161-563f-5539-b86c-36e52742725a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b439e732-f71c-52bd-837e-b4f399fdb126",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "67592f1e-116d-5896-8dcd-9d66f8098e71",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e9ff6428-2241-58b5-b44c-072fc0671cfd",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9f1cc31e-1c06-5684-ada2-d70ca39f733a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d4bdb864-3d8e-539e-9380-928b76f01698",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cb8dd073-a8b6-596a-90d0-219b0adfc01b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "db7c35ab-4bf4-5ea4-9cfd-b2a0700db814",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b7979db7-c2d5-5576-b83d-c9671af388ec",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b2ae5390-95c2-5f6a-9e6a-1aeb33b546af",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cd1448a2-e46c-5fab-ba41-d64777fa57a6",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "07b62055-a028-5697-86b8-b25c05b64f59",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4c9753b2-2627-57b2-a273-1106663f7912",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "322a6d34-34f6-50fc-a1b6-9b39b89ff079",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a1a25bbc-8e41-53e7-9d1f-64dd26952bf4",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2e06089-43f6-5f67-a22e-ba90a64e0624",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8f45da95-a20b-54fb-b18c-ae21d62d6061",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bd16c69a-fcc5-50e3-a06c-4a7c57b417fc",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2ece489-1f73-52f6-85ba-e033d4140a52",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "de94f91c-446c-5e2e-844d-dccf96e95938",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "85ce6e03-1029-5631-b97d-589da3e7e45d",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "59e141a7-8356-5523-a2fc-4c58a2e0143a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "175ff9fc-0f64-5643-8d10-6307f4dfca89",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "11a53d09-374d-55e7-8fe5-947e56000a01",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "34c81504-5b04-5d9a-9733-ccdb24a8de70",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d165e89a-c7f5-576c-b693-8ed8d271bca8",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "1d513da5-2108-5bd6-ba3c-3b6beb8558f3",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5219a265-b0f1-525a-bdeb-ded31a13468c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9b14fa0d-ee1c-5192-9160-fcbb38d52052",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d08ab5b9-3ba6-5c09-a03c-69cf21738146",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e6c83623-8c39-5ef8-b2af-a39c83cb30e9",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cfefbcdb-2350-5496-8912-96fce6c0ed0c",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f915cab4-cd5e-5b89-948d-e514ce1e40a6",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3e218e5f-cd29-58b5-9f2a-b53d21e4215d",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "39577c8d-b309-562c-bce9-af323c7c7d7b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "faa03c85-e5d7-57af-b888-3a77f02b25bd",
+          "observed": null,
+          "expected": 99700,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b1007bf0-aef7-5006-9386-48348cfac7c4",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ef07a27-9222-53be-9cd1-1e5b6a7057b2",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "edf3bdf8-8c1c-5f18-afb0-3bfc031ae510",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a0cc2177-d720-52cc-9842-9e399b8ef7a1",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "59277a9b-dd6b-596d-a853-ac6034d864cd",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9a3c9131-8d03-5215-a561-78502a7edc7a",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bdd089ad-2e13-5381-831b-2db229018344",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "52eb9f46-bbc2-5c22-b6a4-0b0813ee8b0b",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cf704919-72c1-572c-9a48-decdd533ab43",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "65fe314f-c5c8-589e-b4c5-1b56e6498339",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a0ac61fb-1b73-506c-96a1-09f2c3d75fb9",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d17bb53d-73a3-5e45-9924-4e9085ebe7a5",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0709851d-6d5e-5936-9c02-385878d4eb03",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0c1cda1b-a09d-5cb3-aedd-9686b1e02978",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "aeec1b97-f169-5f3e-98c7-6eac0f7d4e60",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2d6b0ce-2742-5981-bcdc-dc6d591893f0",
+          "observed": null,
+          "expected": 100000,
+          "result": "HEALED"
+        }
+      ],
+      "after": [
+        {
+          "tierId": "a3ceeaec-5947-5a50-9e53-f9601e508e18",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8082dedb-3a66-5970-a4aa-14beb61764fa",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "06fd003c-a47b-58ea-be6e-cca4bda8c603",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "05bdf804-f958-50cb-939a-0f4c3df39ea7",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7c11f40d-859c-518c-ad79-df86f92f36fb",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b2006bf7-f107-5f12-a87a-49389a10a861",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "686613b3-057c-5988-9294-d0862186b95c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e0eeae0e-c6f2-59d8-add3-66bf0419d0a1",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "187b8619-a2d6-51f3-8374-75fc3bac9fed",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b6ecdc99-b4af-5e3a-8a42-8d2b4b9fad3d",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d809157e-4148-5a2d-9b08-8eac3f061b85",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "c71eacb5-c1a4-51e2-ac58-5b949ef0586c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0bee3382-3b65-5318-ac1c-8103f97a7150",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "06d57b4f-4b85-502b-b173-06c88835ec2a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "de6691e2-1c11-537d-b03f-245ec6bcf34b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2c3c3c8b-3fe4-5486-bc1f-d1192213b07e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "599dd42b-3279-5ec9-9f29-a3a83a756d71",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b209ae8d-cc9f-551c-b1d5-0faf9c5d7301",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2b2bd2d4-3838-5d3d-9910-8bfef6541980",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "10468041-6136-50d1-aa4f-ad88e7a190d7",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "ece0bc65-b70b-5750-8f66-2327a960d060",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6f3fbc40-0e65-5beb-b87a-d3457e21e210",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "689445f6-dc4b-51f8-9ba1-22f0b6400bae",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "267002ed-be91-5599-9e9c-529eae6cc6bc",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4fae4297-0a35-58d9-ba0d-1993c3c0fdb6",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f283de31-4942-5d78-bedd-c90002ec24bb",
+          "observed": 2914,
+          "expected": 2914,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "340fafd3-314a-5125-b986-ece654017ca6",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d78c9f36-d45b-5320-8f21-8d4d6e779ea5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bfdca02d-28d2-5545-9449-65044f31a93a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "39324046-fd90-55fd-a9bb-da3b94a8ec4c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9d6b7df9-eecd-5b68-941d-ade10755caf7",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "221cacf1-0df5-596e-9473-b50c781360d8",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5520f6fe-441e-5c11-854d-4cf7c1713b00",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4bdcf280-ec62-5597-a2b3-5aafffbe39db",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6b1ab9d0-069a-5f5a-a434-6a3c3fc84227",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bddb7442-b9ae-5685-95fd-4ceda7b1e08e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "1cb60443-da54-539d-8394-1b2d7186e05f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b155744f-bd46-5303-9e7f-008a1c767e2b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7cafb6e9-447f-5914-ba69-644d9df7e5fd",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "33e177ea-fa72-57d3-b8a9-d808033ae733",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d76a0626-12e5-556a-b027-5b2bc6ca1ba5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6857a1e2-46bd-54ec-a105-5d150260900b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "28a87dbc-726d-57ae-8039-329e14141298",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "177e7060-3590-58a2-9045-1dc1d7bf6983",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ddc6ebd-d82f-543b-9f43-9d1f68a9d0b5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4bbd2aee-ea69-52b1-9f47-46eeae7d00ec",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "570fe3da-75d3-5e75-bc49-701c60681ae3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "47a1609f-7a4f-5eff-bc58-14b564e0322e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9184f22c-4bc4-5cc0-827e-0241eaae1e65",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7c56a8f2-2684-58ba-83b1-5337f8939681",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4886164d-2744-5a33-8f83-db94fd758065",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f86d4e37-2d30-50bc-82f6-0f2c61d6df10",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d2a4746e-a555-5b16-b068-bf6caf66b3be",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cdf0eacc-a0ca-5eb9-938c-f2f84cd23d89",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "ba8b8bb6-d711-5043-bfe9-48cd7f336023",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7966e3ef-2ff1-594b-8afb-8a15785b72f5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "302e5c5f-4e46-5b72-84b8-4d116e0dae3f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bf74a110-1822-5602-a639-c7b6e3cf1b9a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "02217852-e718-5fc9-9d82-34af84665098",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "94b654fe-d4b8-53ec-be8a-a53bbcc721e4",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3cdba217-ba63-5b14-8067-2b2501d72b7d",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "883be24b-e237-5aef-b0f2-bd764d5ff474",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "29ece239-92f1-50a3-9984-f746f41b6b78",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9368439d-4191-5304-b929-d6411feee78b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b74c977e-4594-5c61-89c1-b98c45786d04",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2f64071c-eedc-5765-9787-6e18b06dad8e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2df9b1fb-056a-541d-9653-c23c41065efb",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "56b1c3ea-a9e4-52c4-9cae-4cc3b5a24a61",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "29f551d5-d8b8-5e6f-a863-bf8f8fc66126",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "49c8b087-43e6-5394-8abf-7fd9866360d9",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0d894984-a84d-5f82-b1fb-aea65114c988",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b4ea0b3f-8ea6-56db-a0d9-dd72306ce74f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3bd236dc-9d50-50a3-ac5f-c555a79e70bf",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6172610b-1709-59c9-a89e-4734dd0fc78a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2716bf82-3aff-5911-a709-1b7dfec49f33",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "860d5857-bcc4-59e0-b2be-7e9519055522",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "29d9ba7e-818b-502f-b307-48cb6c95865d",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "20d672a6-717e-5d8e-8c85-a9fd24d87de0",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7b3667e9-8f9d-51e2-becf-2430acede9b9",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "71b67406-6e75-5c02-b117-889a6719c53b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "871d048c-a8fe-5136-954c-56473a0f948a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "600744df-06fb-50a3-9221-0d5dd6548d63",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "42a500ed-e158-5008-a50c-8515722f7653",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2fb733c-4283-549e-b926-4bbe20d4c54c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8431eba3-a54a-550a-a9b4-fb6fdad3e791",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "19d904cf-5574-527d-841d-a8e6ddc733c7",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a6d6bc63-ab7d-5d92-8656-c79e2342a391",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "05c31748-fa9f-5db5-99cd-cd2f37593d23",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a6573ef3-4e5f-5bc3-a34c-ed86f5fcd584",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5c0c6e7c-b736-591c-85bd-27f90bcce6c7",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3a563b77-6b21-5d6c-b608-eec7b6a85865",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5553066c-b99f-55a1-bc9b-a651779a35bc",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "fb30ae7c-a8d9-575f-a7de-f7894226a1a3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3b5e334c-8ca9-5a06-aa2e-55ec24387f88",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7a0c30cf-5490-521b-a745-643d9113df6e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a61e23e0-3319-55c3-952f-7e967b6a801b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8b7741ca-f444-5de6-8bf7-8c43d7b5f82f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a2484aa6-2a5f-5819-90be-8e1c992ed21b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f2cf218c-14bf-5ec0-b10d-83dd7babbf79",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "40a9de80-6e72-5fde-9380-0e08fd46a883",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "91d70c98-1566-50ca-908b-60c57b629380",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "93effd2e-f681-5f08-b8de-7b9707f8b055",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "47a4fcf8-14a4-5926-9f42-97e4ba5c0536",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f92e1e6f-58db-531a-9c83-a4853994cfcb",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5aa8b3e1-1ba4-513d-9122-77bd80cb4b0a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7df80eaa-6ab6-5511-854b-9543b8a6410f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d0be50f7-5f55-51c6-a47b-e1ae78588488",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "c08e454d-69a2-5db3-96d2-c5fd2db6b1d2",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2a54c58e-ac9b-5799-b4a8-cce186357a8f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d3f92591-2bc4-5c41-878e-adb1eecb576f",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3d47f826-69a0-5527-afb3-fdf1c9f5593b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a75bc875-6426-5a6b-b523-cd00f8e6f174",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cfc73f1c-3e99-52d3-b7ac-3fc8766f7476",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3abf3314-2a3c-59e5-9314-f06c0c7e13db",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "6ab67402-1f57-5733-ae70-e44791ff76ee",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "66380c57-4cba-5e09-837d-21e38eb40b7d",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8aa741ef-c7bb-5f45-9315-afd3c7146533",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3d7d3511-bfb4-501a-90b9-7156a94e9cc4",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9d7ecda1-c364-5a3f-a51d-8ccf4fe95411",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "db042c9d-c7b2-54ae-aee1-d7cdc9fb300b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "fdb9d958-343b-5185-88c9-91ce4a5e61c4",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a149e4c0-e8e4-5e40-8914-2139cb2ba923",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e0f89be9-95f2-516f-92d3-1e056151cbd3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f5446e7f-5232-5da0-87d4-e1bfc8a216e0",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "23d1a166-8cd6-555d-88cc-aabd82c517cf",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "43f8a359-5e60-50a4-ae9e-61ce39df44a3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "384fc5a1-8242-50cc-aa38-cfb159461f46",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a83451ac-784a-5366-8466-4619ea2d251e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5f81bba4-98c8-53a5-9ed9-f334edf806d5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7268327a-71d3-50e2-82b5-0d4966767371",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b76c2b7b-18e5-5e4a-9933-0182eff4a5ed",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2f93635e-0c6e-5f0f-bec7-8d666ef89cbe",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "84a45d5f-d130-52ef-84a7-7555538f2aa0",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ea7e6d9-839a-5a56-b431-ddf34def5747",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ee54614-95b1-5ae5-bb36-282617adfd3c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "35598751-2253-5af3-82fa-904b80ed9c29",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9ab6bd8c-b0e6-5e0c-8d75-13de7cac8769",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3b190f31-d424-5a6a-b515-a722248135b6",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5d1a3ecb-ae52-5ae9-8337-955bb2434510",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b52c4900-e705-5c82-a9b5-f59c5b82e5d5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "67ccd08e-5c97-5fab-a563-cc2ffc10bb07",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "7ce22369-7100-5f7f-ab92-62b11843e0d3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e98712a3-6c9c-518e-a9cc-0e9762d2f7d3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d1dc0c6b-dbdc-5aad-bcd2-0d01e331dbed",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3d776d5f-94ee-5d55-ba91-3c0200765ca3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "83ec5556-269e-54e2-8ef5-ec8dcfb77a1c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "21c5cd0e-fd67-5c74-bc29-cce1deed7e7b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "2f425b7f-3c59-5969-abc8-0e708cfaaab3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3cea838e-3dca-561e-9632-9373df60f135",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "74217505-0dd4-5f3c-808b-f6c1e6790d9e",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "54de3b58-a451-5d19-8870-f56ea4b6d6a7",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "15f93e52-b74e-5029-b3be-b4b625f3e8fb",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "19817bf8-e52e-51cf-b048-21c00ed44105",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "58898161-563f-5539-b86c-36e52742725a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b439e732-f71c-52bd-837e-b4f399fdb126",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "67592f1e-116d-5896-8dcd-9d66f8098e71",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e9ff6428-2241-58b5-b44c-072fc0671cfd",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9f1cc31e-1c06-5684-ada2-d70ca39f733a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d4bdb864-3d8e-539e-9380-928b76f01698",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cb8dd073-a8b6-596a-90d0-219b0adfc01b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "db7c35ab-4bf4-5ea4-9cfd-b2a0700db814",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b7979db7-c2d5-5576-b83d-c9671af388ec",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b2ae5390-95c2-5f6a-9e6a-1aeb33b546af",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cd1448a2-e46c-5fab-ba41-d64777fa57a6",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "07b62055-a028-5697-86b8-b25c05b64f59",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "4c9753b2-2627-57b2-a273-1106663f7912",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "322a6d34-34f6-50fc-a1b6-9b39b89ff079",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a1a25bbc-8e41-53e7-9d1f-64dd26952bf4",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2e06089-43f6-5f67-a22e-ba90a64e0624",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "8f45da95-a20b-54fb-b18c-ae21d62d6061",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bd16c69a-fcc5-50e3-a06c-4a7c57b417fc",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2ece489-1f73-52f6-85ba-e033d4140a52",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "de94f91c-446c-5e2e-844d-dccf96e95938",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "85ce6e03-1029-5631-b97d-589da3e7e45d",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "59e141a7-8356-5523-a2fc-4c58a2e0143a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "175ff9fc-0f64-5643-8d10-6307f4dfca89",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "11a53d09-374d-55e7-8fe5-947e56000a01",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "34c81504-5b04-5d9a-9733-ccdb24a8de70",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d165e89a-c7f5-576c-b693-8ed8d271bca8",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "1d513da5-2108-5bd6-ba3c-3b6beb8558f3",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "5219a265-b0f1-525a-bdeb-ded31a13468c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9b14fa0d-ee1c-5192-9160-fcbb38d52052",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d08ab5b9-3ba6-5c09-a03c-69cf21738146",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e6c83623-8c39-5ef8-b2af-a39c83cb30e9",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cfefbcdb-2350-5496-8912-96fce6c0ed0c",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "f915cab4-cd5e-5b89-948d-e514ce1e40a6",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "3e218e5f-cd29-58b5-9f2a-b53d21e4215d",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "39577c8d-b309-562c-bce9-af323c7c7d7b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "faa03c85-e5d7-57af-b888-3a77f02b25bd",
+          "observed": 99700,
+          "expected": 99700,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "b1007bf0-aef7-5006-9386-48348cfac7c4",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0ef07a27-9222-53be-9cd1-1e5b6a7057b2",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "edf3bdf8-8c1c-5f18-afb0-3bfc031ae510",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a0cc2177-d720-52cc-9842-9e399b8ef7a1",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "59277a9b-dd6b-596d-a853-ac6034d864cd",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "9a3c9131-8d03-5215-a561-78502a7edc7a",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "bdd089ad-2e13-5381-831b-2db229018344",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "52eb9f46-bbc2-5c22-b6a4-0b0813ee8b0b",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "cf704919-72c1-572c-9a48-decdd533ab43",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "65fe314f-c5c8-589e-b4c5-1b56e6498339",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "a0ac61fb-1b73-506c-96a1-09f2c3d75fb9",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "d17bb53d-73a3-5e45-9924-4e9085ebe7a5",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0709851d-6d5e-5936-9c02-385878d4eb03",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "0c1cda1b-a09d-5cb3-aedd-9686b1e02978",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "aeec1b97-f169-5f3e-98c7-6eac0f7d4e60",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        },
+        {
+          "tierId": "e2d6b0ce-2742-5981-bcdc-dc6d591893f0",
+          "observed": 100000,
+          "expected": 100000,
+          "result": "HEALED"
+        }
+      ],
+      "violations": 0,
+      "passed": true
+    },
+    "admin_inventory_audit": {
+      "violations": 0,
+      "errors": [],
+      "passed": true
+    }
+  },
+  "counts": {
+    "inventory": [
+      {
+        "tier_id": "02217852-e718-5fc9-9d82-34af84665098",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "05bdf804-f958-50cb-939a-0f4c3df39ea7",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "05c31748-fa9f-5db5-99cd-cd2f37593d23",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "06d57b4f-4b85-502b-b173-06c88835ec2a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "06fd003c-a47b-58ea-be6e-cca4bda8c603",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0709851d-6d5e-5936-9c02-385878d4eb03",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "07b62055-a028-5697-86b8-b25c05b64f59",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0bee3382-3b65-5318-ac1c-8103f97a7150",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0c1cda1b-a09d-5cb3-aedd-9686b1e02978",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0d894984-a84d-5f82-b1fb-aea65114c988",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0ddc6ebd-d82f-543b-9f43-9d1f68a9d0b5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0ea7e6d9-839a-5a56-b431-ddf34def5747",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0ee54614-95b1-5ae5-bb36-282617adfd3c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "0ef07a27-9222-53be-9cd1-1e5b6a7057b2",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "10468041-6136-50d1-aa4f-ad88e7a190d7",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "11a53d09-374d-55e7-8fe5-947e56000a01",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "15f93e52-b74e-5029-b3be-b4b625f3e8fb",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "175ff9fc-0f64-5643-8d10-6307f4dfca89",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "177e7060-3590-58a2-9045-1dc1d7bf6983",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "187b8619-a2d6-51f3-8374-75fc3bac9fed",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "19817bf8-e52e-51cf-b048-21c00ed44105",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "19d904cf-5574-527d-841d-a8e6ddc733c7",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "1cb60443-da54-539d-8394-1b2d7186e05f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "1d513da5-2108-5bd6-ba3c-3b6beb8558f3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "20d672a6-717e-5d8e-8c85-a9fd24d87de0",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "21c5cd0e-fd67-5c74-bc29-cce1deed7e7b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "221cacf1-0df5-596e-9473-b50c781360d8",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "23d1a166-8cd6-555d-88cc-aabd82c517cf",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "267002ed-be91-5599-9e9c-529eae6cc6bc",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2716bf82-3aff-5911-a709-1b7dfec49f33",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "28a87dbc-726d-57ae-8039-329e14141298",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "29d9ba7e-818b-502f-b307-48cb6c95865d",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "29ece239-92f1-50a3-9984-f746f41b6b78",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "29f551d5-d8b8-5e6f-a863-bf8f8fc66126",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2a54c58e-ac9b-5799-b4a8-cce186357a8f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2b2bd2d4-3838-5d3d-9910-8bfef6541980",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2c3c3c8b-3fe4-5486-bc1f-d1192213b07e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2df9b1fb-056a-541d-9653-c23c41065efb",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2f425b7f-3c59-5969-abc8-0e708cfaaab3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2f64071c-eedc-5765-9787-6e18b06dad8e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "2f93635e-0c6e-5f0f-bec7-8d666ef89cbe",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "302e5c5f-4e46-5b72-84b8-4d116e0dae3f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "322a6d34-34f6-50fc-a1b6-9b39b89ff079",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "33e177ea-fa72-57d3-b8a9-d808033ae733",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "340fafd3-314a-5125-b986-ece654017ca6",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "34c81504-5b04-5d9a-9733-ccdb24a8de70",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "35598751-2253-5af3-82fa-904b80ed9c29",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "384fc5a1-8242-50cc-aa38-cfb159461f46",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "39324046-fd90-55fd-a9bb-da3b94a8ec4c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "39577c8d-b309-562c-bce9-af323c7c7d7b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3a563b77-6b21-5d6c-b608-eec7b6a85865",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3abf3314-2a3c-59e5-9314-f06c0c7e13db",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3b190f31-d424-5a6a-b515-a722248135b6",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3b5e334c-8ca9-5a06-aa2e-55ec24387f88",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3bd236dc-9d50-50a3-ac5f-c555a79e70bf",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3cdba217-ba63-5b14-8067-2b2501d72b7d",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3cea838e-3dca-561e-9632-9373df60f135",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3d47f826-69a0-5527-afb3-fdf1c9f5593b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3d776d5f-94ee-5d55-ba91-3c0200765ca3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3d7d3511-bfb4-501a-90b9-7156a94e9cc4",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "3e218e5f-cd29-58b5-9f2a-b53d21e4215d",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "40a9de80-6e72-5fde-9380-0e08fd46a883",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "42a500ed-e158-5008-a50c-8515722f7653",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "43f8a359-5e60-50a4-ae9e-61ce39df44a3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "47a1609f-7a4f-5eff-bc58-14b564e0322e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "47a4fcf8-14a4-5926-9f42-97e4ba5c0536",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "4886164d-2744-5a33-8f83-db94fd758065",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "49c8b087-43e6-5394-8abf-7fd9866360d9",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "4bbd2aee-ea69-52b1-9f47-46eeae7d00ec",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "4bdcf280-ec62-5597-a2b3-5aafffbe39db",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "4c9753b2-2627-57b2-a273-1106663f7912",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "4fae4297-0a35-58d9-ba0d-1993c3c0fdb6",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5219a265-b0f1-525a-bdeb-ded31a13468c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "52eb9f46-bbc2-5c22-b6a4-0b0813ee8b0b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "54de3b58-a451-5d19-8870-f56ea4b6d6a7",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5520f6fe-441e-5c11-854d-4cf7c1713b00",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5553066c-b99f-55a1-bc9b-a651779a35bc",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "56b1c3ea-a9e4-52c4-9cae-4cc3b5a24a61",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "570fe3da-75d3-5e75-bc49-701c60681ae3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "58898161-563f-5539-b86c-36e52742725a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "59277a9b-dd6b-596d-a853-ac6034d864cd",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "599dd42b-3279-5ec9-9f29-a3a83a756d71",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "59e141a7-8356-5523-a2fc-4c58a2e0143a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5aa8b3e1-1ba4-513d-9122-77bd80cb4b0a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5c0c6e7c-b736-591c-85bd-27f90bcce6c7",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5d1a3ecb-ae52-5ae9-8337-955bb2434510",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "5f81bba4-98c8-53a5-9ed9-f334edf806d5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "600744df-06fb-50a3-9221-0d5dd6548d63",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "6172610b-1709-59c9-a89e-4734dd0fc78a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "65fe314f-c5c8-589e-b4c5-1b56e6498339",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "66380c57-4cba-5e09-837d-21e38eb40b7d",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "67592f1e-116d-5896-8dcd-9d66f8098e71",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "67ccd08e-5c97-5fab-a563-cc2ffc10bb07",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "6857a1e2-46bd-54ec-a105-5d150260900b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "686613b3-057c-5988-9294-d0862186b95c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "689445f6-dc4b-51f8-9ba1-22f0b6400bae",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "6ab67402-1f57-5733-ae70-e44791ff76ee",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "6b1ab9d0-069a-5f5a-a434-6a3c3fc84227",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "6f3fbc40-0e65-5beb-b87a-d3457e21e210",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "71b67406-6e75-5c02-b117-889a6719c53b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7268327a-71d3-50e2-82b5-0d4966767371",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "74217505-0dd4-5f3c-808b-f6c1e6790d9e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7966e3ef-2ff1-594b-8afb-8a15785b72f5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7a0c30cf-5490-521b-a745-643d9113df6e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7b3667e9-8f9d-51e2-becf-2430acede9b9",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7c11f40d-859c-518c-ad79-df86f92f36fb",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7c56a8f2-2684-58ba-83b1-5337f8939681",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7cafb6e9-447f-5914-ba69-644d9df7e5fd",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7ce22369-7100-5f7f-ab92-62b11843e0d3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "7df80eaa-6ab6-5511-854b-9543b8a6410f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "8082dedb-3a66-5970-a4aa-14beb61764fa",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "83ec5556-269e-54e2-8ef5-ec8dcfb77a1c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "8431eba3-a54a-550a-a9b4-fb6fdad3e791",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "84a45d5f-d130-52ef-84a7-7555538f2aa0",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "85ce6e03-1029-5631-b97d-589da3e7e45d",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "860d5857-bcc4-59e0-b2be-7e9519055522",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "871d048c-a8fe-5136-954c-56473a0f948a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "883be24b-e237-5aef-b0f2-bd764d5ff474",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "8aa741ef-c7bb-5f45-9315-afd3c7146533",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "8b7741ca-f444-5de6-8bf7-8c43d7b5f82f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "8f45da95-a20b-54fb-b18c-ae21d62d6061",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9184f22c-4bc4-5cc0-827e-0241eaae1e65",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "91d70c98-1566-50ca-908b-60c57b629380",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9368439d-4191-5304-b929-d6411feee78b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "93effd2e-f681-5f08-b8de-7b9707f8b055",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "94b654fe-d4b8-53ec-be8a-a53bbcc721e4",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9a3c9131-8d03-5215-a561-78502a7edc7a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9ab6bd8c-b0e6-5e0c-8d75-13de7cac8769",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9b14fa0d-ee1c-5192-9160-fcbb38d52052",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9d6b7df9-eecd-5b68-941d-ade10755caf7",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9d7ecda1-c364-5a3f-a51d-8ccf4fe95411",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "9f1cc31e-1c06-5684-ada2-d70ca39f733a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a0ac61fb-1b73-506c-96a1-09f2c3d75fb9",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a0cc2177-d720-52cc-9842-9e399b8ef7a1",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a149e4c0-e8e4-5e40-8914-2139cb2ba923",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a1a25bbc-8e41-53e7-9d1f-64dd26952bf4",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a2484aa6-2a5f-5819-90be-8e1c992ed21b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a3ceeaec-5947-5a50-9e53-f9601e508e18",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a61e23e0-3319-55c3-952f-7e967b6a801b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a6573ef3-4e5f-5bc3-a34c-ed86f5fcd584",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a6d6bc63-ab7d-5d92-8656-c79e2342a391",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a75bc875-6426-5a6b-b523-cd00f8e6f174",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "a83451ac-784a-5366-8466-4619ea2d251e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "aeec1b97-f169-5f3e-98c7-6eac0f7d4e60",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b1007bf0-aef7-5006-9386-48348cfac7c4",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b155744f-bd46-5303-9e7f-008a1c767e2b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b2006bf7-f107-5f12-a87a-49389a10a861",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b209ae8d-cc9f-551c-b1d5-0faf9c5d7301",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b2ae5390-95c2-5f6a-9e6a-1aeb33b546af",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b439e732-f71c-52bd-837e-b4f399fdb126",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b4ea0b3f-8ea6-56db-a0d9-dd72306ce74f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b52c4900-e705-5c82-a9b5-f59c5b82e5d5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b6ecdc99-b4af-5e3a-8a42-8d2b4b9fad3d",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b74c977e-4594-5c61-89c1-b98c45786d04",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b76c2b7b-18e5-5e4a-9933-0182eff4a5ed",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "b7979db7-c2d5-5576-b83d-c9671af388ec",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "ba8b8bb6-d711-5043-bfe9-48cd7f336023",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "bd16c69a-fcc5-50e3-a06c-4a7c57b417fc",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "bdd089ad-2e13-5381-831b-2db229018344",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "bddb7442-b9ae-5685-95fd-4ceda7b1e08e",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "bf74a110-1822-5602-a639-c7b6e3cf1b9a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "bfdca02d-28d2-5545-9449-65044f31a93a",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "c08e454d-69a2-5db3-96d2-c5fd2db6b1d2",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "c71eacb5-c1a4-51e2-ac58-5b949ef0586c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "cb8dd073-a8b6-596a-90d0-219b0adfc01b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "cd1448a2-e46c-5fab-ba41-d64777fa57a6",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "cdf0eacc-a0ca-5eb9-938c-f2f84cd23d89",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "cf704919-72c1-572c-9a48-decdd533ab43",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "cfc73f1c-3e99-52d3-b7ac-3fc8766f7476",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "cfefbcdb-2350-5496-8912-96fce6c0ed0c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d08ab5b9-3ba6-5c09-a03c-69cf21738146",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d0be50f7-5f55-51c6-a47b-e1ae78588488",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d165e89a-c7f5-576c-b693-8ed8d271bca8",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d17bb53d-73a3-5e45-9924-4e9085ebe7a5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d1dc0c6b-dbdc-5aad-bcd2-0d01e331dbed",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d2a4746e-a555-5b16-b068-bf6caf66b3be",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d3f92591-2bc4-5c41-878e-adb1eecb576f",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d4bdb864-3d8e-539e-9380-928b76f01698",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d76a0626-12e5-556a-b027-5b2bc6ca1ba5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d78c9f36-d45b-5320-8f21-8d4d6e779ea5",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "d809157e-4148-5a2d-9b08-8eac3f061b85",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "db042c9d-c7b2-54ae-aee1-d7cdc9fb300b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "db7c35ab-4bf4-5ea4-9cfd-b2a0700db814",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "de6691e2-1c11-537d-b03f-245ec6bcf34b",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "de94f91c-446c-5e2e-844d-dccf96e95938",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e0eeae0e-c6f2-59d8-add3-66bf0419d0a1",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e0f89be9-95f2-516f-92d3-1e056151cbd3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e2d6b0ce-2742-5981-bcdc-dc6d591893f0",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e2e06089-43f6-5f67-a22e-ba90a64e0624",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e2ece489-1f73-52f6-85ba-e033d4140a52",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e2fb733c-4283-549e-b926-4bbe20d4c54c",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e6c83623-8c39-5ef8-b2af-a39c83cb30e9",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e98712a3-6c9c-518e-a9cc-0e9762d2f7d3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "e9ff6428-2241-58b5-b44c-072fc0671cfd",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "ece0bc65-b70b-5750-8f66-2327a960d060",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "edf3bdf8-8c1c-5f18-afb0-3bfc031ae510",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "f283de31-4942-5d78-bedd-c90002ec24bb",
+        "total": 5000,
+        "available": 2914,
+        "held": 0,
+        "confirmed": 2086,
+        "tickets": 2086
+      },
+      {
+        "tier_id": "f2cf218c-14bf-5ec0-b10d-83dd7babbf79",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "f5446e7f-5232-5da0-87d4-e1bfc8a216e0",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "f86d4e37-2d30-50bc-82f6-0f2c61d6df10",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "f915cab4-cd5e-5b89-948d-e514ce1e40a6",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "f92e1e6f-58db-531a-9c83-a4853994cfcb",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "faa03c85-e5d7-57af-b888-3a77f02b25bd",
+        "total": 100000,
+        "available": 99700,
+        "held": 0,
+        "confirmed": 300,
+        "tickets": 300
+      },
+      {
+        "tier_id": "fb30ae7c-a8d9-575f-a7de-f7894226a1a3",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      },
+      {
+        "tier_id": "fdb9d958-343b-5185-88c9-91ce4a5e61c4",
+        "total": 100000,
+        "available": 100000,
+        "held": 0,
+        "confirmed": 0,
+        "tickets": 0
+      }
+    ],
+    "payment_duplicates": {
+      "violations": 0
+    },
+    "ticket_duplicates": {
+      "violations": 0
+    },
+    "ticket_quantity": {
+      "violations": 0
+    },
+    "idempotency": {
+      "orders": 985,
+      "successful_keys": 985,
+      "distinct_keys": 985,
+      "distinct_effects": 985,
+      "violations": 0
+    },
+    "paid_without_tickets": {
+      "violations": 0
+    },
+    "confirmed_without_paid": {
+      "violations": 0
+    },
+    "outbox": {
+      "pending": 4142,
+      "failed": 0,
+      "published": 0
+    },
+    "emails": {
+      "paid_orders": 936,
+      "exactly_one": 0,
+      "sent_confirmations": 0,
+      "violations": 936,
+      "passed": false
+    },
+    "overdue_orders": {
+      "violations": 0
+    },
+    "expired_holds": {
+      "violations": 0
+    },
+    "totals": {
+      "orders": 985,
+      "paid": 936,
+      "pending_payment": 0,
+      "held": 0,
+      "valid_tickets": 2386
+    }
+  },
+  "timestamp": 1791745534
+}

@@ -1,0 +1,11 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 1,
+  "start": 1791719177.0530927,
+  "end": 1791719211.1325321,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=baseline-C-1"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 1,
+  "verification_error": null,
+  "start": 1791779757.4954824,
+  "end": 1791779794.625518,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=broken-guard"
+  ],
+  "collection_error": null
+}

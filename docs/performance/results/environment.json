@@ -1,0 +1,32 @@
+{
+  "host": "Windows-11-10.0.22631-SP0",
+  "processor": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel",
+  "logical_cpus": 12,
+  "git_sha": "13c36d97312c410306578edca618a7da3b1bac57",
+  "docker": {
+    "ServerVersion": "29.3.1",
+    "NCPU": 12,
+    "MemTotal": 4013400064,
+    "KernelVersion": "6.18.40.1-microsoft-standard-WSL2",
+    "OperatingSystem": "Docker Desktop (containerized)",
+    "Architecture": "x86_64"
+  },
+  "java": "Picked up JAVA_TOOL_OPTIONS: -Xms256m -Xmx768m\nopenjdk version \"21.0.12.1\" 2026-08-18 LTS\nOpenJDK Runtime Environment Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS, mixed mode, sharing)\n",
+  "k6": "k6 v1.3.0+dirty (commit/5870e99ae8-dirty, go1.25.1, linux/amd64)\n",
+  "images": "[{\"ID\":\"sha256:961ec2cf4499943514beff7b56799521429275b881e6a718733b178d8a553a52\",\"ContainerName\":\"ticketrush-week7-cadvisor-1\",\"Repository\":\"ghcr.io/google/cadvisor\",\"Tag\":\"0.54.0\",\"Platform\":\"linux/amd64\",\"Size\":34261817,\"Created\":\"2025-12-02T22:02:10.338407344Z\",\"LastTagTime\":\"2026-10-11T11:40:19.896139019Z\"},{\"ID\":\"sha256:079759020faa42e243a07aaa3e31086de70e93e78b02b844e4149e0108dd5428\",\"ContainerName\":\"ticketrush-week7-mailpit-1\",\"Repository\":\"axllent/mailpit\",\"Tag\":\"v1.26\",\"Platform\":\"linux/amd64\",\"Size\":13363972,\"Created\":\"2025-06-21T06:27:54.703212227Z\",\"LastTagTime\":\"2026-10-10T09:08:30.813773273Z\"},{\"ID\":\"sha256:38606faa38c54787525fb0ff2fd6b41b4cfb75d455c1df294927c5f611699b17\",\"ContainerName\":\"ticketrush-week7-postgres-exporter-1\",\"Repository\":\"prometheuscommunity/postgres-exporter\",\"Tag\":\"v0.17.1\",\"Platform\":\"linux/amd64\",\"Size\":11215599,\"Created\":\"2025-02-26T13:55:40.041191362Z\",\"LastTagTime\":\"2026-10-11T07:14:37.131381063Z\"},{\"ID\":\"sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24\",\"ContainerName\":\"ticketrush-week7-postgres-1\",\"Repository\":\"postgres\",\"Tag\":\"17-alpine\",\"Platform\":\"linux/amd64\",\"Size\":117212703,\"Created\":\"2026-09-17T21:31:32.987011508Z\",\"LastTagTime\":\"2026-10-07T15:30:06.504920997Z\"},{\"ID\":\"sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3\",\"ContainerName\":\"ticketrush-week7-rabbitmq-1\",\"Repository\":\"rabbitmq\",\"Tag\":\"4.1-management-alpine\",\"Platform\":\"linux/amd64\",\"Size\":87601693,\"Created\":\"2026-09-29T22:07:17.358465391Z\",\"LastTagTime\":\"2026-10-07T15:30:02.399754846Z\"},{\"ID\":\"sha256:8df234452baa3a41af17a4d99e9f9ceb86603ab684bf3ae095639e886ad9f1e1\",\"ContainerName\":\"ticketrush-week7-backend-1\",\"Repository\":\"ticketrush-week7-backend\",\"Tag\":\"latest\",\"Platform\":\"linux/amd64\",\"Size\":255775636,\"Created\":\"2026-10-11T07:19:16.944820017Z\",\"LastTagTime\":\"2026-10-11T07:19:20.860303029Z\"},{\"ID\":\"sha256:76cc6f9354a480890bf9e857a2045d882370d7674f8c241520a6d8d0ef8b9cf6\",\"ContainerName\":\"ticketrush-week7-tools-run-e161514ca6d1\",\"Repository\":\"ticketrush-week7-tools\",\"Tag\":\"latest\",\"Platform\":\"linux/amd64\",\"Size\":52713718,\"Created\":\"2026-10-11T07:13:14.50573558Z\",\"LastTagTime\":\"2026-10-11T07:18:05.154675972Z\"},{\"ID\":\"sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996\",\"ContainerName\":\"ticketrush-week7-prometheus-1\",\"Repository\":\"prom/prometheus\",\"Tag\":\"v3.5.0\",\"Platform\":\"linux/amd64\",\"Size\":123797512,\"Created\":\"2025-07-14T16:46:29.345043083Z\",\"LastTagTime\":\"2026-10-11T07:15:15.382810064Z\"},{\"ID\":\"sha256:4c8000eb3525e0f6ed1327499861e272fcce358a9e7a87dd9db74c44607e6d8e\",\"ContainerName\":\"ticketrush-week7-redis-exporter-1\",\"Repository\":\"oliver006/redis_exporter\",\"Tag\":\"v1.77.0\",\"Platform\":\"linux/amd64\",\"Size\":4077582,\"Created\":\"2025-09-12T06:00:19.852159677Z\",\"LastTagTime\":\"2026-10-11T07:14:30.733553027Z\"},{\"ID\":\"sha256:a1701c2180249361737a99a01bc770db39381640e4d631825d38ff4535efa47d\",\"ContainerName\":\"ticketrush-week7-grafana-1\",\"Repository\":\"grafana/grafana\",\"Tag\":\"12.1.1\",\"Platform\":\"linux/amd64\",\"Size\":201615524,\"Created\":\"2025-08-12T09:10:35.132572449Z\",\"LastTagTime\":\"2026-10-11T07:15:41.14784122Z\"},{\"ID\":\"sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499\",\"ContainerName\":\"ticketrush-week7-redis-1\",\"Repository\":\"redis\",\"Tag\":\"7.4-alpine\",\"Platform\":\"linux/amd64\",\"Size\":16260342,\"Created\":\"2026-09-17T21:32:46.989770417Z\",\"LastTagTime\":\"2026-10-07T15:29:56.757185205Z\"}]\n\n",
+  "config": {
+    "RESERVATION_HOLD_DURATION": "60s",
+    "RESERVATION_JOB_INTERVAL": "5s",
+    "PAYMENT_LATE_GRACE": "5s"
+  },
+  "defaults": {
+    "hikari": 10,
+    "tomcat": 200,
+    "heap": "-Xms256m -Xmx768m",
+    "strategy": "conditional-update",
+    "virtual_threads": false,
+    "outbox_batch": 100,
+    "outbox_interval": "1s",
+    "mock_delay": "500ms"
+  }
+}

@@ -1,5 +1,23 @@
 # TicketRush
 
+## Performance (Week 7)
+
+The [performance laboratory](docs/performance/README.md) provides an isolated bulk seeder, open-model
+k6 scenarios, automatic SQL/API correctness verification, Prometheus/Grafana dashboards and measured
+artifacts. See the [experiment log](docs/performance/log.md) for failures as well as successes.
+
+```sh
+python3 infrastructure/scripts/loadtest.py init
+python3 infrastructure/scripts/loadtest.py up
+make loadtest-smoke
+```
+
+On Windows use `python` instead of `python3`, or `make PYTHON=python loadtest-smoke`.
+For the normal development stack set `METRICS_PASSWORD` and `GRAFANA_PASSWORD` in `.env` and run
+`docker compose --profile observability up --build`. No frontend is added in Week 7.
+
+## Historical foundation notes
+
 Week 1 foundation and authentication for a Java 21 / Spring Boot modular monolith.
 Frontend and future booking modules are placeholders only.
 
