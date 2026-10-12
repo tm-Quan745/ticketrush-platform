@@ -9,6 +9,7 @@ import platform
 import secrets
 import subprocess
 import sys
+import threading
 import time
 import urllib.parse
 import urllib.request
@@ -95,6 +96,33 @@ def backend_provenance(args):
 def request_json(url):
     with urllib.request.urlopen(url, timeout=20) as response:
         return json.load(response)
+
+
+class PgActivitySampler:
+    query = """SELECT json_build_object('at',clock_timestamp(),'sessions',coalesce(json_agg(json_build_object(
+      'state',state,'wait_event_type',wait_event_type,'wait_event',wait_event,
+      'xact_age_s',extract(epoch from clock_timestamp()-xact_start),
+      'query_age_s',extract(epoch from clock_timestamp()-query_start),'query',left(query,240))
+      ORDER BY xact_start NULLS LAST),'[]'::json)) FROM pg_stat_activity
+      WHERE datname=current_database() AND pid<>pg_backend_pid()"""
+    def __init__(self, run_id): self.run_id, self.samples, self.stop = run_id, [], threading.Event()
+    def start(self):
+        self.thread = threading.Thread(target=self.collect, daemon=True); self.thread.start()
+    def collect(self):
+        while not self.stop.is_set():
+            result = run(["docker", "exec", "ticketrush-week7-postgres-1", "psql", "-U", "ticketrush",
+                          "-d", "ticketrush_loadtest", "-Atc", self.query], capture=True, check=False)
+            try:
+                session = json.loads(result.stdout); rows = session["sessions"]
+                self.samples.append({"at": session["at"], "sessions": rows,
+                    "idle_in_transaction": sum(x["state"] == "idle in transaction" for x in rows),
+                    "waiting_on_lock": sum(x["wait_event_type"] == "Lock" for x in rows),
+                    "oldest_xact_age_s": max((x["xact_age_s"] or 0 for x in rows), default=0)})
+            except (json.JSONDecodeError, KeyError): self.samples.append({"error": result.stderr.strip()})
+            self.stop.wait(1)
+    def finish(self):
+        self.stop.set(); self.thread.join(timeout=5)
+        (RESULTS / f"{self.run_id}-pgactivity.json").write_text(json.dumps(self.samples, indent=2))
 
 
 def collect(run_id, start, end, params, source):
@@ -196,7 +224,11 @@ def measure(args):
         command.extend(["-e", param])
     if args.jfr:
         compose("exec", "-T", "backend", "jcmd", "1", "JFR.start", "name=week7", "settings=profile", "filename=/tmp/week7.jfr")
-    outcome = compose(*command, "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
+    sampler = PgActivitySampler(args.run_id); sampler.start()
+    try:
+        outcome = compose(*command, "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
+    finally:
+        sampler.finish()
     end = time.time()
     collection_error = None
     try:
