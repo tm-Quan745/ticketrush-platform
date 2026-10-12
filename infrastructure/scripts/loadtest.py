@@ -74,6 +74,7 @@ def request_json(url):
 def collect(run_id, start, end, params):
     queries = {
         "request_rate": 'sum(rate(http_server_requests_seconds_count[15s]))',
+        "k6_request_rate": 'sum(rate(k6_http_reqs_total[15s]))',
         "hikari_pending": 'hikaricp_connections_pending',
         "hikari_active": 'hikaricp_connections_active',
         "db_lock_waits": 'ticketrush_database_lock_waits',
@@ -88,6 +89,14 @@ def collect(run_id, start, end, params):
         "waiting_size": 'waiting_room_size', "paid": 'ticketrush_funnel_orders_paid',
     }
     result = {"start": start, "end": end, "parameters": params, "series": {}}
+    inspected = json.loads(run(["docker", "inspect", "ticketrush-week7-backend-1"], capture=True).stdout)[0]
+    allowed = {"RESERVATION_STRATEGY", "HIKARI_MAX_POOL_SIZE", "TOMCAT_MAX_THREADS", "JAVA_TOOL_OPTIONS",
+               "SPRING_THREADS_VIRTUAL_ENABLED", "RESERVATION_HOLD_DURATION", "RESERVATION_JOB_INTERVAL",
+               "RESERVATION_BATCH_SIZE", "PAYMENT_LATE_GRACE", "MOCK_PAYMENT_DELAY", "WAITING_ROOM_RATE",
+               "WAITING_ROOM_DEFAULT", "OUTBOX_BATCH_SIZE", "OUTBOX_RELAY_INTERVAL"}
+    result["runtime_configuration"] = {key: value for item in inspected["Config"]["Env"]
+                                       for key, _, value in [item.partition("=")] if key in allowed}
+    result["backend_image_id"] = inspected["Image"]
     for name, query in queries.items():
         url = "http://127.0.0.1:29097/api/v1/query_range?" + urllib.parse.urlencode(
             {"query": query, "start": start, "end": end, "step": 5})
@@ -104,7 +113,40 @@ def collect(run_id, start, end, params):
     (RESULTS / f"{run_id}-telemetry.json").write_text(json.dumps(result, indent=2))
 
 
+def export_profile(run_id):
+    compose("exec", "-T", "backend", "jcmd", "1", "JFR.stop", "name=week7")
+    compose("cp", "backend:/tmp/week7.jfr", str(RESULTS / f"{run_id}.jfr"))
+    profile = compose("exec", "-T", "backend", "jfr", "summary", "/tmp/week7.jfr", capture=True)
+    (RESULTS / f"{run_id}-jfr-summary.txt").write_text(profile.stdout)
+    # Stream text: long stress recordings can expand to gigabytes of JSON.
+    from collections import Counter
+    stacks = Counter()
+    command = COMPOSE + ["exec", "-T", "backend", "jfr", "print", "--stack-depth", "32", "--events",
+                         "jdk.ExecutionSample,jdk.JavaMonitorEnter,jdk.ThreadPark,jdk.SocketRead", "/tmp/week7.jfr"]
+    with subprocess.Popen(command, cwd=ROOT, text=True, stdout=subprocess.PIPE, encoding="utf-8", errors="replace") as process:
+        event_type, frames, reading_stack = None, [], False
+        for line in process.stdout:
+            line = line.strip()
+            if line.startswith("jdk.") and line.endswith(" {"):
+                event_type, frames = line.split()[0], []
+            elif line == "stackTrace = [":
+                reading_stack = True
+            elif reading_stack and line == "]":
+                reading_stack = False
+            elif reading_stack and "(" in line:
+                frames.append(line.split("(", 1)[0])
+            elif line == "}" and event_type:
+                stacks[(event_type, tuple(frames))] += 1
+                event_type = None
+        if process.wait():
+            raise RuntimeError("JFR text export failed")
+    compact = [{"event": k[0], "stack": list(k[1]), "samples": v} for k, v in stacks.most_common(50)]
+    (RESULTS / f"{run_id}-profile.json").write_text(json.dumps(compact, indent=2))
+
+
 def measure(args):
+    if (RESULTS / f"{args.run_id}.json").exists():
+        raise ValueError("Run ID already exists; choose a new ID to preserve all results")
     if not args.no_reset:
         reset(args)
     if args.scenario != "W" and not args.no_warmup:
@@ -125,30 +167,42 @@ def measure(args):
         compose("exec", "-T", "backend", "jcmd", "1", "JFR.start", "name=week7", "settings=profile", "filename=/tmp/week7.jfr")
     outcome = compose(*command, "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
     end = time.time()
-    if args.jfr:
-        compose("exec", "-T", "backend", "jcmd", "1", "JFR.stop", "name=week7")
-        compose("cp", "backend:/tmp/week7.jfr", str(RESULTS / f"{args.run_id}.jfr"))
-        profile = compose("exec", "-T", "backend", "jfr", "summary", "/tmp/week7.jfr", capture=True)
-        (RESULTS / f"{args.run_id}-jfr-summary.txt").write_text(profile.stdout)
-        profile = compose("exec", "-T", "backend", "jfr", "print", "--json", "--events",
-                          "jdk.ExecutionSample,jdk.JavaMonitorEnter,jdk.ThreadPark,jdk.SocketRead", "/tmp/week7.jfr", capture=True)
-        raw = json.loads(profile.stdout)
-        from collections import Counter
-        stacks = Counter()
-        for event in raw.get("recording", {}).get("events", []):
-            frames = (event.get("values", {}).get("stackTrace") or {}).get("frames", [])
-            signature = tuple(frame.get("method", {}).get("type", {}).get("name", "") + "." +
-                              frame.get("method", {}).get("name", "") for frame in frames[:8])
-            stacks[(event.get("type"), signature)] += 1
-        compact = [{"event": k[0], "stack": list(k[1]), "samples": v} for k, v in stacks.most_common(50)]
-        (RESULTS / f"{args.run_id}-profile.json").write_text(json.dumps(compact, indent=2))
-    collect(args.run_id, start, end, parameters)
-    tool("top-queries", "--output", f"{args.run_id}-queries.json")
-    verified = tool("verify", "--drain", str(args.drain), "--output", f"{args.run_id}-verify.json", check=False)
-    run_result = {"scenario": args.scenario, "k6_exit": outcome.returncode, "verification_exit": verified.returncode,
-                  "start": start, "end": end, "parameters": parameters}
+    collection_error = None
+    try:
+        if args.jfr:
+            export_profile(args.run_id)
+        collect(args.run_id, start, end, parameters)
+        tool("top-queries", "--output", f"{args.run_id}-queries.json")
+    except Exception as error:
+        collection_error = str(error)
+        print("Telemetry collection failed; correctness verification still runs")
+    verification_error = None
+    try:
+        verified = tool("verify", "--drain", str(args.drain), "--output", f"{args.run_id}-verify.json", check=False)
+        verification_exit = verified.returncode
+    except Exception as error:
+        verification_error = str(error)
+        verification_exit = 1
+        print("Correctness verification could not run; the run is invalid")
+    recovery = {"start": end, "end": time.time(), "series": {}}
+    for name, query in {
+        "hikari_pending": "hikaricp_connections_pending",
+        "heap": 'sum(jvm_memory_used_bytes{area="heap"})',
+        "outbox_pending": "outbox_pending_count",
+        "backend_up": 'up{job="backend"}',
+        "redis_memory": "redis_memory_used_bytes",
+    }.items():
+        encoded = urllib.parse.urlencode({"query": query, "start": end, "end": recovery["end"], "step": 5})
+        try:
+            recovery["series"][name] = request_json("http://127.0.0.1:29097/api/v1/query_range?" + encoded)
+        except Exception as error:
+            recovery["series"][name] = {"error": str(error)}
+    (RESULTS / f"{args.run_id}-recovery.json").write_text(json.dumps(recovery, indent=2))
+    run_result = {"scenario": args.scenario, "k6_exit": outcome.returncode, "verification_exit": verification_exit,
+                  "verification_error": verification_error, "start": start, "end": end, "parameters": parameters,
+                  "collection_error": collection_error}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
-    return outcome.returncode or verified.returncode
+    return outcome.returncode or verification_exit or int(collection_error is not None)
 
 
 def environment():

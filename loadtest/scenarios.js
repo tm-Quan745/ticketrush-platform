@@ -13,6 +13,10 @@ const arrivals = Number(__ENV.SPIKE_USERS || 5000);
 const vus = { preAllocatedVUs: Number(__ENV.PRE_VUS || 200), maxVUs: Number(__ENV.MAX_VUS || 1000) };
 const rate = Number(__ENV.RATE || (scenario === 'B' ? 50 : 5));
 const duration = __ENV.DURATION || (scenario === 'G' ? '20m' : '60s');
+const stressRates = (__ENV.STRESS_RATES || '10,25,50,100,200').split(',').map(Number);
+const stressPlateau = __ENV.STEP_DURATION || '29s';
+if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
+const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
 const completed = new Counter('purchases_paid');
 const arrivalsStarted = new Counter('arrivals_started');
@@ -28,8 +32,8 @@ const plans = {
   B: { browse: steady('browse', rate, duration) },
   C: { spike }, D: { spike, browse: steady('browse', Number(__ENV.BROWSE_RATE || 50), `${window + 30}s`) },
   E: { stress: { executor: 'ramping-arrival-rate', exec: 'purchase', startRate: 1, timeUnit: '1s', ...vus,
-    stages: (__ENV.STRESS_RATES || '10,25,50,100,200').split(',').flatMap(value => [
-      { duration: '1s', target: Number(value) }, { duration: __ENV.STEP_DURATION || '29s', target: Number(value) }
+    stages: stressRates.flatMap(value => [
+      { duration: '1s', target: value }, { duration: stressPlateau, target: value }
     ]).concat([{ duration: '1s', target: 2 }, { duration: '60s', target: 2 }]), gracefulStop: '90s' } },
   F: { auth: steady('login', Number(__ENV.RATE || 10), duration) },
   G: { soak: steady('purchase', rate, duration), browse: steady('browse', Number(__ENV.BROWSE_RATE || 5), duration) },
@@ -58,6 +62,12 @@ export const options = {
     ...(scenario === 'F' ? { 'http_req_duration{name:POST /api/v1/auth/login}': ['p(95)<2000', 'p(99)<3000'] } : {}),
     ...(scenario === 'A' ? { purchases_paid: ['count>=60'] } : {}),
     ...(['C', 'D', 'H'].includes(scenario) ? { arrivals_started: [`count==${arrivals}`] } : {}),
+    ...(scenario === 'E' ? Object.fromEntries(stressRates.map(r => `stage-${r}`).concat(['recovery']).flatMap(phase => [
+      [`http_req_failed{phase:${phase}}`, ['rate>=0']],
+      [`http_req_duration{phase:${phase}}`, ['p(95)>=0']],
+      [`purchases_paid{phase:${phase}}`, ['count>=0']],
+      [`business_failures{phase:${phase}}`, ['count>=0']],
+    ])) : {}),
   },
 };
 
@@ -68,6 +78,11 @@ function business(ok, label) {
 }
 
 export function purchase() {
+  if (scenario === 'E') {
+    const phase = Math.floor((Date.now() - exec.scenario.startTime) / (stressPhaseSeconds * 1000));
+    // Phase describes the arrival cohort, including its later polling requests.
+    exec.vu.metrics.tags.phase = phase < stressRates.length ? `stage-${stressRates[phase]}` : 'recovery';
+  }
   const index = exec.scenario.iterationInTest + (scenario === 'W' ? Math.max(0, users.length - 1000) : 0);
   // k6 may schedule an iteration at the duration boundary. Cap the business cohort, not the offered rate.
   if (['C', 'D', 'H'].includes(scenario) && index >= arrivals) return;

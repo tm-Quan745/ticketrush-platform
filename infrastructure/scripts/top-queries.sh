@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -eu
 cd "$(dirname "$0")/../.."
-exec python3 infrastructure/scripts/loadtest.py queries "$@"
+exec python3 infrastructure/scripts/loadtest.py queries --top "${1:-10}"
