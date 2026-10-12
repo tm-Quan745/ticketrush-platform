@@ -1,6 +1,29 @@
 {
   "runs": [
     {
+      "run": "auth-1",
+      "scenario": "F",
+      "k6_exit": 0,
+      "verification_passed": true,
+      "arrivals": null,
+      "requests": 601,
+      "rps": 10.015673988512336,
+      "failed_rate": 0,
+      "dropped": 0,
+      "client_paid": 0,
+      "sold_out": 0,
+      "browse_ok": 0,
+      "browse_limited": 0,
+      "login_ok": 22,
+      "login_limited": 579,
+      "reserve_p95_ms": null,
+      "reserve_p99_ms": null,
+      "order_p95_ms": null,
+      "order_p99_ms": null,
+      "oversold": 0,
+      "pending_outbox": 0
+    },
+    {
       "run": "baseline-B-1",
       "scenario": "B",
       "k6_exit": 0,

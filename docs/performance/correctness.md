@@ -4,6 +4,7 @@ Counts include the separate warm-up event. Redis reports mismatched tiers before
 
 | Run | Tiers | Sold / oversold | Orders / keys / effects | Paid without tickets / confirmed without paid | Outbox pending / failed | Paid / exactly one email | Redis before / after | Overdue orders / holds | Result |
 | --- | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
+| [auth-1](results/auth-1-verify.json) | 205 | 301 / 0 | 121 / 121 / 121 | 0 / 0 | 0 / 0 | 121 / 121 | 205 / 0 | 0 / 0 | PASS |
 | [baseline-B-1](results/baseline-B-1-verify.json) | 205 | 300 / 0 | 120 / 120 / 120 | 0 / 0 | 480 / 0 | 120 / 0 | 205 / 0 | 0 / 0 | FAIL |
 | [baseline-B-2](results/baseline-B-2-verify.json) | 205 | 301 / 0 | 121 / 121 / 121 | 0 / 0 | 484 / 0 | 121 / 0 | 205 / 0 | 0 / 0 | FAIL |
 | [baseline-B-3](results/baseline-B-3-verify.json) | 205 | 301 / 0 | 121 / 121 / 121 | 0 / 0 | 484 / 0 | 121 / 0 | 205 / 0 | 0 / 0 | FAIL |

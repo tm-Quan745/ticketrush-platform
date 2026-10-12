@@ -132,3 +132,15 @@ reconciled from 205 mismatches to zero. Artifacts include the [k6 summary](resul
 [verifier output](results/stress-1-verify.json), [telemetry](results/stress-1-telemetry.json),
 [top PostgreSQL queries](results/stress-1-queries.json), and the bounded-text
 [JFR summary](results/stress-1-jfr-summary.txt).
+
+## Authentication F: IP limiter is visible and correct
+
+Artifact prefix: `auth-1`. The measured phase made 601 login requests at 10 requests/s after
+the normal purchase warm-up. k6 passed: no dropped iterations, no unexpected HTTP response,
+no 5xx, login p95 18.327595 ms and p99 262.536363 ms. From the single load-generator IP,
+22 requests succeeded and 579 were explicitly rate-limited. Therefore this run demonstrates
+the configured IP limiter rather than an authentication throughput capacity of 10 requests/s.
+
+The verifier passed after drain: no inventory, ticket, idempotency, outbox, email, expiry or
+Redis-reconciliation violation. The 121 warm-up paid orders each have exactly one confirmation.
+See [k6](results/auth-1.json) and [verifier](results/auth-1-verify.json).

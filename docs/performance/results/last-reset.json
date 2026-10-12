@@ -1,5 +1,5 @@
 {
-  "redis_keys_deleted": 0,
+  "redis_keys_deleted": 615,
   "queues_purged": [
     "notification.email",
     "notification.email.dlq",

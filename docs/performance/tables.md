@@ -4,6 +4,7 @@ Source: individual JSON summaries; latency is milliseconds.
 
 | Run | HTTP requests | Avg RPS | Failed rate | Dropped | Reserve p95 / p99 | Order p95 / p99 | k6 / verifier |
 | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
+| [auth-1](results/auth-1.json) | 601 | 10.015673988512336 | 0 | 0 | N/A / N/A | N/A / N/A | PASS / PASS |
 | [baseline-B-1](results/baseline-B-1.json) | 3000 | 50.00118005368321 | 0 | 0 | N/A / N/A | N/A / N/A | PASS / FAIL |
 | [baseline-B-2](results/baseline-B-2.json) | 3001 | 50.01633829940246 | 0 | 0 | N/A / N/A | N/A / N/A | PASS / FAIL |
 | [baseline-B-3](results/baseline-B-3.json) | 3001 | 50.015744517215445 | 0 | 0 | N/A / N/A | N/A / N/A | PASS / FAIL |
