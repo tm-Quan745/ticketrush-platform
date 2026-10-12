@@ -66,6 +66,13 @@ def reset(args):
     compose("up", "-d", "--wait", "--wait-timeout", "180", "backend")
 
 
+def source_status():
+    tracked = run(["git", "status", "--porcelain", "--untracked-files=no"], capture=True).stdout
+    untracked = run(["git", "status", "--porcelain", "--untracked-files=all"], capture=True).stdout.splitlines()
+    return {"working_tree_clean": not bool(tracked), "tracked_status": tracked.splitlines(),
+            "untracked_files": [line[3:] for line in untracked if line.startswith("?? ")]}
+
+
 def backend_provenance(args):
     inspected = json.loads(run(["docker", "inspect", "ticketrush-week7-backend-1"], capture=True).stdout)[0]
     selected = args.backend_image or os.environ.get("BACKEND_IMAGE")
@@ -80,7 +87,9 @@ def backend_provenance(args):
             "backend_image_id": inspected["Image"],
             "image_revision_label": revision,
             "run_id": args.run_id, "utc_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "working_tree_clean": not bool(run(["git", "status", "--porcelain", "--untracked-files=no"], capture=True).stdout)}
+            **source_status(),
+            "hikari_connection_timeout_ms": 30000,
+            "k6_vus": {"preAllocatedVUs": int(os.environ.get("PRE_VUS", "200")), "maxVUs": int(os.environ.get("MAX_VUS", "1000"))}}
 
 
 def request_json(url):
@@ -88,7 +97,7 @@ def request_json(url):
         return json.load(response)
 
 
-def collect(run_id, start, end, params):
+def collect(run_id, start, end, params, source):
     queries = {
         "request_rate": 'sum(rate(http_server_requests_seconds_count[15s]))',
         "k6_request_rate": 'sum(rate(k6_http_reqs_total[15s]))',
@@ -101,6 +110,7 @@ def collect(run_id, start, end, params):
         "redis_memory": 'redis_memory_used_bytes', "redis_latency": 'lettuce_command_completion_seconds_max',
         "container_memory": 'container_memory_working_set_bytes{image!=""}',
         "container_cpu": 'sum by(name)(rate(container_cpu_usage_seconds_total{image!=""}[15s]))',
+        "backend_container_cpu_cores": 'sum(rate(container_cpu_usage_seconds_total{name=~".*backend.*"}[15s]))',
         "error_rate": 'sum(rate(http_server_requests_seconds_count{status=~"5.."}[15s]))',
         "reservation_results": 'reservation_attempts_total',
         "waiting_size": 'waiting_room_size', "paid": 'ticketrush_funnel_orders_paid',
@@ -123,10 +133,12 @@ def collect(run_id, start, end, params):
             result["series"][name] = {"error": str(error)}
     result["targets"] = request_json("http://127.0.0.1:29097/api/v1/targets")
     # No credentials, container environment, raw headers or user files are included in artifacts.
-    result["git_sha"] = run(["git", "rev-parse", "HEAD"], capture=True).stdout.strip()
+    result["git_sha"] = source["commit_sha"]
     diff = run(["git", "diff", "--binary"], capture=True).stdout
     result["tracked_diff_sha256"] = hashlib.sha256(diff.encode()).hexdigest()
-    result["working_tree_dirty"] = bool(run(["git", "status", "--porcelain"], capture=True).stdout)
+    result["working_tree_dirty"] = not source["working_tree_clean"]
+    result["source_status"] = source
+    result["metric_units"] = {"process_cpu_usage": "CPU cores", "jvm_gc_pause_seconds_max": "seconds"}
     (RESULTS / f"{run_id}-telemetry.json").write_text(json.dumps(result, indent=2))
 
 
@@ -190,7 +202,7 @@ def measure(args):
     try:
         if args.jfr:
             export_profile(args.run_id)
-        collect(args.run_id, start, end, parameters)
+        collect(args.run_id, start, end, parameters, provenance)
         tool("top-queries", "--output", f"{args.run_id}-queries.json")
     except Exception as error:
         collection_error = str(error)
