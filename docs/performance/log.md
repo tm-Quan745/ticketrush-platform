@@ -159,3 +159,20 @@ orders with exactly one SENT confirmation; no overdue orders or holds; and Redis
 laptop VM, not a production capacity claim. See [k6](results/soak-1.json),
 [verifier](results/soak-1-verify.json), [telemetry](results/soak-1-telemetry.json), and
 [PostgreSQL queries](results/soak-1-queries.json).
+
+## Iteration 2: make the hot tier update the final write
+
+Hypothesis: the reservation transaction held the contended `ticket_tiers` row while it inserted
+the reservation and `reservation.created` outbox event. The statement order was validation,
+expired-hold release, duplicate check, conditional tier UPDATE, reservation INSERT, outbox INSERT,
+commit. `7eef8a6` changes only this order: reservation INSERT, outbox INSERT, conditional tier
+UPDATE, commit. If the UPDATE affects zero rows, the transaction rolls back all earlier writes.
+
+Three `final-C-*` runs used the same 5,000-user Scenario C and verified every invariant after
+drain. Median HTTP throughput rose from 125.3 to 467.6 requests/s and median HTTP failed rate
+fell from 97.6% to 0.08%. Median reserve p95 fell from 5,001.0 to 3,725.7 ms and order p95 from
+5,058.1 to 3,028.4 ms. However, the generator began only 913 arrivals and dropped 4,087, versus
+the baseline median 3,071 started and 1,929 dropped. Every run still failed k6 thresholds, so
+this is not a capacity improvement claim. It is a measured reduction in request failures and
+latency while correctness remained intact. Raw artifacts: [C-1](results/final-C-1.json),
+[C-2](results/final-C-2.json), [C-3](results/final-C-3.json), and their verifier reports.

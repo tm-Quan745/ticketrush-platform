@@ -15,6 +15,9 @@ Counts include the separate warm-up event. Redis reports mismatched tiers before
 | [baseline-D-2](results/baseline-D-2-verify.json) | 205 | 312 / 0 | 139 / 139 / 139 | 0 / 0 | 4758 / 0 | 124 / 0 | 205 / 0 | 0 / 0 | FAIL |
 | [baseline-D-3](results/baseline-D-3-verify.json) | 205 | 309 / 0 | 142 / 142 / 142 | 0 / 0 | 4698 / 0 | 124 / 0 | 205 / 0 | 0 / 0 | FAIL |
 | [broken-guard](results/broken-guard-verify.json) | 205 | 2705 / 2605 | 1124 / 1124 / 1124 | 0 / 0 | 0 / 0 | 1058 / 1058 | 205 / 0 | 0 / 0 | FAIL |
+| [final-C-1](results/final-C-1-verify.json) | 205 | 1941 / 0 | 806 / 806 / 806 | 0 / 0 | 0 / 0 | 763 / 763 | 205 / 0 | 0 / 0 | PASS |
+| [final-C-2](results/final-C-2-verify.json) | 205 | 2267 / 0 | 937 / 937 / 937 | 0 / 0 | 0 / 0 | 889 / 889 | 205 / 0 | 0 / 0 | PASS |
+| [final-C-3](results/final-C-3-verify.json) | 205 | 2394 / 0 | 989 / 989 / 989 | 0 / 0 | 0 / 0 | 938 / 938 | 205 / 0 | 0 / 0 | PASS |
 | [iteration1-C-1](results/iteration1-C-1-verify.json) | 205 | 327 / 0 | 174 / 174 / 174 | 0 / 0 | 3396 / 0 | 130 / 0 | 205 / 0 | 0 / 0 | FAIL |
 | [iteration1-C-2](results/iteration1-C-2-verify.json) | 205 | 2386 / 0 | 985 / 985 / 985 | 0 / 0 | 4142 / 0 | 936 / 0 | 205 / 0 | 0 / 0 | FAIL |
 | [post-outbox-smoke](results/post-outbox-smoke-verify.json) | 205 | 451 / 0 | 181 / 181 / 181 | 0 / 0 | 0 / 0 | 181 / 181 | 205 / 0 | 0 / 0 | PASS |

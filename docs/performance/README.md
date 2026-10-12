@@ -24,6 +24,20 @@ drain it retained zero oversell, no pending/failed outbox events and exactly one
 for each paid order. Read this as a one-run sustained-load observation; the
 [summary](results/soak-1.json) and [verifier](results/soak-1-verify.json) retain the evidence.
 
+| Scenario C median, three runs | Baseline | Hot-row-final-write iteration |
+| --- | ---: | ---: |
+| HTTP RPS | 125.3 | 467.6 |
+| HTTP failed rate | 97.6% | 0.08% |
+| Started arrivals | 3,071 | 913 |
+| Dropped iterations | 1,929 | 4,087 |
+| Reserve p95 | 5,001.0 ms | 3,725.7 ms |
+| Order p95 | 5,058.1 ms | 3,028.4 ms |
+| Verifier after drain | failed | passed (3/3) |
+
+The final-write experiment improved response failures and latency but started far fewer arrivals
+and dropped more work. It therefore fails the configured spike objective and is not a capacity
+claim. The transaction and raw run artifacts are recorded in the [experiment log](log.md).
+
 Baseline B's approximately 50 requests/s includes rate-limited responses from a shared
 load-generator IP. Inspect `browse_ok` and `browse_limited` in [aggregate.json](results/aggregate.json)
 before interpreting browse throughput. The existing limiter remains enabled.
