@@ -3,6 +3,6 @@
   "admins": 1,
   "events": 203,
   "tiers": 205,
-  "hot_capacity": 5000,
+  "hot_capacity": 100000,
   "waiting": false
 }

@@ -111,3 +111,24 @@ uses HOT capacity 100. The verifier failed `1_inventory_conservation` with one v
 required. The `finally` path reset the isolated data and restored the CHECK; a transient Docker
 Desktop 500 occurred during final Compose inspection, so the runner now retries that healthcheck.
 The backend was confirmed back on the normal image and a subsequent reset/reseed completed.
+
+## Stress E: correctness survives, latency objective does not
+
+Artifact prefix: `stress-1`. Source: the normal image after the outbox routing repair.
+The HOT capacity was raised to 100,000 so sell-out did not set the limit. The five offered
+stages were 10, 25, 50, 100 and 200 iterations/s, followed by a two-iterations/s recovery.
+
+The run started 7,022 arrivals and paid 4,608 purchases, but k6 dropped 4,649 arrivals and
+failed its latency/error thresholds (`reservation` p95 5,000.321385 ms; `order` p95
+2,842.434966399996 ms; overall HTTP failed rate 0.02486715576889117). It is therefore a
+failed performance result, not a capacity claim. The recovery-stage request p95 was
+185.18293369999995 ms, which is evidence that the service recovered after offered load fell;
+it does not erase the failure at the high stages.
+
+The post-drain verifier passed every invariant: 205 tiers, 13,683 sold tickets with zero
+oversell, 5,685 orders and distinct idempotency effects, 25,656 published outbox events,
+5,357 paid orders with exactly one SENT confirmation each, no overdue holds, and Redis drift
+reconciled from 205 mismatches to zero. Artifacts include the [k6 summary](results/stress-1.json),
+[verifier output](results/stress-1-verify.json), [telemetry](results/stress-1-telemetry.json),
+[top PostgreSQL queries](results/stress-1-queries.json), and the bounded-text
+[JFR summary](results/stress-1-jfr-summary.txt).

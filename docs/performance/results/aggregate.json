@@ -321,6 +321,29 @@
       "order_p99_ms": 461.6824966200019,
       "oversold": 0,
       "pending_outbox": 728
+    },
+    {
+      "run": "stress-1",
+      "scenario": "E",
+      "k6_exit": 99,
+      "verification_passed": true,
+      "arrivals": 7022,
+      "requests": 62291,
+      "rps": 294.11786548629243,
+      "failed_rate": 0.02486715576889117,
+      "dropped": 4649,
+      "client_paid": 4608,
+      "sold_out": 0,
+      "browse_ok": 0,
+      "browse_limited": 0,
+      "login_ok": 0,
+      "login_limited": 0,
+      "reserve_p95_ms": 5000.321385,
+      "reserve_p99_ms": 5369.911752099999,
+      "order_p95_ms": 2842.434966399996,
+      "order_p99_ms": 5000.282171780001,
+      "oversold": 0,
+      "pending_outbox": 0
     }
   ],
   "repetitions": {

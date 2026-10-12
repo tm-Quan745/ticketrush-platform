@@ -10,6 +10,14 @@ All nine B/C/D repetitions and their ranges are in the [generated tables](tables
 with individual [k6](results/baseline-C-1.json) and [verifier](results/baseline-C-3-verify.json)
 artifacts. Optimization measurements remain in progress.
 
+The subsequent stress run `stress-1` preserved every checked invariant after drain, including
+zero oversell, zero pending outbox records and exactly one sent confirmation for each of 5,357
+paid orders. It still failed performance thresholds: 4,649 dropped arrivals, 2.4867% failed
+HTTP requests, reserve p95 5,000.32 ms and order p95 2,842.43 ms. Its low-load recovery p95
+was 185.18 ms. This measures an overload knee and recovery behavior, not sustainable capacity;
+the [summary](results/stress-1.json), [verifier](results/stress-1-verify.json), and
+[JFR summary](results/stress-1-jfr-summary.txt) are retained.
+
 Baseline B's approximately 50 requests/s includes rate-limited responses from a shared
 load-generator IP. Inspect `browse_ok` and `browse_limited` in [aggregate.json](results/aggregate.json)
 before interpreting browse throughput. The existing limiter remains enabled.

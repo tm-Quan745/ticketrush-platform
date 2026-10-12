@@ -18,6 +18,7 @@ Source: individual JSON summaries; latency is milliseconds.
 | [iteration1-C-2](results/iteration1-C-2.json) | 24614 | 462.500302587591 | 0.00016250914113918907 | 4034 | 3345.33220069999 / 4056.1976772000025 | 3258.9506611999986 / 4111.339954160001 | FAIL / FAIL |
 | [post-outbox-smoke](results/post-outbox-smoke.json) | 251 | 4.111000836412667 | 0 | 0 | 41.144074 / 58.5755374 | 25.0311712 / 39.90983115 | PASS / PASS |
 | [smoke-initial](results/smoke-initial.json) | 249 | 4.073932793732724 | 0 | 0 | 64.713356 / 82.12197379999999 | 129.02593614999995 / 461.6824966200019 | FAIL / FAIL |
+| [stress-1](results/stress-1.json) | 62291 | 294.11786548629243 | 0.02486715576889117 | 4649 | 5000.321385 / 5369.911752099999 | 2842.434966399996 / 5000.282171780001 | FAIL / PASS |
 
 ## Repetitions
 
