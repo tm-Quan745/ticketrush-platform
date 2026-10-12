@@ -6,4 +6,5 @@
 *.log
 loadtest/.data/
 **/__pycache__/
+.worktrees/
 docs/performance/results/*.jfr

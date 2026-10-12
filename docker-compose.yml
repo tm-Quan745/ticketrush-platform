@@ -61,6 +61,7 @@ services:
       retries: 20
 
   backend:
+    image: ${BACKEND_IMAGE:-ticketrush-week7-backend}
     build: ./backend
     environment:
       METRICS_PASSWORD: ${METRICS_PASSWORD:-}

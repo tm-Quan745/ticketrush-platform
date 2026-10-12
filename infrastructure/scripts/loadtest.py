@@ -66,6 +66,23 @@ def reset(args):
     compose("up", "-d", "--wait", "--wait-timeout", "180", "backend")
 
 
+def backend_provenance(args):
+    inspected = json.loads(run(["docker", "inspect", "ticketrush-week7-backend-1"], capture=True).stdout)[0]
+    selected = args.backend_image or os.environ.get("BACKEND_IMAGE")
+    if selected and inspected["Image"] != selected:
+        raise RuntimeError(f"Backend image mismatch: selected {selected}, running {inspected['Image']}")
+    image = json.loads(run(["docker", "image", "inspect", inspected["Image"]], capture=True).stdout)[0]
+    commit = args.backend_commit or run(["git", "rev-parse", "HEAD"], capture=True).stdout.strip()
+    revision = image.get("Config", {}).get("Labels", {}).get("org.opencontainers.image.revision")
+    if revision != commit:
+        raise RuntimeError(f"Backend revision mismatch: expected {commit}, image label is {revision}")
+    return {"commit_sha": commit,
+            "backend_image_id": inspected["Image"],
+            "image_revision_label": revision,
+            "run_id": args.run_id, "utc_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "working_tree_clean": not bool(run(["git", "status", "--porcelain", "--untracked-files=no"], capture=True).stdout)}
+
+
 def request_json(url):
     with urllib.request.urlopen(url, timeout=20) as response:
         return json.load(response)
@@ -149,6 +166,8 @@ def measure(args):
         raise ValueError("Run ID already exists; choose a new ID to preserve all results")
     if not args.no_reset:
         reset(args)
+    provenance = backend_provenance(args)
+    (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
     if args.scenario != "W" and not args.no_warmup:
         warm_id = args.run_id + "-warmup"
         warm = compose("run", "--rm", "-T", "-e", "SCENARIO=W", "-e", f"RUN_ID={warm_id}",
@@ -236,7 +255,11 @@ def main():
     p.add_argument("--jfr", action="store_true")
     p.add_argument("--drain", type=int, default=180)
     p.add_argument("--top", type=int, default=10)
+    p.add_argument("--backend-image")
+    p.add_argument("--backend-commit")
     args = p.parse_args()
+    if args.backend_image:
+        os.environ["BACKEND_IMAGE"] = args.backend_image
     args.run_id = args.run_id or args.scenario + "-" + time.strftime("%Y%m%d-%H%M%S", time.gmtime())
     if not all(c.isalnum() or c in "-_" for c in args.run_id):
         p.error("run-id must contain only letters, digits, hyphen or underscore")
