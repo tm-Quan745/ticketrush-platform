@@ -144,3 +144,18 @@ the configured IP limiter rather than an authentication throughput capacity of 1
 The verifier passed after drain: no inventory, ticket, idempotency, outbox, email, expiry or
 Redis-reconciliation violation. The 121 warm-up paid orders each have exactly one confirmation.
 See [k6](results/auth-1.json) and [verifier](results/auth-1-verify.json).
+
+## Soak G: sustained workload passes on this host
+
+Artifact prefix: `soak-1`. The 20-minute run combined 5 purchase and 5 browse workflows per
+second after warm-up. k6 passed with 28,913 HTTP requests (24.07581444169738 RPS), zero dropped
+iterations, zero unexpected HTTP responses/5xx, reserve p95 33.655018 ms and order p95
+45.884544949999984 ms. It paid 5,083 purchases from the measured workload.
+
+The verifier passed: 13,291 sold tickets with zero oversell; 5,520 orders, successful keys and
+distinct effects; 23,282 published outbox events with no pending or failed row; 5,203 paid
+orders with exactly one SENT confirmation; no overdue orders or holds; and Redis reconciled
+205 mismatched tier keys to zero. This is a single-run sustained-load observation on the shared
+laptop VM, not a production capacity claim. See [k6](results/soak-1.json),
+[verifier](results/soak-1-verify.json), [telemetry](results/soak-1-telemetry.json), and
+[PostgreSQL queries](results/soak-1-queries.json).

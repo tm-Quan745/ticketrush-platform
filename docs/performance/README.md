@@ -18,6 +18,12 @@ was 185.18 ms. This measures an overload knee and recovery behavior, not sustain
 the [summary](results/stress-1.json), [verifier](results/stress-1-verify.json), and
 [JFR summary](results/stress-1-jfr-summary.txt) are retained.
 
+The 20-minute `soak-1` workload passed on this shared laptop VM: 24.08 HTTP RPS, zero dropped
+iterations, zero unexpected responses/5xx, reserve p95 33.66 ms and order p95 45.88 ms. After
+drain it retained zero oversell, no pending/failed outbox events and exactly one confirmation
+for each paid order. Read this as a one-run sustained-load observation; the
+[summary](results/soak-1.json) and [verifier](results/soak-1-verify.json) retain the evidence.
+
 Baseline B's approximately 50 requests/s includes rate-limited responses from a shared
 load-generator IP. Inspect `browse_ok` and `browse_limited` in [aggregate.json](results/aggregate.json)
 before interpreting browse throughput. The existing limiter remains enabled.
