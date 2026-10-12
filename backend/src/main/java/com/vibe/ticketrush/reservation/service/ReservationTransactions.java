@@ -39,12 +39,14 @@ public class ReservationTransactions {
         em.clear();
         for (var old: reservations.expiredForUser(user,now)) expire(old,now);
         if (reservations.existsByUserIdAndTierIdAndStatus(user,tier,ReservationStatus.HELD)) throw duplicate();
-        strategy.take(tier,quantity);
         Reservation r=new Reservation(); r.setId(UUID.randomUUID()); r.setUserId(user); r.setTierId(tier);
         r.setQuantity(quantity); r.setStatus(ReservationStatus.HELD); r.setExpiresAt(now.plus(properties.holdDuration()));
         r.setCreatedAt(now); r.setUpdatedAt(now);
         reservations.saveAndFlush(r);
         outbox.publish("reservation.created","reservation",r.getId(),new EventPayloads.Reservation(r.getId(),r.getUserId()));
+        // Keep the contended tier row locked only for this final write and commit. A failed
+        // conditional update rolls back the reservation and its outbox event atomically.
+        strategy.take(tier,quantity);
         return view(r,now);
     }
     public View get(UUID user, UUID id) {
