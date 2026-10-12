@@ -176,3 +176,18 @@ the baseline median 3,071 started and 1,929 dropped. Every run still failed k6 t
 this is not a capacity improvement claim. It is a measured reduction in request failures and
 latency while correctness remained intact. Raw artifacts: [C-1](results/final-C-1.json),
 [C-2](results/final-C-2.json), [C-3](results/final-C-3.json), and their verifier reports.
+
+`pg_stat_statements` confirms the guarded UPDATE itself became shorter: baseline C-1 recorded
+1,302 calls at 64.085 ms mean, while final C-1/C-2/C-3 recorded 1,024/1,034/1,089 calls at
+11.210/15.909/9.807 ms mean. This is statement execution time, not a direct lock-duration
+measurement; PostgreSQL lock wait sampling is not enabled in these saved runs, so it must not
+be presented as exact lock-hold time.
+
+## Commit/fsync measurement
+
+The isolated PostgreSQL uses `fsync=on`, `synchronous_commit=on`, and `wal_sync_method=fdatasync`.
+`track_wal_io_timing` is off, so the database does not provide per-commit WAL timing. A one-second
+`pg_test_fsync` run inside the Docker VM measured `fdatasync` at 1.699 ms per 8 KiB write and
+1.670 ms per two-write test; see [raw output](results/commit-fsync.txt). This can contribute to
+the serial hot-row path, but it is materially smaller than the 3.0--5.1 s HTTP p95 values, so
+it does not by itself explain the spike timeouts.
