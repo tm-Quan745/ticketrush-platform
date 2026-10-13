@@ -15,6 +15,10 @@ const rate = Number(__ENV.RATE || (scenario === 'B' ? 50 : 5));
 const duration = __ENV.DURATION || (scenario === 'G' ? '20m' : '60s');
 const stressRates = (__ENV.STRESS_RATES || '10,25,50,100,200').split(',').map(Number);
 const stressPlateau = __ENV.STEP_DURATION || '29s';
+const paymentPollBaseMs = Number(__ENV.PAYMENT_POLL_BASE_MS || 1000);
+const paymentPollMaxMs = Number(__ENV.PAYMENT_POLL_MAX_MS || 2000);
+const paymentPollJitterMs = Number(__ENV.PAYMENT_POLL_JITTER_MS || 250);
+const paymentMaxPolls = Number(__ENV.PAYMENT_MAX_POLLS || 20);
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
 const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
@@ -98,7 +102,7 @@ export function purchase() {
       'POST /api/v1/events/{id}/waiting-room/join', null, user.token, {}, [200, 429]));
     const started = Date.now();
     while (state.state !== 'ADMITTED' && !state.soldOut && Date.now() - started < Number(__ENV.QUEUE_TIMEOUT_MS || 120000)) {
-      sleep(2);
+      sleep(Math.max(1, Number(state.pollIntervalSeconds || 1)) + Math.random() * 0.25);
       state = body(request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
         'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]));
     }
@@ -144,12 +148,12 @@ export function purchase() {
     business(body(replay).id === order.id, 'double click returns same order');
   }
   const expectedState = mode === 'FAILURE' ? 'PAYMENT_FAILED' : 'PAID';
-  const started = Date.now();
-  let status;
-  do {
-    sleep(0.5);
+  let status = 'PENDING_PAYMENT';
+  for (let poll = 0; poll < paymentMaxPolls && status === 'PENDING_PAYMENT'; poll++) {
+    const delayMs = Math.min(paymentPollMaxMs, paymentPollBaseMs * (2 ** Math.min(poll, 1)));
+    sleep((delayMs + Math.random() * paymentPollJitterMs) / 1000);
     status = body(request('GET', `/api/v1/orders/${order.id}`, 'GET /api/v1/orders/{id}', null, user.token)).status;
-  } while (status === 'PENDING_PAYMENT' && Date.now() - started < Number(__ENV.PAYMENT_POLL_MS || 30000));
+  }
   if (business(status === expectedState, 'payment reached expected state')) {
     outcomes.add(1, { result: expectedState.toLowerCase() });
     if (status === 'PAID') completed.add(1);

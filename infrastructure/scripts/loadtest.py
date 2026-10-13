@@ -104,6 +104,17 @@ def backend_provenance(args):
             "k6_vus": {"preAllocatedVUs": int(os.environ.get("PRE_VUS", "200")), "maxVUs": int(os.environ.get("MAX_VUS", "1000"))}}
 
 
+def k6_poll_parameters(args):
+    defaults = {"PAYMENT_POLL_BASE_MS": 1000, "PAYMENT_POLL_MAX_MS": 2000,
+                "PAYMENT_POLL_JITTER_MS": 250, "PAYMENT_MAX_POLLS": 20}
+    selected = dict(defaults)
+    for item in args.param:
+        name, separator, value = item.partition("=")
+        if name in selected and separator == "=" and value.isdecimal() and int(value) > 0:
+            selected[name] = int(value)
+    return selected
+
+
 def request_json(url):
     with urllib.request.urlopen(url, timeout=20) as response:
         return json.load(response)
@@ -231,6 +242,7 @@ def measure(args):
     if not args.no_reset:
         reset(args)
     provenance = backend_provenance(args)
+    provenance["k6_order_poll"] = k6_poll_parameters(args)
     (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
     if args.scenario != "W" and not args.no_warmup:
         warm_id = args.run_id + "-warmup"

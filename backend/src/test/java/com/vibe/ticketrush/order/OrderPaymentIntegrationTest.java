@@ -264,6 +264,16 @@ class OrderPaymentIntegrationTest {
         assertThat(create(other,expired,UUID.randomUUID()).statusCode()).isEqualTo(409);
         assertThat(jdbc.queryForObject("SELECT status FROM reservations WHERE id=?",String.class,expired)).isEqualTo("EXPIRED");invariant();
     }
+    @Test void getOrderReturnsPaymentAndItemsFromJoinedRead() throws Exception {
+        UUID order=order(user,2);
+        var response=request("GET","/api/v1/orders/"+order,null,token(user,"USER"),Map.of());
+        assertThat(response.statusCode()).isEqualTo(200);
+        JsonNode view=json.readTree(response.body());
+        assertThat(view.path("id").asText()).isEqualTo(order.toString());
+        assertThat(view.path("paymentReference").asText()).isEqualTo("mock_"+order);
+        assertThat(view.path("items")).hasSize(1);
+        assertThat(view.path("items").get(0).path("quantity").asInt()).isEqualTo(2);
+    }
     @Test void unknownEventsAndScenarioToken() throws Exception {
         String now=Long.toString(clock.instant().getEpochSecond());
         assertThat(signed("{}",now,false).statusCode()).isEqualTo(400);

@@ -140,6 +140,8 @@ ticketrush:
     batch-size: ${RESERVATION_BATCH_SIZE:100}
     optimistic-attempts: ${RESERVATION_OPTIMISTIC_ATTEMPTS:20}
     expiry-enabled: ${RESERVATION_EXPIRY_ENABLED:true}
+  order:
+    joined-status-read: ${ORDER_STATUS_JOINED_READ:true}
   outbox:
     relay-interval: ${OUTBOX_RELAY_INTERVAL:1s}
     batch-size: ${OUTBOX_BATCH_SIZE:100}

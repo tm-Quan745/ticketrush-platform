@@ -15,6 +15,7 @@ public class OrderRepository {
     private final JdbcTemplate jdbc;
     public OrderRepository(JdbcTemplate jdbc) { this.jdbc=jdbc; }
     public record Row(UUID id,UUID userId,UUID reservationId,OrderStatus status,long total,String currency,Instant deadline,boolean review) {}
+    public record OwnedView(UUID userId,View view) {}
     private Row row(ResultSet rs) throws SQLException {
         return new Row(rs.getObject("id",UUID.class),rs.getObject("user_id",UUID.class),rs.getObject("reservation_id",UUID.class),
             OrderStatus.valueOf(rs.getString("status")),rs.getLong("total_amount"),rs.getString("currency"),rs.getTimestamp("payment_deadline").toInstant(),rs.getBoolean("manual_review"));
@@ -22,6 +23,32 @@ public class OrderRepository {
     public Row get(UUID id) {
         return jdbc.query("SELECT * FROM orders WHERE id=?",(rs,n) -> row(rs),id).stream().findFirst()
             .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"ORDER_NOT_FOUND","Order not found"));
+    }
+    public OwnedView getView(UUID id) {
+        return jdbc.query("""
+            SELECT o.id AS order_id,o.user_id,o.reservation_id,o.status,o.total_amount,o.currency,o.payment_deadline,o.manual_review,
+                   p.provider_payment_id,i.tier_id,i.tier_name,i.unit_price,i.quantity
+            FROM orders o
+            JOIN payments p ON p.order_id=o.id
+            JOIN order_items i ON i.order_id=o.id
+            WHERE o.id=? ORDER BY i.id
+            """,rs -> {
+                if (!rs.next()) throw new ApiException(HttpStatus.NOT_FOUND,"ORDER_NOT_FOUND","Order not found");
+                UUID order=rs.getObject("order_id",UUID.class);
+                UUID user=rs.getObject("user_id",UUID.class);
+                UUID reservation=rs.getObject("reservation_id",UUID.class);
+                OrderStatus status=OrderStatus.valueOf(rs.getString("status"));
+                long total=rs.getLong("total_amount");
+                String currency=rs.getString("currency");
+                Instant deadline=rs.getTimestamp("payment_deadline").toInstant();
+                String reference=rs.getString("provider_payment_id");
+                boolean review=rs.getBoolean("manual_review");
+                List<Item> items=new ArrayList<>();
+                do {
+                    items.add(new Item(rs.getObject("tier_id",UUID.class),rs.getString("tier_name"),rs.getLong("unit_price"),rs.getInt("quantity")));
+                } while (rs.next());
+                return new OwnedView(user,new View(order,user,reservation,status,total,currency,deadline,reference,review,items));
+            },id);
     }
     public Row getByReservation(UUID reservation) {
         return jdbc.query("SELECT * FROM orders WHERE reservation_id=?",(rs,n) -> row(rs),reservation).stream().findFirst().orElse(null);
