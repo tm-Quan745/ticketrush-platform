@@ -98,6 +98,19 @@ def request_json(url):
         return json.load(response)
 
 
+def wal_snapshot():
+    query = "SELECT row_to_json(w) FROM (SELECT wal_records,wal_fpi,wal_bytes,wal_buffers_full,wal_write,wal_sync,wal_write_time,wal_sync_time FROM pg_stat_wal) w"
+    output = compose("exec", "-T", "postgres", "psql", "-U", "ticketrush", "-d", "ticketrush_loadtest", "-Atc", query, capture=True).stdout.strip()
+    return json.loads(output)
+
+
+def wal_delta(before, after):
+    result = {key: after[key] - before[key] for key in before}
+    result["avg_wal_sync_ms"] = result["wal_sync_time"] / result["wal_sync"] if result["wal_sync"] else None
+    result["avg_wal_write_ms"] = result["wal_write_time"] / result["wal_write"] if result["wal_write"] else None
+    return result
+
+
 class PgActivitySampler:
     query = """SELECT json_build_object('at',clock_timestamp(),'sessions',coalesce(json_agg(json_build_object(
       'state',state,'wait_event_type',wait_event_type,'wait_event',wait_event,
@@ -224,12 +237,16 @@ def measure(args):
         command.extend(["-e", param])
     if args.jfr:
         compose("exec", "-T", "backend", "jcmd", "1", "JFR.start", "name=week7", "settings=profile", "filename=/tmp/week7.jfr")
+    wal_before = wal_snapshot()
     sampler = PgActivitySampler(args.run_id); sampler.start()
     try:
         outcome = compose(*command, "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
     finally:
         sampler.finish()
     end = time.time()
+    wal_after = wal_snapshot()
+    (RESULTS / f"{args.run_id}-wal.json").write_text(json.dumps({"before": wal_before, "after": wal_after,
+        "delta": wal_delta(wal_before, wal_after)}, indent=2))
     collection_error = None
     try:
         if args.jfr:
@@ -301,9 +318,15 @@ def main():
     p.add_argument("--top", type=int, default=10)
     p.add_argument("--backend-image")
     p.add_argument("--backend-commit")
+    p.add_argument("--backend-env", action="append", default=[])
     args = p.parse_args()
     if args.backend_image:
         os.environ["BACKEND_IMAGE"] = args.backend_image
+    for item in args.backend_env:
+        key, separator, value = item.partition("=")
+        if separator != "=" or key != "HIKARI_MAX_POOL_SIZE" or not value.isdecimal() or int(value) < 1:
+            p.error("--backend-env only accepts HIKARI_MAX_POOL_SIZE=<positive integer>")
+        os.environ[key] = value
     args.run_id = args.run_id or args.scenario + "-" + time.strftime("%Y%m%d-%H%M%S", time.gmtime())
     if not all(c.isalnum() or c in "-_" for c in args.run_id):
         p.error("run-id must contain only letters, digits, hyphen or underscore")
