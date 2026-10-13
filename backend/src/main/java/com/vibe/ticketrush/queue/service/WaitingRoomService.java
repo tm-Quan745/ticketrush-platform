@@ -21,8 +21,9 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableConfigurationProperties(QueueProperties.class)
 public class WaitingRoomService implements ReservationAdmission {
-    public record Status(String state,long position,long estimatedWaitSeconds,int pollIntervalSeconds,
+    public record Status(String state,long position,long queueLength,long estimatedWaitSeconds,int pollIntervalSeconds,
                          boolean soldOut,String token,Instant expiresAt) {}
+    private record CachedSettings(WaitingRoomEvents.Settings event, boolean soldOut) {}
     private final StringRedisTemplate redis;
     private final RedisScript<String> script;
     private final RedisProperties keys;
@@ -65,17 +66,46 @@ public class WaitingRoomService implements ReservationAdmission {
         if (!event.enabled()) throw new ApiException(HttpStatus.CONFLICT,"WAITING_ROOM_DISABLED","Waiting room is disabled");
         return event;
     }
+    private String settingsKey(UUID event) { return keys.key("queue",event,"settings"); }
+    private CachedSettings cache(WaitingRoomEvents.Settings event,boolean soldOut) {
+        CachedSettings cached=new CachedSettings(event,soldOut);
+        try {
+            redis.opsForValue().set(settingsKey(event.id()),json.writeValueAsString(cached),Duration.ofDays(7));
+            return cached;
+        } catch (com.fasterxml.jackson.core.JsonProcessingException error) {
+            throw new IllegalStateException("Could not cache waiting room settings",error);
+        }
+    }
+    private CachedSettings cached(UUID event) {
+        String raw=guard.call("waiting-room",() -> redis.opsForValue().get(settingsKey(event)),() -> null);
+        if (raw==null) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_NOT_READY","Join the waiting room before polling status");
+        try {
+            CachedSettings cached=json.readValue(raw,CachedSettings.class);
+            if (!cached.event().enabled() || !cached.event().published())
+                throw new ApiException(HttpStatus.CONFLICT,"WAITING_ROOM_DISABLED","Waiting room is disabled");
+            return cached;
+        } catch (com.fasterxml.jackson.core.JsonProcessingException error) {
+            throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_UNAVAILABLE","Waiting room settings are unavailable");
+        }
+    }
     private boolean open(WaitingRoomEvents.Settings e) { return !clock.instant().isBefore(e.saleStart()) && clock.instant().isBefore(e.saleEnd()); }
     private boolean soldOut(UUID event) { return inventory.publicTiers(event).stream().noneMatch(t -> t.availability()!=Availability.SOLD_OUT); }
     public Status status(UUID eventId,UUID user,boolean join) {
-        var event=settings(eventId);
+        CachedSettings cached=join ? cache(settings(eventId),soldOut(eventId)) : cached(eventId);
+        var event=cached.event();
         var data=parse(execute(event,join ? "join":"status",user,open(event)));
         long position=data.path("position").asLong();
-        return new Status(data.path("state").asText(),position,(long)Math.ceil((double)position/event.rate())*Math.max(1,properties.interval().toSeconds()),
-            2,soldOut(eventId),data.path("token").isMissingNode() ? null:data.path("token").asText(),
+        long queueLength=data.path("queueLength").asLong(position);
+        int pollInterval=(int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,Math.ceil((double)queueLength/event.rate())));
+        return new Status(data.path("state").asText(),position,queueLength,(long)Math.ceil((double)position/event.rate())*Math.max(1,properties.interval().toSeconds()),
+            pollInterval,cached.soldOut(),data.path("token").isMissingNode() ? null:data.path("token").asText(),
             data.has("expiresAt") ? Instant.ofEpochMilli(data.path("expiresAt").asLong()):null);
     }
-    public void leave(UUID event,UUID user) { execute(settings(event),"leave",user,false); }
+    public void leave(UUID event,UUID user) { execute(cached(event).event(),"leave",user,false); }
+    public void refresh(UUID eventId) {
+        WaitingRoomEvents.Settings event=events.settings(eventId);
+        cache(event,soldOut(eventId));
+    }
     public void requireAdmission(UUID tier,UUID user,String token) {
         UUID eventId=inventory.eventId(tier);
         var event=events.settings(eventId);
@@ -86,7 +116,10 @@ public class WaitingRoomService implements ReservationAdmission {
     private ApiException denied(String code) { return new ApiException(HttpStatus.FORBIDDEN,code,"Valid admission for this user and event required"); }
     public int admit(UUID id) {
         var event=settings(id);
-        if (!open(event) || soldOut(id)) {
+        return admit(event,soldOut(id));
+    }
+    private int admit(WaitingRoomEvents.Settings event,boolean soldOut) {
+        if (!open(event) || soldOut) {
             // Liveness cleanup must continue even when no new admission is allowed.
             execute(event,"admit",new UUID(0,0),false);
             return 0;
@@ -97,7 +130,7 @@ public class WaitingRoomService implements ReservationAdmission {
         for (var wait:admitted) io.micrometer.core.instrument.Timer.builder("waiting_room_wait_seconds").publishPercentileHistogram().register(metrics).record(Duration.ofMillis(wait.asLong()));
         metrics.counter("waiting_room_admitted_total").increment(admitted.size());
         if (!admitted.isEmpty()) org.slf4j.LoggerFactory.getLogger(getClass()).info("waiting_room_admit correlation_id={} event_id={} count={}",
-            com.vibe.ticketrush.common.service.CorrelationId.current(),id,admitted.size());
+            com.vibe.ticketrush.common.service.CorrelationId.current(),event.id(),admitted.size());
         return admitted.size();
     }
     @Scheduled(fixedDelayString="${ticketrush.queue.interval:1s}",initialDelayString="${ticketrush.queue.initial-delay:1s}")
@@ -105,7 +138,10 @@ public class WaitingRoomService implements ReservationAdmission {
         long count=0;
         for (UUID event:events.enabledEvents()) {
             try {
-                admit(event);
+                WaitingRoomEvents.Settings settings=settings(event);
+                boolean soldOut=soldOut(event);
+                cache(settings,soldOut);
+                admit(settings,soldOut);
                 Long value=guard.call("waiting-room",() -> redis.opsForZSet().zCard(keys.key("queue",event,"waiting")),() -> 0L);
                 if (value!=null) count+=value;
             } catch (ApiException ex) { /* Retry next interval; no tokens are admitted locally. */ }

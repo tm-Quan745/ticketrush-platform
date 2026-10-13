@@ -48,7 +48,7 @@ if op=='admit' then
 end
 local raw=redis.call('GET',admission)
 if raw then
-  local value=cjson.decode(raw); value.state='ADMITTED'; value.position=0
+  local value=cjson.decode(raw); value.state='ADMITTED'; value.position=0; value.queueLength=redis.call('ZCARD',KEYS[1])
   return cjson.encode(value)
 end
 if op=='join' and not redis.call('ZSCORE',KEYS[1],user) then
@@ -58,7 +58,7 @@ end
 local rank=redis.call('ZRANK',KEYS[1],user)
 if rank then
   redis.call('ZADD',KEYS[2],now,user); redis.call('PEXPIRE',seen,retention); touch()
-  return cjson.encode({state='WAITING',position=rank+1})
+  return cjson.encode({state='WAITING',position=rank+1,queueLength=redis.call('ZCARD',KEYS[1])})
 end
-if redis.call('EXISTS',seen)==1 then return '{"state":"EXPIRED","position":0}' end
-return '{"state":"NOT_IN_QUEUE","position":0}'
+if redis.call('EXISTS',seen)==1 then return cjson.encode({state='EXPIRED',position=0,queueLength=redis.call('ZCARD',KEYS[1])}) end
+return cjson.encode({state='NOT_IN_QUEUE',position=0,queueLength=redis.call('ZCARD',KEYS[1])})

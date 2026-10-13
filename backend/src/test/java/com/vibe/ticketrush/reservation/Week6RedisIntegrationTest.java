@@ -193,12 +193,28 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(queue.status(event,users.getFirst(),false).state()).isEqualTo("EXPIRED");
         assertThatThrownBy(() -> queue.requireAdmission(tier,users.getFirst(),first.token())).isInstanceOf(ApiException.class);
     }
+    @Test void statusUsesRedisSettingsAndPollIntervalGrowsWithQueuePosition() {
+        roomEvents.configure(event,true,3,"fifo");
+        UUID second=addUser(); UUID third=addUser();
+        queue.status(event,user,true);queue.status(event,second,true);queue.status(event,third,true);
+        var status=queue.status(event,third,false);
+        assertThat(status.position()).isEqualTo(3);
+        assertThat(status.pollIntervalSeconds()).isEqualTo(1);
+        for(int i=0;i<45;i++) queue.status(event,addUser(),true);
+        jdbc.update("UPDATE events SET waiting_room_enabled=false WHERE id=?",event);
+        status=queue.status(event,third,false);
+        assertThat(status.queueLength()).isGreaterThan(3);
+        assertThat(status.pollIntervalSeconds()).isGreaterThan(1);
+    }
     @Test void admissionHttpBindingAndAdminAuthorization() throws Exception {
         roomEvents.configure(event,true,3,"fifo");UUID other=addUser();
         queue.status(event,user,true);queue.admit(event);String token=queue.status(event,user,false).token();
         var owner=jwt().jwt(j -> j.subject(user.toString())).authorities(new SimpleGrantedAuthority("ROLE_USER"));
         var stranger=jwt().jwt(j -> j.subject(other.toString())).authorities(new SimpleGrantedAuthority("ROLE_USER"));
         String body="{\"tierId\":\""+tier+"\",\"quantity\":1}";
+        http.perform(get("/api/v1/events/"+event+"/waiting-room/status").with(owner))
+            .andExpect(status().isOk()).andExpect(header().string("X-RateLimit-Limit","120"))
+            .andExpect(header().string("Retry-After","1"));
         http.perform(post("/api/v1/reservations").with(stranger).header("X-Admission-Token",token).contentType("application/json").content(body))
             .andExpect(status().isForbidden()).andExpect(jsonPath("$.code").value("INVALID_ADMISSION_TOKEN"));
         http.perform(post("/api/v1/reservations").with(owner).contentType("application/json").content(body))

@@ -29,7 +29,9 @@ public class WaitingRoomController {
     @PutMapping("/admin/events/{id}/waiting-room")
     @Operation(summary="Configure waiting room (ADMIN)")
     public WaitingRoomEvents.Settings configure(@PathVariable UUID id,@Valid @RequestBody Configure request) {
-        return events.configure(id,request.enabled(),request.rate(),request.mode());
+        WaitingRoomEvents.Settings settings=events.configure(id,request.enabled(),request.rate(),request.mode());
+        queue.refresh(id);
+        return settings;
     }
     @PostMapping("/events/{id}/waiting-room/join")
     @Operation(summary="Join once, preserving the original position (USER)")

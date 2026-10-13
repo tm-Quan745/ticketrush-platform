@@ -118,10 +118,11 @@ ticketrush:
   queue:
     enabled-by-default: ${WAITING_ROOM_DEFAULT:false}
     mode: ${WAITING_ROOM_MODE:fifo}
-    rate: ${WAITING_ROOM_RATE:10}
+    rate: ${WAITING_ROOM_RATE:20}
     interval: ${WAITING_ROOM_INTERVAL:1s}
     heartbeat-ttl: ${WAITING_ROOM_HEARTBEAT_TTL:30s}
     token-ttl: ${WAITING_ROOM_TOKEN_TTL:10m}
+    max-poll-interval-seconds: ${WAITING_ROOM_MAX_POLL_INTERVAL_SECONDS:15}
   payment:
     webhook-secret: ${PAYMENT_WEBHOOK_SECRET:}
     webhook-url: ${PAYMENT_WEBHOOK_URL:http://127.0.0.1:8080/api/v1/payments/webhook}
