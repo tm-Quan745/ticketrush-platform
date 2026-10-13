@@ -191,3 +191,85 @@ The isolated PostgreSQL uses `fsync=on`, `synchronous_commit=on`, and `wal_sync_
 1.670 ms per two-write test; see [raw output](results/commit-fsync.txt). This can contribute to
 the serial hot-row path, but it is materially smaller than the 3.0--5.1 s HTTP p95 values, so
 it does not by itself explain the spike timeouts.
+
+## Interleaved attribution of `7eef8a6`
+
+The older baseline and `final-C-1..3` files have no recorded commit SHA, backend image ID, image
+revision, start time, or source-state snapshot. They remain negative/indicative artifacts only.
+Do not use them to claim the effect of iteration 2; baseline-to-final mixes iteration 1, the
+outbox routing repair, and iteration 2.
+
+The attribution protocol used HEAD load tooling with only the backend image changed. Before k6,
+each run wrote a provenance record containing commit SHA, running image ID, OCI revision label,
+run ID, UTC start time, one source-state check (`working_tree_clean`, tracked diff and untracked
+list), Hikari `connectionTimeout=30000 ms`, and `preAllocatedVUs=200` / `maxVUs=1000`. The runner
+aborts when the running image digest or revision label differs from the selection. Every listed
+run has a k6 summary, verifier report and `verification_exit=0`; k6 exit 99 records violated
+overload thresholds rather than an interrupted run. Backend `RestartCount` was zero after C-3
+and C-6. Generator logs are retained beside every summary as `*-k6.log`.
+
+The earlier conflicting `working_tree_clean=true` / `working_tree_dirty=true` fields were caused
+by two different checks: the provenance check ignored untracked files while telemetry compared only
+the tracked diff (empty hash). The new artifacts use one captured `source_status` object for both
+fields and list untracked result artifacts; a clean tracked tree therefore remains correctly true.
+
+| Run | backend commit | started / dropped | server PAID / SOLD_OUT | HOT taken | hot UPDATE mean | Hikari pending max | Tomcat busy max | max GC pause | k6 max VUs | verifier |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| attribution-C-1 | e29ce4f | 1,216 / 3,784 | 105 / 0 | 273 | 130.1 ms | 171 | 178 | 0.717 s | 435 | PASS |
+| final-C-4 | post-7eef / 174aac3 | 921 / 4,080 | 491 / 0 | 1,259 | 68.9 ms | 192 | 200 | 0.743 s | 493 | PASS |
+| attribution-C-2 | e29ce4f | 840 / 4,577 | 689 / 0 | 1,764 | 57.2 ms | 190 | 200 | 0.150 s | 558 | PASS |
+| final-C-5 | HEAD / 5bda52c | 1,218 / 3,783 | 672 / 0 | 1,700 | 39.8 ms | 192 | 200 | 0.269 s | 514 | PASS |
+| attribution-C-3 | e29ce4f | 1,168 / 3,832 | 988 / 0 | 2,529 | 48.0 ms | 190 | 200 | 0.163 s | 1,000 | PASS |
+| final-C-6 | HEAD / 5bda52c | 1,209 / 3,790 | 1,024 / 0 | 2,616 | 9.1 ms | 188 | 200 | 0.059 s | 1,000 | PASS |
+
+Server PAID is verifier `paid_orders - 121` warm-up orders. HOT taken is `5,000 - available`
+from the HOT tier in the verifier; it is intentionally distinct from aggregate ticket totals.
+The three-run medians are e29: UPDATE `57.2 ms`, Hikari pending `190`, Tomcat busy `200`, k6 max
+VUs `558`; HEAD: UPDATE `39.8 ms`, Hikari pending `192`, Tomcat busy `200`, k6 max VUs `514`.
+The ranges overlap substantially (for example RPS e29 `59.7–677.2`, HEAD `197.5–690.0`), so the
+end-to-end difference does not exceed machine/run noise. The statement order is proven; a stable
+capacity benefit is not.
+
+### Isolated statement order and lock interval
+
+`log_statement=all` with `%m [%p] %x` was enabled only for one isolated successful reservation
+on each selected image, then reset to `none`. In e29, the conditional `UPDATE ticket_tiers` was
+logged at `04:34:52.906 UTC`; reservation select/insert and outbox insert followed, then COMMIT
+at `04:34:53.008` — about **102 ms** from hot UPDATE to COMMIT. At HEAD, reservation insert and
+outbox insert preceded the conditional UPDATE at `04:34:02.191`; COMMIT was at `.192` — about
+**1 ms**. The captured order is in `statement-order-e29-postgres.log` and
+`statement-order-head-postgres.log`. This is an isolated measured lock-hold interval, not a p95.
+
+### Saturation evidence and limitations
+
+The pg activity sampler recorded state, wait type/event, transaction/query age and short query text
+each second for the runs after it was introduced: final-C-5 max idle-in-transaction/Lock/oldest-xact
+was `8 / 6 / 0.994 s`; attribution-C-3 was `10 / 6 / 0.940 s`; final-C-6 was `9 / 2 / 1.341 s`.
+Lock waiters were predominantly the conditional `UPDATE ticket_tiers`; COMMIT sessions also showed
+`WalSync`. No sampled transaction remained open for multiple seconds. Earlier C-1/C-2/C-4 cannot
+be retroactively sampled and are explicitly not used for this pg-activity comparison.
+
+Code inspection finds no path in reservation/order/webhook that holds one JDBC connection while
+requesting a second: reservation enters `ReservationTransactions` in one `REQUIRES_NEW` transaction;
+order preparation is `NOT_SUPPORTED` before the order transaction (iteration 1); webhook handling
+has its own transaction. This is a code-path finding, not a substitute for a connection trace.
+
+Tomcat reached its configured 200 busy threads on five of six runs, while Hikari pending reached
+171–192. The primary bottleneck evidence is therefore request/connection queueing plus hot-tier
+lock contention, not a measured external call inside a JDBC transaction. The generator log shows
+`Insufficient VUs` once it reached 1,000 in C-3/C-6. A lower instantaneous VU gauge in earlier
+runs does not prove spare capacity: constant-arrival-rate drops an arrival when no VU is free at
+that scheduling instant, and the visible gauge is sampled later. The remaining missing evidence is
+a per-second started/dropped counter; the saved k6 progress log records VU and completed counts but
+not that counter, so no timeline has been fabricated.
+
+`Redis mismatch before reconcile` is expected under `conditional-update`: Redis counters are not
+maintained and verifier `observed=null` means Redis was unused. Reconciliation returns the mismatch
+count to zero; it is not a correctness failure for this strategy.
+
+`final-C-4` verifier recorded 612 PAID orders, so 491 measured PAID after subtracting 121 warm-up
+orders; k6 recorded 383 `paid`, a difference of 108. Its aggregate k6 summary has no per-order
+identifier, outcome trace, or last-endpoint field, and later resets removed those C-4 rows.
+Accordingly the 108 orders cannot truthfully be listed or assigned a final client endpoint after
+the fact. This is a measurement gap, not evidence of a server-side failure; future runs need
+per-iteration sanitized terminal-outcome capture before claiming that attribution.

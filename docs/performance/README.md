@@ -1,14 +1,10 @@
 # TicketRush performance laboratory
 
-The baseline does **not** meet the 5,000-user flash-sale target. Across three C runs on
-`eaf4898`, median HTTP throughput was 125.2781108328662 requests/s, median HTTP failed rate
-was 0.9760840998685939, and median dropped arrivals was 1,929. Median reserve p95 was
-5000.96730215 ms and order p95 was 5058.1487412999995 ms. Inventory oversold was zero,
-but outbox and confirmation delivery failed in every baseline run; C-3 also retained 153
-overdue holds after drain. These are failed load tests, not production capacity claims.
-All nine B/C/D repetitions and their ranges are in the [generated tables](tables.md),
-with individual [k6](results/baseline-C-1.json) and [verifier](results/baseline-C-3-verify.json)
-artifacts. Optimization measurements remain in progress.
+The baseline does **not** meet the 5,000-user flash-sale target. It recorded 97.6% failed
+HTTP responses, only 131 PAID orders and 332 valid tickets from 5,000 offered users, and
+five-second timeouts. It is retained as a negative result, but it and `final-C-1..3` have no
+per-run provenance record. They are indicative only and are not used as evidence for the
+attribution below.
 
 The subsequent stress run `stress-1` preserved every checked invariant after drain, including
 zero oversell, zero pending outbox records and exactly one sent confirmation for each of 5,357
@@ -24,19 +20,33 @@ drain it retained zero oversell, no pending/failed outbox events and exactly one
 for each paid order. Read this as a one-run sustained-load observation; the
 [summary](results/soak-1.json) and [verifier](results/soak-1-verify.json) retain the evidence.
 
-| Scenario C median, three runs | Baseline | Hot-row-final-write iteration |
-| --- | ---: | ---: |
-| HTTP RPS | 125.3 | 467.6 |
-| HTTP failed rate | 97.6% | 0.08% |
-| Started arrivals | 3,071 | 913 |
-| Dropped iterations | 1,929 | 4,087 |
-| Reserve p95 | 5,001.0 ms | 3,725.7 ms |
-| Order p95 | 5,058.1 ms | 3,028.4 ms |
-| Verifier after drain | failed | passed (3/3) |
+## Interleaved attribution: final hot-row write
 
-The final-write experiment improved response failures and latency but started far fewer arrivals
-and dropped more work. It therefore fails the configured spike objective and is not a capacity
-claim. The transaction and raw run artifacts are recorded in the [experiment log](log.md).
+Scenario C offers 5,000 arrivals at 250/s for 20 seconds. The primary outcome is server-side:
+PAID is verifier `paid_orders - 121` warm-up orders; served fraction is `(PAID + SOLD_OUT) / 5,000`.
+All six runs below have provenance, a k6 summary, telemetry, and a completed verifier. k6 threshold
+exit 99 is expected for an overload result and does not invalidate a run whose verifier passes.
+
+| Run | commit | started | dropped | PAID (server) | SOLD_OUT | served | RPS | reserve p95 | order p95 | verifier |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| attribution-C-1 | e29ce4f | 1,216 | 3,784 | 105 | 0 | 2.1% | 59.7 | 5,149.0 ms | 5,148.4 ms | PASS |
+| final-C-4 | post-7eef / 174aac3 | 921 | 4,080 | 491 | 0 | 9.8% | 197.5 | 6,780.0 ms | 6,713.1 ms | PASS |
+| attribution-C-2 | e29ce4f | 840 | 4,577 | 689 | 0 | 13.8% | 279.4 | 3,129.5 ms | 5,017.8 ms | PASS |
+| final-C-5 | HEAD / 5bda52c | 1,218 | 3,783 | 672 | 0 | 13.4% | 281.7 | 5,034.3 ms | 5,542.3 ms | PASS |
+| attribution-C-3 | e29ce4f | 1,168 | 3,832 | 988 | 0 | 19.8% | 677.2 | 3,272.3 ms | 3,266.8 ms | PASS |
+| final-C-6 | HEAD / 5bda52c | 1,209 | 3,790 | 1,024 | 0 | 20.5% | 690.0 | 1,939.5 ms | 1,779.5 ms | PASS |
+
+| Commit, n=3 | started median (range) | dropped median (range) | PAID median (range) | served median (range) | RPS median (range) | reserve p95 median (range) | order p95 median (range) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| e29ce4f | 1,168 (840–1,216) | 3,832 (3,784–4,577) | 689 (105–988) | 13.8% (2.1–19.8%) | 279.4 (59.7–677.2) | 3,272.3 ms (3,129.5–5,149.0) | 5,017.8 ms (3,266.8–5,148.4) |
+| post-7eef HEAD series | 1,209 (921–1,218) | 3,790 (3,783–4,080) | 672 (491–1,024) | 13.4% (9.8–20.5%) | 281.7 (197.5–690.0) | 5,034.3 ms (1,939.5–6,780.0) | 5,542.3 ms (1,779.5–6,713.1) |
+
+The isolated SQL capture proves the intended change, but the interleaved load medians and ranges
+overlap heavily. Therefore the effect of `7eef8a6` on end-to-end Scenario C throughput or latency
+does **not** exceed run-to-run noise on this shared generator/VM. It is not a capacity claim.
+The raw artifacts are [C-1 provenance](results/attribution-C-1-provenanced-provenance.json),
+[C-6 provenance](results/final-C-6-provenanced-provenance.json), and the two isolated PostgreSQL
+captures: [e29](results/statement-order-e29-postgres.log), [HEAD](results/statement-order-head-postgres.log).
 
 Baseline B's approximately 50 requests/s includes rate-limited responses from a shared
 load-generator IP. Inspect `browse_ok` and `browse_limited` in [aggregate.json](results/aggregate.json)

@@ -1,0 +1,1003 @@
+ Container ticketrush-week7-backend-1 Stopping 
+ Container ticketrush-week7-backend-1 Stopped 
+ Container ticketrush-week7-tools-run-85b28365dc55 Creating 
+ Container ticketrush-week7-tools-run-85b28365dc55 Created 
+{
+  "redis_keys_deleted": 615,
+  "queues_purged": [
+    "notification.email",
+    "notification.email.dlq",
+    "notification.email.retry.10m",
+    "notification.email.retry.10s",
+    "notification.email.retry.1m"
+  ]
+}
+ Container ticketrush-week7-tools-run-9363e0bf9825 Creating 
+ Container ticketrush-week7-tools-run-9363e0bf9825 Created 
+{
+  "buyers": 20000,
+  "admins": 1,
+  "events": 203,
+  "tiers": 205,
+  "hot_capacity": 5000,
+  "waiting": false
+}
+ Container ticketrush-week7-mailpit-1 Running 
+ Container ticketrush-week7-redis-1 Running 
+ Container ticketrush-week7-rabbitmq-1 Running 
+ Container ticketrush-week7-postgres-1 Running 
+ Container ticketrush-week7-backend-1 Recreate 
+ Container ticketrush-week7-backend-1 Recreated 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-backend-1 Starting 
+ Container ticketrush-week7-backend-1 Started 
+ Container ticketrush-week7-backend-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-backend-1 Healthy 
+ Container ticketrush-week7-k6-run-d9b2d56f76da Creating 
+ Container ticketrush-week7-k6-run-d9b2d56f76da Created 
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: scenarios.js
+        output: Prometheus remote write (http://prometheus:9090/api/v1/write)
+
+     scenarios: (100.00%) 1 scenario, 1000 max VUs, 2m30s max duration (incl. graceful stop):
+              * warmup: 2.00 iterations/s for 1m0s (maxVUs: 200-1000, exec: purchase, gracefulStop: 1m30s)
+
+
+running (0m00.8s), 0002/0200 VUs, 0 complete and 0 interrupted iterations
+warmup   [   1% ] 0002/0200 VUs  0m00.8s/1m0s  2.00 iters/s
+
+running (0m01.8s), 0002/0200 VUs, 2 complete and 0 interrupted iterations
+warmup   [   3% ] 0002/0200 VUs  0m01.8s/1m0s  2.00 iters/s
+
+running (0m02.8s), 0002/0200 VUs, 4 complete and 0 interrupted iterations
+warmup   [   5% ] 0002/0200 VUs  0m02.8s/1m0s  2.00 iters/s
+
+running (0m03.8s), 0002/0200 VUs, 6 complete and 0 interrupted iterations
+warmup   [   6% ] 0002/0200 VUs  0m03.8s/1m0s  2.00 iters/s
+
+running (0m04.8s), 0002/0200 VUs, 8 complete and 0 interrupted iterations
+warmup   [   8% ] 0002/0200 VUs  0m04.8s/1m0s  2.00 iters/s
+
+running (0m05.8s), 0002/0200 VUs, 10 complete and 0 interrupted iterations
+warmup   [  10% ] 0002/0200 VUs  0m05.8s/1m0s  2.00 iters/s
+
+running (0m06.8s), 0002/0200 VUs, 12 complete and 0 interrupted iterations
+warmup   [  11% ] 0002/0200 VUs  0m06.8s/1m0s  2.00 iters/s
+
+running (0m07.8s), 0002/0200 VUs, 14 complete and 0 interrupted iterations
+warmup   [  13% ] 0002/0200 VUs  0m07.8s/1m0s  2.00 iters/s
+
+running (0m08.8s), 0002/0200 VUs, 16 complete and 0 interrupted iterations
+warmup   [  15% ] 0002/0200 VUs  0m08.8s/1m0s  2.00 iters/s
+
+running (0m09.8s), 0002/0200 VUs, 18 complete and 0 interrupted iterations
+warmup   [  16% ] 0002/0200 VUs  0m09.8s/1m0s  2.00 iters/s
+
+running (0m10.8s), 0002/0200 VUs, 20 complete and 0 interrupted iterations
+warmup   [  18% ] 0002/0200 VUs  0m10.8s/1m0s  2.00 iters/s
+
+running (0m11.8s), 0002/0200 VUs, 22 complete and 0 interrupted iterations
+warmup   [  20% ] 0002/0200 VUs  0m11.8s/1m0s  2.00 iters/s
+
+running (0m12.8s), 0002/0200 VUs, 24 complete and 0 interrupted iterations
+warmup   [  21% ] 0002/0200 VUs  0m12.8s/1m0s  2.00 iters/s
+
+running (0m13.8s), 0002/0200 VUs, 26 complete and 0 interrupted iterations
+warmup   [  23% ] 0002/0200 VUs  0m13.8s/1m0s  2.00 iters/s
+
+running (0m14.8s), 0002/0200 VUs, 28 complete and 0 interrupted iterations
+warmup   [  25% ] 0002/0200 VUs  0m14.8s/1m0s  2.00 iters/s
+
+running (0m15.8s), 0002/0200 VUs, 30 complete and 0 interrupted iterations
+warmup   [  26% ] 0002/0200 VUs  0m15.8s/1m0s  2.00 iters/s
+
+running (0m16.8s), 0002/0200 VUs, 32 complete and 0 interrupted iterations
+warmup   [  28% ] 0002/0200 VUs  0m16.8s/1m0s  2.00 iters/s
+
+running (0m17.8s), 0002/0200 VUs, 34 complete and 0 interrupted iterations
+warmup   [  30% ] 0002/0200 VUs  0m17.8s/1m0s  2.00 iters/s
+
+running (0m18.8s), 0002/0200 VUs, 36 complete and 0 interrupted iterations
+warmup   [  31% ] 0002/0200 VUs  0m18.8s/1m0s  2.00 iters/s
+
+running (0m19.8s), 0002/0200 VUs, 38 complete and 0 interrupted iterations
+warmup   [  33% ] 0002/0200 VUs  0m19.8s/1m0s  2.00 iters/s
+
+running (0m20.8s), 0002/0200 VUs, 40 complete and 0 interrupted iterations
+warmup   [  35% ] 0002/0200 VUs  0m20.8s/1m0s  2.00 iters/s
+
+running (0m21.8s), 0002/0200 VUs, 42 complete and 0 interrupted iterations
+warmup   [  36% ] 0002/0200 VUs  0m21.8s/1m0s  2.00 iters/s
+
+running (0m22.8s), 0002/0200 VUs, 44 complete and 0 interrupted iterations
+warmup   [  38% ] 0002/0200 VUs  0m22.8s/1m0s  2.00 iters/s
+
+running (0m23.8s), 0002/0200 VUs, 46 complete and 0 interrupted iterations
+warmup   [  40% ] 0002/0200 VUs  0m23.8s/1m0s  2.00 iters/s
+
+running (0m24.8s), 0002/0200 VUs, 48 complete and 0 interrupted iterations
+warmup   [  41% ] 0002/0200 VUs  0m24.8s/1m0s  2.00 iters/s
+
+running (0m25.8s), 0002/0200 VUs, 50 complete and 0 interrupted iterations
+warmup   [  43% ] 0002/0200 VUs  0m25.8s/1m0s  2.00 iters/s
+
+running (0m26.8s), 0002/0200 VUs, 52 complete and 0 interrupted iterations
+warmup   [  45% ] 0002/0200 VUs  0m26.8s/1m0s  2.00 iters/s
+
+running (0m27.8s), 0002/0200 VUs, 54 complete and 0 interrupted iterations
+warmup   [  46% ] 0002/0200 VUs  0m27.8s/1m0s  2.00 iters/s
+
+running (0m28.8s), 0002/0200 VUs, 56 complete and 0 interrupted iterations
+warmup   [  48% ] 0002/0200 VUs  0m28.8s/1m0s  2.00 iters/s
+
+running (0m29.8s), 0002/0200 VUs, 58 complete and 0 interrupted iterations
+warmup   [  50% ] 0002/0200 VUs  0m29.8s/1m0s  2.00 iters/s
+
+running (0m30.8s), 0002/0200 VUs, 60 complete and 0 interrupted iterations
+warmup   [  51% ] 0002/0200 VUs  0m30.8s/1m0s  2.00 iters/s
+
+running (0m31.8s), 0002/0200 VUs, 62 complete and 0 interrupted iterations
+warmup   [  53% ] 0002/0200 VUs  0m31.8s/1m0s  2.00 iters/s
+
+running (0m32.8s), 0002/0200 VUs, 64 complete and 0 interrupted iterations
+warmup   [  55% ] 0002/0200 VUs  0m32.8s/1m0s  2.00 iters/s
+
+running (0m33.8s), 0002/0200 VUs, 66 complete and 0 interrupted iterations
+warmup   [  56% ] 0002/0200 VUs  0m33.8s/1m0s  2.00 iters/s
+
+running (0m34.8s), 0002/0200 VUs, 68 complete and 0 interrupted iterations
+warmup   [  58% ] 0002/0200 VUs  0m34.8s/1m0s  2.00 iters/s
+
+running (0m35.8s), 0002/0200 VUs, 70 complete and 0 interrupted iterations
+warmup   [  60% ] 0002/0200 VUs  0m35.8s/1m0s  2.00 iters/s
+
+running (0m36.8s), 0002/0200 VUs, 72 complete and 0 interrupted iterations
+warmup   [  61% ] 0002/0200 VUs  0m36.8s/1m0s  2.00 iters/s
+
+running (0m37.8s), 0002/0200 VUs, 74 complete and 0 interrupted iterations
+warmup   [  63% ] 0002/0200 VUs  0m37.8s/1m0s  2.00 iters/s
+
+running (0m38.8s), 0002/0200 VUs, 76 complete and 0 interrupted iterations
+warmup   [  65% ] 0002/0200 VUs  0m38.8s/1m0s  2.00 iters/s
+
+running (0m39.8s), 0002/0200 VUs, 78 complete and 0 interrupted iterations
+warmup   [  66% ] 0002/0200 VUs  0m39.8s/1m0s  2.00 iters/s
+
+running (0m40.8s), 0002/0200 VUs, 80 complete and 0 interrupted iterations
+warmup   [  68% ] 0002/0200 VUs  0m40.8s/1m0s  2.00 iters/s
+
+running (0m41.8s), 0002/0200 VUs, 82 complete and 0 interrupted iterations
+warmup   [  70% ] 0002/0200 VUs  0m41.8s/1m0s  2.00 iters/s
+
+running (0m42.8s), 0002/0200 VUs, 84 complete and 0 interrupted iterations
+warmup   [  71% ] 0002/0200 VUs  0m42.8s/1m0s  2.00 iters/s
+
+running (0m43.8s), 0002/0200 VUs, 86 complete and 0 interrupted iterations
+warmup   [  73% ] 0002/0200 VUs  0m43.8s/1m0s  2.00 iters/s
+
+running (0m44.8s), 0002/0200 VUs, 88 complete and 0 interrupted iterations
+warmup   [  75% ] 0002/0200 VUs  0m44.8s/1m0s  2.00 iters/s
+
+running (0m45.8s), 0002/0200 VUs, 90 complete and 0 interrupted iterations
+warmup   [  76% ] 0002/0200 VUs  0m45.8s/1m0s  2.00 iters/s
+
+running (0m46.8s), 0002/0200 VUs, 92 complete and 0 interrupted iterations
+warmup   [  78% ] 0002/0200 VUs  0m46.8s/1m0s  2.00 iters/s
+
+running (0m47.8s), 0002/0200 VUs, 94 complete and 0 interrupted iterations
+warmup   [  80% ] 0002/0200 VUs  0m47.8s/1m0s  2.00 iters/s
+
+running (0m48.8s), 0002/0200 VUs, 96 complete and 0 interrupted iterations
+warmup   [  81% ] 0002/0200 VUs  0m48.8s/1m0s  2.00 iters/s
+
+running (0m49.8s), 0002/0200 VUs, 98 complete and 0 interrupted iterations
+warmup   [  83% ] 0002/0200 VUs  0m49.8s/1m0s  2.00 iters/s
+
+running (0m50.8s), 0002/0200 VUs, 100 complete and 0 interrupted iterations
+warmup   [  85% ] 0002/0200 VUs  0m50.8s/1m0s  2.00 iters/s
+
+running (0m51.8s), 0002/0200 VUs, 102 complete and 0 interrupted iterations
+warmup   [  86% ] 0002/0200 VUs  0m51.8s/1m0s  2.00 iters/s
+
+running (0m52.8s), 0002/0200 VUs, 104 complete and 0 interrupted iterations
+warmup   [  88% ] 0002/0200 VUs  0m52.8s/1m0s  2.00 iters/s
+
+running (0m53.8s), 0002/0200 VUs, 106 complete and 0 interrupted iterations
+warmup   [  90% ] 0002/0200 VUs  0m53.8s/1m0s  2.00 iters/s
+
+running (0m54.8s), 0002/0200 VUs, 108 complete and 0 interrupted iterations
+warmup   [  91% ] 0002/0200 VUs  0m54.8s/1m0s  2.00 iters/s
+
+running (0m55.8s), 0002/0200 VUs, 110 complete and 0 interrupted iterations
+warmup   [  93% ] 0002/0200 VUs  0m55.8s/1m0s  2.00 iters/s
+
+running (0m56.8s), 0002/0200 VUs, 112 complete and 0 interrupted iterations
+warmup   [  95% ] 0002/0200 VUs  0m56.8s/1m0s  2.00 iters/s
+
+running (0m57.8s), 0002/0200 VUs, 114 complete and 0 interrupted iterations
+warmup   [  96% ] 0002/0200 VUs  0m57.8s/1m0s  2.00 iters/s
+
+running (0m58.8s), 0002/0200 VUs, 116 complete and 0 interrupted iterations
+warmup   [  98% ] 0002/0200 VUs  0m58.8s/1m0s  2.00 iters/s
+
+running (0m59.8s), 0002/0200 VUs, 118 complete and 0 interrupted iterations
+warmup   [ 100% ] 0002/0200 VUs  0m59.8s/1m0s  2.00 iters/s
+
+running (1m00.8s), 0001/0200 VUs, 120 complete and 0 interrupted iterations
+warmup ↓ [ 100% ] 0003/0200 VUs  1m0s  2.00 iters/s
+{"scenario":"W","thresholds":{"business_outcomes{result:login_ok}":{"count>=0":{"ok":true}},"business_outcomes{result:payment_failed}":{"count>=0":{"ok":true}},"business_outcomes{result:browse_ok}":{"count>=0":{"ok":true}},"business_failures":{"count==0":{"ok":true}},"http_req_duration{name:POST /api/v1/orders}":{"p(95)<1000":{"ok":true},"p(99)<2000":{"ok":true}},"business_outcomes{result:paid}":{"count>=0":{"ok":true}},"business_outcomes{result:abandoned}":{"count>=0":{"ok":true}},"business_outcomes{result:waiting_room_required}":{"count>=0":{"ok":true}},"dropped_iterations":{"count==0":{"ok":true}},"business_outcomes{result:error}":{"count>=0":{"ok":true}},"http_req_duration{name:POST /api/v1/reservations}":{"p(95)<1000":{"ok":true},"p(99)<2000":{"ok":true}},"business_outcomes{result:rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:browse_rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:login_rate_limited}":{"count>=0":{"ok":true}},"unexpected_responses":{"rate<0.01":{"ok":true}},"http_req_failed":{"rate<0.01":{"ok":true}},"business_outcomes{result:sold_out}":{"count>=0":{"ok":true}},"unexpected_5xx":{"count==0":{"ok":true}},"business_outcomes{result:queue_sold_out}":{"count>=0":{"ok":true}},"checks":{"rate==1":{"ok":true}}}}
+
+running (1m01.0s), 0000/0200 VUs, 121 complete and 0 interrupted iterations
+warmup ✓ [ 100% ] 0000/0200 VUs  1m0s  2.00 iters/s
+ Container ticketrush-week7-k6-run-884fd0485471 Creating 
+ Container ticketrush-week7-k6-run-884fd0485471 Created 
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: scenarios.js
+        output: Prometheus remote write (http://prometheus:9090/api/v1/write)
+
+     scenarios: (100.00%) 1 scenario, 1000 max VUs, 3m20s max duration (incl. graceful stop):
+              * spike: 250.00 iterations/s for 20s (maxVUs: 200-1000, exec: purchase, gracefulStop: 3m0s)
+
+
+running (0m00.9s), 0206/0206 VUs, 12 complete and 0 interrupted iterations
+spike   [   5% ] 0206/0206 VUs  00.9s/20s  250.00 iters/s
+
+running (0m01.9s), 0295/0295 VUs, 39 complete and 0 interrupted iterations
+spike   [  10% ] 0295/0295 VUs  01.9s/20s  250.00 iters/s
+
+running (0m02.9s), 0345/0345 VUs, 59 complete and 0 interrupted iterations
+spike   [  15% ] 0345/0345 VUs  02.9s/20s  250.00 iters/s
+
+running (0m04.1s), 0349/0349 VUs, 65 complete and 0 interrupted iterations
+spike   [  20% ] 0349/0349 VUs  04.1s/20s  250.00 iters/s
+
+running (0m04.9s), 0351/0351 VUs, 72 complete and 0 interrupted iterations
+spike   [  25% ] 0351/0351 VUs  04.9s/20s  250.00 iters/s
+
+running (0m06.0s), 0357/0357 VUs, 82 complete and 0 interrupted iterations
+spike   [  30% ] 0357/0357 VUs  05.9s/20s  250.00 iters/s
+
+running (0m06.9s), 0420/0420 VUs, 107 complete and 0 interrupted iterations
+spike   [  35% ] 0420/0420 VUs  06.9s/20s  250.00 iters/s
+
+running (0m08.0s), 0429/0429 VUs, 118 complete and 0 interrupted iterations
+spike   [  40% ] 0429/0429 VUs  07.9s/20s  250.00 iters/s
+
+running (0m08.9s), 0433/0433 VUs, 121 complete and 0 interrupted iterations
+spike   [  45% ] 0433/0433 VUs  08.9s/20s  250.00 iters/s
+
+running (0m09.9s), 0435/0435 VUs, 123 complete and 0 interrupted iterations
+spike   [  50% ] 0435/0435 VUs  09.9s/20s  250.00 iters/s
+
+running (0m10.9s), 0448/0448 VUs, 125 complete and 0 interrupted iterations
+spike   [  55% ] 0448/0448 VUs  10.9s/20s  250.00 iters/s
+time="2026-10-12T11:45:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+
+running (0m12.5s), 0446/0450 VUs, 130 complete and 0 interrupted iterations
+spike   [  62% ] 0446/0450 VUs  12.5s/20s  250.00 iters/s
+time="2026-10-12T11:45:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+
+running (0m13.0s), 0451/0451 VUs, 133 complete and 0 interrupted iterations
+spike   [  65% ] 0451/0451 VUs  13.0s/20s  250.00 iters/s
+time="2026-10-12T11:45:29Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/36fc31ba-0788-4e0f-958f-1bdf424caa2b\": request timeout"
+time="2026-10-12T11:45:29Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/543040b7-d681-4c31-bd18-17ccb8a0b32e\": request timeout"
+
+running (0m13.9s), 0480/0480 VUs, 140 complete and 0 interrupted iterations
+spike   [  70% ] 0480/0480 VUs  13.9s/20s  250.00 iters/s
+
+running (0m14.9s), 0540/0540 VUs, 154 complete and 0 interrupted iterations
+spike   [  75% ] 0540/0540 VUs  14.9s/20s  250.00 iters/s
+
+running (0m15.9s), 0546/0546 VUs, 159 complete and 0 interrupted iterations
+spike   [  80% ] 0546/0546 VUs  15.9s/20s  250.00 iters/s
+
+running (0m16.9s), 0556/0556 VUs, 165 complete and 0 interrupted iterations
+spike   [  85% ] 0556/0556 VUs  16.9s/20s  250.00 iters/s
+
+running (0m18.0s), 0556/0556 VUs, 165 complete and 0 interrupted iterations
+spike   [  90% ] 0556/0556 VUs  18.0s/20s  250.00 iters/s
+
+running (0m21.2s), 0556/0556 VUs, 165 complete and 0 interrupted iterations
+spike   [ 100% ] 0556/0556 VUs  20s  250.00 iters/s
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/349d41b6-ed47-4292-986d-2afed53fa10d\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a4e7d643-cf14-4126-be98-258382ffc8a3\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8d7ff183-e379-46ea-912e-4139cf9981f8\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6f3f98fc-f7c5-4d68-ac63-2eb2be3aac4f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6d6c3b16-f8d3-48c1-ab1a-b73d61769f81\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0ed61770-98aa-44da-9cd8-1bcb7c576b5a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f4f9c7fd-d0e8-446d-b732-b186cab8a117\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c81bb230-15e1-4a96-b3c8-cf74b079ee66\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/978981ab-c192-438c-9a49-2903e4b4f0a6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/03b5b4bd-956d-49cc-b799-e113d24b757a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/aebdfbfc-c8e4-40a8-bd47-61e4f63131e0\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/114adb7a-6090-48a3-8184-ab470e968ad0\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a5737564-04a0-4e3d-b118-b3db6d2a9e9f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bef9cf7e-9a3f-4b1d-baea-53e824e0503c\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/caab540f-82f5-4ce4-a10e-b19f7527eeb5\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e45a9619-15d8-4450-974d-4d29173d7abf\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2f8bf60c-1ede-4976-b434-c1ea1c193d55\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0c800636-dfd7-442d-bba3-efdf6a2e5fad\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/70b50d5e-5e7a-47e0-9d7e-b08822ed12d0\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1d6a0b3b-a613-4c46-ae40-8f173033cd66\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/13c5b19b-0403-4ddd-8c37-f2e1cd853d42\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ddd5d334-9985-409f-9239-d59ee233f661\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0a3fc39a-87cb-454c-be4a-64429758f6a2\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/88c14b0d-5f19-46f7-8334-df560d55e27d\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ce6d6aaf-c1b9-419b-9ea8-aee614f83820\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5faf29d7-ac93-4797-9126-d356ac14f109\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5fd16744-c55d-4722-8b72-f75fce1320d9\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/22e13e9d-3a68-4b5b-b192-067ff0fb1a96\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/68bf7190-7cd2-4e07-9421-ab18edcadf1d\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f36d75bf-095b-4d48-a2e1-1bafb0ee64ac\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/67a837fd-259e-45a6-b54a-6edc0b9fb707\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4c4e9019-9f94-416e-ac69-ba4e535d7382\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f87c2479-a777-42fb-a959-f4cb4dbe0753\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/756e490c-d8d1-42bc-824b-b522baa8de81\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2cb96f19-a9e9-4e20-acac-c41195f0dbd6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/933bc22f-4c4f-46cf-9737-d933b74836ed\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/26baba70-f48c-4b98-a5d8-67b70488688e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/19eab416-c24f-4399-a60d-ff38fd2e14cd\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ab96cd20-415e-4180-bf3d-6fa7531a1565\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8cfad5e4-0422-4abc-815e-555b3cc0867a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/175dd3c5-b73a-4da9-98e2-123c4eb8ddf6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5f116923-30e8-4e43-8751-d622e935f7dc\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/949c966c-ce29-40c4-92f1-4e0142ad0a31\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/67dc3cfa-157f-40a7-8e2d-2b4e395e6823\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3235843f-ae7e-462c-b3e7-c2b6e01fa5f9\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/abb655f6-4a3d-48b7-a100-633e199c2501\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bd7a9e70-faba-47fa-9773-931d4861556c\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0e68cdca-d2f3-4247-893d-9d5359eaccdb\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4942f59a-31bf-4365-ba28-ff273764661c\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e63e403b-0327-4164-98a9-4d6ea9d47b73\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a84b42a9-91f6-4d44-bdf5-75a8e510ad7c\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/299a777f-1a51-48d4-ab26-98fa8bedb2b7\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/24755a05-83a2-4649-b6da-20e997322cf4\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/34f1e09c-9976-4540-8fee-b564bf134000\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2be910c6-d948-454b-8973-b3df2e88c698\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/08e4bb79-2374-4828-bc89-8a38b6fe84c7\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c1d2105f-aa79-497b-b561-c97df0a41581\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/870c3464-3385-40b6-9718-d747494c83cf\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ebf35673-74ca-4df0-b6f2-885f32f602f7\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/408c22a0-c6f6-48b2-99ef-331adb38c730\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e5083df7-464a-4a76-b42f-00de9034cc11\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0c6bf32b-91c4-4084-a45d-3825227aa438\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fe92afc5-7b51-4f77-94eb-23f9c7b0f407\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7a2554ee-4324-4e6c-86e9-13bda4a5d9dd\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5bec5de4-2fe5-4da4-ae34-94e01d7875b9\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6bbdae2a-1e9d-44b7-b628-88d66bc3db2a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/dcbb676e-e73a-4db1-ba2b-4b7d0d993795\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/569fb2be-b118-4d3b-a3e3-73448ac9649c\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f5a0cc31-d2e5-4f0e-a290-d65f6ef062f4\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3bc5b272-dfd4-413d-ac73-3194e9004192\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/dff420cf-9b0b-45de-bd49-91661cd407ab\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/df622634-9553-4d3a-b3f0-9c0a92559c8b\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a9372505-a822-49b9-9dd2-b2aede4964a6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fdd9f63f-e93a-4cbb-bb44-854da4831358\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/eb940022-4da1-42fc-bae1-6f4809684478\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5ff6f275-b22f-4419-a1d9-384c10f1aace\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1bfb1c9e-b62c-4c47-8778-4302ff5cdb0a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/31cd34bd-a837-4de2-9cb0-7d2fffce12ab\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/64fcf22f-075a-48ed-ba48-1d2b9e127c8f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d5494537-7ce2-42f8-9d33-3de54d912198\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a2b14092-7c8c-4a80-8b8f-2118bd1c8136\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/52703830-3348-496e-a677-9cde765915f4\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d807da0a-c7fb-4d5e-bad6-52550f07895e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1460395c-275e-4917-9fae-ae05c466c6f6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/806881c3-388f-4ddb-9f30-6a6a711384f1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a16a0526-f17b-4022-82dc-2137a15eaff2\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b814df36-270e-446e-adf6-e89a019258ea\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/43ae8a61-1d75-42ce-bdd0-bc87d64c45db\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7d214e96-b502-43c9-9eef-b850edc7f936\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/dc376673-899c-4516-b622-85d04c05cc68\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/524c4358-3f34-4a2f-8b85-d311d857e586\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/cf713bcd-5ef0-4135-b248-f47e4148084a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/80c1aea4-b774-496c-9ed2-dea6593c9d19\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/cd297302-c2be-4a51-831b-4309c7b1d30b\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/afedd200-0acc-4f02-abb5-80344fbc495a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c85a7edc-634b-4b2c-8778-64e5ab59f465\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b1502ba4-faf1-4f6f-a311-c3db38ea003e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7992360b-962a-4a57-9a91-eff4a5752163\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/42625106-65cc-499f-8890-ddb4fec8a2c1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f853fed8-1ea1-4fcf-91fc-e181fd46ea62\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/621ff68c-59ec-4235-a919-455bbb38b532\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4241516c-074a-4535-8e5b-cb03e082cfcb\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7008ec25-4f48-489a-84b9-b4519755df46\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/63b80d45-b5d1-4c90-b42d-0a2516a762d4\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8de085b9-fcbf-46cf-b96a-c734464f8477\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fd8fda7b-e54e-4920-b27e-5bc65b77e470\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8dc0130b-4b37-4c17-98a5-d3f1eb01f1ab\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4621301e-3c88-42f8-b01e-c4b327d33ecf\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7aa98391-d438-40a7-b956-0896ab1ac171\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/338549f7-8803-4a7b-8a76-64245b930ae5\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9d0f54f5-6553-477f-b6ee-6892ab48f4a4\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1a3374e3-a937-4e27-b039-566077256627\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d6b7dddf-9d42-4e70-911e-ef8fadd35510\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2218789d-7647-4193-a655-e1021a0b1775\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/35189c2d-400e-4f67-b030-c539e9821290\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0043a32f-48d7-4032-a12e-04bcde3087a1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b6ca42ad-899b-483e-b857-5ed1f49a3fea\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1e879269-e1ab-4892-b5df-990e627b26a2\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3cbcc1e4-6d85-4e28-9051-c52700596d07\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1e2c2a41-f929-442d-99b1-d77fc20944a3\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b7353085-87db-4875-83fb-bdc89ec1b6cc\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/53a8ef84-8435-49e7-a44d-0b8652d20414\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/18885e73-bb24-4306-a0bc-9eb2614f9394\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d1733ee7-b137-4838-b766-56fc7340451b\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/755f4f6b-cf34-49b7-a780-097b11d5df37\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3f9a45b3-2abc-4055-bfff-19dc924f2a0e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/61051aa4-4c10-4b67-b209-c83ad4c0a8c1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/83b989a8-3eee-4b9d-a940-075cfbf7d80f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bd40b895-ae14-4025-8a82-aaaa2e9009e6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9a9d06bb-f3db-4912-9bde-53ae38128539\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8d0038ba-14e2-460f-89c0-1ac788e728db\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e46d7e2b-c006-4254-969e-83fac7485857\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9ed8adc7-d50e-4454-b98c-0ab403424b76\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f130ca22-2be4-497e-bda3-650b7b8ef41f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/77c1417b-4cad-4574-8971-5dee830b97c0\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b9aa6b58-95bb-4b0c-bfcc-3ac61b94f609\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/70e254dd-cbb2-4eee-b9b2-e6316ba01d61\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/03b6b7f6-51af-40a6-b3f8-f42efe841acf\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6ff03c69-7c9c-4f3a-95a3-a7585dbd9219\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/43b12adc-2478-4652-bef0-230bec790cbe\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/da2b39e2-e40c-45ca-a8b8-52ebfc3cc3e8\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/34c88fc3-aa23-4d77-a93d-8db8a83496c9\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9264f35e-6f95-4c96-b89b-9cf13fb2cfc2\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a257ab11-e1a4-41d7-b941-1baecff01d38\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/05631865-8af4-4de0-abde-c5a41eb0e19d\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/22b689b6-533f-492b-88a8-6fa4c5023543\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/44311e44-02da-4377-9cf2-c1d10a820713\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0a99a9e4-96a7-4024-9667-a136609d8363\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5a734a0f-e590-4a67-9acf-587c34e3fd1e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6bf79936-4d21-4aeb-818a-9c851da374b6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/77375e57-1056-45b3-9f6c-6529d4c658ba\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2dcb22fe-16b2-4fb6-80d4-65aa8dd8ff6f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4016cc5d-4d5d-4c9e-854f-1b0dd2e97ba8\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/81971151-a863-42e9-823b-bd00bdafe575\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b9e1e45d-ce8f-47f7-8599-114cd8d54df6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1c5f132b-068d-48fd-b1cc-0aa23768fd15\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/45fb64f5-d401-4148-94aa-53806793390b\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/59025f0c-a4d9-4b7b-b296-441971613f9e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3d126cd5-b834-4f36-a4c8-8451ebe59c24\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d8365859-ee03-428b-992c-f8fbfb8b2a4a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6cb5a524-d850-45b7-9f9d-ad6af49eb657\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/706808b7-efdc-4b86-bccb-fdfb6688a435\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6dadce12-9b8c-4a68-9cf0-54fb1cb80a58\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/263e9b39-c984-4323-be25-f20f59e3c265\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f537160d-8bce-4732-a613-61b87da566df\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1d9f10a9-cd45-4c10-9a00-d4a53e3b91d1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/52cb7a0b-b6b8-43f9-93f2-4e8716bc03c7\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d07cd49a-af07-421f-838e-bf844293f7c6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d61bde19-539e-4d25-bb75-596aca41288e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a78062d9-b14c-4a7f-be78-f22f6ca0dfd3\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0a277adc-6b42-4a24-b147-2c0d99a171a7\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5d993c1a-1013-4d93-8016-87ff3839d3dc\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e30d8084-365b-494d-bf99-8f3d39f1a5d8\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/347bd2d2-37d6-4038-afe1-cad93b9c8168\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/689d1acd-c4bf-4878-be9e-ab95b98754f0\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fb30d9a5-e3e7-4f57-8948-acc885b79616\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d07f4d3f-a494-4cf8-9b08-d8bd08d859dc\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/35ffcb06-6430-4c2d-9483-81bb09c0355b\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/36f4609a-109f-4be6-ba97-d357796bc64c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/960b340f-6a1d-4fea-835d-34972bce4466\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/777d7cf3-5bd0-4590-8963-c66d4c543287\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/51e82155-0626-4b42-9573-95d32ca781ab\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c60c6492-55ea-44e1-af1c-9e8c4d0a6121\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f281f75a-6810-4cdc-b3cd-8b1dc68ea691\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/871a75fd-ac32-42db-8bf4-f4bd1123197c\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3e11be25-ff20-4ea5-b611-fb0a935765ce\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3ced5376-2efc-4739-aac4-5567a54ff554\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/efdbe21b-dabb-4a56-8724-4e13a95eb287\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ace92c7f-f47d-4cdd-8291-76159d5a6f74\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7af4ca68-7725-471c-af51-e7885b8569f8\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5ac6e06d-dd98-4aad-8bdc-b5a04da996fe\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/63b8077b-0085-490e-9a1a-5155703c7855\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/60e7457f-7389-44bf-806d-d2aed6b90f6e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f84352c4-7729-4ec3-870c-977fcf1bcad5\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3a8e2607-29a7-49e4-99cb-f8e8525b6f84\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e99018e0-f6f5-4015-b50d-a670aba7c57e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/649b0f40-4058-4d9a-9d3a-ee77da990709\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/779303f0-a17d-49cf-a8f5-dd39478ed3cc\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/de4f7d6b-7ac5-426e-b29c-dc677cda59dc\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7863fc70-f3f6-45e9-aa6c-d14503312c6e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/61d52fb9-ebac-4448-ab78-b11c6d498c89\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e673c9b3-b0b8-4a99-a408-1397043d19f0\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f505cefc-b1a5-4521-8f5c-0cae426bcc1b\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c8a696ce-6952-447e-9fc6-c2c1e38e35a5\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/52e8a10e-98dd-4d9e-b50f-12943c06cfe3\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/17b05217-75c8-41cd-8354-d29dd74f8a10\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/22977d79-7b78-4b9e-82cf-01a9b2b30ee9\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b80917ce-d4e1-4d0a-b53a-319706855fe1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/24a9d790-bc98-4fde-aa0a-a0adad24a308\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4f2ca066-f002-4d81-99cf-b8ba03a2842d\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/346a1bf2-9050-4c40-99e4-f1b0e1df1047\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4e41025b-ee0e-4adc-9669-99a347e529ec\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/042c9158-5f7d-4890-b33a-11ae648ec16b\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3f11427d-c481-49d6-b47e-a59229142b24\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/39c22662-d429-4b96-b8dd-08f7312935c3\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2a1f4c9c-0fa0-4425-94e3-3d7c527f6d0f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9e515283-990d-44ac-a8c0-001a4107f978\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4759442a-3969-47b9-ad9c-0b76e0b6ff56\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/82358d7d-440f-4081-9086-054085545162\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0cbdabf8-99b3-470d-a587-394ab35d40a2\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/eaaf3a98-a0aa-4777-bd82-15eeb2b9988e\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7e8f3a29-8a09-4a9b-b1dd-21fcac13b6a6\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b474f553-332c-4a51-9484-1132de0a2786\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1b62a6ad-84ed-4781-bb37-5a0f45f351d1\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/163f7f50-f3fa-423c-8ecf-1b1cc38109aa\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bd25d9d5-8c5b-4337-af60-a3ab76f072ba\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/82f6420d-c4b1-4c76-8ff5-dcb590d75297\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c9b5b696-2e75-4ec2-b453-208e53155db7\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/dc2f57b2-8eff-4916-92f0-546b2d033ade\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m21.9s), 0396/0558 VUs, 444 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/855cb2fc-d8a0-4c98-aef6-94446651c25f\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6870566d-b98e-4d43-9963-b6b1953f7fa9\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/80ca4622-cedc-4e53-aa82-395d38e48424\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/045c366c-c052-4409-9dfb-982159a6ad0a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bcd0a1c4-74d0-4cd4-80f5-c7625d6e101a\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7ab1f0f7-9aae-4196-8cec-0d5095726957\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/dbeda515-4b72-45c2-a309-10e8f6f338db\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a6f16894-3461-4cd9-816a-a9b1f2e6c984\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4f39fe79-fe72-4c3b-82d5-8a471b3b43a2\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b90dc7a5-9642-469f-9d5c-0ac76b703779\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f93b2a18-ded8-4b16-9c3c-83c5d5216d36\": request timeout"
+time="2026-10-12T11:45:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/702e733f-10cd-4807-af17-3f9928e187d2\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8fd6dc94-bd5c-458f-88d8-835494b6c68d\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/34f62cb6-7742-446f-89f2-a18ada739670\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fb819871-3d11-446d-84c0-7c397b031141\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d33a777e-ac52-4f3b-8db0-6f6342797b24\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4b50a0ba-8625-4069-993c-9af3101d2be7\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/10af6083-a8a9-40ce-94f4-177a59653c8f\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/97d9c31a-ff91-4e57-8b06-54b8e76e2efc\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/588428ac-829e-4a55-9fb3-85fdbcf8201e\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/de9343a7-0db8-489a-8cd9-6ab4cda39116\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ae74ef1f-8f76-4229-af3f-9ad12b7dc778\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/05d8b4d7-e68c-45e0-bd70-f470b0e1261e\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8bbf6b9a-b813-41c2-b85d-0bde7cf3b919\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/15a5bb81-46d8-4671-9cb1-934755afb2bc\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0b17c83b-1149-4b25-987b-5814a6a743ad\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/de5f6dc8-30ed-41f3-8ffb-1dd79f27039c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6bdea7bb-a1a6-4078-9443-02ac4d5fe14d\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c6178e37-dc97-4812-aedb-618e0c200519\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/06275935-adbe-4938-b2e3-ddfadf756908\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1769475c-909c-4e50-8172-730208913452\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/558e9989-eddc-4ca3-afe5-6623ea97641c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/84b04a4b-57ce-4fcf-9abd-d6308443d014\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/94d905c7-af52-4428-98c4-e9d3e5ac721c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/22d8b439-f215-4280-8562-ebf84cfbdc40\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/24882ba1-8cac-4e50-a2f2-e1919d22a8e8\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6f2d9518-ade2-4772-84f2-443a9d82e787\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ebb211ae-161e-4c02-8d9e-618ca35b5166\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c04abd0f-14af-4cc5-ace8-547ab53e916f\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/aefac91b-1a40-4c16-bd04-2e1fcbc41507\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/df7d30a0-1c81-4466-8e6f-7e0f8acebaf3\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/89cbb025-662b-416e-9c29-b0f479dbf159\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f671d841-ea74-4f37-9c6b-bdaa392356ff\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/eeade3a5-e291-451e-87d9-532fc36c3036\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/07a93403-9322-44b7-ad37-a79820daf722\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c17e209c-db45-441e-b70a-14486c3ce28f\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/38b93f3d-cdcb-4635-a942-5b6da72d41de\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/cf1bf89c-5d5e-4613-bf1b-69b2f4ec145f\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/48921d0f-809c-408d-b144-3502ca6b37c3\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9696c28b-9248-4734-843c-2ff135abb16f\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/be5d8f0b-f81f-4420-be2a-371ae888f092\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a1219523-945f-4583-bcc0-1365fa5788c5\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/270bca7d-14db-43b7-8bd0-377b5084b9a6\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e2bdb8a0-a480-4f17-b73c-55fec6a9938e\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/82338048-3948-4aeb-b23d-60d5b0301753\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/aee058c7-0186-408f-b8fa-f2528cf92a6e\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a4c8411c-2914-4989-87a7-85f7d4dc85ee\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d0f17663-896d-4be6-a616-7dbef1c5c3cd\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e2ac64fa-fd32-4018-bb05-3f64b63a65d1\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3f25a2c2-6279-447e-b7f3-19643fb49662\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5faff9b0-8f46-4269-8d6e-4f985a2955d4\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/765fbc13-2634-4082-90ab-c37032e24c41\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7ae25ed6-bbb3-460f-a483-bf76c221be42\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fe1f1f89-2beb-4693-b5fa-d1a948e69621\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/11691eb2-60ee-490e-a92a-43c005614ed6\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a7c894dc-9ca1-4317-b323-e3603835f76a\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9486e4d9-51e0-4545-8111-1a858c4ecc54\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f691be00-6df2-4142-b388-1dad137dc5f0\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d1f8aef8-170f-49a2-a62d-823d2fc93c81\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ea420d73-2997-4ef7-9fa5-207570a1f0ef\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7106ecc7-52b2-47e5-80b4-fe88b370e1e9\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a8d73aa0-3887-40ad-a570-14edaf86d136\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2a5b1be9-1e38-4b22-b5f7-345c75afe6ce\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2748c52e-14bb-4f9a-906f-2b9832bf17b2\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b994c733-e367-4cad-908b-2aecf51d93bf\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e34255bb-29b8-4826-a5f3-2417a1905e50\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/acee36d6-b73b-48cc-892d-a0f1fb470874\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5e36fc15-21f5-4287-9408-c998857f33f9\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9bd89381-35da-4887-b9d2-0913b9226974\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f1e42c05-c9b1-41a0-bbb9-8e78e555c2b5\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e6a58da1-dcee-42b6-b87c-a00605ced5c7\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4f597cb5-a4ca-413c-8a89-5adec8167af5\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/64cb3425-0278-4681-b224-a2a8a2886fc0\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/69b1f47d-d366-4f93-b3f0-94c7160c9f66\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/637978c1-7d50-4e8a-a332-99d0e8ba0093\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/806a830d-dcc5-466c-b393-1f6103ada44d\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/755765da-fa82-43ac-a453-9040b5b59147\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/61834065-3f03-4e84-bdc5-462bc02d3bb0\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/02ef39e8-d72f-431f-9879-eb1c1c954132\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d7d529f1-4527-409b-8497-efcf5cb9f24b\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5dbb3c46-c2b2-4523-9a9d-5222e14f46bf\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/28c89bc1-a5af-49ba-b61d-9b2108116279\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b7c1de07-b5d3-4b89-9383-b14fcaec048c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2ee66e84-ea7b-48cf-a2a0-f688a8952a20\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/baced1de-19c8-4592-92cc-97264e21aafa\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/988e744d-2da4-4a1b-a50c-2678b9631276\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c1a82cb7-ba8c-4b56-81cd-a2d5753793e4\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6720de49-eddd-4239-8ce0-0eac09d704f4\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/165d9b30-c9a3-47e1-b963-a906e777a886\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3d1c572a-30f3-462e-962a-61afc3c61ce9\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f0cd35f4-6a23-477b-a98c-bc8647b7d5de\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1b56fcc1-fd0b-4286-b5c2-65564cc158b8\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2236a323-eee4-4060-9993-bca4babfe4b0\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4370c314-b129-4890-a49c-e9d862c196c8\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0ce68640-5f25-4e21-8f46-866fa037b487\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f02ab149-c02a-4625-9cfa-231ef4c16d6c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/84ba9df8-814c-4bff-a178-e26ed52ef86c\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/128e0332-196d-4d0f-8c3b-8a1313c00086\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bce26472-10b6-4b2d-af57-51300288638b\": request timeout"
+time="2026-10-12T11:45:38Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/93ed1a9b-99cd-4dd6-8c7a-fad3a2e5c96f\": request timeout"
+
+running (0m22.9s), 0279/0558 VUs, 561 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m23.9s), 0265/0558 VUs, 575 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m24.9s), 0249/0558 VUs, 591 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m25.9s), 0224/0558 VUs, 616 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m26.9s), 0189/0558 VUs, 651 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m27.9s), 0170/0558 VUs, 670 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m28.9s), 0134/0558 VUs, 706 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+
+running (0m29.9s), 0043/0558 VUs, 797 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0451/0558 VUs  20s  250.00 iters/s
+{"scenario":"C","thresholds":{"business_outcomes{result:sold_out}":{"count>=0":{"ok":true}},"business_outcomes{result:rate_limited}":{"count>=0":{"ok":true}},"business_failures":{"count==0":{"ok":false}},"http_req_failed":{"rate<0.01":{"ok":false}},"business_outcomes{result:browse_ok}":{"count>=0":{"ok":true}},"business_outcomes{result:browse_rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:error}":{"count>=0":{"ok":true}},"business_outcomes{result:login_ok}":{"count>=0":{"ok":true}},"http_req_duration{name:POST /api/v1/reservations}":{"p(95)<1000":{"ok":false},"p(99)<2000":{"ok":false}},"unexpected_5xx":{"count==0":{"ok":true}},"business_outcomes{result:abandoned}":{"count>=0":{"ok":true}},"business_outcomes{result:queue_sold_out}":{"count>=0":{"ok":true}},"http_req_duration{name:POST /api/v1/orders}":{"p(95)<1000":{"ok":false},"p(99)<2000":{"ok":false}},"business_outcomes{result:payment_failed}":{"count>=0":{"ok":true}},"arrivals_started":{"count==5000":{"ok":false}},"business_outcomes{result:login_rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:paid}":{"count>=0":{"ok":true}},"unexpected_responses":{"rate<0.01":{"ok":false}},"business_outcomes{result:waiting_room_required}":{"count>=0":{"ok":true}},"dropped_iterations":{"count==0":{"ok":false}},"checks":{"rate==1":{"ok":false}}}}
+
+running (0m30.5s), 0000/0558 VUs, 840 complete and 0 interrupted iterations
+spike ✓ [ 100% ] 0000/0558 VUs  20s  250.00 iters/s
+time="2026-10-12T11:45:47Z" level=error msg="thresholds on metrics 'arrivals_started, business_failures, checks, dropped_iterations, http_req_duration{name:POST /api/v1/orders}, http_req_duration{name:POST /api/v1/reservations}, http_req_failed, unexpected_responses' have been crossed"
+
+ Container ticketrush-week7-tools-run-1a6ddb353574 Creating 
+ Container ticketrush-week7-tools-run-1a6ddb353574 Created 
+{
+  "total_exec_time": [
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 960,
+      "total_exec_time": 54913.050167,
+      "mean_exec_time": 57.201093923958425,
+      "rows": 960
+    },
+    {
+      "queryid": 4752457557041058143,
+      "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id",
+      "calls": 7943,
+      "total_exec_time": 6160.847107000017,
+      "mean_exec_time": 0.7756322682865403,
+      "rows": 7943
+    },
+    {
+      "queryid": 245626904635024902,
+      "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,$9,$4,$5,$6,$7,$8)",
+      "calls": 852,
+      "total_exec_time": 5315.691177999995,
+      "mean_exec_time": 6.239074152582158,
+      "rows": 852
+    },
+    {
+      "queryid": 1907361671576918022,
+      "query": "SELECT * FROM payments WHERE order_id=$1",
+      "calls": 7091,
+      "total_exec_time": 4434.866741000001,
+      "mean_exec_time": 0.6254219067832472,
+      "rows": 7091
+    },
+    {
+      "queryid": -2737154438296329858,
+      "query": "UPDATE idempotency_keys SET status=$4,response_status=$1,response_body=$2 WHERE id=$3 AND status=$5",
+      "calls": 852,
+      "total_exec_time": 4324.059687999998,
+      "mean_exec_time": 5.075187427230041,
+      "rows": 852
+    },
+    {
+      "queryid": -8101211000551547893,
+      "query": "SELECT * FROM orders WHERE id=$1",
+      "calls": 11527,
+      "total_exec_time": 3428.1638229999953,
+      "mean_exec_time": 0.297402951591914,
+      "rows": 11527
+    },
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 1840,
+      "total_exec_time": 3392.3627429999997,
+      "mean_exec_time": 1.8436754038043475,
+      "rows": 852
+    },
+    {
+      "queryid": -3854080420358358271,
+      "query": "INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)\nVALUES ($1,$2,$3,$4,$5,$6,$7,$9,$8) ON CONFLICT(order_id,ticket_index) DO NOTHING",
+      "calls": 2065,
+      "total_exec_time": 3169.2166999999963,
+      "mean_exec_time": 1.5347296368038728,
+      "rows": 2065
+    },
+    {
+      "queryid": 1451592005812453505,
+      "query": "INSERT INTO idempotency_keys(id,user_id,endpoint,key,request_hash,status,created_at,expires_at,lease_until)\nVALUES ($1,$2,$3,$4,$5,$9,$6,$7,$8) ON CONFLICT(user_id,endpoint,key) DO NOTHING",
+      "calls": 1082,
+      "total_exec_time": 2365.1593780000003,
+      "mean_exec_time": 2.1859143974121973,
+      "rows": 852
+    },
+    {
+      "queryid": 7290069031147222470,
+      "query": "UPDATE outbox_events SET status=$3,published_at=$1,last_error=$4 WHERE id=$2 AND status=$5",
+      "calls": 1984,
+      "total_exec_time": 2293.556532999996,
+      "mean_exec_time": 1.1560264783266117,
+      "rows": 1984
+    }
+  ],
+  "mean_exec_time": [
+    {
+      "queryid": 8986880392822749325,
+      "query": "INSERT INTO user_roles SELECT id,$1 FROM users",
+      "calls": 1,
+      "total_exec_time": 1958.63227,
+      "mean_exec_time": 1958.63227,
+      "rows": 20001
+    },
+    {
+      "queryid": 2529582894003489060,
+      "query": "COPY users (id,email,password_hash) FROM STDIN",
+      "calls": 1,
+      "total_exec_time": 579.39321,
+      "mean_exec_time": 579.39321,
+      "rows": 20001
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 960,
+      "total_exec_time": 54913.050167,
+      "mean_exec_time": 57.201093923958425,
+      "rows": 960
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 26,
+      "total_exec_time": 826.8402530000001,
+      "mean_exec_time": 31.801548192307692,
+      "rows": 442
+    },
+    {
+      "queryid": 6342828237680505206,
+      "query": "SELECT * FROM (SELECT current_database() AS current_database, n.nspname,c.relname,a.attname,a.atttypid,a.attnotnull  OR (t.typtype = $1 AND t.typnotnull) AS attnotnull,a.atttypmod,a.attlen,t.typtypmod,row_number() OVER (PARTITION BY a.attrelid ORDER BY a.attnum) AS attnum, nullif(a.attidentity, $2) as attidentity,nullif(a.attgenerated, $3) as attgenerated,pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS adsrc,dsc.description,t.typbasetype,t.typtype  FROM pg_catalog.pg_namespace n  JOIN pg_catalog.pg_class c ON (c.relnamespace = n.oid)  JOIN pg_catalog.pg_attribute a ON (a.attrelid=c.oid)  JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid)  LEFT JOIN pg_catalog.pg_attrdef def ON (a.attrelid=def.adrelid AND a.attnum = def.adnum)  LEFT JOIN pg_catalog.pg_description dsc ON (c.oid=dsc.objoid AND a.attnum = dsc.objsubid)  LEFT JOIN pg_catalog.pg_class dc ON (dc.oid=dsc.classoid AND dc.relname=$4)  LEFT JOIN pg_catalog.pg_namespace dn ON (dc.relnamespace=dn.oid AND dn.nspname=$5)  WHERE c.relkind in ($6,$7,$8,$9,$10) and a.attnum > $11 AND NOT a.attisdropped  AND n.nspname LIKE $12) c WHERE $13  AND attname LIKE $14 ORDER BY nspname,c.relname,attnum",
+      "calls": 1,
+      "total_exec_time": 26.024652999999997,
+      "mean_exec_time": 26.024652999999997,
+      "rows": 195
+    },
+    {
+      "queryid": -4274481145482781420,
+      "query": "SELECT name, setting, COALESCE(unit, $1), short_desc, vartype FROM pg_settings WHERE vartype IN ($2, $3, $4) AND name != $5",
+      "calls": 26,
+      "total_exec_time": 277.38865400000003,
+      "mean_exec_time": 10.668794384615385,
+      "rows": 7124
+    },
+    {
+      "queryid": 3914026115026614898,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity+$1, version=version+$4, updated_at=$2 WHERE id=$3",
+      "calls": 42,
+      "total_exec_time": 440.1911009999999,
+      "mean_exec_time": 10.4807405,
+      "rows": 42
+    },
+    {
+      "queryid": -1677136239082965199,
+      "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type=$1) AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= $2) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),$3)/$4 FROM pg_stat_statements) AS slowest_mean_seconds",
+      "calls": 26,
+      "total_exec_time": 187.90730699999997,
+      "mean_exec_time": 7.227204115384615,
+      "rows": 26
+    },
+    {
+      "queryid": 245626904635024902,
+      "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,$9,$4,$5,$6,$7,$8)",
+      "calls": 852,
+      "total_exec_time": 5315.691177999995,
+      "mean_exec_time": 6.239074152582158,
+      "rows": 852
+    },
+    {
+      "queryid": -1104071183735899680,
+      "query": "SELECT e.* FROM outbox_events e\nWHERE e.status=$3 AND e.next_attempt_at<=$1\n  AND NOT EXISTS (SELECT $4 FROM outbox_events earlier WHERE earlier.aggregate_type=e.aggregate_type\n    AND earlier.aggregate_id=e.aggregate_id AND earlier.status<>$5\n    AND (earlier.created_at<e.created_at OR (earlier.created_at=e.created_at AND earlier.id<e.id)))\nORDER BY e.created_at,e.id LIMIT $2 FOR UPDATE SKIP LOCKED",
+      "calls": 84,
+      "total_exec_time": 448.83204599999993,
+      "mean_exec_time": 5.343238642857144,
+      "rows": 1984
+    }
+  ]
+}
+ Container ticketrush-week7-tools-run-68cc4a6695f8 Creating 
+ Container ticketrush-week7-tools-run-68cc4a6695f8 Created 
+{
+  "passed": true,
+  "checks": {
+    "1_inventory_conservation": {
+      "violations": 0,
+      "tiers_checked": 205,
+      "passed": true
+    },
+    "2_ticket_conservation": {
+      "violations": 0,
+      "sold": 2065,
+      "oversold": 0,
+      "passed": true
+    },
+    "3_idempotency": {
+      "orders": 852,
+      "successful_keys": 852,
+      "distinct_keys": 852,
+      "distinct_effects": 852,
+      "violations": 0,
+      "passed": true
+    },
+    "4_paid_consistency": {
+      "paid_without_tickets": 0,
+      "confirmed_without_paid": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "5_outbox": {
+      "pending": 0,
+      "failed": 0,
+      "published": 3624,
+      "violations": 0,
+      "passed": true
+    },
+    "6_emails": {
+      "paid_orders": 810,
+      "exactly_one": 810,
+      "sent_confirmations": 810,
+      "violations": 0,
+      "passed": true
+    },
+    "8_expiry": {
+      "overdue_orders": 0,
+      "overdue_holds": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "7_redis_drift": {
+      "tiers_checked": 205,
+      "before_mismatches": 205,
+      "after_mismatches": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "admin_inventory_audit": {
+      "violations": 0,
+      "errors": [],
+      "passed": true
+    }
+  }
+}
