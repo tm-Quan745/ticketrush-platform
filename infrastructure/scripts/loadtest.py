@@ -345,10 +345,17 @@ def main():
     args = p.parse_args()
     if args.backend_image:
         os.environ["BACKEND_IMAGE"] = args.backend_image
+    allowed_backend_env = {"HIKARI_MAX_POOL_SIZE", "HIKARI_CONNECTION_TIMEOUT_MS", "BULKHEAD_ENABLED",
+                           "BULKHEAD_MAX_CONCURRENT", "BULKHEAD_POOL_MULTIPLIER", "ORDER_STATUS_JOINED_READ"}
     for item in args.backend_env:
         key, separator, value = item.partition("=")
-        if separator != "=" or key != "HIKARI_MAX_POOL_SIZE" or not value.isdecimal() or int(value) < 1:
-            p.error("--backend-env only accepts HIKARI_MAX_POOL_SIZE=<positive integer>")
+        if separator != "=" or key not in allowed_backend_env:
+            p.error("--backend-env accepts only documented load-test backend flags")
+        if key in {"BULKHEAD_ENABLED", "ORDER_STATUS_JOINED_READ"}:
+            if value not in {"true", "false"}:
+                p.error(key + " must be true or false")
+        elif not value.isdecimal() or (key != "BULKHEAD_MAX_CONCURRENT" and int(value) < 1):
+            p.error(key + " must be a positive integer (or zero for derived bulkhead capacity)")
         os.environ[key] = value
     args.run_id = args.run_id or args.scenario + "-" + time.strftime("%Y%m%d-%H%M%S", time.gmtime())
     if not all(c.isalnum() or c in "-_" for c in args.run_id):
