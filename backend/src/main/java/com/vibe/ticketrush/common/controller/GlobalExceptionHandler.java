@@ -3,9 +3,11 @@ package com.vibe.ticketrush.common.controller;
 import com.vibe.ticketrush.common.dto.ApiError;
 import com.vibe.ticketrush.common.service.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +15,17 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import java.time.Instant;
+import java.sql.SQLTransientConnectionException;
 import java.util.TreeMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private final MeterRegistry metrics;
+
+    public GlobalExceptionHandler(MeterRegistry metrics) {
+        this.metrics = metrics;
+    }
 
     @ExceptionHandler(ApiException.class)
     ResponseEntity<ApiError> api(ApiException ex, HttpServletRequest request) {
@@ -30,6 +38,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<ApiError> conflict(HttpServletRequest request) {
         return ResponseEntity.status(409).body(ApiError.of(409, "CONFLICT",
                 "The request conflicts with existing data", request.getRequestURI()));
+    }
+
+    @ExceptionHandler(CannotGetJdbcConnectionException.class)
+    ResponseEntity<ApiError> poolTimeout(CannotGetJdbcConnectionException ex, HttpServletRequest request) {
+        return poolUnavailable(ex, request);
     }
 
     @Override
@@ -50,9 +63,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiError> unexpected(Exception ex, HttpServletRequest request) {
+        if (hikariTimeout(ex)) return poolUnavailable(ex, request);
         LOG.error("Unhandled request failure", ex);
         return ResponseEntity.internalServerError().body(ApiError.of(500, "INTERNAL_ERROR",
                 "An unexpected error occurred", request.getRequestURI()));
+    }
+
+    private ResponseEntity<ApiError> poolUnavailable(Exception ex, HttpServletRequest request) {
+        LOG.warn("database_pool_timeout correlation_id={}", com.vibe.ticketrush.common.service.CorrelationId.current());
+        metrics.counter("database_pool_timeout_total").increment();
+        request.setAttribute("metric.error", "DATABASE_POOL_TIMEOUT");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, "1")
+            .body(ApiError.of(503, "DATABASE_POOL_TIMEOUT", "Database capacity is temporarily full", request.getRequestURI()));
+    }
+
+    private boolean hikariTimeout(Throwable error) {
+        for (Throwable current = error; current != null; current = current.getCause()) {
+            if (current instanceof SQLTransientConnectionException && current.getMessage() != null
+                    && current.getMessage().contains("HikariPool")) return true;
+        }
+        return false;
     }
 
     private String path(WebRequest request) {

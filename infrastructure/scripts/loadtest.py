@@ -95,7 +95,7 @@ def backend_provenance(args):
             "image_revision_label": revision,
             "run_id": args.run_id, "utc_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             **source_status(),
-            "hikari_connection_timeout_ms": 30000,
+            "hikari_connection_timeout_ms": int(os.environ.get("HIKARI_CONNECTION_TIMEOUT_MS", "1500")),
             "backend_connection_durability": {
                 "synchronous_commit": sync,
                 "fsync": fsync,

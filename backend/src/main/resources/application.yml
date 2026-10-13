@@ -13,6 +13,7 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:10}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT_MS:1500}
     url: ${DB_URL:jdbc:postgresql://localhost:5432/ticketrush}
     username: ${POSTGRES_USER:ticketrush}
     password: ${POSTGRES_PASSWORD}
@@ -142,6 +143,10 @@ ticketrush:
     expiry-enabled: ${RESERVATION_EXPIRY_ENABLED:true}
   order:
     joined-status-read: ${ORDER_STATUS_JOINED_READ:true}
+  bulkhead:
+    enabled: ${BULKHEAD_ENABLED:true}
+    max-concurrent: ${BULKHEAD_MAX_CONCURRENT:0}
+    pool-multiplier: ${BULKHEAD_POOL_MULTIPLIER:3}
   outbox:
     relay-interval: ${OUTBOX_RELAY_INTERVAL:1s}
     batch-size: ${OUTBOX_BATCH_SIZE:100}

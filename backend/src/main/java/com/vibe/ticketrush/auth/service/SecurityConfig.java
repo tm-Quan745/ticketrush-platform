@@ -50,7 +50,9 @@ public class SecurityConfig {
                                  com.vibe.ticketrush.common.ratelimit.RedisRateLimiter limiter,
                                  com.vibe.ticketrush.common.ratelimit.RateLimitProperties limits,
                                  com.vibe.ticketrush.common.ratelimit.ClientAddress addresses,
-                                 com.fasterxml.jackson.databind.ObjectMapper json) throws Exception {
+                                 com.fasterxml.jackson.databind.ObjectMapper json,
+                                 com.vibe.ticketrush.common.bulkhead.RequestBulkhead bulkhead,
+                                 io.micrometer.core.instrument.MeterRegistry metrics) throws Exception {
         var authorities = new JwtGrantedAuthoritiesConverter();
         authorities.setAuthoritiesClaimName("roles");
         authorities.setAuthorityPrefix("ROLE_");
@@ -86,6 +88,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint((req, res, e) -> errors.write(req, res, 401, "UNAUTHORIZED", "Invalid access token"))
                         .accessDeniedHandler((req, res, e) -> errors.write(req, res, 403, "FORBIDDEN", "Access denied")))
                 .addFilterBefore(new com.vibe.ticketrush.common.ratelimit.RateLimitFilter(limiter,limits,addresses,properties,errors,json),
+                    org.springframework.security.web.access.intercept.AuthorizationFilter.class)
+                .addFilterAfter(new com.vibe.ticketrush.common.bulkhead.BulkheadFilter(bulkhead,errors,metrics),
                     org.springframework.security.web.access.intercept.AuthorizationFilter.class);
         return http.build();
     }
