@@ -71,4 +71,10 @@ class ObservabilityIntegrationTest {
         assertThat(generated).hasSize(36);
         assertThat(org.slf4j.MDC.get("correlation_id")).isNull();
     }
+
+    @Test void loadtestDurabilityProbeReadsDurableSettingsThroughTheApplicationPool() throws Exception {
+        String body = http.perform(get("/internal/loadtest/durability"))
+            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertThat(body).contains("\"synchronousCommit\":\"on\"", "\"fsync\":\"on\"", "observedAt");
+    }
 }

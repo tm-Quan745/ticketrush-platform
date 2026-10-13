@@ -64,6 +64,9 @@ public class SecurityConfig {
                             "/api/v1/auth/refresh", "/api/v1/auth/logout").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
                             "/actuator/health/readiness").permitAll();
+                    if (environment.matchesProfiles("loadtest", "test")) {
+                        auth.requestMatchers(HttpMethod.GET, "/internal/loadtest/durability").permitAll();
+                    }
                     if (!environment.matchesProfiles("prod")) {
                         auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     }

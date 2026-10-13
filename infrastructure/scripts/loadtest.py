@@ -84,12 +84,23 @@ def backend_provenance(args):
     revision = image.get("Config", {}).get("Labels", {}).get("org.opencontainers.image.revision")
     if revision != commit:
         raise RuntimeError(f"Backend revision mismatch: expected {commit}, image label is {revision}")
+    durability = request_json("http://127.0.0.1:28087/internal/loadtest/durability")
+    sync, fsync = durability.get("synchronousCommit"), durability.get("fsync")
+    if not sync or not fsync or not durability.get("observedAt"):
+        raise RuntimeError("Backend Hikari durability response is incomplete")
+    if not args.run_id.startswith("diagnostic-") and (sync != "on" or fsync != "on"):
+        raise RuntimeError(f"Refusing non-DIAGNOSTIC run with backend durability {sync}/{fsync}")
     return {"commit_sha": commit,
             "backend_image_id": inspected["Image"],
             "image_revision_label": revision,
             "run_id": args.run_id, "utc_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             **source_status(),
             "hikari_connection_timeout_ms": 30000,
+            "backend_connection_durability": {
+                "synchronous_commit": sync,
+                "fsync": fsync,
+                "observed_at_utc": durability["observedAt"]
+            },
             "k6_vus": {"preAllocatedVUs": int(os.environ.get("PRE_VUS", "200")), "maxVUs": int(os.environ.get("MAX_VUS", "1000"))}}
 
 
