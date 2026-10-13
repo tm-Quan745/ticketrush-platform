@@ -44,6 +44,12 @@ exit 99 is expected for an overload result and does not invalidate a run whose v
 The isolated SQL capture proves the intended change, but the interleaved load medians and ranges
 overlap heavily. Therefore the effect of `7eef8a6` on end-to-end Scenario C throughput or latency
 does **not** exceed run-to-run noise on this shared generator/VM. It is not a capacity claim.
+The earlier six-run sequence is not evidence of a monotonic wall-clock trend: the same-config A/A
+control had large variance. Its raw triples are WAL sync / hot UPDATE mean / PAID / reserve p95:
+`4.75 ms / 4.71 ms / 1,017 / 1,496.7 ms`, `5.62 / 10.05 / 1,067 / 1,805.7`, and
+`12.88 / 118.74 / 551 / 5,001.1`; the last p95 is the five-second timeout cap. They are
+consistent with, not proof of, a commit-latency hypothesis. The isolated trace is one cold request:
+it proves statement order, not the magnitude of a load-test effect.
 The raw artifacts are [C-1 provenance](results/attribution-C-1-provenanced-provenance.json),
 [C-6 provenance](results/final-C-6-provenanced-provenance.json), and the two isolated PostgreSQL
 captures: [e29](results/statement-order-e29-postgres.log), [HEAD](results/statement-order-head-postgres.log).
@@ -172,6 +178,11 @@ internet latency, external payment-provider reliability, multi-node fairness or 
 One generator IP is subject to existing browse/login IP limits. Expected 429s must be reported separately
 from useful throughput. SMTP notification rows prove committed consumer idempotency, not exactly-once
 external email delivery across every possible crash window.
+
+The durability diagnostic was stopped at n=1 per arm by decision: `synchronous_commit=off` is not
+an option, and the hot row is not established as the end-to-end limit. The durable A/A triples remain
+consistent with, not proof of, an effect from this laptop's Docker Desktop virtual disk (observed average
+WAL sync 4.75–12.88 ms); they do not predict production storage behavior.
 
 Future experiments require separate generators, multiple backend instances behind Nginx, a managed
 database, read replicas for browse traffic, and measured horizontal scaling. No frontend is included.

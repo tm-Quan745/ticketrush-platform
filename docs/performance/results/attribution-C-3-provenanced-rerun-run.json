@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791865080.8418875,
+  "end": 1791865132.653156,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=attribution-C-3-provenanced-rerun"
+  ],
+  "collection_error": "<urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+}

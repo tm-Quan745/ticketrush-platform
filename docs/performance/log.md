@@ -230,6 +230,44 @@ The ranges overlap substantially (for example RPS e29 `59.7–677.2`, HEAD `197.
 end-to-end difference does not exceed machine/run noise. The statement order is proven; a stable
 capacity benefit is not.
 
+The earlier six-run sequence must not be described as a monotonic wall-clock trend. The isolated
+statement trace is one cold request: it establishes order only, not a load-effect magnitude.
+`git diff --stat 174aac3 5bda52c -- backend` was empty, so C-4 is in the same post-`7eef8a6`
+backend series.
+
+An A/A control then ran the same HEAD image/config three times back-to-back: server PAID was
+`1,017, 1,067, 551`; hot UPDATE mean `4.71, 10.05, 118.74 ms`; average WAL sync `4.75, 5.62,
+12.88 ms`; reserve p95 `1,496.7, 1,805.7, 5,001.1 ms`; all verifiers passed. Across these three
+points are consistent with, but do not prove, a commit-latency hypothesis; the third reserve p95 is
+the five-second timeout cap. This confirms material run-to-run variance. Future comparisons require a 30–60 second low-rate pre-warm, discard the
+first session run, and use counterbalanced ABBA ordering.
+
+## Pre-registered durability diagnostic
+
+This is DIAGNOSTIC only, never a default or headline result. In one session, with identical Scenario C,
+the existing 60-second low-rate pre-warm, full provenance, pg activity and WAL artifacts, run order is
+`D X X D D X`: D uses durable defaults; X uses `synchronous_commit=off` while `fsync=on`. The hypothesis
+is supported only if median X PAID is at least 1.5x median D, X hot UPDATE mean is below about 5 ms, and
+X PAID spread (max/min) is below 1.5. It is rejected if PAID is roughly unchanged. Restore D afterwards
+and record `SHOW synchronous_commit` and `SHOW fsync`.
+
+## Diagnostic recovery
+
+Docker Desktop stopped during the diagnostic durability restore. `ALTER SYSTEM RESET
+synchronous_commit` was applied after Docker returned. A new PostgreSQL session then reported
+`synchronous_commit=on` and `fsync=on`, both from `default`; the captured recovery record is
+`results/durability-recovery.json`. The leftover `log_line_prefix` and `log_statement` settings were
+also reset and `pg_reload_conf()` returned true. At `2026-10-13T12:59:09.560397482Z`, the loadtest
+backend's own Hikari connection reported `synchronous_commit=on` and `fsync=on`. Every future runner
+provenance record captures this backend-pool probe and refuses a non-DIAGNOSTIC run unless both are on.
+
+The diagnostic is **stopped at n=1 per arm by decision**. `synchronous_commit=off` is not an option;
+the hot row is not the established end-to-end limit. No X result is a headline/default result and no
+remaining diagnostic run will be started. Docker Desktop stopped once during this restore and once
+earlier during attribution. The Docker VM setting recorded in `results/environment.json` is
+4,013,400,064 bytes; the k6 container had reached about 1.1 GB at 1,000 VUs. This is a suspected
+memory-pressure cause, not a proven root cause.
+
 ### Isolated statement order and lock interval
 
 `log_statement=all` with `%m [%p] %x` was enabled only for one isolated successful reservation
