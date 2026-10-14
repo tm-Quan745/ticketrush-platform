@@ -34,6 +34,11 @@ class ObservabilityPreflightTest(unittest.TestCase):
         self.assertFalse(loadtest.healthy_cadvisor_target({
             "health": "up", "labels": {"job": "cadvisor", "instance": "cadvisor:8080"}}))
 
+    def test_preflight_keeps_probe_metric_after_k6_exits(self):
+        command = loadtest.k6_preflight_command("probe-1")
+        self.assertIn("K6_PROMETHEUS_RW_STALE_MARKERS=false", command)
+        self.assertIn("preflight_id=probe-1", command)
+
 
 if __name__ == '__main__':
     unittest.main()

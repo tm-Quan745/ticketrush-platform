@@ -148,6 +148,13 @@ def healthy_cadvisor_target(target):
             and labels.get("instance", "").startswith("cadvisor:"))
 
 
+def k6_preflight_command(probe_id):
+    return ["run", "--rm", "--no-deps", "-T",
+            "-e", "K6_PROMETHEUS_RW_STALE_MARKERS=false",
+            "k6", "run", "--quiet", "--tag", f"preflight_id={probe_id}",
+            "--out", "experimental-prometheus-rw", "preflight.js"]
+
+
 def observability_preflight(args):
     """Fail closed before warm-up when telemetry cannot be collected."""
     report = {"run_id": args.run_id,
@@ -178,10 +185,7 @@ def observability_preflight(args):
             errors.append("Prometheus has no healthy cAdvisor scrape target")
 
         probe_id = f"preflight-{args.run_id}-{int(time.time())}"
-        probe = compose("run", "--rm", "--no-deps", "-T", "k6", "run", "--quiet",
-                        "--tag", f"preflight_id={probe_id}",
-                        "--out", "experimental-prometheus-rw", "preflight.js",
-                        capture=True, check=False)
+        probe = compose(*k6_preflight_command(probe_id), capture=True, check=False)
         probe_output = probe.stdout + "\n" + probe.stderr
         probe_ok = probe.returncode == 0 and not remote_write_failed(probe_output)
         received = False
