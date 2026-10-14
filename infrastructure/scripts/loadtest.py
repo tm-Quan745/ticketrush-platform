@@ -297,7 +297,18 @@ class DockerStatsSampler:
         (RESULTS / f"{self.run_id}-docker-stats.json").write_text(json.dumps(self.samples, indent=2))
 
 
-def collect(run_id, start, end, params, source):
+def k6_measurement_window(run_id, process_end):
+    """Use k6's own duration so Prometheus and k6 exclude the same warm-up."""
+    summary = json.loads((RESULTS / f"{run_id}.json").read_text())
+    duration = summary["state"]["testRunDurationMs"] / 1000
+    k6_end = process_end
+    k6_start = k6_end - duration
+    return {"k6_start": k6_start, "k6_end": k6_end, "duration_seconds": duration,
+            "steady_start": k6_start + 15, "steady_end": k6_end,
+            "steady_duration_seconds": max(1, duration - 15)}
+
+
+def collect(run_id, start, end, params, source, window):
     queries = {
         "request_rate": 'sum(rate(http_server_requests_seconds_count[15s]))',
         "k6_request_rate": 'sum(rate(k6_http_reqs_total[15s]))',
@@ -341,9 +352,9 @@ def collect(run_id, start, end, params, source):
             result["series"][name] = request_json(url)
         except Exception as error:
             result["series"][name] = {"error": str(error)}
-    # A full-window histogram is needed for an apples-to-apples server p95.  The
-    # first 15 seconds are deliberately excluded to match the k6 steady trend.
-    steady_seconds = max(1, int(end - start - 15))
+    # A full-window histogram is needed for an apples-to-apples server p95. The
+    # timestamps come from k6's own duration, not Docker process overhead.
+    steady_seconds = max(1, int(window["steady_duration_seconds"]))
     steady = {
         "status_server_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(http_server_requests_seconds_bucket{uri="/api/v1/events/{id}/waiting-room/status"}[%ss])))' % steady_seconds,
         "jwt_validation_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(jwt_validation_seconds_bucket[%ss])))' % steady_seconds,
@@ -352,10 +363,11 @@ def collect(run_id, start, end, params, source):
         "script_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(waiting_room_status_script_seconds_bucket[%ss])))' % steady_seconds,
         "response_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(waiting_room_status_response_seconds_bucket[%ss])))' % steady_seconds,
     }
-    result["steady_state"] = {"excluded_warmup_seconds": 15, "duration_seconds": steady_seconds, "queries": {}}
+    result["steady_state"] = {"excluded_warmup_seconds": 15, "duration_seconds": steady_seconds,
+                              "window": window, "queries": {}}
     for name, query in steady.items():
         try:
-            url = "http://127.0.0.1:29097/api/v1/query?" + urllib.parse.urlencode({"query": query, "time": end})
+            url = "http://127.0.0.1:29097/api/v1/query?" + urllib.parse.urlencode({"query": query, "time": window["steady_end"]})
             result["steady_state"]["queries"][name] = request_json(url)
         except Exception as error:
             result["steady_state"]["queries"][name] = {"error": str(error)}
@@ -451,7 +463,8 @@ def measure(args):
     try:
         if args.jfr:
             export_profile(args.run_id)
-        collect(args.run_id, start, end, parameters, provenance)
+        window = k6_measurement_window(args.run_id, end)
+        collect(args.run_id, start, end, parameters, provenance, window)
         tool("top-queries", "--output", f"{args.run_id}-queries.json")
     except Exception as error:
         collection_error = str(error)
