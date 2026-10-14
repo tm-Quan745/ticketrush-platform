@@ -2,3 +2,5 @@ ticketrush:
   queue:
     # The admission-pair feed is test-only and exists only in the isolated loadtest profile.
     capture-admitted: true
+    # Polling experiments sample subsets; retain inactive sample members while they are measured.
+    heartbeat-ttl: 10m
