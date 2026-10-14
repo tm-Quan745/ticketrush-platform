@@ -12,6 +12,8 @@ import io.micrometer.core.instrument.Timer;
 import java.security.SecureRandom;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -40,6 +42,11 @@ public class WaitingRoomService implements ReservationAdmission {
     private final Counter redisCommands;
     private final Counter joinRequests;
     private final Counter statusRequests;
+    // Tier/event ownership and admission configuration change only through the
+    // inventory and waiting-room admin flows.  Keep the pre-transaction gate
+    // off the JDBC pool while hot-row transactions are queued.
+    private final ConcurrentMap<UUID,UUID> tierEvents=new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID,WaitingRoomEvents.Settings> admissionEvents=new ConcurrentHashMap<>();
     private final AtomicLong size=new AtomicLong();
     private final SecureRandom random=new SecureRandom();
     public WaitingRoomService(StringRedisTemplate redis,RedisScript<String> waitingRoomScript,RedisProperties keys,
@@ -88,6 +95,7 @@ public class WaitingRoomService implements ReservationAdmission {
     private String settingsKey(UUID event) { return keys.key("queue",event,"settings"); }
     private CachedSettings cache(WaitingRoomEvents.Settings event,boolean soldOut) {
         CachedSettings cached=new CachedSettings(event,soldOut);
+        admissionEvents.put(event.id(),event);
         try {
             redis.opsForValue().set(settingsKey(event.id()),json.writeValueAsString(cached),Duration.ofDays(7));
             return cached;
@@ -146,8 +154,8 @@ public class WaitingRoomService implements ReservationAdmission {
         cache(event,soldOut(eventId));
     }
     public void requireAdmission(UUID tier,UUID user,String token) {
-        UUID eventId=inventory.eventId(tier);
-        var event=events.settings(eventId);
+        UUID eventId=tierEvents.computeIfAbsent(tier,inventory::eventId);
+        var event=admissionEvents.computeIfAbsent(eventId,events::settings);
         if (!event.enabled()) return;
         if (token==null || token.isBlank()) throw denied("WAITING_ROOM_REQUIRED");
         if (token.length()>128 || !"VALID".equals(execute(event,"validate",user,false,token))) throw denied("INVALID_ADMISSION_TOKEN");
