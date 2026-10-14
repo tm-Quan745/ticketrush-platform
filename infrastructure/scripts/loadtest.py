@@ -126,8 +126,11 @@ def request_json(url):
 
 def compose_service_rows(output):
     """Normalise `docker compose ps --format json` across Compose versions."""
-    decoded = json.loads(output)
-    return decoded if isinstance(decoded, list) else [decoded]
+    try:
+        decoded = json.loads(output)
+        return decoded if isinstance(decoded, list) else [decoded]
+    except json.JSONDecodeError:
+        return [json.loads(line) for line in output.splitlines() if line.strip()]
 
 
 def remote_write_failed(output):

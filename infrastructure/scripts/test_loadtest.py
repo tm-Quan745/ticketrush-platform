@@ -15,6 +15,9 @@ class ObservabilityPreflightTest(unittest.TestCase):
         self.assertEqual(
             [{"Service": "prometheus"}],
             loadtest.compose_service_rows('[{"Service":"prometheus"}]'))
+        self.assertEqual(
+            [{"Service": "prometheus"}, {"Service": "cadvisor"}],
+            loadtest.compose_service_rows('{"Service":"prometheus"}\n{"Service":"cadvisor"}'))
 
     def test_remote_write_failure_is_detected_case_insensitively(self):
         self.assertTrue(loadtest.remote_write_failed(
