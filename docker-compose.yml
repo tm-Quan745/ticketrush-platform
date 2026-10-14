@@ -62,7 +62,10 @@ services:
 
   backend:
     image: ${BACKEND_IMAGE:-ticketrush-week7-backend}
-    build: ./backend
+    build:
+      context: ./backend
+      args:
+        VCS_REF: ${BACKEND_VCS_REF:-unknown}
     environment:
       METRICS_PASSWORD: ${METRICS_PASSWORD:-}
       HIKARI_MAX_POOL_SIZE: ${HIKARI_MAX_POOL_SIZE:-10}

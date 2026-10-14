@@ -104,6 +104,10 @@ def backend_provenance(args):
             "k6_vus": {"preAllocatedVUs": int(os.environ.get("PRE_VUS", "200")), "maxVUs": int(os.environ.get("MAX_VUS", "1000"))}}
 
 
+def backend_build_revision(args):
+    return args.backend_commit or run(["git", "rev-parse", "HEAD"], capture=True).stdout.strip()
+
+
 def k6_poll_parameters(args):
     defaults = {"PAYMENT_POLL_BASE_MS": 1000, "PAYMENT_POLL_MAX_MS": 2000,
                 "PAYMENT_POLL_JITTER_MS": 250, "PAYMENT_MAX_POLLS": 20}
@@ -426,6 +430,8 @@ def main():
     args = p.parse_args()
     if args.backend_image:
         os.environ["BACKEND_IMAGE"] = args.backend_image
+    else:
+        os.environ["BACKEND_VCS_REF"] = backend_build_revision(args)
     allowed_backend_env = {"HIKARI_MAX_POOL_SIZE", "HIKARI_CONNECTION_TIMEOUT_MS", "BULKHEAD_ENABLED",
                            "BULKHEAD_MAX_CONCURRENT", "BULKHEAD_POOL_MULTIPLIER", "ORDER_STATUS_JOINED_READ"}
     for item in args.backend_env:
