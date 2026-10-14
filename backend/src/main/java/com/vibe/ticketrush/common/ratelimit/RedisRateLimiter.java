@@ -3,6 +3,7 @@ package com.vibe.ticketrush.common.ratelimit;
 import com.vibe.ticketrush.common.redis.*;
 import com.vibe.ticketrush.auth.service.TokenService;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.util.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,7 +28,13 @@ public class RedisRateLimiter {
         String key=keys.key("rate-limit",TokenService.hash(identity),policy);
         Decision decision=guard.call("rate-limit",() -> {
             metrics.counter("rate_limit_redis_commands_total","policy",policy).increment();
-            String raw=redis.execute(script,List.of(key),Integer.toString(config.capacity()),Long.toString(config.period().toMillis()),Long.toString(config.period().toMillis()*2));
+            Timer.Sample sample=Timer.start(metrics);
+            String raw;
+            try {
+                raw=redis.execute(script,List.of(key),Integer.toString(config.capacity()),Long.toString(config.period().toMillis()),Long.toString(config.period().toMillis()*2));
+            } finally {
+                sample.stop(Timer.builder("rate_limit_redis_seconds").tag("policy",policy).publishPercentileHistogram().register(metrics));
+            }
             String[] values=Objects.requireNonNull(raw).split("\\|");
             return new Decision("1".equals(values[0]),config.capacity(),Long.parseLong(values[1]),
                 (Long.parseLong(values[2])+999)/1000,(Long.parseLong(values[3])+999)/1000);

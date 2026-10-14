@@ -41,6 +41,7 @@ const queuePollInterval = new Trend('queue_poll_interval_seconds', true);
 const queueRetryAfterHonored = new Counter('queue_retry_after_honored');
 const queueRejoinPreserved = new Counter('queue_rejoin_preserved');
 const queueStatusResponses = new Counter('queue_status_responses');
+const queueStatusSteadyDuration = new Trend('queue_status_steady_duration', true);
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -64,10 +65,11 @@ const plans = {
     iterations: Number(__ENV.QUEUE_REJOIN_USERS || 100), maxDuration: '30s', gracefulStop: '10s' } },
   P: { poll: { executor: 'constant-vus', exec: 'queuePoll', vus: queuePollers, duration: queuePollDuration,
     gracefulStop: '30s' } },
+  S: { statusMicro: steady('queueStatusMicro', Number(__ENV.STATUS_RATE || 50), __ENV.STATUS_DURATION || '45s') },
   Q: { checkout: { executor: 'shared-iterations', exec: 'checkout', vus: checkoutVUs, iterations: admissionPairs.length,
     maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
 };
-if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q or W');
+if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q, S or W');
 export const options = {
   scenarios: plans[scenario],
   // Exclude raw URL, user/token values and VU identifiers from every exported series.
@@ -95,6 +97,10 @@ export const options = {
     ...(scenario === 'R' ? { queue_rejoin_preserved: [`count==${Number(__ENV.QUEUE_REJOIN_USERS || 100)}`] } : {}),
     ...(scenario === 'P' ? { queue_retry_after_honored: ['count>0'],
       'http_req_duration{name:GET /api/v1/events/{id}/waiting-room/status}': ['p(95)<500', 'p(99)<1000'] } : {}),
+    ...(scenario === 'S' ? {
+      'http_req_duration{name:GET /api/v1/events/{id}/waiting-room/status}': ['p(95)<500', 'p(99)<1000'],
+      queue_status_steady_duration: ['p(95)<500', 'p(99)<1000']
+    } : {}),
     ...(scenario === 'E' ? Object.fromEntries(stressRates.map(r => `stage-${r}`).concat(['recovery']).flatMap(phase => [
       [`http_req_failed{phase:${phase}}`, ['rate>=0']],
       [`http_req_duration{phase:${phase}}`, ['p(95)>=0']],
@@ -243,6 +249,23 @@ export function queuePoll() {
   }
   // All clients wait at least the server-provided Retry-After interval; jitter only delays further.
   sleep(Math.max(1, retryAfter) + Math.random() * 0.1);
+}
+
+export function queueStatusMicro() {
+  const index = exec.scenario.iterationInTest % Number(__ENV.STATUS_DISTINCT_USERS || 200);
+  const event = data.events.find(value => value.name === 'HOT');
+  const user = users[index];
+  if (!business(Boolean(user), 'distinct status user available')) return;
+  const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
+    'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
+  queueStatusResponses.add(1, { status: String(response.status) });
+  if (Date.now() - exec.scenario.startTime >= 15_000) queueStatusSteadyDuration.add(response.timings.duration);
+  if (response.status === 200) {
+    outcomes.add(1, { result: 'queue_polled' });
+  } else {
+    outcomes.add(1, { result: 'rate_limited' });
+    business(false, 'status micro-run was not rate limited');
+  }
 }
 
 export function checkout() {

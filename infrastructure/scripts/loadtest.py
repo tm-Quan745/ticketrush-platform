@@ -121,16 +121,18 @@ def k6_poll_parameters(args):
 
 def k6_queue_parameters(args):
     defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 500,
-                "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100}
+                "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
+                "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200}
     selected = dict(defaults)
     for item in args.param:
         name, separator, value = item.partition("=")
         if name not in selected or separator != "=" or not value:
             continue
-        if name == "QUEUE_POLL_DURATION" and value.endswith("s") and value[:-1].isdecimal():
+        if name in {"QUEUE_POLL_DURATION", "STATUS_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
             selected[name] = value
-        elif name != "QUEUE_POLL_DURATION" and value.isdecimal() and int(value) > 0:
+        elif name not in {"QUEUE_POLL_DURATION", "STATUS_DURATION"} and value.isdecimal() and int(value) > 0:
             selected[name] = int(value)
+    selected["steady_state_warmup_seconds"] = 15
     return selected
 
 
@@ -289,6 +291,12 @@ def collect(run_id, start, end, params, source):
         "queue_status_rate": 'sum(rate(waiting_room_requests_total{operation="status"}[15s]))',
         "queue_redis_command_rate": 'sum(rate(waiting_room_redis_commands_total[15s]))',
         "queue_status_limiter_redis_rate": 'sum(rate(rate_limit_redis_commands_total{policy="queue-status"}[15s]))',
+        "status_server_latency": 'histogram_quantile(0.95,sum by (le) (rate(http_server_requests_seconds_bucket{uri="/api/v1/events/{id}/waiting-room/status"}[15s])))',
+        "jwt_validation": 'histogram_quantile(0.95,sum by (le) (rate(jwt_validation_seconds_bucket[15s])))',
+        "status_limiter": 'histogram_quantile(0.95,sum by (le) (rate(rate_limit_redis_seconds_bucket{policy="queue-status"}[15s])))',
+        "status_settings": 'histogram_quantile(0.95,sum by (le) (rate(waiting_room_status_settings_seconds_bucket[15s])))',
+        "status_script": 'histogram_quantile(0.95,sum by (le) (rate(waiting_room_status_script_seconds_bucket[15s])))',
+        "status_response": 'histogram_quantile(0.95,sum by (le) (rate(waiting_room_status_response_seconds_bucket[15s])))',
     }
     result = {"start": start, "end": end, "parameters": params, "series": {}}
     inspected = json.loads(run(["docker", "inspect", "ticketrush-week7-backend-1"], capture=True).stdout)[0]
@@ -449,7 +457,7 @@ def environment():
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "verify", "queries", "test", "environment", "down"])
-    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQ"), default="A")
+    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQS"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
     p.add_argument("--background", type=int, default=200)

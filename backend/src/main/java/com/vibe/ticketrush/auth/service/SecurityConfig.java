@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 
 @Configuration
 public class SecurityConfig {
@@ -34,14 +36,15 @@ public class SecurityConfig {
     JwtEncoder jwtEncoder(SecretKey key) { return new NimbusJwtEncoder(new ImmutableSecret<>(key)); }
 
     @Bean
-    JwtDecoder jwtDecoder(SecretKey key, AuthProperties properties) {
+    JwtDecoder jwtDecoder(SecretKey key, AuthProperties properties, MeterRegistry metrics) {
         var decoder = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
         OAuth2TokenValidator<Jwt> audience = jwt -> jwt.getAudience().contains("ticketrush-api")
                 ? OAuth2TokenValidatorResult.success()
                 : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token"));
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
                 JwtValidators.createDefaultWithIssuer(properties.issuer()), audience));
-        return decoder;
+        Timer validation = Timer.builder("jwt_validation_seconds").publishPercentileHistogram().register(metrics);
+        return token -> validation.record(() -> decoder.decode(token));
     }
 
     @Bean

@@ -8,6 +8,7 @@ import com.vibe.ticketrush.inventory.dto.TierDtos.Availability;
 import com.fasterxml.jackson.databind.*;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
 import java.security.SecureRandom;
 import java.time.*;
 import java.util.*;
@@ -63,12 +64,17 @@ public class WaitingRoomService implements ReservationAdmission {
             Long.toString(properties.tokenTtl().toMillis()),"604800000"));
         args.addAll(Arrays.asList(tokens));
         args.add(properties.captureAdmitted() ? "1":"0");
-        return guard.call("waiting-room",() -> {
+        Timer.Sample sample="status".equals(op) ? Timer.start(metrics):null;
+        try {
+            return guard.call("waiting-room",() -> {
             redisCommands.increment();
             return redis.execute(script,names,args.toArray());
         },() -> {
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_UNAVAILABLE","Waiting room temporarily unavailable; retry later");
         });
+        } finally {
+            if (sample!=null) sample.stop(Timer.builder("waiting_room_status_script_seconds").publishPercentileHistogram().register(metrics));
+        }
     }
     private JsonNode parse(String raw) {
         try { return json.readTree(raw); } catch (com.fasterxml.jackson.core.JsonProcessingException e) { throw new IllegalStateException(e); }
@@ -90,7 +96,13 @@ public class WaitingRoomService implements ReservationAdmission {
         }
     }
     private CachedSettings cached(UUID event) {
-        String raw=guard.call("waiting-room",() -> redis.opsForValue().get(settingsKey(event)),() -> null);
+        Timer.Sample sample=Timer.start(metrics);
+        String raw;
+        try {
+            raw=guard.call("waiting-room",() -> redis.opsForValue().get(settingsKey(event)),() -> null);
+        } finally {
+            sample.stop(Timer.builder("waiting_room_status_settings_seconds").publishPercentileHistogram().register(metrics));
+        }
         if (raw==null) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_NOT_READY","Join the waiting room before polling status");
         try {
             CachedSettings cached=json.readValue(raw,CachedSettings.class);
