@@ -336,12 +336,9 @@ disables stale markers so Prometheus can query it after exit.
 
 ### Backend suite
 
-The full `mvn test` suite was run with Docker/Testcontainers available. It executes 102 tests;
-100 passed, but `PessimisticReservationIntegrationTest` still has one failure and one error under
-its direct high-concurrency workload (the error is a Hikari pool acquisition timeout with all 40
-connections active). Targeted tests that changed in this step pass: `ObservabilityIntegrationTest`
-3/3 and `Week6RedisIntegrationTest` 20/20. Do not report the suite as passing. The remaining
-pessimistic-path failure is an explicit open item before the feature is considered test-green.
+The full `mvn test` suite was rerun with Docker/Testcontainers available and `HIKARI_CONNECTION_TIMEOUT_MS=30000`; this value is supplied only by `application-test.yml`. Result: **102 tests, 0 failures, 0 errors, 0 skipped**. `PessimisticReservationIntegrationTest` is 13/13 in 9.045 s. Production remains at `HIKARI_CONNECTION_TIMEOUT_MS=1500`.
+
+Before the fix, direct errors were `CannotCreateTransactionException: Could not open JPA EntityManager for transaction`, caused by `HikariPool-1 - Connection is not available, request timed out after 30015ms (total=40, active=40, idle=0, waiting=10)` and another run with `waiting=77`; the companion assertion was `Expecting value to be true but was false` when the concurrent fixture deadline elapsed. Commit `ed889ab` adds 256 local tier stripes before transaction entry; PostgreSQL `SELECT FOR UPDATE` remains the cross-instance lock. ADR 0033 records this.
 
 ### Valid legacy A-1 control
 
@@ -365,10 +362,26 @@ capacity pass. The verifier found zero oversell, no inventory/idempotency violat
 hold/order and no pending/failed outbox event; HOT availability was 981, so HOT taken was 4,019.
 
 The guarded HOT UPDATE had 1,979 calls at 5.18 ms mean. Telemetry sampled Hikari pending max 129,
-Tomcat busy max 142, backend JVM CPU max 0.54 cores, PostgreSQL container CPU sample 1.78 cores,
+Tomcat busy max 142, backend JVM `process_cpu_usage` max 0.54 (about 6.5 of 12 CPU cores), PostgreSQL container CPU sample 1.78 cores,
 lock waiter sample max 1 and GC pause max 28 ms. WAL recorded 6,961 syncs totaling 18,878.379 ms
 (2.712 ms average). Artifacts: `week7-legacy-A1-rerun3-{preflight,provenance,run,verify,wal,telemetry,queries,json}`.
 
 Next: implement and measure the short-iteration front door only after this Step 0 record is
 committed. No strategy comparison, sell-out or calibration has started.
 
+
+
+### Status endpoint diagnosis before P=2,500 / checkout / calibration (2026-10-14)
+
+No P=2,500, checkout, admission calibration, sell-out or strategy comparison was started. `status-window-setup-J` is a negative setup artifact: 5,000 joins started, 4,999 accepted and one 5xx, so it was excluded. `status-window-setup-J100` established 5,000 distinct contiguous positions. Final P runs record `644fa8e` / `sha256:c20b56e...`, backend `synchronous_commit=on`, `fsync=on`, verifier PASS.
+
+| run | duration / steady window | req/s | k6 steady p50 / p95 / p99 | server p95 | Hikari active/pending | Tomcat busy | verifier |
+| --- | --- | ---: | --- | ---: | ---: | ---: | --- |
+| P500 | 61.1 s / 46.1 s | 49.1 | 4.6 / 19.3 / 32.8 ms | 15.1 ms | 0 / 0 | 1 | PASS |
+| P1000 | 62.5 s / 47.5 s | 95.9 | 5.9 / 59.5 / 83.8 ms | 38.2 ms | 0 / 0 | 1 | PASS |
+
+Prometheus uses the k6-derived window, not Docker overhead. Status has two atomic Redis Lua calls (limiter plus heartbeat/rank/size/estimate), no Hikari connection. P95 JWT/limiter/settings/script/controller is 1.0/5.0/2.5/4.1/6.9 ms at 500 and 1.0/16.1/6.4/19.1/23.9 ms at 1,000. Lettuce max was 77.1/77.7 ms. Same `Retry-After` synchronizes closed-loop clients; this is not a DB-pool limit.
+
+Three S runs/rate used 200 identities, 45 s and excluded 15 s: median p50/p95/p99 ms (server p95) is 50/s 2.53/8.97/10.02 (7.67), 100/s 2.17/3.54/8.56 (3.12), 200/s 1.81/3.06/4.99 (2.68), 400/s 1.61/2.98/4.66 (2.62). Zero drops, 5xx and verifier violations. This is not linear p95 growth, so the JFR condition is false. Direct Docker stats: all-container average/peak CPU 0.87/2.43, 0.81/2.32, 1.06/2.36, 1.46/2.67 cores of 12; backend CPU/request 8.87, 2.86, 1.64, 1.49 ms. Raw `status-cpu-S*-docker-stats.json` retains every container.
+
+`frontdoor-J-5000-final`: 5,000 joins, 565.2/s, 10.524 s, p50/p95/p99 153.4/371.9/503.7 ms; `process_cpu_usage=0.734` is about 8.8 of 12 cores. Legacy A-1 rerun uses current poll backoff/jitter and is not comparable with older legacy tables.

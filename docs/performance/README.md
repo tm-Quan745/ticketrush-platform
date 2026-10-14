@@ -213,7 +213,7 @@ The verifier passed all invariants: 1,694 PAID orders including 121 warm-up orde
 legacy configuration deliberately used waiting room off, `HIKARI_CONNECTION_TIMEOUT_MS=30000`,
 bulkhead off and joined order-status read off. Its top guarded HOT UPDATE had 1,979 calls and
 5.18 ms mean execution time; sampled Hikari pending peaked at 129, Tomcat busy at 142, and
-backend JVM CPU at 0.54 cores. See [summary](results/week7-legacy-A1-rerun3.json),
+backend JVM `process_cpu_usage` at 0.54, about 6.5 of the 12 available CPU cores; this metric is a CPU fraction, not a core count. See [summary](results/week7-legacy-A1-rerun3.json),
 [provenance](results/week7-legacy-A1-rerun3-provenance.json),
 [preflight](results/week7-legacy-A1-rerun3-preflight.json),
 [verifier](results/week7-legacy-A1-rerun3-verify.json),
@@ -225,9 +225,7 @@ table. `rerun1` found a Compose JSON parser defect before k6; `rerun2` correctly
 unhealthy cAdvisor scrape and a non-observable remote-write probe. No purchase measurement was
 accepted from either attempt.
 
-The backend `mvn test` suite was run after Docker returned. Observability (3 tests) and Redis queue
-(20 tests) pass after aligning their durable/cache fixtures. The complete suite is **not green**:
-`PessimisticReservationIntegrationTest` has one failed and one errored direct high-concurrency case,
-including a Hikari acquisition timeout with 40 active connections. This remains an open regression
-that must be resolved or explicitly redesigned before calling the backend suite passing.
+The backend `mvn test` suite was rerun with `HIKARI_CONNECTION_TIMEOUT_MS=30000` only in the `test` profile. It is now green: **102 tests, 0 failures, 0 errors, 0 skipped**; the real concurrent `PessimisticReservationIntegrationTest` is 13/13 in 9.045 s. Production remains at 1,500 ms. The earlier direct failure was `CannotCreateTransactionException: Could not open JPA EntityManager for transaction`, caused by `HikariPool-1 - Connection is not available, request timed out after 30015ms (total=40, active=40, idle=0, waiting=10/77)`; one companion assertion was `Expecting value to be true but was false` after the concurrent fixture deadline. ADR 0033 documents the fix: same-tier pessimistic callers are serialized before acquiring a pool connection, while PostgreSQL `SELECT FOR UPDATE` remains the cross-instance correctness authority.
+
+`week7-legacy-A1-rerun3` uses the current k6 order-status polling behavior (1,000 ms base, 2,000 ms cap, 250 ms jitter, at most 20 polls). It is not comparable with older legacy tables that used the earlier polling script.
 
