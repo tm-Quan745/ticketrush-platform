@@ -57,7 +57,7 @@ def settings():
 
 
 def seed_args(args):
-    return ["--users", str(args.users), "--background", str(args.background), "--capacity", str(args.capacity)] + (["--waiting"] if args.waiting else [])
+    return ["--users", str(args.users), "--background", str(args.background), "--capacity", str(args.capacity)] + (["--waiting"] if args.waiting else []) + (["--queue-closed"] if args.queue_closed else [])
 
 
 def reset(args):
@@ -115,6 +115,21 @@ def k6_poll_parameters(args):
     for item in args.param:
         name, separator, value = item.partition("=")
         if name in selected and separator == "=" and value.isdecimal() and int(value) > 0:
+            selected[name] = int(value)
+    return selected
+
+
+def k6_queue_parameters(args):
+    defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 500,
+                "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100}
+    selected = dict(defaults)
+    for item in args.param:
+        name, separator, value = item.partition("=")
+        if name not in selected or separator != "=" or not value:
+            continue
+        if name == "QUEUE_POLL_DURATION" and value.endswith("s") and value[:-1].isdecimal():
+            selected[name] = value
+        elif name != "QUEUE_POLL_DURATION" and value.isdecimal() and int(value) > 0:
             selected[name] = int(value)
     return selected
 
@@ -270,6 +285,10 @@ def collect(run_id, start, end, params, source):
         "error_rate": 'sum(rate(http_server_requests_seconds_count{status=~"5.."}[15s]))',
         "reservation_results": 'reservation_attempts_total',
         "waiting_size": 'waiting_room_size', "paid": 'ticketrush_funnel_orders_paid',
+        "queue_join_rate": 'sum(rate(waiting_room_requests_total{operation="join"}[15s]))',
+        "queue_status_rate": 'sum(rate(waiting_room_requests_total{operation="status"}[15s]))',
+        "queue_redis_command_rate": 'sum(rate(waiting_room_redis_commands_total[15s]))',
+        "queue_status_limiter_redis_rate": 'sum(rate(rate_limit_redis_commands_total{policy="queue-status"}[15s]))',
     }
     result = {"start": start, "end": end, "parameters": params, "series": {}}
     inspected = json.loads(run(["docker", "inspect", "ticketrush-week7-backend-1"], capture=True).stdout)[0]
@@ -341,8 +360,9 @@ def measure(args):
         "artifact": f"{args.run_id}-preflight.json"
     }
     provenance["k6_order_poll"] = k6_poll_parameters(args)
+    provenance["k6_queue"] = k6_queue_parameters(args)
     (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
-    if args.scenario != "W" and not args.no_warmup:
+    if args.scenario in set("ACDEGHQ") and not args.no_warmup:
         warm_id = args.run_id + "-warmup"
         warm = compose("run", "--rm", "-T", "-e", "SCENARIO=W", "-e", f"RUN_ID={warm_id}",
                        "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
@@ -425,12 +445,13 @@ def environment():
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "verify", "queries", "test", "environment", "down"])
-    p.add_argument("--scenario", choices=list("ABCDEFGHW"), default="A")
+    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQ"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
     p.add_argument("--background", type=int, default=200)
     p.add_argument("--capacity", type=int, default=5000)
     p.add_argument("--waiting", action="store_true")
+    p.add_argument("--queue-closed", action="store_true")
     p.add_argument("--param", action="append", default=[])
     p.add_argument("--no-reset", action="store_true")
     p.add_argument("--no-warmup", action="store_true")

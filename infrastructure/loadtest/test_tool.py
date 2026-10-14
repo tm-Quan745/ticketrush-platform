@@ -145,7 +145,8 @@ class SeederTests(unittest.TestCase):
                 db.execute("TRUNCATE users,events,ticket_tiers,outbox_events,processed_messages CASCADE")
                 db.commit()
                 shape = tool.seed(db, users=7, background=4, capacity=11, mixed_tiers=2)
-                self.assertEqual({"buyers": 7, "admins": 1, "events": 7, "tiers": 8, "hot_capacity": 11, "waiting": False}, shape)
+                self.assertEqual({"buyers": 7, "admins": 1, "events": 7, "tiers": 8, "hot_capacity": 11,
+                                  "waiting": False, "queue_closed": False}, shape)
                 self.assertEqual(8, db.execute("SELECT count(*) n FROM users").fetchone()["n"])
                 self.assertEqual(8, db.execute("SELECT count(*) n FROM ticket_tiers").fetchone()["n"])
                 shapes.append(db.execute("SELECT id,total_quantity,available_quantity FROM ticket_tiers ORDER BY id").fetchall())
@@ -159,6 +160,14 @@ class SeederTests(unittest.TestCase):
                     tool.seed(db, users=7)
                 db.rollback()
             self.assertEqual(shapes[0], shapes[1])
+
+    def test_closed_queue_seed_has_future_sale_start(self):
+        with tool.connect() as db:
+            db.execute("TRUNCATE users,events,ticket_tiers,outbox_events,processed_messages CASCADE")
+            db.commit()
+            shape = tool.seed(db, users=3, background=1, capacity=10, waiting=True, queue_closed=True)
+            self.assertTrue(shape["queue_closed"])
+            self.assertGreater(db.execute("SELECT extract(epoch FROM sale_start_time-now()) AS seconds FROM events WHERE id=%s", (tool.uid("HOT"),)).fetchone()["seconds"], 3500)
 
 
 if __name__ == "__main__":

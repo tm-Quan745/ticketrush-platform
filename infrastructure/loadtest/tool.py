@@ -51,7 +51,7 @@ def jwt(user, roles, ttl=86400):
     return (body + b"." + base64.urlsafe_b64encode(signature).rstrip(b"=")).decode()
 
 
-def seed(db, users=20000, background=200, capacity=5000, mixed_tiers=3, waiting=False):
+def seed(db, users=20000, background=200, capacity=5000, mixed_tiers=3, waiting=False, queue_closed=False):
     guard()
     if not (1 <= users <= 1000000 and 1 <= background <= 10000 and 1 <= capacity <= 1000000
             and 1 <= mixed_tiers <= 100):
@@ -74,10 +74,16 @@ def seed(db, users=20000, background=200, capacity=5000, mixed_tiers=3, waiting=
     events = []
     for index, name in enumerate(["HOT", "MIXED", "WARMUP"] + [f"BACKGROUND-{i}" for i in range(background)]):
         event_id = uid(name)
-        db.execute("""INSERT INTO events (id,title,venue_name,venue_address,start_time,end_time,
+        sql = """INSERT INTO events (id,title,venue_name,venue_address,start_time,end_time,
             sale_start_time,sale_end_time,status,created_by,waiting_room_enabled)
             VALUES (%s,%s,'Loadtest Hall','Synthetic City',now()+interval '7 days',now()+interval '7 days 2 hours',
-            now()-interval '1 day',now()+interval '6 days','PUBLISHED',%s,%s)""",
+            now()-interval '1 day',now()+interval '6 days','PUBLISHED',%s,%s)"""
+        if queue_closed and index == 0:
+            sql = """INSERT INTO events (id,title,venue_name,venue_address,start_time,end_time,
+                sale_start_time,sale_end_time,status,created_by,waiting_room_enabled)
+                VALUES (%s,%s,'Loadtest Hall','Synthetic City',now()+interval '7 days',now()+interval '7 days 2 hours',
+                now()+interval '1 hour',now()+interval '6 days','PUBLISHED',%s,%s)"""
+        db.execute(sql,
                    (event_id, name, admin["id"], waiting and index == 0))
         tiers = []
         for tier in range(mixed_tiers if name == "MIXED" else 1):
@@ -95,9 +101,51 @@ def seed(db, users=20000, background=200, capacity=5000, mixed_tiers=3, waiting=
     (directory / "users.json").write_text(json.dumps(records))
     (directory / "admin.json").write_text(json.dumps(admin))
     (directory / "dataset.json").write_text(json.dumps({"events": events, "users": users, "capacity": capacity,
-                                                       "waiting": waiting, "created_at": int(time.time())}))
+                                                       "waiting": waiting, "queue_closed": queue_closed,
+                                                       "created_at": int(time.time())}))
     return {"buyers": users, "admins": 1, "events": len(events), "tiers": sum(len(e["tiers"]) for e in events),
-            "hot_capacity": capacity, "waiting": waiting}
+            "hot_capacity": capacity, "waiting": waiting, "queue_closed": queue_closed}
+
+
+def queue_audit(event):
+    guard()
+    members = redis_client().zrange(f"ticketrush:loadtest:queue:{event}:waiting", 0, -1, withscores=True)
+    positions = [int(score) for _, score in members]
+    return {"event": str(event), "queue_size": len(positions), "positions_distinct": len(set(positions)),
+            "position_min": min(positions) if positions else None, "position_max": max(positions) if positions else None,
+            "positions_contiguous": positions == list(range(1, len(positions) + 1))}
+
+
+def open_queue(db, event):
+    guard()
+    db.execute("UPDATE events SET sale_start_time=now()-interval '1 second' WHERE id=%s", (event,))
+    db.commit()
+    return {"event": str(event), "opened": True}
+
+
+def admission_pairs(event, count, timeout, output):
+    guard()
+    if not 1 <= count <= 100000:
+        raise ValueError("count must be 1..100000")
+    admin = json.loads((Path("/data") / "admin.json").read_text())
+    result = []
+    seen = set()
+    deadline = time.monotonic() + timeout
+    while len(result) < count and time.monotonic() < deadline:
+        values = http("GET", f"http://backend:8080/internal/loadtest/events/{event}/waiting-room/admissions?limit={min(1000, count-len(result))}",
+                      token=admin["token"]) or []
+        for value in values:
+            if value["user"] not in seen:
+                seen.add(value["user"])
+                result.append(value)
+        if len(result) < count:
+            time.sleep(0.25)
+    if len(result) != count:
+        raise RuntimeError(f"Timed out waiting for {count} admission pairs; received {len(result)}")
+    target = Path("/data") / Path(output).name
+    target.write_text(json.dumps(result))
+    target.chmod(0o600)
+    return {"event": str(event), "pairs": len(result), "output": target.name}
 
 
 def http(method, url, token=None, basic=None):
@@ -269,12 +317,16 @@ def verify(db, drain=180, grace=5, reconcile=True):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["seed", "reset", "verify", "top-queries", "test"])
+    parser.add_argument("command", choices=["seed", "reset", "verify", "top-queries", "test", "queue-audit", "queue-open", "admission-pairs"])
     parser.add_argument("--users", type=int, default=20000)
     parser.add_argument("--background", type=int, default=200)
     parser.add_argument("--capacity", type=int, default=5000)
     parser.add_argument("--mixed-tiers", type=int, default=3)
     parser.add_argument("--waiting", action="store_true")
+    parser.add_argument("--queue-closed", action="store_true")
+    parser.add_argument("--event")
+    parser.add_argument("--count", type=int, default=100)
+    parser.add_argument("--timeout", type=int, default=120)
     parser.add_argument("--drain", type=int, default=180)
     parser.add_argument("--grace", type=int, default=5)
     parser.add_argument("--output", default="verification.json")
@@ -287,11 +339,17 @@ def main():
         raise SystemExit(0 if result.wasSuccessful() else 1)
     with connect() as db:
         if args.command == "seed":
-            result = seed(db, args.users, args.background, args.capacity, args.mixed_tiers, args.waiting)
+            result = seed(db, args.users, args.background, args.capacity, args.mixed_tiers, args.waiting, args.queue_closed)
         elif args.command == "reset":
             result = reset(db)
         elif args.command == "verify":
             result = verify(db, args.drain, args.grace)
+        elif args.command == "queue-audit":
+            result = queue_audit(uuid.UUID(args.event) if args.event else uid("HOT"))
+        elif args.command == "queue-open":
+            result = open_queue(db, uuid.UUID(args.event) if args.event else uid("HOT"))
+        elif args.command == "admission-pairs":
+            result = admission_pairs(uuid.UUID(args.event) if args.event else uid("HOT"), args.count, args.timeout, args.output)
         else:
             result = {}
             for sort in ("total_exec_time", "mean_exec_time"):

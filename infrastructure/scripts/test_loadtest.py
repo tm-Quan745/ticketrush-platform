@@ -39,6 +39,13 @@ class ObservabilityPreflightTest(unittest.TestCase):
         self.assertIn("K6_PROMETHEUS_RW_STALE_MARKERS=false", command)
         self.assertIn("preflight_id=probe-1", command)
 
+    def test_closed_queue_seed_and_queue_metadata_are_recorded(self):
+        args = SimpleNamespace(users=5000, background=200, capacity=5000, waiting=True, queue_closed=True,
+                               param=["QUEUE_USERS=900", "QUEUE_POLLERS=2500", "QUEUE_POLL_DURATION=90s"])
+        self.assertIn("--queue-closed", loadtest.seed_args(args))
+        self.assertEqual({"QUEUE_USERS": 900, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 2500,
+                          "QUEUE_POLL_DURATION": "90s", "CHECKOUT_VUS": 100}, loadtest.k6_queue_parameters(args))
+
 
 if __name__ == '__main__':
     unittest.main()

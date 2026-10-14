@@ -19,12 +19,26 @@ const paymentPollBaseMs = Number(__ENV.PAYMENT_POLL_BASE_MS || 1000);
 const paymentPollMaxMs = Number(__ENV.PAYMENT_POLL_MAX_MS || 2000);
 const paymentPollJitterMs = Number(__ENV.PAYMENT_POLL_JITTER_MS || 250);
 const paymentMaxPolls = Number(__ENV.PAYMENT_MAX_POLLS || 20);
+const queueUsers = Number(__ENV.QUEUE_USERS || 5000);
+const queueJoinVUs = Number(__ENV.QUEUE_JOIN_VUS || 300);
+const queuePollers = Number(__ENV.QUEUE_POLLERS || 500);
+const queuePollDuration = __ENV.QUEUE_POLL_DURATION || '60s';
+const checkoutVUs = Number(__ENV.CHECKOUT_VUS || 100);
+const admissionPairs = scenario === 'Q'
+  ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
+const usersById = scenario === 'Q' ? Object.fromEntries(users.map(user => [user.id, user])) : {};
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
 const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
 const completed = new Counter('purchases_paid');
 const arrivalsStarted = new Counter('arrivals_started');
 const queueWait = new Trend('queue_wait_ms', true);
+const queueJoinsStarted = new Counter('queue_joins_started');
+const queueJoinsAccepted = new Counter('queue_joins_accepted');
+const queuePosition = new Trend('queue_position', true);
+const queuePollInterval = new Trend('queue_poll_interval_seconds', true);
+const queueRetryAfterHonored = new Counter('queue_retry_after_honored');
+const queueRejoinPreserved = new Counter('queue_rejoin_preserved');
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -42,8 +56,16 @@ const plans = {
   F: { auth: steady('login', Number(__ENV.RATE || 10), duration) },
   G: { soak: steady('purchase', rate, duration), browse: steady('browse', Number(__ENV.BROWSE_RATE || 5), duration) },
   H: { spike }, W: { warmup: steady('purchase', 2, __ENV.WARMUP_DURATION || '60s') },
+  J: { join: { executor: 'shared-iterations', exec: 'queueJoin', vus: queueJoinVUs, iterations: queueUsers,
+    maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '2m', gracefulStop: '30s' } },
+  R: { rejoin: { executor: 'shared-iterations', exec: 'queueRejoin', vus: Math.min(100, queueJoinVUs),
+    iterations: Number(__ENV.QUEUE_REJOIN_USERS || 100), maxDuration: '30s', gracefulStop: '10s' } },
+  P: { poll: { executor: 'constant-vus', exec: 'queuePoll', vus: queuePollers, duration: queuePollDuration,
+    gracefulStop: '30s' } },
+  Q: { checkout: { executor: 'shared-iterations', exec: 'checkout', vus: checkoutVUs, iterations: admissionPairs.length,
+    maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
 };
-if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H or W');
+if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q or W');
 export const options = {
   scenarios: plans[scenario],
   // Exclude raw URL, user/token values and VU identifiers from every exported series.
@@ -55,7 +77,7 @@ export const options = {
     ...Object.fromEntries(['sold_out', 'rate_limited', 'waiting_room_required', 'error', 'abandoned', 'paid', 'payment_failed',
       'browse_ok', 'browse_rate_limited', 'login_ok', 'login_rate_limited', 'queue_sold_out'].map(result =>
       [`business_outcomes{result:${result}}`, ['count>=0']])),
-    ...(scenario !== 'B' && scenario !== 'F' ? {
+    ...(['A', 'C', 'D', 'E', 'G', 'H', 'Q', 'W'].includes(scenario) ? {
       'http_req_duration{name:POST /api/v1/reservations}': ['p(95)<1000', 'p(99)<2000'],
       'http_req_duration{name:POST /api/v1/orders}': ['p(95)<1000', 'p(99)<2000'],
     } : {}),
@@ -66,6 +88,11 @@ export const options = {
     ...(scenario === 'F' ? { 'http_req_duration{name:POST /api/v1/auth/login}': ['p(95)<2000', 'p(99)<3000'] } : {}),
     ...(scenario === 'A' ? { purchases_paid: ['count>=60'] } : {}),
     ...(['C', 'D', 'H'].includes(scenario) ? { arrivals_started: [`count==${arrivals}`] } : {}),
+    ...(scenario === 'J' ? { queue_joins_started: [`count==${queueUsers}`], queue_joins_accepted: [`count==${queueUsers}`],
+      'http_req_duration{name:POST /api/v1/events/{id}/waiting-room/join}': ['p(95)<500', 'p(99)<1000'] } : {}),
+    ...(scenario === 'R' ? { queue_rejoin_preserved: [`count==${Number(__ENV.QUEUE_REJOIN_USERS || 100)}`] } : {}),
+    ...(scenario === 'P' ? { queue_retry_after_honored: ['count>0'],
+      'http_req_duration{name:GET /api/v1/events/{id}/waiting-room/status}': ['p(95)<500', 'p(99)<1000'] } : {}),
     ...(scenario === 'E' ? Object.fromEntries(stressRates.map(r => `stage-${r}`).concat(['recovery']).flatMap(phase => [
       [`http_req_failed{phase:${phase}}`, ['rate>=0']],
       [`http_req_duration{phase:${phase}}`, ['p(95)>=0']],
@@ -157,6 +184,95 @@ export function purchase() {
   if (business(status === expectedState, 'payment reached expected state')) {
     outcomes.add(1, { result: expectedState.toLowerCase() });
     if (status === 'PAID') completed.add(1);
+  }
+}
+
+export function queueJoin() {
+  const index = exec.scenario.iterationInTest;
+  queueJoinsStarted.add(1);
+  if (!business(index < queueUsers && index < users.length, 'distinct queue user available')) return;
+  const event = data.events.find(value => value.name === 'HOT');
+  const response = request('POST', `/api/v1/events/${event.id}/waiting-room/join`,
+    'POST /api/v1/events/{id}/waiting-room/join', null, users[index].token, {}, [200]);
+  const state = body(response);
+  const accepted = response.status === 200 && state.state === 'WAITING' && state.position > 0;
+  business(accepted, 'queue join accepted');
+  if (accepted) {
+    queueJoinsAccepted.add(1);
+    queuePosition.add(state.position);
+    outcomes.add(1, { result: 'queue_joined' });
+  }
+}
+
+export function queueRejoin() {
+  const index = exec.scenario.iterationInTest;
+  const event = data.events.find(value => value.name === 'HOT');
+  const user = users[index];
+  if (!business(Boolean(user), 'sample queue user available')) return;
+  const before = body(request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
+    'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200]));
+  const after = body(request('POST', `/api/v1/events/${event.id}/waiting-room/join`,
+    'POST /api/v1/events/{id}/waiting-room/join', null, user.token, {}, [200]));
+  const preserved = before.state === 'WAITING' && after.state === 'WAITING' && before.position === after.position;
+  if (preserved) queueRejoinPreserved.add(1);
+  business(preserved, 'rejoin preserves queue position');
+}
+
+export function queuePoll() {
+  const index = (exec.vu.idInTest - 1) % queueUsers;
+  const event = data.events.find(value => value.name === 'HOT');
+  const user = users[index];
+  if (!business(Boolean(user), 'distinct queue poller available')) return;
+  const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
+    'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
+  const state = body(response);
+  const retryAfter = Number(response.headers['Retry-After'] || 1);
+  if (response.status === 200) {
+    const honored = retryAfter === Number(state.pollIntervalSeconds);
+    if (honored) queueRetryAfterHonored.add(1);
+    business(honored, 'status Retry-After matches advised interval');
+    queuePollInterval.add(retryAfter);
+    outcomes.add(1, { result: 'queue_polled' });
+  } else {
+    outcomes.add(1, { result: 'rate_limited' });
+    business(false, 'queue status was not rate limited');
+  }
+  // All clients wait at least the server-provided Retry-After interval; jitter only delays further.
+  sleep(Math.max(1, retryAfter) + Math.random() * 0.1);
+}
+
+export function checkout() {
+  const index = exec.scenario.iterationInTest;
+  const admission = admissionPairs[index];
+  const user = admission && usersById[admission.user];
+  if (!business(Boolean(admission && user), 'admission pair belongs to a seeded user')) return;
+  const event = data.events.find(value => value.name === 'HOT');
+  const payload = { tierId: event.tiers[index % event.tiers.length], quantity: 1 + index % 4 };
+  const reservationResponse = request('POST', '/api/v1/reservations', 'POST /api/v1/reservations', payload,
+    user.token, { 'Idempotency-Key': key(index, '3'), 'X-Admission-Token': admission.token }, [201, 409, 429, 403]);
+  const reservation = body(reservationResponse);
+  if (reservationResponse.status !== 201) {
+    const expected = reservationResponse.status === 409 && reservation.code === 'SOLD_OUT' ||
+      reservationResponse.status === 429 || reservationResponse.status === 403;
+    outcomes.add(1, { result: reservation.code === 'SOLD_OUT' ? 'sold_out' : reservation.code === 'RATE_LIMITED' ? 'rate_limited' : 'error' });
+    business(expected, 'checkout reservation has an expected terminal outcome');
+    return;
+  }
+  const orderHeaders = { 'Idempotency-Key': key(index, '4'), 'X-Mock-Scenario': 'SUCCESS',
+    'X-Mock-Test-Token': __ENV.MOCK_PAYMENT_TEST_TOKEN };
+  const orderResponse = request('POST', '/api/v1/orders', 'POST /api/v1/orders', { reservationId: reservation.id },
+    user.token, orderHeaders, [201]);
+  const order = body(orderResponse);
+  if (!business(orderResponse.status === 201 && Boolean(order.id), 'queue checkout order created')) return;
+  let status = 'PENDING_PAYMENT';
+  for (let poll = 0; poll < paymentMaxPolls && status === 'PENDING_PAYMENT'; poll++) {
+    const delayMs = Math.min(paymentPollMaxMs, paymentPollBaseMs * (2 ** Math.min(poll, 1)));
+    sleep((delayMs + Math.random() * paymentPollJitterMs) / 1000);
+    status = body(request('GET', `/api/v1/orders/${order.id}`, 'GET /api/v1/orders/{id}', null, user.token)).status;
+  }
+  if (business(status === 'PAID', 'queue checkout payment paid')) {
+    outcomes.add(1, { result: 'paid' });
+    completed.add(1);
   }
 }
 
