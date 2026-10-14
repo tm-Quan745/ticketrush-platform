@@ -311,3 +311,64 @@ identifier, outcome trace, or last-endpoint field, and later resets removed thos
 Accordingly the 108 orders cannot truthfully be listed or assigned a final client endpoint after
 the fact. This is a measurement gap, not evidence of a server-side failure; future runs need
 per-iteration sanitized terminal-outcome capture before claiming that attribution.
+
+## 2026-10-14 — controlled-admission reframe, Step 0
+
+Decision: the next target is 5,000 concurrent **queue entries** plus controlled admission, not
+5,000 concurrent purchase transactions. A queued client will join once and end; status polling
+and checkout are separate workloads. Future documentation must never say “5,000 concurrent
+purchases.”
+
+### Tooling preflight
+
+Commit `221c66c` added a fail-closed preflight to `loadtest.py`: Prometheus/cAdvisor must be
+running, Prometheus ready, the cAdvisor target healthy, and a tagged k6 remote-write probe must be
+queryable before k6 starts. Follow-up commits fixed Compose multi-line JSON parsing (`ac97df6`),
+the cAdvisor target label (`89e7686`), and k6's exit stale-marker behavior for the probe
+(`148bd04`). The actual load run retains its normal k6 configuration; only the disposable probe
+disables stale markers so Prometheus can query it after exit.
+
+- `week7-legacy-A1-rerun1`: **invalid before k6** — Compose emitted JSON objects on separate
+  lines and the new parser attempted one JSON document (`Extra data`).
+- `week7-legacy-A1-rerun2`: **invalid before k6** — cAdvisor target check was false and the probe
+  series was immediately marked stale, so Prometheus could not observe it.
+- `week7-legacy-A1-rerun3`: valid. Its preflight record has every check true and `verification_exit=0`.
+
+### Backend suite
+
+The full `mvn test` suite was run with Docker/Testcontainers available. It executes 102 tests;
+100 passed, but `PessimisticReservationIntegrationTest` still has one failure and one error under
+its direct high-concurrency workload (the error is a Hikari pool acquisition timeout with all 40
+connections active). Targeted tests that changed in this step pass: `ObservabilityIntegrationTest`
+3/3 and `Week6RedisIntegrationTest` 20/20. Do not report the suite as passing. The remaining
+pessimistic-path failure is an explicit open item before the feature is considered test-green.
+
+### Valid legacy A-1 control
+
+Run: `week7-legacy-A1-rerun3`, start `2026-10-14T06:45:31Z`, commit/image revision
+`148bd04a5f898c4d11a24544e1205476ef17bcc5`, image
+`sha256:6d5c62a43c9f3edef6c2c7cca7d69a5882b484e95d799073d475ce156c08ad6c`.
+The record captured backend-pool durability `synchronous_commit=on`, `fsync=on`; the Hikari
+connection timeout was 30,000 ms; preallocated/max k6 VUs were 200/1,000. The source snapshot was
+dirty only because reset/seed and prior result artifacts were present; that fact is recorded in
+provenance rather than hidden.
+
+| offered | started | dropped | measured server PAID | SOLD_OUT | served / offered | purchase RPS | reserve p95 | order p95 | verifier |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 5,000 | 1,858 | 3,142 | 1,573 | 0 | 31.5% | 56.2 | 1,013.9 ms | 905.6 ms | PASS |
+
+Server PAID is verifier paid orders (1,694) minus 121 warm-up orders. k6 saw exactly 1,573 paid,
+99 payment-failed and 186 abandoned outcomes across 1,858 started iterations; no HTTP failure,
+5xx, 429 or SOLD_OUT was recorded. It returned exit 99 solely because `dropped_iterations=3,142`
+and reserve p95 exceeded its 1,000 ms threshold. This is an overload control measurement, not a
+capacity pass. The verifier found zero oversell, no inventory/idempotency violation, no overdue
+hold/order and no pending/failed outbox event; HOT availability was 981, so HOT taken was 4,019.
+
+The guarded HOT UPDATE had 1,979 calls at 5.18 ms mean. Telemetry sampled Hikari pending max 129,
+Tomcat busy max 142, backend JVM CPU max 0.54 cores, PostgreSQL container CPU sample 1.78 cores,
+lock waiter sample max 1 and GC pause max 28 ms. WAL recorded 6,961 syncs totaling 18,878.379 ms
+(2.712 ms average). Artifacts: `week7-legacy-A1-rerun3-{preflight,provenance,run,verify,wal,telemetry,queries,json}`.
+
+Next: implement and measure the short-iteration front door only after this Step 0 record is
+committed. No strategy comparison, sell-out or calibration has started.
+

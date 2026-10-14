@@ -1,0 +1,9 @@
+{
+  "run_id": "week7-legacy-A1-rerun1",
+  "checked_at_utc": "2026-10-14T06:32:16Z",
+  "checks": {},
+  "valid": false,
+  "errors": [
+    "Extra data: line 2 column 1 (char 1645)"
+  ]
+}

@@ -186,3 +186,48 @@ WAL sync 4.75–12.88 ms); they do not predict production storage behavior.
 
 Future experiments require separate generators, multiple backend instances behind Nginx, a managed
 database, read replicas for browse traffic, and measured horizontal scaling. No frontend is included.
+
+## Controlled-admission reframe and Step 0
+
+The target is **5,000 concurrent queue entries with controlled admission**, not 5,000
+concurrent purchase transactions. A joined client ends its short join iteration; it must not keep
+a k6 VU or a backend/DB request open while waiting. The remaining work will measure queue join,
+Redis-only status polling, controlled checkout, admission calibration and a 5,000-entry sell-out.
+It will not claim “5,000 concurrent purchases.”
+
+Before every non-diagnostic measurement, the runner now fails closed on an observability preflight:
+Prometheus and cAdvisor containers must be running, Prometheus must be ready, its cAdvisor target
+must be healthy, and a six-second k6 remote-write probe must appear in Prometheus. The probe uses
+non-stale markers only for preflight so the test series remains queryable after k6 exits. Provenance
+also captures durable settings from the backend Hikari pool; a non-diagnostic run refuses values
+other than `synchronous_commit=on` and `fsync=on`.
+
+| Run | offered | started | dropped | server PAID | SOLD_OUT | served / offered | purchase RPS | reserve p95 | order p95 | verifier |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `week7-legacy-A1-rerun3` direct legacy control | 5,000 | 1,858 | 3,142 | 1,573 | 0 | 31.5% | 56.2 | 1,013.9 ms | 905.6 ms | PASS |
+
+This is a valid A-1 control run, not a passing capacity result: k6 returned 99 because it reached
+`maxVUs=1,000`, dropped 3,142 offered arrivals, and reserve p95 exceeded the 1,000 ms threshold.
+The verifier passed all invariants: 1,694 PAID orders including 121 warm-up orders, HOT taken
+4,019, zero oversell, zero overdue holds/orders and no pending/failed outbox event. The direct
+legacy configuration deliberately used waiting room off, `HIKARI_CONNECTION_TIMEOUT_MS=30000`,
+bulkhead off and joined order-status read off. Its top guarded HOT UPDATE had 1,979 calls and
+5.18 ms mean execution time; sampled Hikari pending peaked at 129, Tomcat busy at 142, and
+backend JVM CPU at 0.54 cores. See [summary](results/week7-legacy-A1-rerun3.json),
+[provenance](results/week7-legacy-A1-rerun3-provenance.json),
+[preflight](results/week7-legacy-A1-rerun3-preflight.json),
+[verifier](results/week7-legacy-A1-rerun3-verify.json),
+[WAL](results/week7-legacy-A1-rerun3-wal.json), and
+[telemetry](results/week7-legacy-A1-rerun3-telemetry.json).
+
+`week7-legacy-A1` and preflight attempts `rerun1`/`rerun2` are invalid and excluded from the
+table. `rerun1` found a Compose JSON parser defect before k6; `rerun2` correctly rejected an
+unhealthy cAdvisor scrape and a non-observable remote-write probe. No purchase measurement was
+accepted from either attempt.
+
+The backend `mvn test` suite was run after Docker returned. Observability (3 tests) and Redis queue
+(20 tests) pass after aligning their durable/cache fixtures. The complete suite is **not green**:
+`PessimisticReservationIntegrationTest` has one failed and one errored direct high-concurrency case,
+including a Hikari acquisition timeout with 40 active connections. This remains an open regression
+that must be resolved or explicitly redesigned before calling the backend suite passing.
+

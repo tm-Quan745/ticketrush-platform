@@ -1,0 +1,44 @@
+ Container ticketrush-week7-backend-1 Stopping 
+ Container ticketrush-week7-backend-1 Stopped 
+ Container ticketrush-week7-tools-run-eefa7c69f75b Creating 
+ Container ticketrush-week7-tools-run-eefa7c69f75b Created 
+ Container ticketrush-week7-tools-run-1803c1e0cde0 Creating 
+ Container ticketrush-week7-tools-run-1803c1e0cde0 Created 
+ Container ticketrush-week7-redis-1 Running 
+ Container ticketrush-week7-postgres-1 Running 
+ Container ticketrush-week7-mailpit-1 Running 
+ Container ticketrush-week7-rabbitmq-1 Running 
+ Container ticketrush-week7-backend-1 Recreate 
+ Container ticketrush-week7-backend-1 Recreated 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-backend-1 Starting 
+ Container ticketrush-week7-backend-1 Started 
+ Container ticketrush-week7-backend-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-backend-1 Healthy 
+Traceback (most recent call last):
+  File "D:\My pro\ticketrush-platform\infrastructure\scripts\loadtest.py", line 486, in <module>
+    main()
+    ~~~~^^
+  File "D:\My pro\ticketrush-platform\infrastructure\scripts\loadtest.py", line 468, in main
+    raise SystemExit(measure(args))
+                     ~~~~~~~^^^^^^
+  File "D:\My pro\ticketrush-platform\infrastructure\scripts\loadtest.py", line 324, in measure
+    preflight = observability_preflight(args)
+  File "D:\My pro\ticketrush-platform\infrastructure\scripts\loadtest.py", line 199, in observability_preflight
+    raise RuntimeError("Observability preflight failed: " + "; ".join(errors))
+RuntimeError: Observability preflight failed: Extra data: line 2 column 1 (char 1645)
