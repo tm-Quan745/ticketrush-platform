@@ -235,6 +235,7 @@ export function queuePoll() {
   const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
     'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
   queueStatusResponses.add(1, { status: String(response.status) });
+  if (Date.now() - exec.scenario.startTime >= 15_000) queueStatusSteadyDuration.add(response.timings.duration);
   const state = body(response);
   const retryAfter = Number(response.headers['Retry-After'] || 1);
   if (response.status === 200) {
