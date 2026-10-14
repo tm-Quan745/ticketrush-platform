@@ -28,6 +28,12 @@ class ObservabilityPreflightTest(unittest.TestCase):
     def test_explicit_backend_commit_is_used_as_build_revision(self):
         self.assertEqual("abc123", loadtest.backend_build_revision(SimpleNamespace(backend_commit="abc123")))
 
+    def test_healthy_cadvisor_target_uses_actual_prometheus_labels(self):
+        self.assertTrue(loadtest.healthy_cadvisor_target({
+            "health": "up", "labels": {"job": "containers", "instance": "cadvisor:8080"}}))
+        self.assertFalse(loadtest.healthy_cadvisor_target({
+            "health": "up", "labels": {"job": "cadvisor", "instance": "cadvisor:8080"}}))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -142,6 +142,12 @@ def output_tail(output, lines=20):
     return output.splitlines()[-lines:]
 
 
+def healthy_cadvisor_target(target):
+    labels = target.get("labels", {})
+    return (target.get("health") == "up" and labels.get("job") == "containers"
+            and labels.get("instance", "").startswith("cadvisor:"))
+
+
 def observability_preflight(args):
     """Fail closed before warm-up when telemetry cannot be collected."""
     report = {"run_id": args.run_id,
@@ -165,8 +171,8 @@ def observability_preflight(args):
 
         targets = request_json("http://127.0.0.1:29097/api/v1/targets")
         cadvisor_targets = [target for target in targets.get("data", {}).get("activeTargets", [])
-                            if target.get("labels", {}).get("job") == "cadvisor"]
-        cadvisor_up = any(target.get("health") == "up" for target in cadvisor_targets)
+                            if target.get("labels", {}).get("instance", "").startswith("cadvisor:")]
+        cadvisor_up = any(healthy_cadvisor_target(target) for target in cadvisor_targets)
         report["checks"]["cadvisor_scrape"] = {"up": cadvisor_up, "targets": len(cadvisor_targets)}
         if not cadvisor_up:
             errors.append("Prometheus has no healthy cAdvisor scrape target")
