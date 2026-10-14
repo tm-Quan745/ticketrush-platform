@@ -253,7 +253,7 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         redis.opsForZSet().add(keys.key("queue",event,"heartbeat"),user.toString(),1);
         assertThat(queue.status(event,second,false).position()).isEqualTo(1);
         assertThat(queue.status(event,user,false).state()).isEqualTo("EXPIRED");
-        capacity(0);assertThat(queue.status(event,second,false).soldOut()).isTrue();assertThat(queue.admit(event)).isZero();
+        capacity(0);queue.refresh(event);assertThat(queue.status(event,second,false).soldOut()).isTrue();assertThat(queue.admit(event)).isZero();
         redis.opsForZSet().add(keys.key("queue",event,"heartbeat"),second.toString(),1);
         assertThat(queue.admit(event)).isZero();
         assertThat(redis.opsForZSet().zCard(keys.key("queue",event,"waiting"))).isZero();

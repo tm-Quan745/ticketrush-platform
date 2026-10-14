@@ -29,7 +29,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @DirtiesContext
 class ObservabilityIntegrationTest {
     static final String PASSWORD = UUID.randomUUID().toString();
-    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine");
+    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine")
+        .withCommand("postgres", "-c", "fsync=on");
     @Container static final GenericContainer<?> REDIS = new GenericContainer<>("redis:7.4-alpine")
         .withCommand("redis-server", "--requirepass", PASSWORD).withExposedPorts(6379);
     @DynamicPropertySource static void configure(DynamicPropertyRegistry r) {
