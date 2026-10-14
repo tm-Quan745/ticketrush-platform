@@ -385,6 +385,10 @@ def measure(args):
     finally:
         sampler.finish()
     end = time.time()
+    queue_audit_exit = None
+    if args.scenario in {"J", "R", "P"}:
+        audit = tool("queue-audit", "--output", f"{args.run_id}-queue-audit.json", check=False)
+        queue_audit_exit = audit.returncode
     wal_after = wal_snapshot()
     (RESULTS / f"{args.run_id}-wal.json").write_text(json.dumps({"before": wal_before, "after": wal_after,
         "delta": wal_delta(wal_before, wal_after)}, indent=2))
@@ -421,7 +425,7 @@ def measure(args):
     (RESULTS / f"{args.run_id}-recovery.json").write_text(json.dumps(recovery, indent=2))
     run_result = {"scenario": args.scenario, "k6_exit": outcome.returncode, "verification_exit": verification_exit,
                   "verification_error": verification_error, "start": start, "end": end, "parameters": parameters,
-                  "collection_error": collection_error}
+                  "collection_error": collection_error, "queue_audit_exit": queue_audit_exit}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
     return outcome.returncode or verification_exit or int(collection_error is not None)
 
