@@ -270,6 +270,33 @@ class PgActivitySampler:
         (RESULTS / f"{self.run_id}-pgactivity.json").write_text(json.dumps(self.samples, indent=2))
 
 
+class DockerStatsSampler:
+    """Keep a direct CPU/memory record when cAdvisor misses short-lived k6 containers."""
+    def __init__(self, run_id): self.run_id, self.samples, self.stop = run_id, [], threading.Event()
+    def start(self):
+        self.thread = threading.Thread(target=self.collect, daemon=True); self.thread.start()
+    def collect(self):
+        while not self.stop.is_set():
+            result = run(["docker", "stats", "--no-stream", "--format", "{{json .}}"],
+                         capture=True, check=False)
+            rows = []
+            for line in result.stdout.splitlines():
+                try:
+                    row = json.loads(line)
+                    percent = row.get("CPUPerc", "0%").rstrip("%")
+                    rows.append({"name": row.get("Name"), "cpu_percent": float(percent),
+                                 "cpu_cores": float(percent) / 100,
+                                 "memory_usage": row.get("MemUsage"), "memory_percent": row.get("MemPerc")})
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    continue
+            self.samples.append({"at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                                 "containers": rows})
+            self.stop.wait(2)
+    def finish(self):
+        self.stop.set(); self.thread.join(timeout=5)
+        (RESULTS / f"{self.run_id}-docker-stats.json").write_text(json.dumps(self.samples, indent=2))
+
+
 def collect(run_id, start, end, params, source):
     queries = {
         "request_rate": 'sum(rate(http_server_requests_seconds_count[15s]))',
@@ -406,10 +433,12 @@ def measure(args):
         compose("exec", "-T", "backend", "jcmd", "1", "JFR.start", "name=week7", "settings=profile", "filename=/tmp/week7.jfr")
     wal_before = wal_snapshot()
     sampler = PgActivitySampler(args.run_id); sampler.start()
+    docker_stats = DockerStatsSampler(args.run_id); docker_stats.start()
     try:
         outcome = compose(*command, "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
     finally:
         sampler.finish()
+        docker_stats.finish()
     end = time.time()
     queue_audit_exit = None
     if args.scenario in {"J", "R", "P"}:
