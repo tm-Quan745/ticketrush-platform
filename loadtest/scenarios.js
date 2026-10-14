@@ -35,10 +35,12 @@ const arrivalsStarted = new Counter('arrivals_started');
 const queueWait = new Trend('queue_wait_ms', true);
 const queueJoinsStarted = new Counter('queue_joins_started');
 const queueJoinsAccepted = new Counter('queue_joins_accepted');
+const queueJoinResponses = new Counter('queue_join_responses');
 const queuePosition = new Trend('queue_position', true);
 const queuePollInterval = new Trend('queue_poll_interval_seconds', true);
 const queueRetryAfterHonored = new Counter('queue_retry_after_honored');
 const queueRejoinPreserved = new Counter('queue_rejoin_preserved');
+const queueStatusResponses = new Counter('queue_status_responses');
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -194,6 +196,7 @@ export function queueJoin() {
   const event = data.events.find(value => value.name === 'HOT');
   const response = request('POST', `/api/v1/events/${event.id}/waiting-room/join`,
     'POST /api/v1/events/{id}/waiting-room/join', null, users[index].token, {}, [200]);
+  queueJoinResponses.add(1, { status: String(response.status) });
   const state = body(response);
   const accepted = response.status === 200 && state.state === 'WAITING' && state.position > 0;
   business(accepted, 'queue join accepted');
@@ -225,6 +228,7 @@ export function queuePoll() {
   if (!business(Boolean(user), 'distinct queue poller available')) return;
   const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
     'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
+  queueStatusResponses.add(1, { status: String(response.status) });
   const state = body(response);
   const retryAfter = Number(response.headers['Retry-After'] || 1);
   if (response.status === 200) {
