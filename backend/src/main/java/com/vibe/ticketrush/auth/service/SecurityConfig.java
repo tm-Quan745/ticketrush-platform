@@ -69,6 +69,9 @@ public class SecurityConfig {
                     if (environment.matchesProfiles("loadtest", "test")) {
                         auth.requestMatchers(HttpMethod.GET, "/internal/loadtest/durability").permitAll();
                     }
+                    if (environment.matchesProfiles("loadtest")) {
+                        auth.requestMatchers(HttpMethod.GET, "/internal/loadtest/events/*/waiting-room/admissions").hasRole("ADMIN");
+                    }
                     if (!environment.matchesProfiles("prod")) {
                         auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     }

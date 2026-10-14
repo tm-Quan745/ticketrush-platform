@@ -1,0 +1,4 @@
+ticketrush:
+  queue:
+    # The admission-pair feed is test-only and exists only in the isolated loadtest profile.
+    capture-admitted: true

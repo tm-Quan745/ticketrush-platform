@@ -26,6 +26,7 @@ public class RedisRateLimiter {
     public Decision check(String policy,String identity,RateLimitProperties.Policy config) {
         String key=keys.key("rate-limit",TokenService.hash(identity),policy);
         Decision decision=guard.call("rate-limit",() -> {
+            metrics.counter("rate_limit_redis_commands_total","policy",policy).increment();
             String raw=redis.execute(script,List.of(key),Integer.toString(config.capacity()),Long.toString(config.period().toMillis()),Long.toString(config.period().toMillis()*2));
             String[] values=Objects.requireNonNull(raw).split("\\|");
             return new Decision("1".equals(values[0]),config.capacity(),Long.parseLong(values[1]),

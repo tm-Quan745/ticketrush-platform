@@ -26,6 +26,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @SpringBootTest(properties={"ticketrush.reservation.strategy=redis-gate","ticketrush.redis.cooldown=200ms",
     "spring.data.redis.timeout=2s","ticketrush.redis.attempt-lease=5s",
+    "ticketrush.queue.capture-admitted=true",
     "ticketrush.payment.delay=24h","ticketrush.payment.dispatch-interval=24h",
     "ticketrush.rate-limit.enabled=true","ticketrush.rate-limit.policies.reservations.capacity=10",
     "ticketrush.rate-limit.policies.reservations.period=1h","ticketrush.rate-limit.policies.reservations.local-capacity=3",
@@ -182,6 +183,10 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
             keys,context.getBean(QueueProperties.class),roomEvents,inventoryService,guard,json,clock,new io.micrometer.core.instrument.simple.SimpleMeterRegistry()));
         assertThat(concurrent(3,i -> instances.get(i).admit(event)).stream().mapToInt(Integer::intValue).sum()).isEqualTo(3);
         assertThat(queue.admit(event)).isZero();
+        var admitted=queue.newlyAdmitted(event,3);
+        assertThat(admitted).hasSize(3).extracting(WaitingRoomService.AdmittedUser::user).containsExactlyElementsOf(users.subList(0,3));
+        assertThat(admitted).allSatisfy(value -> assertThat(value.token()).hasSizeGreaterThanOrEqualTo(22));
+        assertThat(queue.newlyAdmitted(event,3)).isEmpty();
         var first=queue.status(event,users.getFirst(),false);assertThat(first.state()).isEqualTo("ADMITTED");
         assertThat(first.token().length()).isGreaterThanOrEqualTo(22);
         queue.requireAdmission(tier,users.getFirst(),first.token());
@@ -200,7 +205,7 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         var status=queue.status(event,third,false);
         assertThat(status.position()).isEqualTo(3);
         assertThat(status.pollIntervalSeconds()).isEqualTo(1);
-        for(int i=0;i<45;i++) queue.status(event,addUser(),true);
+        for(int i=0;i<500;i++) queue.status(event,addUser(),true);
         jdbc.update("UPDATE events SET waiting_room_enabled=false WHERE id=?",event);
         status=queue.status(event,third,false);
         assertThat(status.queueLength()).isGreaterThan(3);

@@ -8,10 +8,12 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 public record QueueProperties(@DefaultValue("false") boolean enabledByDefault,
         @DefaultValue("fifo") String mode, @DefaultValue("20") int rate,
         @DefaultValue("1s") Duration interval, @DefaultValue("30s") Duration heartbeatTtl,
-        @DefaultValue("10m") Duration tokenTtl, @DefaultValue("15") int maxPollIntervalSeconds) {
+        @DefaultValue("10m") Duration tokenTtl, @DefaultValue("500") int statusTargetRequestsPerSecond,
+        @DefaultValue("60") int maxPollIntervalSeconds, @DefaultValue("false") boolean captureAdmitted) {
     public QueueProperties {
         if (!java.util.Set.of("fifo","lottery").contains(mode) || rate<1 || rate>1000 || interval.toMillis()<1
-                || heartbeatTtl.toMillis()<1 || tokenTtl.toMillis()<1 || maxPollIntervalSeconds<1 || maxPollIntervalSeconds>60)
+                || heartbeatTtl.toMillis()<1 || tokenTtl.toMillis()<1 || statusTargetRequestsPerSecond<1
+                || statusTargetRequestsPerSecond>10_000 || maxPollIntervalSeconds<1 || maxPollIntervalSeconds>60)
             throw new IllegalArgumentException("Invalid queue configuration");
     }
 }

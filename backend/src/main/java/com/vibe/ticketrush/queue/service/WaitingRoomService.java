@@ -7,6 +7,7 @@ import com.vibe.ticketrush.inventory.service.InventoryRead;
 import com.vibe.ticketrush.inventory.dto.TierDtos.Availability;
 import com.fasterxml.jackson.databind.*;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Counter;
 import java.security.SecureRandom;
 import java.time.*;
 import java.util.*;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class WaitingRoomService implements ReservationAdmission {
     public record Status(String state,long position,long queueLength,long estimatedWaitSeconds,int pollIntervalSeconds,
                          boolean soldOut,String token,Instant expiresAt) {}
+    public record AdmittedUser(UUID user,String token,Instant expiresAt) {}
     private record CachedSettings(WaitingRoomEvents.Settings event, boolean soldOut) {}
     private final StringRedisTemplate redis;
     private final RedisScript<String> script;
@@ -34,6 +36,9 @@ public class WaitingRoomService implements ReservationAdmission {
     private final ObjectMapper json;
     private final Clock clock;
     private final MeterRegistry metrics;
+    private final Counter redisCommands;
+    private final Counter joinRequests;
+    private final Counter statusRequests;
     private final AtomicLong size=new AtomicLong();
     private final SecureRandom random=new SecureRandom();
     public WaitingRoomService(StringRedisTemplate redis,RedisScript<String> waitingRoomScript,RedisProperties keys,
@@ -44,16 +49,24 @@ public class WaitingRoomService implements ReservationAdmission {
         metrics.gauge("waiting_room_size",size);
         metrics.counter("waiting_room_admitted_total");
         io.micrometer.core.instrument.Timer.builder("waiting_room_wait_seconds").publishPercentileHistogram().register(metrics);
+        redisCommands=Counter.builder("waiting_room_redis_commands_total").register(metrics);
+        joinRequests=Counter.builder("waiting_room_requests_total").tag("operation","join").register(metrics);
+        statusRequests=Counter.builder("waiting_room_requests_total").tag("operation","status").register(metrics);
     }
     private String execute(WaitingRoomEvents.Settings event,String op,UUID user,boolean open,String... tokens) {
         List<String> names=List.of(keys.key("queue",event.id(),"waiting"),keys.key("queue",event.id(),"heartbeat"),
             keys.key("queue",event.id(),"sequence"),keys.key("queue",event.id(),"opened"),
-            keys.key("queue",event.id(),"budget"),keys.key("queue",event.id(),"user")+":");
+            keys.key("queue",event.id(),"budget"),keys.key("queue",event.id(),"user")+":",
+            admittedKey(event.id()));
         List<String> args=new ArrayList<>(List.of(op,user.toString(),open ? "1":"0",event.mode(),Integer.toString(event.rate()),
             Long.toString(properties.interval().toMillis()),Long.toString(properties.heartbeatTtl().toMillis()),
             Long.toString(properties.tokenTtl().toMillis()),"604800000"));
         args.addAll(Arrays.asList(tokens));
-        return guard.call("waiting-room",() -> redis.execute(script,names,args.toArray()),() -> {
+        args.add(properties.captureAdmitted() ? "1":"0");
+        return guard.call("waiting-room",() -> {
+            redisCommands.increment();
+            return redis.execute(script,names,args.toArray());
+        },() -> {
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_UNAVAILABLE","Waiting room temporarily unavailable; retry later");
         });
     }
@@ -96,12 +109,26 @@ public class WaitingRoomService implements ReservationAdmission {
         var data=parse(execute(event,join ? "join":"status",user,open(event)));
         long position=data.path("position").asLong();
         long queueLength=data.path("queueLength").asLong(position);
-        int pollInterval=(int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,Math.ceil((double)queueLength/event.rate())));
+        int pollInterval=(int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,
+            Math.ceil((double)queueLength/properties.statusTargetRequestsPerSecond())));
+        if (join) joinRequests.increment(); else statusRequests.increment();
         return new Status(data.path("state").asText(),position,queueLength,(long)Math.ceil((double)position/event.rate())*Math.max(1,properties.interval().toSeconds()),
             pollInterval,cached.soldOut(),data.path("token").isMissingNode() ? null:data.path("token").asText(),
             data.has("expiresAt") ? Instant.ofEpochMilli(data.path("expiresAt").asLong()):null);
     }
     public void leave(UUID event,UUID user) { execute(cached(event).event(),"leave",user,false); }
+    public List<AdmittedUser> newlyAdmitted(UUID eventId,int limit) {
+        if (limit<1 || limit>1_000) throw new IllegalArgumentException("limit must be 1..1000");
+        List<String> values=guard.call("waiting-room",() -> {
+            redisCommands.increment();
+            List<String> popped=redis.opsForList().leftPop(admittedKey(eventId),limit);
+            return popped==null ? List.of():popped;
+        },List::of);
+        return values.stream().map(this::parse).map(value -> new AdmittedUser(
+            UUID.fromString(value.path("user").asText()),value.path("token").asText(),
+            Instant.ofEpochMilli(value.path("expiresAt").asLong()))).toList();
+    }
+    private String admittedKey(UUID event) { return keys.key("queue",event,"admitted"); }
     public void refresh(UUID eventId) {
         WaitingRoomEvents.Settings event=events.settings(eventId);
         cache(event,soldOut(eventId));

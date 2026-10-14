@@ -1,4 +1,4 @@
--- KEYS: queue ZSET, heartbeat ZSET, sequence, opened, budget, user key prefix.
+-- KEYS: queue ZSET, heartbeat ZSET, sequence, opened, budget, user key prefix, admitted LIST.
 -- ARGV: op,user,open,mode,rate,intervalMs,heartbeatMs,tokenMs,retentionMs,token candidates...
 -- Redis TIME governs liveness and one shared admission budget. Pop + bound token are atomic.
 local op,user=ARGV[1],ARGV[2]
@@ -8,7 +8,7 @@ local admission=prefix..user..':admission'; local seen=prefix..user..':seen'
 local stale=redis.call('ZRANGEBYSCORE',KEYS[2],'-inf',now-tonumber(ARGV[7]))
 for _,id in ipairs(stale) do redis.call('ZREM',KEYS[1],id); redis.call('ZREM',KEYS[2],id) end
 local function touch()
-  for i=1,5 do redis.call('PEXPIRE',KEYS[i],retention) end
+  for i=1,7 do redis.call('PEXPIRE',KEYS[i],retention) end
 end
 if ARGV[3]=='1' and redis.call('EXISTS',KEYS[4])==0 then
   if ARGV[4]=='lottery' then
@@ -40,6 +40,9 @@ if op=='admit' then
     local joined=tonumber(redis.call('GET',prefix..id..':seen') or now)
     local value=cjson.encode({token=ARGV[9+i],expiresAt=now+tonumber(ARGV[8])})
     redis.call('SET',prefix..id..':admission',value,'PX',ARGV[8])
+    if ARGV[#ARGV]=='1' then
+      redis.call('RPUSH',KEYS[7],cjson.encode({user=id,token=ARGV[9+i],expiresAt=now+tonumber(ARGV[8])}))
+    end
     redis.call('PEXPIRE',prefix..id..':seen',retention)
     redis.call('ZREM',KEYS[1],id); redis.call('ZREM',KEYS[2],id)
     table.insert(result,math.max(0,now-joined))
