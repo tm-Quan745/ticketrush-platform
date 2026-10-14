@@ -314,6 +314,24 @@ def collect(run_id, start, end, params, source):
             result["series"][name] = request_json(url)
         except Exception as error:
             result["series"][name] = {"error": str(error)}
+    # A full-window histogram is needed for an apples-to-apples server p95.  The
+    # first 15 seconds are deliberately excluded to match the k6 steady trend.
+    steady_seconds = max(1, int(end - start - 15))
+    steady = {
+        "status_server_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(http_server_requests_seconds_bucket{uri="/api/v1/events/{id}/waiting-room/status"}[%ss])))' % steady_seconds,
+        "jwt_validation_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(jwt_validation_seconds_bucket[%ss])))' % steady_seconds,
+        "limiter_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(rate_limit_redis_seconds_bucket{policy="queue-status"}[%ss])))' % steady_seconds,
+        "settings_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(waiting_room_status_settings_seconds_bucket[%ss])))' % steady_seconds,
+        "script_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(waiting_room_status_script_seconds_bucket[%ss])))' % steady_seconds,
+        "response_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(waiting_room_status_response_seconds_bucket[%ss])))' % steady_seconds,
+    }
+    result["steady_state"] = {"excluded_warmup_seconds": 15, "duration_seconds": steady_seconds, "queries": {}}
+    for name, query in steady.items():
+        try:
+            url = "http://127.0.0.1:29097/api/v1/query?" + urllib.parse.urlencode({"query": query, "time": end})
+            result["steady_state"]["queries"][name] = request_json(url)
+        except Exception as error:
+            result["steady_state"]["queries"][name] = {"error": str(error)}
     result["targets"] = request_json("http://127.0.0.1:29097/api/v1/targets")
     # No credentials, container environment, raw headers or user files are included in artifacts.
     result["git_sha"] = source["commit_sha"]
