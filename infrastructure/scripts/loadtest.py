@@ -120,6 +120,82 @@ def request_json(url):
         return json.load(response)
 
 
+def compose_service_rows(output):
+    """Normalise `docker compose ps --format json` across Compose versions."""
+    decoded = json.loads(output)
+    return decoded if isinstance(decoded, list) else [decoded]
+
+
+def remote_write_failed(output):
+    markers = ("failed to send the time series data", "stopping output", "remote write receiver")
+    return any(marker in output.lower() for marker in markers)
+
+
+def output_tail(output, lines=20):
+    return output.splitlines()[-lines:]
+
+
+def observability_preflight(args):
+    """Fail closed before warm-up when telemetry cannot be collected."""
+    report = {"run_id": args.run_id,
+              "checked_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+              "checks": {}, "valid": False}
+    errors = []
+    try:
+        rows = compose_service_rows(compose("ps", "--format", "json", capture=True).stdout)
+        by_service = {row.get("Service"): row for row in rows}
+        for service in ("prometheus", "cadvisor"):
+            row = by_service.get(service)
+            running = bool(row) and row.get("State") == "running"
+            report["checks"][f"{service}_container"] = {"running": running}
+            if not running:
+                errors.append(f"{service} container is not running")
+
+        with urllib.request.urlopen("http://127.0.0.1:29097/-/ready", timeout=10) as response:
+            report["checks"]["prometheus_ready"] = {"status": response.status}
+            if response.status != 200:
+                errors.append("Prometheus readiness endpoint is not 200")
+
+        targets = request_json("http://127.0.0.1:29097/api/v1/targets")
+        cadvisor_targets = [target for target in targets.get("data", {}).get("activeTargets", [])
+                            if target.get("labels", {}).get("job") == "cadvisor"]
+        cadvisor_up = any(target.get("health") == "up" for target in cadvisor_targets)
+        report["checks"]["cadvisor_scrape"] = {"up": cadvisor_up, "targets": len(cadvisor_targets)}
+        if not cadvisor_up:
+            errors.append("Prometheus has no healthy cAdvisor scrape target")
+
+        probe_id = f"preflight-{args.run_id}-{int(time.time())}"
+        probe = compose("run", "--rm", "--no-deps", "-T", "k6", "run", "--quiet",
+                        "--tag", f"preflight_id={probe_id}",
+                        "--out", "experimental-prometheus-rw", "preflight.js",
+                        capture=True, check=False)
+        probe_output = probe.stdout + "\n" + probe.stderr
+        probe_ok = probe.returncode == 0 and not remote_write_failed(probe_output)
+        received = False
+        for _ in range(5):
+            query = urllib.parse.urlencode({"query": f'k6_http_reqs_total{{preflight_id="{probe_id}"}}'})
+            received = bool(request_json("http://127.0.0.1:29097/api/v1/query?" + query)
+                            .get("data", {}).get("result", []))
+            if received:
+                break
+            time.sleep(1)
+        probe_ok = probe_ok and received
+        report["checks"]["k6_remote_write"] = {
+            "exit_code": probe.returncode, "received_by_prometheus": received, "ok": probe_ok,
+            "output_tail": output_tail(probe_output)
+        }
+        if not probe_ok:
+            errors.append("k6 remote-write probe failed")
+    except Exception as error:
+        errors.append(str(error))
+    report["errors"] = errors
+    report["valid"] = not errors
+    (RESULTS / f"{args.run_id}-preflight.json").write_text(json.dumps(report, indent=2))
+    if errors:
+        raise RuntimeError("Observability preflight failed: " + "; ".join(errors))
+    return report
+
+
 def wal_snapshot():
     query = "SELECT row_to_json(w) FROM (SELECT wal_records,wal_fpi,wal_bytes,wal_buffers_full,wal_write,wal_sync,wal_write_time,wal_sync_time FROM pg_stat_wal) w"
     output = compose("exec", "-T", "postgres", "psql", "-U", "ticketrush", "-d", "ticketrush_loadtest", "-Atc", query, capture=True).stdout.strip()
@@ -241,7 +317,12 @@ def measure(args):
         raise ValueError("Run ID already exists; choose a new ID to preserve all results")
     if not args.no_reset:
         reset(args)
+    preflight = observability_preflight(args)
     provenance = backend_provenance(args)
+    provenance["observability_preflight"] = {
+        "valid": preflight["valid"], "checked_at_utc": preflight["checked_at_utc"],
+        "artifact": f"{args.run_id}-preflight.json"
+    }
     provenance["k6_order_poll"] = k6_poll_parameters(args)
     (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
     if args.scenario != "W" and not args.no_warmup:
