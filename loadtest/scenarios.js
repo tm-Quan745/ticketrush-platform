@@ -24,6 +24,11 @@ const queueJoinVUs = Number(__ENV.QUEUE_JOIN_VUS || 300);
 const queuePollers = Number(__ENV.QUEUE_POLLERS || 500);
 const queuePollDuration = __ENV.QUEUE_POLL_DURATION || '60s';
 const queueFirstPollJitterSeconds = Number(__ENV.QUEUE_FIRST_POLL_JITTER_SECONDS || 2);
+const statusTokenPool = Number(__ENV.STATUS_TOKEN_POOL || 200);
+const statusBurstAfterSeconds = Number(__ENV.STATUS_BURST_AFTER_SECONDS || 15);
+const statusBurstDurationSeconds = Number(__ENV.STATUS_BURST_DURATION_SECONDS || 2);
+const statusBurstSteadyRate = Number(__ENV.STATUS_BURST_STEADY_RATE || 500);
+const statusBurstRate = Number(__ENV.STATUS_BURST_RATE || 2500);
 const checkoutVUs = Number(__ENV.CHECKOUT_VUS || 100);
 const admissionPairs = scenario === 'Q'
   ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
@@ -43,6 +48,8 @@ const queueRetryAfterHonored = new Counter('queue_retry_after_honored');
 const queueRejoinPreserved = new Counter('queue_rejoin_preserved');
 const queueStatusResponses = new Counter('queue_status_responses');
 const queueStatusSteadyDuration = new Trend('queue_status_steady_duration', true);
+const queueStatusBurstDuration = new Trend('queue_status_burst_duration', true);
+const queueStatusPostBurstDuration = new Trend('queue_status_post_burst_duration', true);
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -67,10 +74,17 @@ const plans = {
   P: { poll: { executor: 'constant-vus', exec: 'queuePoll', vus: queuePollers, duration: queuePollDuration,
     gracefulStop: '30s' } },
   S: { statusMicro: steady('queueStatusMicro', Number(__ENV.STATUS_RATE || 50), __ENV.STATUS_DURATION || '45s') },
+  T: { statusBurst: { executor: 'ramping-arrival-rate', exec: 'queueStatusBurst', startRate: statusBurstSteadyRate,
+    timeUnit: '1s', ...vus, stages: [
+      { duration: `${statusBurstAfterSeconds}s`, target: statusBurstSteadyRate },
+      { duration: `${statusBurstDurationSeconds}s`, target: statusBurstRate },
+      { duration: '1s', target: statusBurstSteadyRate },
+      { duration: __ENV.STATUS_POST_BURST_DURATION || '30s', target: statusBurstSteadyRate }
+    ], gracefulStop: '90s' } },
   Q: { checkout: { executor: 'shared-iterations', exec: 'checkout', vus: checkoutVUs, iterations: admissionPairs.length,
     maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
 };
-if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q, S or W');
+if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q, S, T or W');
 export const options = {
   scenarios: plans[scenario],
   // Exclude raw URL, user/token values and VU identifiers from every exported series.
@@ -255,7 +269,7 @@ export function queuePoll() {
 }
 
 export function queueStatusMicro() {
-  const index = exec.scenario.iterationInTest % Number(__ENV.STATUS_DISTINCT_USERS || 200);
+  const index = Math.floor(Math.random() * Math.min(statusTokenPool, queueUsers));
   const event = data.events.find(value => value.name === 'HOT');
   const user = users[index];
   if (!business(Boolean(user), 'distinct status user available')) return;
@@ -269,6 +283,23 @@ export function queueStatusMicro() {
     outcomes.add(1, { result: 'rate_limited' });
     business(false, 'status micro-run was not rate limited');
   }
+}
+
+export function queueStatusBurst() {
+  const index = Math.floor(Math.random() * Math.min(statusTokenPool, queueUsers));
+  const event = data.events.find(value => value.name === 'HOT');
+  const user = users[index];
+  if (!business(Boolean(user), 'random status user available')) return;
+  const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
+    'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
+  queueStatusResponses.add(1, { status: String(response.status) });
+  const elapsed = (Date.now() - exec.scenario.startTime) / 1000;
+  if (elapsed >= statusBurstAfterSeconds && elapsed < statusBurstAfterSeconds + statusBurstDurationSeconds)
+    queueStatusBurstDuration.add(response.timings.duration);
+  if (elapsed >= statusBurstAfterSeconds + statusBurstDurationSeconds + 1)
+    queueStatusPostBurstDuration.add(response.timings.duration);
+  if (response.status === 200) outcomes.add(1, { result: 'queue_polled' });
+  else { outcomes.add(1, { result: 'rate_limited' }); business(false, 'burst status was not rate limited'); }
 }
 
 export function checkout() {

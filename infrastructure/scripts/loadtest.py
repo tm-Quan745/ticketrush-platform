@@ -123,15 +123,18 @@ def k6_queue_parameters(args):
     defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 500,
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
                 "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
-                "QUEUE_FIRST_POLL_JITTER_SECONDS": 2}
+                "QUEUE_FIRST_POLL_JITTER_SECONDS": 2, "STATUS_TOKEN_POOL": 200,
+                "STATUS_BURST_AFTER_SECONDS": 15, "STATUS_BURST_DURATION_SECONDS": 2,
+                "STATUS_BURST_STEADY_RATE": 500, "STATUS_BURST_RATE": 2500,
+                "STATUS_POST_BURST_DURATION": "30s"}
     selected = dict(defaults)
     for item in args.param:
         name, separator, value = item.partition("=")
         if name not in selected or separator != "=" or not value:
             continue
-        if name in {"QUEUE_POLL_DURATION", "STATUS_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
+        if name in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
             selected[name] = value
-        elif name not in {"QUEUE_POLL_DURATION", "STATUS_DURATION"} and value.isdecimal() and int(value) > 0:
+        elif name not in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION"} and value.isdecimal() and int(value) > 0:
             selected[name] = int(value)
     selected["steady_state_warmup_seconds"] = 15
     return selected
@@ -273,7 +276,9 @@ class PgActivitySampler:
 
 class DockerStatsSampler:
     """Keep a direct CPU/memory record when cAdvisor misses short-lived k6 containers."""
-    def __init__(self, run_id): self.run_id, self.samples, self.stop = run_id, [], threading.Event()
+    def __init__(self, run_id):
+        self.run_id, self.samples, self.stop = run_id, [], threading.Event()
+        self.memory_abort, self.max_memory_percent = threading.Event(), 0.0
     def start(self):
         self.thread = threading.Thread(target=self.collect, daemon=True); self.thread.start()
     def collect(self):
@@ -285,17 +290,27 @@ class DockerStatsSampler:
                 try:
                     row = json.loads(line)
                     percent = row.get("CPUPerc", "0%").rstrip("%")
+                    memory_percent = float(row.get("MemPerc", "0%").rstrip("%"))
                     rows.append({"name": row.get("Name"), "cpu_percent": float(percent),
                                  "cpu_cores": float(percent) / 100,
-                                 "memory_usage": row.get("MemUsage"), "memory_percent": row.get("MemPerc")})
+                                 "memory_usage": row.get("MemUsage"), "memory_percent": memory_percent})
                 except (json.JSONDecodeError, TypeError, ValueError):
                     continue
+            total_memory_percent=sum(row["memory_percent"] for row in rows)
+            self.max_memory_percent=max(self.max_memory_percent,total_memory_percent)
             self.samples.append({"at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                                 "containers": rows})
+                                 "total_memory_percent": total_memory_percent, "containers": rows})
+            if self.max_memory_percent>85 and not self.memory_abort.is_set():
+                self.memory_abort.set()
+                ids=run(["docker", "ps", "--filter", "name=ticketrush-week7-k6-run", "--quiet"],
+                        capture=True, check=False).stdout.split()
+                if ids: run(["docker", "stop", *ids], check=False)
             self.stop.wait(2)
     def finish(self):
         self.stop.set(); self.thread.join(timeout=5)
-        (RESULTS / f"{self.run_id}-docker-stats.json").write_text(json.dumps(self.samples, indent=2))
+        (RESULTS / f"{self.run_id}-docker-stats.json").write_text(json.dumps({
+            "memory_abort": self.memory_abort.is_set(), "max_memory_percent": self.max_memory_percent,
+            "samples": self.samples}, indent=2))
 
 
 def k6_measurement_window(run_id, process_end):
@@ -494,9 +509,10 @@ def measure(args):
     (RESULTS / f"{args.run_id}-recovery.json").write_text(json.dumps(recovery, indent=2))
     run_result = {"scenario": args.scenario, "k6_exit": outcome.returncode, "verification_exit": verification_exit,
                   "verification_error": verification_error, "start": start, "end": end, "parameters": parameters,
-                  "collection_error": collection_error, "queue_audit_exit": queue_audit_exit}
+                  "collection_error": collection_error, "queue_audit_exit": queue_audit_exit,
+                  "memory_abort": docker_stats.memory_abort.is_set(), "max_memory_percent": docker_stats.max_memory_percent}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
-    return outcome.returncode or verification_exit or int(collection_error is not None)
+    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set())
 
 
 def environment():
@@ -518,7 +534,7 @@ def environment():
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "verify", "queries", "test", "environment", "down"])
-    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQS"), default="A")
+    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQST"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
     p.add_argument("--background", type=int, default=200)
