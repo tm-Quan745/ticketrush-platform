@@ -39,6 +39,7 @@ const checkoutVUs = Number(__ENV.CHECKOUT_VUS || 100);
 const checkoutRate = Number(__ENV.CHECKOUT_RATE || 20);
 const checkoutDuration = __ENV.CHECKOUT_DURATION || '5s';
 const checkoutRetries = Number(__ENV.CHECKOUT_MAX_RETRIES || 3);
+const checkoutKeyOffset = Number(__ENV.CHECKOUT_KEY_OFFSET || 0);
 const admissionPairs = ['Q', 'V'].includes(scenario)
   ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
 const usersById = ['Q', 'V'].includes(scenario) ? Object.fromEntries(users.map(user => [user.id, user])) : {};
@@ -67,6 +68,9 @@ const checkoutReservationBulkheadRejected = new Counter('checkout_reservation_bu
 const checkoutOrderBulkheadRejected = new Counter('checkout_order_bulkhead_rejected');
 const checkoutReservationPoolUnavailable = new Counter('checkout_reservation_pool_unavailable');
 const checkoutOrderPoolUnavailable = new Counter('checkout_order_pool_unavailable');
+const checkoutReservationInvalidAdmission = new Counter('checkout_reservation_invalid_admission');
+const checkoutReservationAlreadyHeld = new Counter('checkout_reservation_already_held');
+const checkoutReservationOtherConflict = new Counter('checkout_reservation_other_conflict');
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -352,6 +356,11 @@ function requestWithAdmissionRetry(method, path, name, payload, user, headers, a
     if (result.code === 'DATABASE_POOL_TIMEOUT') {
       (reservation ? checkoutReservationPoolUnavailable : checkoutOrderPoolUnavailable).add(1);
     }
+    if (reservation && result.code === 'INVALID_ADMISSION_TOKEN') checkoutReservationInvalidAdmission.add(1);
+    if (reservation && result.code === 'ALREADY_HELD') checkoutReservationAlreadyHeld.add(1);
+    if (reservation && response.status === 409 && !['SOLD_OUT', 'ALREADY_HELD'].includes(result.code)) {
+      checkoutReservationOtherConflict.add(1);
+    }
     if (![429, 503].includes(response.status) || attempt === checkoutRetries) return { response, result };
     checkoutRetriesMetric.add(1, { endpoint: name, status: String(response.status) });
     const retryAfter = Math.max(1, Number(response.headers['Retry-After'] || 1));
@@ -368,7 +377,7 @@ export function checkout() {
   const event = data.events.find(value => value.name === 'HOT');
   const payload = { tierId: event.tiers[index % event.tiers.length], quantity: 1 + index % 4 };
   const reservationAttempt = requestWithAdmissionRetry('POST', '/api/v1/reservations', 'POST /api/v1/reservations', payload,
-    user, { 'Idempotency-Key': key(index, '3'), 'X-Admission-Token': admission.token }, [201, 409, 429, 403, 503]);
+    user, { 'Idempotency-Key': key(index + checkoutKeyOffset, '3'), 'X-Admission-Token': admission.token }, [201, 409, 429, 403, 503]);
   const reservationResponse = reservationAttempt.response;
   const reservation = reservationAttempt.result;
   if (reservationResponse.status !== 201) {
@@ -381,7 +390,7 @@ export function checkout() {
     business(expected, 'checkout reservation has an expected terminal outcome');
     return;
   }
-  const orderHeaders = { 'Idempotency-Key': key(index, '4'), 'X-Mock-Scenario': 'SUCCESS',
+  const orderHeaders = { 'Idempotency-Key': key(index + checkoutKeyOffset, '4'), 'X-Mock-Scenario': 'SUCCESS',
     'X-Mock-Test-Token': __ENV.MOCK_PAYMENT_TEST_TOKEN };
   const orderAttempt = requestWithAdmissionRetry('POST', '/api/v1/orders', 'POST /api/v1/orders', { reservationId: reservation.id },
     user, orderHeaders, [201, 429, 503]);
