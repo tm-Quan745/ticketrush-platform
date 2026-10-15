@@ -411,3 +411,15 @@ does not establish a 2,500 req/s front-door capacity.
 
 Focused `PessimisticReservationIntegrationTest` passed 13/13 twice at the production 1,500 ms
 timeout, then the 30,000 ms test-profile override was removed and the no-override run also passed.
+
+### 2026-10-15 — first-poll spread, burst replacement, checkout negative result
+
+Commit `59db266` changes the first client poll from a fixed 0–2 seconds to uniform `[0, Retry-After]`; the current 5,000-user advice is 10 seconds. It also adds controlled queue-unavailable `503` responses with jittered Retry-After, derives bulkhead capacity as admission rate x bounded hold x safety factor (20 x 1 x 1.5 = 30), and adds bounded 429/503 checkout retries. `Week6RedisIntegrationTest` passed after the change.
+
+`frontdoor-firstpoll-S500` is valid: 5,001 scheduled status requests over 10 seconds, zero drops/5xx, max 8/600 VUs, k6 3.76/13.85/31.53 ms p50/p95/p99 and verifier PASS. It is a constant-arrival proxy for the uniform first-poll distribution, not a test with 5,000 retained VUs.
+
+The historical 2,500/s burst had 2,837 unlabeled 5xx and 2,294 drops. Its old client artifact cannot distinguish 500 from 503. Evidence available from logs/telemetry is RedisGuard fallback, 300 ms Redis command timeout, EVALSHA max 1,192.7 ms, GET max 1,106.5 ms, Tomcat 200 busy, backend JVM 0.576 x 12 = 6.9 cores, Docker peak backend/k6/postgres/redis 7.94/6.96/1.97/0.46 cores. The k6 generator reached 996/1,000 VUs because burst latency consumed VUs; five-second observed response peak was ~883/s, far under the 2,500/s offer. This remains a negative result.
+
+`frontdoor-T1500-burst` is valid and replaces it as a generator-drivable burst: 27,490 responses, zero HTTP failures/drops, max 9/600 VUs, memory 44.9%, verifier PASS and k6 p50/p95/p99 2.44/11.48/53.95 ms. It scheduled 1,500/s for two seconds; five-second scrape averaging reports ~800/s and is not an exact plateau measurement.
+
+Checkout is blocked. The prior Q100's 70 errors matched the 30-permit bulkhead arithmetic but were not status/code-tagged, so that classification is inference only. Retry-enabled simultaneous Q100 ended in controlled 503 and reserve p95 1,876.4 ms. The first paced V20 used expired 10-minute admission tokens and returned 100 `INVALID_ADMISSION_TOKEN`; a fresh closed-queue setup removed that timing defect, but `checkout-V20-fresh` still had 67 controlled 503 outcomes and 34 dropped iterations. Verifier passed in every checkout run, but the required zero rejected admitted users at 20/s is not met. Do not start calibration or sell-out until the server-side 503 code/path is instrumented and this test passes.
