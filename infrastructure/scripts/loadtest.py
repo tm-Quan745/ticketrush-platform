@@ -490,7 +490,8 @@ def measure(args):
         if warm.returncode:
             raise RuntimeError("Warm-up failed; refusing to silently measure an unhealthy stack")
     start = time.time()
-    parameters = ["SCENARIO=" + args.scenario, "RUN_ID=" + args.run_id] + args.param
+    parameters = ["SCENARIO=" + args.scenario, "RUN_ID=" + args.run_id,
+                  "QUEUE_USERS=" + str(args.users)] + args.param
     command = ["run", "--rm", "-T"]
     for param in parameters:
         name, _, value = param.partition("=")
