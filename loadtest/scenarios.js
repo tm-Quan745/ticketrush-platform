@@ -23,7 +23,11 @@ const queueUsers = Number(__ENV.QUEUE_USERS || 5000);
 const queueJoinVUs = Number(__ENV.QUEUE_JOIN_VUS || 300);
 const queuePollers = Number(__ENV.QUEUE_POLLERS || 500);
 const queuePollDuration = __ENV.QUEUE_POLL_DURATION || '60s';
-const queueFirstPollJitterSeconds = Number(__ENV.QUEUE_FIRST_POLL_JITTER_SECONDS || 2);
+// A joined client receives Retry-After from the join response.  The separate
+// polling scenario receives that captured value through this run parameter.
+// Do not use a fixed 0-2 s window: 5,000 simultaneous joins would synchronize
+// roughly 2,500 status requests/s.
+const queueFirstPollAdviceSeconds = Number(__ENV.QUEUE_FIRST_POLL_ADVICE_SECONDS || 10);
 const queueJoinMaxAttempts = Number(__ENV.QUEUE_JOIN_MAX_ATTEMPTS || 3);
 const statusTokenPool = Number(__ENV.STATUS_TOKEN_POOL || 200);
 const statusBurstAfterSeconds = Number(__ENV.STATUS_BURST_AFTER_SECONDS || 15);
@@ -32,9 +36,12 @@ const statusBurstDurationSeconds = Number(__ENV.STATUS_BURST_DURATION_SECONDS ||
 const statusBurstSteadyRate = Number(__ENV.STATUS_BURST_STEADY_RATE || 500);
 const statusBurstRate = Number(__ENV.STATUS_BURST_RATE || 2500);
 const checkoutVUs = Number(__ENV.CHECKOUT_VUS || 100);
-const admissionPairs = scenario === 'Q'
+const checkoutRate = Number(__ENV.CHECKOUT_RATE || 20);
+const checkoutDuration = __ENV.CHECKOUT_DURATION || '5s';
+const checkoutRetries = Number(__ENV.CHECKOUT_MAX_RETRIES || 3);
+const admissionPairs = ['Q', 'V'].includes(scenario)
   ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
-const usersById = scenario === 'Q' ? Object.fromEntries(users.map(user => [user.id, user])) : {};
+const usersById = ['Q', 'V'].includes(scenario) ? Object.fromEntries(users.map(user => [user.id, user])) : {};
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
 const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
@@ -54,6 +61,8 @@ const queueStatusResponses = new Counter('queue_status_responses');
 const queueStatusSteadyDuration = new Trend('queue_status_steady_duration', true);
 const queueStatusBurstDuration = new Trend('queue_status_burst_duration', true);
 const queueStatusPostBurstDuration = new Trend('queue_status_post_burst_duration', true);
+const checkoutResponses = new Counter('checkout_responses');
+const checkoutRetriesMetric = new Counter('checkout_retries');
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -88,8 +97,9 @@ const plans = {
     ], gracefulStop: '90s' } },
   Q: { checkout: { executor: 'shared-iterations', exec: 'checkout', vus: checkoutVUs, iterations: admissionPairs.length,
     maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
+  V: { checkoutPaced: steady('checkout', checkoutRate, checkoutDuration) },
 };
-if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q, S, T or W');
+if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q, S, T, V or W');
 export const options = {
   scenarios: plans[scenario],
   // Exclude raw URL, user/token values and VU identifiers from every exported series.
@@ -98,10 +108,10 @@ export const options = {
   thresholds: {
     http_req_failed: ['rate<0.01'], unexpected_responses: ['rate<0.01'], unexpected_5xx: ['count==0'],
     dropped_iterations: ['count==0'], checks: ['rate==1'], business_failures: ['count==0'],
-    ...Object.fromEntries(['sold_out', 'rate_limited', 'waiting_room_required', 'error', 'abandoned', 'paid', 'payment_failed',
+    ...Object.fromEntries(['sold_out', 'rate_limited', 'waiting_room_required', 'error', 'abandoned', 'paid', 'payment_failed', 'rejected_429', 'rejected_503',
       'browse_ok', 'browse_rate_limited', 'login_ok', 'login_rate_limited', 'queue_sold_out'].map(result =>
       [`business_outcomes{result:${result}}`, ['count>=0']])),
-    ...(['A', 'C', 'D', 'E', 'G', 'H', 'Q', 'W'].includes(scenario) ? {
+    ...(['A', 'C', 'D', 'E', 'G', 'H', 'Q', 'V', 'W'].includes(scenario) ? {
       'http_req_duration{name:POST /api/v1/reservations}': ['p(95)<1000', 'p(99)<2000'],
       'http_req_duration{name:POST /api/v1/orders}': ['p(95)<1000', 'p(99)<2000'],
     } : {}),
@@ -264,7 +274,10 @@ export function queuePoll() {
   const event = data.events.find(value => value.name === 'HOT');
   const user = users[index];
   if (!business(Boolean(user), 'distinct queue poller available')) return;
-  if (exec.scenario.iterationInInstance === 0) sleep(Math.random() * queueFirstPollJitterSeconds);
+  // This is sampled uniformly from the Retry-After returned by the join.
+  // It spreads a simultaneous cohort over that advised interval without
+  // keeping a k6 VU alive for every waiting user in production tests.
+  if (exec.scenario.iterationInInstance === 0) sleep(Math.random() * queueFirstPollAdviceSeconds);
   const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
     'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
   queueStatusResponses.add(1, { status: String(response.status) });
@@ -308,7 +321,7 @@ export function queueStatusBurst() {
   const user = users[index];
   if (!business(Boolean(user), 'random status user available')) return;
   const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
-    'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
+    'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429, 503]);
   queueStatusResponses.add(1, { status: String(response.status) });
   const elapsed = (Date.now() - exec.scenario.startTime) / 1000;
   const burstStart = statusBurstAfterSeconds + statusBurstRampSeconds;
@@ -317,7 +330,23 @@ export function queueStatusBurst() {
   if (elapsed >= burstStart + statusBurstDurationSeconds + 1)
     queueStatusPostBurstDuration.add(response.timings.duration);
   if (response.status === 200) outcomes.add(1, { result: 'queue_polled' });
-  else { outcomes.add(1, { result: 'rate_limited' }); business(false, 'burst status was not rate limited'); }
+  else if (response.status === 429) { outcomes.add(1, { result: 'rate_limited' }); business(false, 'burst status was not rate limited'); }
+  else if (response.status === 503) { outcomes.add(1, { result: 'rejected_503' }); business(true, 'burst status rejection was controlled'); }
+  else { outcomes.add(1, { result: 'error' }); business(false, 'burst status was controlled'); }
+}
+
+function requestWithAdmissionRetry(method, path, name, payload, user, headers, accepted) {
+  let response;
+  for (let attempt = 0; attempt <= checkoutRetries; attempt++) {
+    response = request(method, path, name, payload, user.token, headers, accepted);
+    const result = body(response);
+    checkoutResponses.add(1, { endpoint: name, status: String(response.status), code: String(result.code || 'NONE') });
+    if (![429, 503].includes(response.status) || attempt === checkoutRetries) return { response, result };
+    checkoutRetriesMetric.add(1, { endpoint: name, status: String(response.status) });
+    const retryAfter = Math.max(1, Number(response.headers['Retry-After'] || 1));
+    sleep(retryAfter + Math.random() * 0.25);
+  }
+  return { response, result: body(response) };
 }
 
 export function checkout() {
@@ -327,21 +356,31 @@ export function checkout() {
   if (!business(Boolean(admission && user), 'admission pair belongs to a seeded user')) return;
   const event = data.events.find(value => value.name === 'HOT');
   const payload = { tierId: event.tiers[index % event.tiers.length], quantity: 1 + index % 4 };
-  const reservationResponse = request('POST', '/api/v1/reservations', 'POST /api/v1/reservations', payload,
-    user.token, { 'Idempotency-Key': key(index, '3'), 'X-Admission-Token': admission.token }, [201, 409, 429, 403]);
-  const reservation = body(reservationResponse);
+  const reservationAttempt = requestWithAdmissionRetry('POST', '/api/v1/reservations', 'POST /api/v1/reservations', payload,
+    user, { 'Idempotency-Key': key(index, '3'), 'X-Admission-Token': admission.token }, [201, 409, 429, 403, 503]);
+  const reservationResponse = reservationAttempt.response;
+  const reservation = reservationAttempt.result;
   if (reservationResponse.status !== 201) {
     const expected = reservationResponse.status === 409 && reservation.code === 'SOLD_OUT' ||
-      reservationResponse.status === 429 || reservationResponse.status === 403;
-    outcomes.add(1, { result: reservation.code === 'SOLD_OUT' ? 'sold_out' : reservation.code === 'RATE_LIMITED' ? 'rate_limited' : 'error' });
+      [429, 503, 403].includes(reservationResponse.status);
+    const outcome = reservation.code === 'SOLD_OUT' ? 'sold_out'
+      : reservationResponse.status === 429 ? 'rejected_429'
+      : reservationResponse.status === 503 ? 'rejected_503' : 'error';
+    outcomes.add(1, { result: outcome });
     business(expected, 'checkout reservation has an expected terminal outcome');
     return;
   }
   const orderHeaders = { 'Idempotency-Key': key(index, '4'), 'X-Mock-Scenario': 'SUCCESS',
     'X-Mock-Test-Token': __ENV.MOCK_PAYMENT_TEST_TOKEN };
-  const orderResponse = request('POST', '/api/v1/orders', 'POST /api/v1/orders', { reservationId: reservation.id },
-    user.token, orderHeaders, [201]);
-  const order = body(orderResponse);
+  const orderAttempt = requestWithAdmissionRetry('POST', '/api/v1/orders', 'POST /api/v1/orders', { reservationId: reservation.id },
+    user, orderHeaders, [201, 429, 503]);
+  const orderResponse = orderAttempt.response;
+  const order = orderAttempt.result;
+  if ([429, 503].includes(orderResponse.status)) {
+    outcomes.add(1, { result: orderResponse.status === 429 ? 'rejected_429' : 'rejected_503' });
+    business(true, 'checkout order was controlled rejection');
+    return;
+  }
   if (!business(orderResponse.status === 201 && Boolean(order.id), 'queue checkout order created')) return;
   let status = 'PENDING_PAYMENT';
   for (let poll = 0; poll < paymentMaxPolls && status === 'PENDING_PAYMENT'; poll++) {

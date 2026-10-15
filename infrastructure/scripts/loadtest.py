@@ -133,7 +133,8 @@ def k6_queue_parameters(args):
     defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_JOIN_MAX_ATTEMPTS": 3, "QUEUE_POLLERS": 500,
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
                 "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
-                "QUEUE_FIRST_POLL_JITTER_SECONDS": 2, "STATUS_TOKEN_POOL": 200,
+                "QUEUE_FIRST_POLL_ADVICE_SECONDS": 10, "CHECKOUT_RATE": 20, "CHECKOUT_DURATION": "5s",
+                "CHECKOUT_MAX_RETRIES": 3, "STATUS_TOKEN_POOL": 200,
                 "STATUS_BURST_AFTER_SECONDS": 15, "STATUS_BURST_RAMP_SECONDS": 1, "STATUS_BURST_DURATION_SECONDS": 2,
                 "STATUS_BURST_STEADY_RATE": 500, "STATUS_BURST_RATE": 2500,
                 "STATUS_POST_BURST_DURATION": "30s"}
@@ -142,9 +143,9 @@ def k6_queue_parameters(args):
         name, separator, value = item.partition("=")
         if name not in selected or separator != "=" or not value:
             continue
-        if name in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
+        if name in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
             selected[name] = value
-        elif name not in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION"} and value.isdecimal() and int(value) > 0:
+        elif name not in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.isdecimal() and int(value) > 0:
             selected[name] = int(value)
     selected["steady_state_warmup_seconds"] = 15
     return selected
@@ -575,7 +576,7 @@ def environment():
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "verify", "queries", "test", "environment", "down"])
-    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQST"), default="A")
+    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQSTV"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
     p.add_argument("--background", type=int, default=200)

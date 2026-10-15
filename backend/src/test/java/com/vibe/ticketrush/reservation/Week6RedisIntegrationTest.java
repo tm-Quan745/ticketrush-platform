@@ -228,6 +228,19 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(intervals).allSatisfy(value -> assertThat(value).isBetween(4,6));
         assertThat(intervals).hasSizeGreaterThan(1);
     }
+    @Test void statusHttpReturnsItsJitteredPollAdvice() throws Exception {
+        roomEvents.configure(event,true,3,"fifo");
+        queue.status(event,user,true);
+        for (int i=0;i<2_000;i++) queue.status(event,addUser(),true);
+        var owner=jwt().jwt(j -> j.subject(user.toString())).authorities(new SimpleGrantedAuthority("ROLE_USER"));
+        for (int i=0;i<10;i++) {
+            var response=http.perform(get("/api/v1/events/"+event+"/waiting-room/status").with(owner))
+                .andExpect(status().isOk()).andReturn().getResponse();
+            int retryAfter=Integer.parseInt(response.getHeader("Retry-After"));
+            assertThat(retryAfter).isBetween(4,6);
+            assertThat(response.getContentAsString()).contains("\"pollIntervalSeconds\":"+retryAfter);
+        }
+    }
     @Test void admissionHttpBindingAndAdminAuthorization() throws Exception {
         roomEvents.configure(event,true,3,"fifo");UUID other=addUser();
         queue.status(event,user,true);queue.admit(event);String token=queue.status(event,user,false).token();

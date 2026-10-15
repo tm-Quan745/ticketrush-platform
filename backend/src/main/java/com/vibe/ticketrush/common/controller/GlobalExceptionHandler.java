@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.Instant;
 import java.sql.SQLTransientConnectionException;
 import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -30,7 +31,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ApiException.class)
     ResponseEntity<ApiError> api(ApiException ex, HttpServletRequest request) {
         request.setAttribute("metric.error", ex.getCode());
-        return ResponseEntity.status(ex.getStatus()).body(ApiError.of(ex.getStatus().value(),
+        ResponseEntity.BodyBuilder response=ResponseEntity.status(ex.getStatus());
+        if ("WAITING_ROOM_UNAVAILABLE".equals(ex.getCode()) || "WAITING_ROOM_NOT_READY".equals(ex.getCode())) {
+            response.header(HttpHeaders.RETRY_AFTER, Integer.toString(1 + ThreadLocalRandom.current().nextInt(2)));
+        }
+        return response.body(ApiError.of(ex.getStatus().value(),
                 ex.getCode(), ex.getMessage(), request.getRequestURI()));
     }
 

@@ -149,6 +149,10 @@ ticketrush:
     enabled: ${BULKHEAD_ENABLED:true}
     max-concurrent: ${BULKHEAD_MAX_CONCURRENT:0}
     pool-multiplier: ${BULKHEAD_POOL_MULTIPLIER:3}
+    # Derived capacity: admission rate x bounded request hold x safety factor.
+    # At the default 20/s, 1 s and 1.5 this yields 30 permits.
+    assumed-hold-seconds: ${BULKHEAD_ASSUMED_HOLD_SECONDS:1}
+    safety-factor: ${BULKHEAD_SAFETY_FACTOR:1.5}
   outbox:
     relay-interval: ${OUTBOX_RELAY_INTERVAL:1s}
     batch-size: ${OUTBOX_BATCH_SIZE:100}

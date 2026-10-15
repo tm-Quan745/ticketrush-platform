@@ -15,10 +15,12 @@ public class RequestBulkhead {
     private final BulkheadProperties properties;
     private final Semaphore permits;
 
-    public RequestBulkhead(BulkheadProperties properties, @Value("${HIKARI_MAX_POOL_SIZE:10}") int poolSize,
+    public RequestBulkhead(BulkheadProperties properties, @Value("${WAITING_ROOM_RATE:20}") int admissionRate,
             MeterRegistry metrics) {
         this.properties = properties;
-        int capacity = properties.maxConcurrent() == 0 ? poolSize * properties.poolMultiplier() : properties.maxConcurrent();
+        int capacity = properties.maxConcurrent() == 0
+            ? (int) Math.ceil(admissionRate * properties.assumedHoldSeconds() * properties.safetyFactor())
+            : properties.maxConcurrent();
         this.permits = new Semaphore(capacity, true);
         metrics.gauge("request_bulkhead_available", permits, Semaphore::availablePermits);
         metrics.counter("request_bulkhead_rejected_total", "endpoint", "reservations");
