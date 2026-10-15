@@ -130,7 +130,7 @@ def k6_poll_parameters(args):
 
 
 def k6_queue_parameters(args):
-    defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 500,
+    defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_JOIN_MAX_ATTEMPTS": 3, "QUEUE_POLLERS": 500,
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
                 "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
                 "QUEUE_FIRST_POLL_JITTER_SECONDS": 2, "STATUS_TOKEN_POOL": 200,
@@ -381,6 +381,17 @@ def collect(run_id, start, end, params, source, window):
     # A full-window histogram is needed for an apples-to-apples server p95. The
     # timestamps come from k6's own duration, not Docker process overhead.
     steady_seconds = max(1, int(window["steady_duration_seconds"]))
+    def status_quantiles(seconds, observed_at):
+        result = {}
+        for label, quantile in (("p50", "0.50"), ("p95", "0.95"), ("p99", "0.99")):
+            query = 'histogram_quantile(%s,sum by (le) (increase(http_server_requests_seconds_bucket{uri="/api/v1/events/{id}/waiting-room/status"}[%ss])))' % (quantile, seconds)
+            try:
+                url = "http://127.0.0.1:29097/api/v1/query?" + urllib.parse.urlencode({"query": query, "time": observed_at})
+                result[label] = request_json(url)
+            except Exception as error:
+                result[label] = {"error": str(error)}
+        return result
+
     steady = {
         "status_server_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(http_server_requests_seconds_bucket{uri="/api/v1/events/{id}/waiting-room/status"}[%ss])))' % steady_seconds,
         "jwt_validation_p95_seconds": 'histogram_quantile(0.95,sum by (le) (increase(jwt_validation_seconds_bucket[%ss])))' % steady_seconds,
@@ -397,6 +408,25 @@ def collect(run_id, start, end, params, source, window):
             result["steady_state"]["queries"][name] = request_json(url)
         except Exception as error:
             result["steady_state"]["queries"][name] = {"error": str(error)}
+    result["steady_state"]["server_status_quantiles"] = status_quantiles(steady_seconds, window["steady_end"])
+    if any(item == "SCENARIO=T" for item in params):
+        queue = source["k6_queue"]
+        burst_start = window["k6_start"] + queue["STATUS_BURST_AFTER_SECONDS"]
+        burst_end = burst_start + queue["STATUS_BURST_DURATION_SECONDS"]
+        # Prometheus scrapes the backend every five seconds. A five-second
+        # server observation window encloses the exact two-second k6 burst;
+        # k6 reports the exact burst interval separately.
+        server_seconds = 5
+        result["burst_windows"] = {
+            "burst_k6_window": {"start": burst_start, "end": burst_end,
+                                "duration_seconds": queue["STATUS_BURST_DURATION_SECONDS"]},
+            "server_burst_observation": {"end": burst_end + 3, "duration_seconds": server_seconds,
+                                           "note": "five-second scrape-resolution window enclosing the k6 burst"},
+            "server_burst_quantiles": status_quantiles(server_seconds, burst_end + 3),
+            "post_burst_k6_window": {"start": burst_end + 1, "end": window["k6_end"],
+                                       "duration_seconds": max(1, window["k6_end"] - burst_end - 1)},
+            "server_post_burst_quantiles": status_quantiles(max(1, int(window["k6_end"] - burst_end - 1)), window["k6_end"])
+        }
     result["targets"] = request_json("http://127.0.0.1:29097/api/v1/targets")
     # No credentials, container environment, raw headers or user files are included in artifacts.
     result["git_sha"] = source["commit_sha"]
