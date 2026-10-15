@@ -63,6 +63,10 @@ const queueStatusBurstDuration = new Trend('queue_status_burst_duration', true);
 const queueStatusPostBurstDuration = new Trend('queue_status_post_burst_duration', true);
 const checkoutResponses = new Counter('checkout_responses');
 const checkoutRetriesMetric = new Counter('checkout_retries');
+const checkoutReservationBulkheadRejected = new Counter('checkout_reservation_bulkhead_rejected');
+const checkoutOrderBulkheadRejected = new Counter('checkout_order_bulkhead_rejected');
+const checkoutReservationPoolUnavailable = new Counter('checkout_reservation_pool_unavailable');
+const checkoutOrderPoolUnavailable = new Counter('checkout_order_pool_unavailable');
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -341,6 +345,13 @@ function requestWithAdmissionRetry(method, path, name, payload, user, headers, a
     response = request(method, path, name, payload, user.token, headers, accepted);
     const result = body(response);
     checkoutResponses.add(1, { endpoint: name, status: String(response.status), code: String(result.code || 'NONE') });
+    const reservation = name.endsWith('reservations');
+    if (result.code === 'BULKHEAD_REJECTED') {
+      (reservation ? checkoutReservationBulkheadRejected : checkoutOrderBulkheadRejected).add(1);
+    }
+    if (result.code === 'DATABASE_POOL_TIMEOUT') {
+      (reservation ? checkoutReservationPoolUnavailable : checkoutOrderPoolUnavailable).add(1);
+    }
     if (![429, 503].includes(response.status) || attempt === checkoutRetries) return { response, result };
     checkoutRetriesMetric.add(1, { endpoint: name, status: String(response.status) });
     const retryAfter = Math.max(1, Number(response.headers['Retry-After'] || 1));
