@@ -175,6 +175,13 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(new HashSet<>(positions)).hasSize(1000);assertThat(Collections.min(positions)).isEqualTo(1);assertThat(Collections.max(positions)).isEqualTo(1000);
         for (int i=0;i<10;i++) assertThat(queue.status(event,users.get(i),true).position()).isEqualTo(positions.get(i));
     }
+    @Test @Tag("redis-stress") void warmJoinSettingsAvoidDatabasePoolFanout() throws Exception {
+        roomEvents.configure(event,true,10,"fifo");
+        queue.refresh(event);
+        var users=users(300);
+        var positions=concurrent(300,i -> queue.status(event,users.get(i),true).position());
+        assertThat(new HashSet<>(positions)).hasSize(300);
+    }
     @Test @Tag("redis-stress") void threeAdmittersShareOneBudgetAndTokensAreBound() throws Exception {
         roomEvents.configure(event,true,3,"fifo");var users=users(9);
         for(UUID id:users)queue.status(event,id,true);

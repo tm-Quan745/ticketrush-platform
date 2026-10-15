@@ -47,6 +47,7 @@ public class WaitingRoomService implements ReservationAdmission {
     // off the JDBC pool while hot-row transactions are queued.
     private final ConcurrentMap<UUID,UUID> tierEvents=new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID,WaitingRoomEvents.Settings> admissionEvents=new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID,CachedSettings> cachedEvents=new ConcurrentHashMap<>();
     private final AtomicLong size=new AtomicLong();
     private final SecureRandom random=new SecureRandom();
     public WaitingRoomService(StringRedisTemplate redis,RedisScript<String> waitingRoomScript,RedisProperties keys,
@@ -98,6 +99,7 @@ public class WaitingRoomService implements ReservationAdmission {
         admissionEvents.put(event.id(),event);
         try {
             redis.opsForValue().set(settingsKey(event.id()),json.writeValueAsString(cached),Duration.ofDays(7));
+            cachedEvents.put(event.id(),cached);
             return cached;
         } catch (com.fasterxml.jackson.core.JsonProcessingException error) {
             throw new IllegalStateException("Could not cache waiting room settings",error);
@@ -116,6 +118,7 @@ public class WaitingRoomService implements ReservationAdmission {
             CachedSettings cached=json.readValue(raw,CachedSettings.class);
             if (!cached.event().enabled() || !cached.event().published())
                 throw new ApiException(HttpStatus.CONFLICT,"WAITING_ROOM_DISABLED","Waiting room is disabled");
+            cachedEvents.put(event,cached);
             return cached;
         } catch (com.fasterxml.jackson.core.JsonProcessingException error) {
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_UNAVAILABLE","Waiting room settings are unavailable");
@@ -123,8 +126,23 @@ public class WaitingRoomService implements ReservationAdmission {
     }
     private boolean open(WaitingRoomEvents.Settings e) { return !clock.instant().isBefore(e.saleStart()) && clock.instant().isBefore(e.saleEnd()); }
     private boolean soldOut(UUID event) { return inventory.publicTiers(event).stream().noneMatch(t -> t.availability()!=Availability.SOLD_OUT); }
+    private CachedSettings joinSettings(UUID event) {
+        // Redis is the source shared by all application instances. Do not let a
+        // local entry survive a Redis flush or an admin configuration change.
+        try { return cached(event); }
+        catch (ApiException error) {
+            if (!"WAITING_ROOM_NOT_READY".equals(error.getCode())) throw error;
+        }
+        synchronized (cachedEvents) {
+            try { return cached(event); }
+            catch (ApiException error) {
+                if (!"WAITING_ROOM_NOT_READY".equals(error.getCode())) throw error;
+                return cache(settings(event),soldOut(event));
+            }
+        }
+    }
     public Status status(UUID eventId,UUID user,boolean join) {
-        CachedSettings cached=join ? cache(settings(eventId),soldOut(eventId)) : cached(eventId);
+        CachedSettings cached=join ? joinSettings(eventId) : cached(eventId);
         var event=cached.event();
         var data=parse(execute(event,join ? "join":"status",user,open(event)));
         long position=data.path("position").asLong();
