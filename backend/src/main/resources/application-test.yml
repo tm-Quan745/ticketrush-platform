@@ -17,11 +17,6 @@ ticketrush:
     concurrency: 1
     prefetch: 1
 spring:
-  datasource:
-    hikari:
-      # The 200-thread PostgreSQL Testcontainers invariant suite queues behind
-      # the test pool; production keeps its 1,500 ms fail-fast setting.
-      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT_MS:30000}
   rabbitmq:
     listener:
       simple:
