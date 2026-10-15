@@ -229,3 +229,62 @@ The backend `mvn test` suite was rerun with `HIKARI_CONNECTION_TIMEOUT_MS=30000`
 
 `week7-legacy-A1-rerun3` uses the current k6 order-status polling behavior (1,000 ms base, 2,000 ms cap, 250 ms jitter, at most 20 polls). It is not comparable with older legacy tables that used the earlier polling script.
 
+
+### Front-door status polling with a 5,000-user token pool (2026-10-15)
+
+The earlier synchronized closed-loop P results remain measurement artifacts, including their complete
+windows: P500 was 48.7 req/s with k6 p50/p95/p99 `4.1/265.4/412.3 ms`; P1000 was
+95.9 req/s with `2.8/518.5/669.3 ms`. They include the common start-up wave and are not replaced
+by the steady-state result below. The older P summaries are [P500](results/frontdoor-P-500.json)
+and [P1000](results/frontdoor-P-1000.json).
+
+The 50/100/200/400 req/s micro-runs used 200 identities. The following values are medians of three
+runs over the post-15-second window. Only server p95 was retained for that earlier diagnostic; p50/p99 were not sampled and are explicitly n/a.
+All had zero 5xx and zero dropped iterations.
+
+| offered req/s | k6 p50 / p95 / p99 | server p50 / p95 / p99 | all-container average / peak CPU | backend CPU per status request |
+| ---: | --- | --- | ---: |
+| 50 | 2.53 / 8.97 / 10.02 ms | n/a / 7.67 / n/a ms | 0.87 / 2.43 cores | 8.87 ms |
+| 100 | 2.17 / 3.54 / 8.56 ms | n/a / 3.12 / n/a ms | 0.81 / 2.32 cores | 2.86 ms |
+| 200 | 1.81 / 3.06 / 4.99 ms | n/a / 2.68 / n/a ms | 1.06 / 2.36 cores | 1.64 ms |
+| 400 | 1.61 / 2.98 / 4.66 ms | n/a / 2.62 / n/a ms | 1.46 / 2.67 cores | 1.49 ms |
+
+The current front-door script chooses a random identity from all 5,000 joined tokens per
+constant-arrival iteration. It does not keep a VU per waiting user. Server advice now jitters
+the queue-derived poll interval independently by about +/-25%, and each closed-loop user's first
+poll waits a random 0–2 seconds. This breaks synchronized polling boundaries while retaining the
+server's `Retry-After` contract.
+
+| offered req/s | runs | k6 p50 / p95 / p99, median (range) | server p50 / p95 / p99, median (range) | drops / 5xx | all-container CPU peak, median (range) | Docker VM memory peak |
+| ---: | ---: | --- | --- | --- | --- | --- |
+| 500 | 3 | 2.02 / 3.63 / 6.22 ms (1.85–2.08 / 3.59–3.65 / 5.49–7.17) | 1.77 / 3.20 / 5.40 ms (1.59–1.87 / 3.03–3.23 / 4.84–5.70) | 0 / 0 | 4.11 (3.80–7.06) cores of 12 | 45.5–47.0% |
+| 1,000 | 3 | 2.16 / 4.23 / 9.22 ms (2.06–2.18 / 3.85–4.25 / 7.61–10.39) | 1.89 / 3.55 / 8.36 ms (1.80–1.92 / 3.19–3.65 / 5.99–8.82) | 0 / 0 | 5.04 (4.60–5.99) cores of 12 | 46.4–46.8% |
+
+All six runs used `preAllocatedVUs=400`, `maxVUs=1,000`, 45 seconds, zero dropped iterations,
+backend-pool durability `on/on`, and verifier PASS. The summaries are
+[setup/audit](results/frontdoor-vu400-setup-J.json), [500-1](results/frontdoor-vu400-S500-1.json),
+[500-2](results/frontdoor-vu400-S500-2.json), [500-3](results/frontdoor-vu400-S500-3.json),
+[1000-1](results/frontdoor-vu400-S1000-1.json), [1000-2](results/frontdoor-vu400-S1000-2.json),
+and [1000-3](results/frontdoor-vu400-S1000-3.json). The setup accepted 5,000/5,000 joins with
+zero join 5xx/retries; the audit found positions 1–5,000, all distinct and contiguous. The earlier
+single join 5xx was a real cold-cache pool fan-out: concurrent joins each read settings/sold-out
+from PostgreSQL. Coalescing the cold cache fill removes that fan-out; joins now retry transient 5xx
+at most three times and record `queue_join_5xx` and `queue_join_retries` instead of excluding a run.
+
+The 2,500 req/s burst is a negative capacity result. It ramps for one second, holds the target for
+two seconds, then returns to 500. With `preAllocatedVUs=maxVUs=1,000`, k6 logged `Insufficient
+VUs`, reached 1,000 VUs, dropped 2,294 arrivals and produced 2,837 HTTP 5xx (10.1%). The burst's
+k6 p50/p95/p99 was `594.5/764.3/782.9 ms`; the following post-burst window was
+`5.8/623.0/866.2 ms`. A five-second server histogram window had no pair of backend scrapes, so
+a ten-second scrape-resolution window enclosing the burst measured server `148.1/296.9/346.5 ms`.
+This is not an exact two-second server histogram. Backend logs show Redis circuit fallbacks for both
+the limiter and waiting room, which deliberately return `503 WAITING_ROOM_UNAVAILABLE`; the status
+route remained Redis-only and used no JDBC connection. Peak CPU was backend 7.94, k6 6.96,
+PostgreSQL 1.97, RabbitMQ 1.88 and Redis 0.46 cores; Docker VM memory peaked at 61.3%, below the
+85% abort limit. The verifier passed, but this burst is not a supported 2,500 req/s status capacity
+claim. See [burst summary](results/frontdoor-vu1000-T-burst.json).
+
+`PessimisticReservationIntegrationTest` now inherits the production 1,500 ms Hikari timeout:
+the focused Testcontainers run passed twice (once explicitly at 1,500 ms and once after removing
+the test override), 13 tests / 0 failures / 0 errors. The prior 30,000 ms test-only override was removed.
+

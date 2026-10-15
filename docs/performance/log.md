@@ -385,3 +385,29 @@ Prometheus uses the k6-derived window, not Docker overhead. Status has two atomi
 Three S runs/rate used 200 identities, 45 s and excluded 15 s: median p50/p95/p99 ms (server p95) is 50/s 2.53/8.97/10.02 (7.67), 100/s 2.17/3.54/8.56 (3.12), 200/s 1.81/3.06/4.99 (2.68), 400/s 1.61/2.98/4.66 (2.62). Zero drops, 5xx and verifier violations. This is not linear p95 growth, so the JFR condition is false. Direct Docker stats: all-container average/peak CPU 0.87/2.43, 0.81/2.32, 1.06/2.36, 1.46/2.67 cores of 12; backend CPU/request 8.87, 2.86, 1.64, 1.49 ms. Raw `status-cpu-S*-docker-stats.json` retains every container.
 
 `frontdoor-J-5000-final`: 5,000 joins, 565.2/s, 10.524 s, p50/p95/p99 153.4/371.9/503.7 ms; `process_cpu_usage=0.734` is about 8.8 of 12 cores. Legacy A-1 rerun uses current poll backoff/jitter and is not comparable with older legacy tables.
+
+### 2026-10-15 — front-door status, jitter, and test-timeout gate
+
+Recorded the old whole-window synchronized polling results as artifacts: P500 k6 p50/p95/p99
+`4.1/265.4/412.3 ms` at 48.7 req/s and P1000 `2.8/518.5/669.3 ms` at 95.9 req/s. They include
+the synchronized start and are not overwritten by later steady-state measurements.
+
+Added server poll-interval jitter (+/-25%, random per response) and an initial 0–2 s random delay
+for closed-loop users. The 5,000-token constant-arrival front door completed three runs each at
+500 and 1,000 req/s in ABABAB order with 400 preallocated and 1,000 maximum VUs: all six had zero
+drops, 5xx, memory aborts, and verifier violations. Median k6/server p95 was 3.63/3.20 ms at 500,
+and 4.23/3.55 ms at 1,000. Docker VM memory was 45.5–47.0% and 46.4–46.8%, respectively.
+
+`frontdoor-vu400-setup-J` accepted 5,000/5,000 joins, with zero join 5xx/retries; queue audit
+found positions 1–5,000, distinct and contiguous. The previous one 5xx was traced to concurrent
+cold-cache joins each executing PostgreSQL configuration/status reads. The backend coalesces the
+cold fill, while k6 now retries transient join 5xx at most three times and reports its metrics.
+
+The attempted 2,500 req/s status burst is negative: even with 1,000 preallocated VUs k6 emitted
+`Insufficient VUs`, dropped 2,294 arrivals and observed 2,837 HTTP 5xx. RedisGuard logged waiting-room
+and limiter fallbacks; status fails closed as 503 and remains Redis-only. Docker memory stayed 61.3%,
+so neither a Docker memory abort nor a database connection was involved. The verifier passed. This
+does not establish a 2,500 req/s front-door capacity.
+
+Focused `PessimisticReservationIntegrationTest` passed 13/13 twice at the production 1,500 ms
+timeout, then the 30,000 ms test-profile override was removed and the no-override run also passed.
