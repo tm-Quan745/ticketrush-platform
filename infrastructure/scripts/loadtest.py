@@ -122,7 +122,8 @@ def k6_poll_parameters(args):
 def k6_queue_parameters(args):
     defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 500,
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
-                "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200}
+                "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
+                "QUEUE_FIRST_POLL_JITTER_SECONDS": 2}
     selected = dict(defaults)
     for item in args.param:
         name, separator, value = item.partition("=")

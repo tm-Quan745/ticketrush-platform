@@ -131,10 +131,16 @@ public class WaitingRoomService implements ReservationAdmission {
         long queueLength=data.path("queueLength").asLong(position);
         int pollInterval=(int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,
             Math.ceil((double)queueLength/properties.statusTargetRequestsPerSecond())));
+        pollInterval=jitterPollInterval(pollInterval);
         if (join) joinRequests.increment(); else statusRequests.increment();
         return new Status(data.path("state").asText(),position,queueLength,(long)Math.ceil((double)position/event.rate())*Math.max(1,properties.interval().toSeconds()),
             pollInterval,cached.soldOut(),data.path("token").isMissingNode() ? null:data.path("token").asText(),
             data.has("expiresAt") ? Instant.ofEpochMilli(data.path("expiresAt").asLong()):null);
+    }
+    private int jitterPollInterval(int interval) {
+        if (interval==1) return 1;
+        double multiplier=.75+random.nextDouble()*.5;
+        return (int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,Math.round(interval*multiplier)));
     }
     public void leave(UUID event,UUID user) { execute(cached(event).event(),"leave",user,false); }
     public List<AdmittedUser> newlyAdmitted(UUID eventId,int limit) {

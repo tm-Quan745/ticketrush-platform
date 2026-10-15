@@ -211,6 +211,16 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(status.queueLength()).isGreaterThan(3);
         assertThat(status.pollIntervalSeconds()).isGreaterThan(1);
     }
+    @Test void statusJittersLongPollIntervalsByTwentyFivePercent() {
+        roomEvents.configure(event,true,3,"fifo");
+        queue.status(event,user,true);
+        for (int i=0;i<2_000;i++) queue.status(event,addUser(),true);
+        var intervals=new HashSet<Integer>();
+        for (int i=0;i<30;i++) intervals.add(queue.status(event,user,false).pollIntervalSeconds());
+        // 2,001 queued users / the default 500 status req/s gives a base interval of 5 s.
+        assertThat(intervals).allSatisfy(value -> assertThat(value).isBetween(4,6));
+        assertThat(intervals).hasSizeGreaterThan(1);
+    }
     @Test void admissionHttpBindingAndAdminAuthorization() throws Exception {
         roomEvents.configure(event,true,3,"fifo");UUID other=addUser();
         queue.status(event,user,true);queue.admit(event);String token=queue.status(event,user,false).token();

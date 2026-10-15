@@ -23,6 +23,7 @@ const queueUsers = Number(__ENV.QUEUE_USERS || 5000);
 const queueJoinVUs = Number(__ENV.QUEUE_JOIN_VUS || 300);
 const queuePollers = Number(__ENV.QUEUE_POLLERS || 500);
 const queuePollDuration = __ENV.QUEUE_POLL_DURATION || '60s';
+const queueFirstPollJitterSeconds = Number(__ENV.QUEUE_FIRST_POLL_JITTER_SECONDS || 2);
 const checkoutVUs = Number(__ENV.CHECKOUT_VUS || 100);
 const admissionPairs = scenario === 'Q'
   ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
@@ -232,6 +233,7 @@ export function queuePoll() {
   const event = data.events.find(value => value.name === 'HOT');
   const user = users[index];
   if (!business(Boolean(user), 'distinct queue poller available')) return;
+  if (exec.scenario.iterationInInstance === 0) sleep(Math.random() * queueFirstPollJitterSeconds);
   const response = request('GET', `/api/v1/events/${event.id}/waiting-room/status`,
     'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
   queueStatusResponses.add(1, { status: String(response.status) });
@@ -248,7 +250,7 @@ export function queuePoll() {
     outcomes.add(1, { result: 'rate_limited' });
     business(false, 'queue status was not rate limited');
   }
-  // All clients wait at least the server-provided Retry-After interval; jitter only delays further.
+  // The server varies its advisory interval; this small client delay prevents exact second boundaries.
   sleep(Math.max(1, retryAfter) + Math.random() * 0.1);
 }
 
