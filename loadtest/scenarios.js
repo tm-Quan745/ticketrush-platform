@@ -24,6 +24,7 @@ const queueJoinVUs = Number(__ENV.QUEUE_JOIN_VUS || 300);
 const queuePollers = Number(__ENV.QUEUE_POLLERS || 500);
 const queuePollDuration = __ENV.QUEUE_POLL_DURATION || '60s';
 const queueFirstPollJitterSeconds = Number(__ENV.QUEUE_FIRST_POLL_JITTER_SECONDS || 2);
+const queueJoinMaxAttempts = Number(__ENV.QUEUE_JOIN_MAX_ATTEMPTS || 3);
 const statusTokenPool = Number(__ENV.STATUS_TOKEN_POOL || 200);
 const statusBurstAfterSeconds = Number(__ENV.STATUS_BURST_AFTER_SECONDS || 15);
 const statusBurstDurationSeconds = Number(__ENV.STATUS_BURST_DURATION_SECONDS || 2);
@@ -42,6 +43,8 @@ const queueWait = new Trend('queue_wait_ms', true);
 const queueJoinsStarted = new Counter('queue_joins_started');
 const queueJoinsAccepted = new Counter('queue_joins_accepted');
 const queueJoinResponses = new Counter('queue_join_responses');
+const queueJoin5xx = new Counter('queue_join_5xx');
+const queueJoinRetries = new Counter('queue_join_retries');
 const queuePosition = new Trend('queue_position', true);
 const queuePollInterval = new Trend('queue_poll_interval_seconds', true);
 const queueRetryAfterHonored = new Counter('queue_retry_after_honored');
@@ -215,8 +218,20 @@ export function queueJoin() {
   queueJoinsStarted.add(1);
   if (!business(index < queueUsers && index < users.length, 'distinct queue user available')) return;
   const event = data.events.find(value => value.name === 'HOT');
-  const response = request('POST', `/api/v1/events/${event.id}/waiting-room/join`,
-    'POST /api/v1/events/{id}/waiting-room/join', null, users[index].token, {}, [200]);
+  let response;
+  for (let attempt = 1; attempt <= queueJoinMaxAttempts; attempt += 1) {
+    response = request('POST', `/api/v1/events/${event.id}/waiting-room/join`,
+      'POST /api/v1/events/{id}/waiting-room/join', null, users[index].token, {}, [200, 500, 502, 503, 504]);
+    if (response.status >= 500 && response.status <= 599) {
+      queueJoin5xx.add(1, { status: String(response.status) });
+      if (attempt < queueJoinMaxAttempts) {
+        queueJoinRetries.add(1);
+        sleep((0.05 * Math.pow(2, attempt - 1)) + Math.random() * 0.05);
+        continue;
+      }
+    }
+    break;
+  }
   queueJoinResponses.add(1, { status: String(response.status) });
   const state = body(response);
   const accepted = response.status === 200 && state.state === 'WAITING' && state.position > 0;

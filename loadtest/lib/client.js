@@ -13,7 +13,10 @@ export function request(method, path, name, body, token, extra = {}, expected = 
     headers, timeout: __ENV.REQUEST_TIMEOUT || '5s', tags: { name },
     responseCallback: http.expectedStatuses(...expected),
   });
-  unexpected5xx.add(response.status >= 500 ? 1 : 0);
+  // A caller can deliberately handle a transient 5xx (for example, a bounded
+  // front-door join retry). It records that response in its own metric; it is
+  // not an unexpected HTTP failure for the run-level threshold.
+  unexpected5xx.add(response.status >= 500 && !expected.includes(response.status) ? 1 : 0);
   unexpected.add(!expected.includes(response.status));
   return response;
 }
