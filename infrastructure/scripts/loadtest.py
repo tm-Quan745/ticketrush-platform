@@ -74,6 +74,16 @@ def source_status():
             "untracked_files": [line[3:] for line in untracked if line.startswith("?? ")]}
 
 
+def k6_vu_parameters(args):
+    selected={"preAllocatedVUs": 200, "maxVUs": 1000}
+    for item in args.param:
+        key, separator, value=item.partition("=")
+        if separator=="=" and key in {"PRE_VUS","MAX_VUS"} and value.isdecimal() and int(value)>0:
+            selected["preAllocatedVUs" if key=="PRE_VUS" else "maxVUs"]=int(value)
+    if selected["preAllocatedVUs"]>selected["maxVUs"]: raise ValueError("PRE_VUS must not exceed MAX_VUS")
+    return selected
+
+
 def backend_provenance(args):
     inspected = json.loads(run(["docker", "inspect", "ticketrush-week7-backend-1"], capture=True).stdout)[0]
     selected = args.backend_image or os.environ.get("BACKEND_IMAGE")
@@ -101,7 +111,7 @@ def backend_provenance(args):
                 "fsync": fsync,
                 "observed_at_utc": durability["observedAt"]
             },
-            "k6_vus": {"preAllocatedVUs": int(os.environ.get("PRE_VUS", "200")), "maxVUs": int(os.environ.get("MAX_VUS", "1000"))}}
+            "k6_vus": k6_vu_parameters(args)}
 
 
 def backend_build_revision(args):
