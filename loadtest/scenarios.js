@@ -27,6 +27,7 @@ const queueFirstPollJitterSeconds = Number(__ENV.QUEUE_FIRST_POLL_JITTER_SECONDS
 const queueJoinMaxAttempts = Number(__ENV.QUEUE_JOIN_MAX_ATTEMPTS || 3);
 const statusTokenPool = Number(__ENV.STATUS_TOKEN_POOL || 200);
 const statusBurstAfterSeconds = Number(__ENV.STATUS_BURST_AFTER_SECONDS || 15);
+const statusBurstRampSeconds = Number(__ENV.STATUS_BURST_RAMP_SECONDS || 1);
 const statusBurstDurationSeconds = Number(__ENV.STATUS_BURST_DURATION_SECONDS || 2);
 const statusBurstSteadyRate = Number(__ENV.STATUS_BURST_STEADY_RATE || 500);
 const statusBurstRate = Number(__ENV.STATUS_BURST_RATE || 2500);
@@ -80,6 +81,7 @@ const plans = {
   T: { statusBurst: { executor: 'ramping-arrival-rate', exec: 'queueStatusBurst', startRate: statusBurstSteadyRate,
     timeUnit: '1s', ...vus, stages: [
       { duration: `${statusBurstAfterSeconds}s`, target: statusBurstSteadyRate },
+      { duration: `${statusBurstRampSeconds}s`, target: statusBurstRate },
       { duration: `${statusBurstDurationSeconds}s`, target: statusBurstRate },
       { duration: '1s', target: statusBurstSteadyRate },
       { duration: __ENV.STATUS_POST_BURST_DURATION || '30s', target: statusBurstSteadyRate }
@@ -309,9 +311,10 @@ export function queueStatusBurst() {
     'GET /api/v1/events/{id}/waiting-room/status', null, user.token, {}, [200, 429]);
   queueStatusResponses.add(1, { status: String(response.status) });
   const elapsed = (Date.now() - exec.scenario.startTime) / 1000;
-  if (elapsed >= statusBurstAfterSeconds && elapsed < statusBurstAfterSeconds + statusBurstDurationSeconds)
+  const burstStart = statusBurstAfterSeconds + statusBurstRampSeconds;
+  if (elapsed >= burstStart && elapsed < burstStart + statusBurstDurationSeconds)
     queueStatusBurstDuration.add(response.timings.duration);
-  if (elapsed >= statusBurstAfterSeconds + statusBurstDurationSeconds + 1)
+  if (elapsed >= burstStart + statusBurstDurationSeconds + 1)
     queueStatusPostBurstDuration.add(response.timings.duration);
   if (response.status === 200) outcomes.add(1, { result: 'queue_polled' });
   else { outcomes.add(1, { result: 'rate_limited' }); business(false, 'burst status was not rate limited'); }

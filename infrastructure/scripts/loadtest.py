@@ -134,7 +134,7 @@ def k6_queue_parameters(args):
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
                 "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
                 "QUEUE_FIRST_POLL_JITTER_SECONDS": 2, "STATUS_TOKEN_POOL": 200,
-                "STATUS_BURST_AFTER_SECONDS": 15, "STATUS_BURST_DURATION_SECONDS": 2,
+                "STATUS_BURST_AFTER_SECONDS": 15, "STATUS_BURST_RAMP_SECONDS": 1, "STATUS_BURST_DURATION_SECONDS": 2,
                 "STATUS_BURST_STEADY_RATE": 500, "STATUS_BURST_RATE": 2500,
                 "STATUS_POST_BURST_DURATION": "30s"}
     selected = dict(defaults)
@@ -411,7 +411,7 @@ def collect(run_id, start, end, params, source, window):
     result["steady_state"]["server_status_quantiles"] = status_quantiles(steady_seconds, window["steady_end"])
     if any(item == "SCENARIO=T" for item in params):
         queue = source["k6_queue"]
-        burst_start = window["k6_start"] + queue["STATUS_BURST_AFTER_SECONDS"]
+        burst_start = window["k6_start"] + queue["STATUS_BURST_AFTER_SECONDS"] + queue["STATUS_BURST_RAMP_SECONDS"]
         burst_end = burst_start + queue["STATUS_BURST_DURATION_SECONDS"]
         # Prometheus scrapes the backend every five seconds. A five-second
         # server observation window encloses the exact two-second k6 burst;
