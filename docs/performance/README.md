@@ -364,3 +364,12 @@ the backend handler; it is consistent with client/host scheduling or Docker netw
 runs used only about 0.10–0.13 k6 cores of its 3-core cap, so they do not support a claim that k6
 CPU saturation caused that tail. Checkout may now be rerun; calibration and sell-out are still not
 proven.
+
+### Fresh checkout at 20 users/s
+
+Three fresh 900-user queues were joined, opened and consumed in one runner invocation. Each run
+admitted a fresh 100-token cohort and met its work minimum: 100 started, 100 PAID, no 429/503 or
+other checkout rejection, zero drops, zero oversell and verifier PASS. Reserve/order k6 p95 were
+284.5/100.9 ms, 133.8/112.0 ms and 36.2/30.5 ms. Docker memory peaked at 56.54%, 57.35% and
+57.47%, below the 85% abort. This proves the paced 20 users/s checkout on this CPU-capped platform;
+it does not yet prove the 10/20/40 calibration or 5,000-entry sell-out.

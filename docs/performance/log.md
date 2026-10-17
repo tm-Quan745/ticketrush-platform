@@ -30,6 +30,14 @@ new runtime JSON are now ignored. They remain under `results/` locally but do no
 curated small summaries must be force-added in a separate commit. New provenance now reports
 `working_tree_clean=true` with this same tracked-file check.
 
+### Fresh checkout V20
+
+`checkout-V20-resilience-1..3` each created their own closed 900-user queue, used admission tokens
+younger than five minutes, and paced 100 checkout users at 20/s. Each run has 100 started and 100
+PAID, no labelled 429/503/other rejection, zero drops, verifier PASS and zero oversell. Reserve/order
+p95 was 284.5/100.9, 133.8/112.0 and 36.2/30.5 ms; Docker memory max was 56.54/57.35/57.47%, below
+the abort threshold. This unblocks calibration, but calibration and sell-out have not run.
+
 ## 2026-10-17 — reject empty checkout successes
 
 The next bounded Week 7 task is repairing the checkout acceptance gate before further
