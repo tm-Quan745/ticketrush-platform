@@ -282,7 +282,10 @@ the limiter and waiting room, which deliberately return `503 WAITING_ROOM_UNAVAI
 route remained Redis-only and used no JDBC connection. Peak CPU was backend 7.94, k6 6.96,
 PostgreSQL 1.97, RabbitMQ 1.88 and Redis 0.46 cores; Docker VM memory peaked at 61.3%, below the
 85% abort limit. The verifier passed, but this burst is not a supported 2,500 req/s status capacity
-claim. See [burst summary](results/frontdoor-vu1000-T-burst.json).
+claim. This was VM CPU oversubscription: k6 and backend alone used about 15 cores on a 12-vCPU VM.
+The high Lettuce latency most likely includes JVM thread-scheduling delay; that is a hypothesis, not
+proof. Subsequent load-test containers have Compose CPU limits of backend 6, k6 3, PostgreSQL 2,
+Redis 1 and RabbitMQ 1 cores, recorded in `environment.json`. See [burst summary](results/frontdoor-vu1000-T-burst.json).
 
 `PessimisticReservationIntegrationTest` now inherits the production 1,500 ms Hikari timeout:
 the focused Testcontainers run passed twice (once explicitly at 1,500 ms and once after removing

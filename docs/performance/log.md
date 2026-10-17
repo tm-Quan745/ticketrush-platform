@@ -420,6 +420,11 @@ Commit `59db266` changes the first client poll from a fixed 0–2 seconds to uni
 
 The historical 2,500/s burst had 2,837 unlabeled 5xx and 2,294 drops. Its old client artifact cannot distinguish 500 from 503. Evidence available from logs/telemetry is RedisGuard fallback, 300 ms Redis command timeout, EVALSHA max 1,192.7 ms, GET max 1,106.5 ms, Tomcat 200 busy, backend JVM 0.576 x 12 = 6.9 cores, Docker peak backend/k6/postgres/redis 7.94/6.96/1.97/0.46 cores. The k6 generator reached 996/1,000 VUs because burst latency consumed VUs; five-second observed response peak was ~883/s, far under the 2,500/s offer. This remains a negative result.
 
+The burst is consistent with Docker VM CPU oversubscription: backend and k6 alone used about 15 cores
+on the 12-vCPU VM. Its Lettuce latency may include JVM thread scheduling delay; this is a hypothesis,
+not proven causality. Future load-test composition caps backend/k6/postgres/redis/rabbitmq at
+6/3/2/1/1 cores and records the applied `NanoCpus` limits in `environment.json`.
+
 `frontdoor-T1500-burst` is valid and replaces it as a generator-drivable burst: 27,490 responses, zero HTTP failures/drops, max 9/600 VUs, memory 44.9%, verifier PASS and k6 p50/p95/p99 2.44/11.48/53.95 ms. It scheduled 1,500/s for two seconds; five-second scrape averaging reports ~800/s and is not an exact plateau measurement.
 
 Checkout is blocked. The prior Q100's 70 errors matched the 30-permit bulkhead arithmetic but were not status/code-tagged, so that classification is inference only. Retry-enabled simultaneous Q100 ended in controlled 503 and reserve p95 1,876.4 ms. The first paced V20 used expired 10-minute admission tokens and returned 100 `INVALID_ADMISSION_TOKEN`; a fresh closed-queue setup removed that timing defect, but `checkout-V20-fresh` still had 67 controlled 503 outcomes and 34 dropped iterations. Verifier passed in every checkout run, but the required zero rejected admitted users at 20/s is not met. Do not start calibration or sell-out until the server-side 503 code/path is instrumented and this test passes.
