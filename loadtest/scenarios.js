@@ -60,6 +60,8 @@ const queueJoinsAccepted = new Counter('queue_joins_accepted');
 const queueJoinResponses = new Counter('queue_join_responses');
 const queueJoin5xx = new Counter('queue_join_5xx');
 const queueJoinRetries = new Counter('queue_join_retries');
+const healthStarted = new Counter('health_started');
+const healthCompleted = new Counter('health_completed');
 const queuePosition = new Trend('queue_position', true);
 const queuePollInterval = new Trend('queue_poll_interval_seconds', true);
 const queueRetryAfterHonored = new Counter('queue_retry_after_honored');
@@ -103,6 +105,8 @@ const plans = {
       maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '45s', gracefulStop: '30s' }
     : { executor: 'shared-iterations', exec: 'queueJoin', vus: queueJoinVUs, iterations: queueUsers,
       maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '2m', gracefulStop: '30s' } },
+  N: { health: { executor: 'per-vu-iterations', exec: 'healthCheck', vus: queueJoinRate,
+    iterations: queueUsers / queueJoinRate, maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '45s', gracefulStop: '30s' } },
   R: { rejoin: { executor: 'shared-iterations', exec: 'queueRejoin', vus: Math.min(100, queueJoinVUs),
     iterations: Number(__ENV.QUEUE_REJOIN_USERS || 100), maxDuration: '30s', gracefulStop: '10s' } },
   P: { poll: { executor: 'constant-vus', exec: 'queuePoll', vus: queuePollers, duration: queuePollDuration,
@@ -120,7 +124,7 @@ const plans = {
     maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
   V: { checkoutPaced: steady('checkout', checkoutRate, checkoutDuration) },
 };
-if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, R, P, Q, S, T, V or W');
+if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, N, R, P, Q, S, T, V or W');
 export const options = {
   scenarios: plans[scenario],
   // Exclude raw URL, user/token values and VU identifiers from every exported series.
@@ -146,6 +150,8 @@ export const options = {
     ...(['C', 'D', 'H'].includes(scenario) ? { arrivals_started: [`count==${arrivals}`] } : {}),
     ...(scenario === 'J' ? { queue_joins_started: [`count==${queueUsers}`], queue_joins_accepted: [`count==${queueUsers}`],
       'http_req_duration{name:POST /api/v1/events/{id}/waiting-room/join}': ['p(95)<1000'] } : {}),
+    ...(scenario === 'N' ? { health_started: [`count==${queueUsers}`], health_completed: [`count==${queueUsers}`],
+      'http_req_duration{name:GET /actuator/health}': ['p(95)<1000'] } : {}),
     ...(scenario === 'R' ? { queue_rejoin_preserved: [`count==${Number(__ENV.QUEUE_REJOIN_USERS || 100)}`] } : {}),
     ...(scenario === 'P' ? { queue_retry_after_honored: ['count>0'],
       'http_req_duration{name:GET /api/v1/events/{id}/waiting-room/status}': ['p(95)<500', 'p(99)<1000'] } : {}),
@@ -279,6 +285,17 @@ export function queueJoin() {
   // second. This avoids a constant-arrival-rate boundary iteration creating a
   // non-existent 901st user in a 900-user setup.
   if (queueJoinRate > 0) sleep(1);
+}
+
+// A dependency-free control with the same 90 VU x 10 round cadence as the
+// paced join. It attributes the client-side tail without a JWT, Redis or DB.
+export function healthCheck() {
+  healthStarted.add(1);
+  const response = request('GET', '/actuator/health', 'GET /actuator/health', null, null, {}, [200]);
+  const accepted = response.status === 200;
+  business(accepted, 'health endpoint available');
+  if (accepted) healthCompleted.add(1);
+  sleep(1);
 }
 
 export function queueRejoin() {

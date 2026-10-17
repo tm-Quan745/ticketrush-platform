@@ -210,6 +210,7 @@ def work_minimum(args):
         "H": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
         "W": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
         "J": ({"started": queue_users, "completed": queue_users, "paid": 0}, {"started": "queue_joins_started", "completed": "queue_joins_accepted", "paid": "purchases_paid"}),
+        "N": ({"started": queue_users, "completed": queue_users, "paid": 0}, {"started": "health_started", "completed": "health_completed", "paid": "purchases_paid"}),
         "R": ({"started": rejoin_users, "completed": rejoin_users, "paid": 0}, {"started": "http_reqs", "completed": "queue_rejoin_preserved", "paid": "purchases_paid"}),
         "P": ({"started": 1, "completed": 1, "paid": 0}, {"started": "queue_status_responses", "completed": "queue_status_responses", "paid": "purchases_paid"}),
         "S": ({"started": 1, "completed": 1, "paid": 0}, {"started": "queue_status_responses", "completed": "queue_status_responses", "paid": "purchases_paid"}),
@@ -602,6 +603,7 @@ def collect(run_id, start, end, params, source, window):
     result["route_server_quantiles"] = {
         "join": route_quantiles("/api/v1/events/{id}/waiting-room/join", full_seconds, window["k6_end"]),
         "status": route_quantiles("/api/v1/events/{id}/waiting-room/status", full_seconds, window["k6_end"]),
+        "health": route_quantiles("/actuator/health", full_seconds, window["k6_end"]),
     }
     if any(item == "SCENARIO=T" for item in params):
         queue = source["k6_queue"]
@@ -808,7 +810,7 @@ def environment():
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "checkout", "verify", "queries", "test", "environment", "down"])
-    p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQSTV"), default="A")
+    p.add_argument("--scenario", choices=list("ABCDEFGHWJNRPQSTV"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
     p.add_argument("--background", type=int, default=200)
