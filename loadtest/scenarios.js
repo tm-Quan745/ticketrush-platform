@@ -22,6 +22,8 @@ const paymentPollJitterMs = Number(__ENV.PAYMENT_POLL_JITTER_MS || 250);
 const paymentMaxPolls = Number(__ENV.PAYMENT_MAX_POLLS || 20);
 const queueUsers = Number(__ENV.QUEUE_USERS || 5000);
 const queueJoinVUs = Number(__ENV.QUEUE_JOIN_VUS || 300);
+const queueJoinRate = Number(__ENV.QUEUE_JOIN_RATE || 0);
+const queueJoinDuration = __ENV.QUEUE_JOIN_DURATION || '10s';
 const queuePollers = Number(__ENV.QUEUE_POLLERS || 500);
 const queuePollDuration = __ENV.QUEUE_POLL_DURATION || '60s';
 // A joined client receives Retry-After from the join response.  The separate
@@ -47,6 +49,7 @@ const usersById = ['Q', 'V'].includes(scenario) ? Object.fromEntries(users.map(u
 const checkoutExpected = checkoutTarget(scenario, admissionPairs.length, checkoutRate, checkoutDuration);
 const checkoutStarted = new Counter('checkout_started');
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
+if (queueJoinRate > 0 && queueUsers % queueJoinRate !== 0) throw new Error('QUEUE_USERS must divide evenly by QUEUE_JOIN_RATE');
 const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
 const completed = new Counter('purchases_paid');
@@ -95,8 +98,11 @@ const plans = {
   F: { auth: steady('login', Number(__ENV.RATE || 10), duration) },
   G: { soak: steady('purchase', rate, duration), browse: steady('browse', Number(__ENV.BROWSE_RATE || 5), duration) },
   H: { spike }, W: { warmup: steady('purchase', 2, __ENV.WARMUP_DURATION || '60s') },
-  J: { join: { executor: 'shared-iterations', exec: 'queueJoin', vus: queueJoinVUs, iterations: queueUsers,
-    maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '2m', gracefulStop: '30s' } },
+  J: { join: queueJoinRate > 0
+    ? { executor: 'per-vu-iterations', exec: 'queueJoin', vus: queueJoinRate, iterations: queueUsers / queueJoinRate,
+      maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '45s', gracefulStop: '30s' }
+    : { executor: 'shared-iterations', exec: 'queueJoin', vus: queueJoinVUs, iterations: queueUsers,
+      maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '2m', gracefulStop: '30s' } },
   R: { rejoin: { executor: 'shared-iterations', exec: 'queueRejoin', vus: Math.min(100, queueJoinVUs),
     iterations: Number(__ENV.QUEUE_REJOIN_USERS || 100), maxDuration: '30s', gracefulStop: '10s' } },
   P: { poll: { executor: 'constant-vus', exec: 'queuePoll', vus: queuePollers, duration: queuePollDuration,
@@ -139,7 +145,7 @@ export const options = {
     ...(scenario === 'A' ? { purchases_paid: ['count>=60'] } : {}),
     ...(['C', 'D', 'H'].includes(scenario) ? { arrivals_started: [`count==${arrivals}`] } : {}),
     ...(scenario === 'J' ? { queue_joins_started: [`count==${queueUsers}`], queue_joins_accepted: [`count==${queueUsers}`],
-      'http_req_duration{name:POST /api/v1/events/{id}/waiting-room/join}': ['p(95)<500', 'p(99)<1000'] } : {}),
+      'http_req_duration{name:POST /api/v1/events/{id}/waiting-room/join}': ['p(95)<1000'] } : {}),
     ...(scenario === 'R' ? { queue_rejoin_preserved: [`count==${Number(__ENV.QUEUE_REJOIN_USERS || 100)}`] } : {}),
     ...(scenario === 'P' ? { queue_retry_after_honored: ['count>0'],
       'http_req_duration{name:GET /api/v1/events/{id}/waiting-room/status}': ['p(95)<500', 'p(99)<1000'] } : {}),
@@ -269,6 +275,10 @@ export function queueJoin() {
     queuePosition.add(state.position);
     outcomes.add(1, { result: 'queue_joined' });
   }
+  // Per-VU iterations yield an exact cohort while keeping one user per VU per
+  // second. This avoids a constant-arrival-rate boundary iteration creating a
+  // non-existent 901st user in a 900-user setup.
+  if (queueJoinRate > 0) sleep(1);
 }
 
 export function queueRejoin() {

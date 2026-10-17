@@ -132,7 +132,8 @@ def k6_poll_parameters(args):
 
 
 def k6_queue_parameters(args):
-    defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_JOIN_MAX_ATTEMPTS": 3, "QUEUE_POLLERS": 500,
+    defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_JOIN_MAX_ATTEMPTS": 3, "QUEUE_JOIN_RATE": 0,
+                "QUEUE_JOIN_DURATION": "10s", "QUEUE_POLLERS": 500,
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
                 "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
                 "QUEUE_FIRST_POLL_ADVICE_SECONDS": 10, "CHECKOUT_RATE": 20, "CHECKOUT_DURATION": "5s", "CHECKOUT_COUNT": 100, "CHECKOUT_KEY_OFFSET": 0,
@@ -145,9 +146,11 @@ def k6_queue_parameters(args):
         name, separator, value = item.partition("=")
         if name not in selected or separator != "=" or not value:
             continue
-        if name in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
+        if name in {"QUEUE_JOIN_DURATION", "QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
             selected[name] = value
-        elif name not in {"QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.isdecimal() and int(value) > 0:
+        elif name == "QUEUE_JOIN_RATE" and value.isdecimal() and int(value) >= 0:
+            selected[name] = int(value)
+        elif name not in {"QUEUE_JOIN_DURATION", "QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.isdecimal() and int(value) > 0:
             selected[name] = int(value)
     selected["steady_state_warmup_seconds"] = 15
     return selected
@@ -225,6 +228,26 @@ def evaluate_work_minimum(summary, declaration):
     actual = {dimension: metric_count(summary, metric) for dimension, metric in declaration["metrics"].items()}
     passed = all(actual[dimension] >= expected for dimension, expected in declaration["minimums"].items())
     return {**declaration, "actual": actual, "passed": passed}
+
+
+def prometheus_scalar(response):
+    try:
+        result = response["data"]["result"]
+        return float(result[0]["value"][1]) if result else None
+    except (KeyError, IndexError, TypeError, ValueError):
+        return None
+
+
+def join_server_latency_requirement(run_id):
+    """The paced front-door join stage has a server-side p95 SLO of one second."""
+    try:
+        telemetry = json.loads((RESULTS / f"{run_id}-telemetry.json").read_text())
+        response = telemetry["route_server_quantiles"]["join"]["p95"]
+        p95 = prometheus_scalar(response)
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        return {"required": True, "passed": False, "error": str(error)}
+    return {"required": True, "p95_seconds": p95, "limit_seconds": 1.0,
+            "passed": p95 is not None and p95 < 1.0}
 
 
 def utc_timestamp(epoch=None):
@@ -544,10 +567,10 @@ def collect(run_id, start, end, params, source, window):
     # A full-window histogram is needed for an apples-to-apples server p95. The
     # timestamps come from k6's own duration, not Docker process overhead.
     steady_seconds = max(1, int(window["steady_duration_seconds"]))
-    def status_quantiles(seconds, observed_at):
+    def route_quantiles(uri, seconds, observed_at):
         result = {}
         for label, quantile in (("p50", "0.50"), ("p95", "0.95"), ("p99", "0.99")):
-            query = 'histogram_quantile(%s,sum by (le) (increase(http_server_requests_seconds_bucket{uri="/api/v1/events/{id}/waiting-room/status"}[%ss])))' % (quantile, seconds)
+            query = 'histogram_quantile(%s,sum by (le) (increase(http_server_requests_seconds_bucket{uri="%s"}[%ss])))' % (quantile, uri, seconds)
             try:
                 url = "http://127.0.0.1:29097/api/v1/query?" + urllib.parse.urlencode({"query": query, "time": observed_at})
                 result[label] = request_json(url)
@@ -571,7 +594,12 @@ def collect(run_id, start, end, params, source, window):
             result["steady_state"]["queries"][name] = request_json(url)
         except Exception as error:
             result["steady_state"]["queries"][name] = {"error": str(error)}
-    result["steady_state"]["server_status_quantiles"] = status_quantiles(steady_seconds, window["steady_end"])
+    result["steady_state"]["server_status_quantiles"] = route_quantiles("/api/v1/events/{id}/waiting-room/status", steady_seconds, window["steady_end"])
+    full_seconds = max(1, int(window["duration_seconds"]))
+    result["route_server_quantiles"] = {
+        "join": route_quantiles("/api/v1/events/{id}/waiting-room/join", full_seconds, window["k6_end"]),
+        "status": route_quantiles("/api/v1/events/{id}/waiting-room/status", full_seconds, window["k6_end"]),
+    }
     if any(item == "SCENARIO=T" for item in params):
         queue = source["k6_queue"]
         burst_start = window["k6_start"] + queue["STATUS_BURST_AFTER_SECONDS"] + queue["STATUS_BURST_RAMP_SECONDS"]
@@ -585,10 +613,10 @@ def collect(run_id, start, end, params, source, window):
                                 "duration_seconds": queue["STATUS_BURST_DURATION_SECONDS"]},
             "server_burst_observation": {"end": burst_end + 3, "duration_seconds": server_seconds,
                                            "note": "five-second scrape-resolution window enclosing the k6 burst"},
-            "server_burst_quantiles": status_quantiles(server_seconds, burst_end + 3),
+            "server_burst_quantiles": route_quantiles("/api/v1/events/{id}/waiting-room/status", server_seconds, burst_end + 3),
             "post_burst_k6_window": {"start": burst_end + 1, "end": window["k6_end"],
                                        "duration_seconds": max(1, window["k6_end"] - burst_end - 1)},
-            "server_post_burst_quantiles": status_quantiles(max(1, int(window["k6_end"] - burst_end - 1)), window["k6_end"])
+            "server_post_burst_quantiles": route_quantiles("/api/v1/events/{id}/waiting-room/status", max(1, int(window["k6_end"] - burst_end - 1)), window["k6_end"])
         }
     result["targets"] = request_json("http://127.0.0.1:29097/api/v1/targets")
     # No credentials, container environment, raw headers or user files are included in artifacts.
@@ -706,6 +734,11 @@ def measure(args):
         work = {"passed": False, "error": str(error)}
     if not work["passed"]:
         print("Work minimum was not met; verifier invariants do not make this run pass")
+    join_latency = {"required": False, "passed": True}
+    if args.scenario == "J" and int(parameter(args, "QUEUE_JOIN_RATE", "0")) > 0:
+        join_latency = join_server_latency_requirement(args.run_id)
+        if not join_latency["passed"]:
+            print("Paced join server p95 was unavailable or exceeded one second")
     recovery = {"start": end, "end": time.time(), "series": {}}
     for name, query in {
         "hikari_pending": "hikaricp_connections_pending",
@@ -724,8 +757,8 @@ def measure(args):
                   "verification_error": verification_error, "start": start, "end": end, "parameters": parameters,
                   "collection_error": collection_error, "queue_audit_exit": queue_audit_exit,
                   "memory_abort": docker_stats.memory_abort.is_set(), "max_memory_percent": docker_stats.max_memory_percent,
-                  "work_minimum": work,
-                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"]) else "FAIL"}
+                  "work_minimum": work, "join_server_latency": join_latency,
+                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"] or not join_latency["passed"]) else "FAIL"}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
     return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set()) or int(not work["passed"])
 

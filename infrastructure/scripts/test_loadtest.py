@@ -41,13 +41,15 @@ class ObservabilityPreflightTest(unittest.TestCase):
 
     def test_closed_queue_seed_and_queue_metadata_are_recorded(self):
         args = SimpleNamespace(users=5000, background=200, capacity=5000, waiting=True, queue_closed=True,
-                               param=["QUEUE_USERS=900", "QUEUE_POLLERS=2500", "QUEUE_POLL_DURATION=90s"])
+                               param=["QUEUE_USERS=900", "QUEUE_JOIN_RATE=90", "QUEUE_JOIN_DURATION=10s", "QUEUE_POLLERS=2500", "QUEUE_POLL_DURATION=90s"])
         self.assertIn("--queue-closed", loadtest.seed_args(args))
         metadata = loadtest.k6_queue_parameters(args)
         expected = {"QUEUE_USERS": 900, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 2500,
                     "QUEUE_POLL_DURATION": "90s", "CHECKOUT_VUS": 100,
                     "CHECKOUT_RATE": 20, "CHECKOUT_DURATION": "5s", "CHECKOUT_MAX_RETRIES": 3}
         self.assertEqual(expected, {key: metadata[key] for key in expected})
+        self.assertEqual(90, metadata["QUEUE_JOIN_RATE"])
+        self.assertEqual("10s", metadata["QUEUE_JOIN_DURATION"])
 
     def test_every_scenario_declares_started_completed_and_paid_minimums(self):
         for scenario in "ABCDEFGHWJRPQSTV":
