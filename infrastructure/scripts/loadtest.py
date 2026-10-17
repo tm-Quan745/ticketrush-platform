@@ -140,13 +140,15 @@ def k6_queue_parameters(args):
                 "CHECKOUT_MAX_RETRIES": 3, "STATUS_TOKEN_POOL": 200,
                 "STATUS_BURST_AFTER_SECONDS": 15, "STATUS_BURST_RAMP_SECONDS": 1, "STATUS_BURST_DURATION_SECONDS": 2,
                 "STATUS_BURST_STEADY_RATE": 500, "STATUS_BURST_RATE": 2500,
-                "STATUS_POST_BURST_DURATION": "30s"}
+                "STATUS_POST_BURST_DURATION": "30s", "CALIBRATION_STAGES": "10:45,20:45,40:45,60:30"}
     selected = dict(defaults)
     for item in args.param:
         name, separator, value = item.partition("=")
         if name not in selected or separator != "=" or not value:
             continue
         if name in {"QUEUE_JOIN_DURATION", "QUEUE_POLL_DURATION", "STATUS_DURATION", "STATUS_POST_BURST_DURATION", "CHECKOUT_DURATION"} and value.endswith("s") and value[:-1].isdecimal():
+            selected[name] = value
+        elif name == "CALIBRATION_STAGES":
             selected[name] = value
         elif name == "QUEUE_JOIN_RATE" and value.isdecimal() and int(value) >= 0:
             selected[name] = int(value)
@@ -169,6 +171,23 @@ def seconds(value):
     if not isinstance(value, str) or not value.endswith("s") or not value[:-1].isdecimal():
         raise ValueError(f"Expected whole seconds, got {value!r}")
     return int(value[:-1])
+
+
+def calibration_stages(value, users):
+    """Parse the finite checkout schedule before any container is started."""
+    stages = []
+    for part in value.split(","):
+        try:
+            rate, duration = (int(token) for token in part.split(":", 1))
+        except ValueError as error:
+            raise ValueError("CALIBRATION_STAGES must use RATE:SECONDS pairs") from error
+        if rate < 1 or duration < 1:
+            raise ValueError("CALIBRATION_STAGES values must be positive")
+        stages.append({"rate": rate, "duration_seconds": duration, "offered": rate * duration})
+    offered = sum(stage["offered"] for stage in stages)
+    if not stages or offered > users:
+        raise ValueError("Calibration offers more checkout users than the finite queue cohort")
+    return stages
 
 
 def metric_count(summary, metric):
@@ -199,6 +218,8 @@ def work_minimum(args):
     checkout_duration = seconds(parameter(args, "CHECKOUT_DURATION", "5s"))
     checkout_admissions = admission_count()
     checkout_target = checkout_admissions if scenario == "Q" else checkout_rate * checkout_duration
+    calibration_target = 0 if scenario != "K" else sum(stage["offered"] for stage in calibration_stages(
+        parameter(args, "CALIBRATION_STAGES", "10:45,20:45,40:45,60:30"), queue_users))
     declarations = {
         "A": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
         "B": ({"started": 1, "completed": 1, "paid": 0}, {"started": "http_reqs", "completed": "http_reqs", "paid": "purchases_paid"}),
@@ -217,6 +238,7 @@ def work_minimum(args):
         "T": ({"started": 1, "completed": 1, "paid": 0}, {"started": "queue_status_responses", "completed": "queue_status_responses", "paid": "purchases_paid"}),
         "Q": ({"started": max(1, checkout_target), "completed": max(1, checkout_target), "paid": max(1, checkout_target)}, {"started": "checkout_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
         "V": ({"started": checkout_target, "completed": checkout_target, "paid": checkout_target}, {"started": "checkout_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "K": ({"started": calibration_target, "completed": calibration_target, "paid": calibration_target}, {"started": "checkout_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
     }
     try:
         minimums, metrics = declarations[scenario]
@@ -334,6 +356,84 @@ def fresh_checkout(args):
     lifecycle["result"] = "PASS" if exit_code == 0 else "FAIL"
     lifecycle["finished_at_utc"] = utc_timestamp()
     write_checkout_lifecycle(args.run_id, lifecycle)
+    return exit_code
+
+
+def write_calibration_lifecycle(run_id, lifecycle):
+    (RESULTS / f"{run_id}-calibration-lifecycle.json").write_text(json.dumps(lifecycle, indent=2))
+
+
+def queue_config(rate, run_id):
+    observed = utc_timestamp()
+    result = tool("queue-config", "--rate", str(rate), "--output", f"{run_id}-queue-config-{rate}.json", capture=True)
+    return {"rate": rate, "observed_at_utc": observed, "exit": result.returncode,
+            "stdout": result.stdout.strip()[-2000:], "stderr": result.stderr.strip()[-2000:]}
+
+
+class CalibrationRateSchedule:
+    """Apply only the pre-registered event admission rates during scenario K."""
+    def __init__(self, args, stages):
+        self.args, self.stages, self.records, self.error = args, stages, [], None
+        self.stop = threading.Event()
+        self.thread = threading.Thread(target=self.apply, daemon=True)
+
+    def start(self):
+        self.thread.start()
+
+    def finish(self):
+        self.stop.set()
+        self.thread.join(timeout=30)
+        (RESULTS / f"{self.args.run_id}-calibration-schedule.json").write_text(json.dumps({
+            "run_id": self.args.run_id, "stages": self.stages, "transitions": self.records,
+            "error": self.error}, indent=2))
+
+    def apply(self):
+        for previous, next_stage in zip(self.stages, self.stages[1:]):
+            if self.stop.wait(previous["duration_seconds"]):
+                return
+            record = queue_config(next_stage["rate"], self.args.run_id)
+            self.records.append(record)
+            if record["exit"]:
+                self.error = f"Could not set admission rate {next_stage['rate']}"
+                return
+
+
+def fresh_calibration(args):
+    """One finite queue with a pre-registered rate schedule and live admission feed."""
+    if args.scenario != "K":
+        raise ValueError("calibration requires scenario K")
+    args.waiting, args.queue_closed = True, True
+    queue_users = int(parameter(args, "QUEUE_USERS", str(args.users)))
+    if queue_users != args.users:
+        raise ValueError("QUEUE_USERS must equal --users for calibration")
+    stages = calibration_stages(parameter(args, "CALIBRATION_STAGES", "10:45,20:45,40:45,60:30"), queue_users)
+    lifecycle = {"run_id": args.run_id, "queue_users": queue_users, "hot_capacity": args.capacity,
+                 "stages": stages, "created_at_utc": utc_timestamp()}
+    write_calibration_lifecycle(args.run_id, lifecycle)
+    reset(args)
+    join_args = copy.copy(args)
+    join_args.scenario, join_args.run_id = "J", args.run_id + "-join"
+    join_args.no_reset, join_args.no_warmup = True, True
+    join_args.param = list(args.param) + ["QUEUE_USERS=" + str(queue_users), "QUEUE_JOIN_RATE=100"]
+    lifecycle["join_started_at_utc"] = utc_timestamp(); write_calibration_lifecycle(args.run_id, lifecycle)
+    join_exit = measure(join_args)
+    lifecycle["join_finished_at_utc"] = utc_timestamp(); lifecycle["join_exit"] = join_exit
+    write_calibration_lifecycle(args.run_id, lifecycle)
+    if join_exit:
+        lifecycle["result"] = "FAIL"; write_calibration_lifecycle(args.run_id, lifecycle); return join_exit
+    initial = queue_config(stages[0]["rate"], args.run_id)
+    lifecycle["initial_rate"] = initial
+    if initial["exit"]:
+        lifecycle["result"] = "FAIL"; write_calibration_lifecycle(args.run_id, lifecycle); return initial["exit"]
+    tool("queue-open", "--output", f"{args.run_id}-queue-open.json")
+    lifecycle["queue_opened_at_utc"] = utc_timestamp(); write_calibration_lifecycle(args.run_id, lifecycle)
+    # Prime the feed before the first constant-arrival stage races the one-second scheduler tick.
+    time.sleep(3)
+    args.no_reset, args.no_warmup = True, True
+    args._calibration_schedule = CalibrationRateSchedule(args, stages)
+    exit_code = measure(args)
+    lifecycle["finished_at_utc"] = utc_timestamp(); lifecycle["result"] = "PASS" if exit_code == 0 else "FAIL"
+    write_calibration_lifecycle(args.run_id, lifecycle)
     return exit_code
 
 
@@ -604,7 +704,21 @@ def collect(run_id, start, end, params, source, window):
         "join": route_quantiles("/api/v1/events/{id}/waiting-room/join", full_seconds, window["k6_end"]),
         "status": route_quantiles("/api/v1/events/{id}/waiting-room/status", full_seconds, window["k6_end"]),
         "health": route_quantiles("/actuator/health", full_seconds, window["k6_end"]),
+        "reservation": route_quantiles("/api/v1/reservations", full_seconds, window["k6_end"]),
+        "order": route_quantiles("/api/v1/orders", full_seconds, window["k6_end"]),
     }
+    if any(item == "SCENARIO=K" for item in params):
+        schedule = next((item.split("=", 1)[1] for item in params if item.startswith("CALIBRATION_STAGES=")), "10:45,20:45,40:45,60:30")
+        users = int(next((item.split("=", 1)[1] for item in params if item.startswith("QUEUE_USERS=")), "5000"))
+        offset = 0
+        result["calibration_phase_server_quantiles"] = {}
+        for stage in calibration_stages(schedule, users):
+            end = window["k6_start"] + offset + stage["duration_seconds"]
+            result["calibration_phase_server_quantiles"][str(stage["rate"])] = {
+                **stage, "window_end_epoch": end,
+                "reservation": route_quantiles("/api/v1/reservations", stage["duration_seconds"], end),
+                "order": route_quantiles("/api/v1/orders", stage["duration_seconds"], end)}
+            offset += stage["duration_seconds"]
     if any(item == "SCENARIO=T" for item in params):
         queue = source["k6_queue"]
         burst_start = window["k6_start"] + queue["STATUS_BURST_AFTER_SECONDS"] + queue["STATUS_BURST_RAMP_SECONDS"]
@@ -689,6 +803,9 @@ def measure(args):
         provenance["admission_token_freshness"] = admission_freshness(args)
         (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
     start = time.time()
+    rate_schedule = getattr(args, "_calibration_schedule", None)
+    if rate_schedule:
+        rate_schedule.start()
     parameters = ["SCENARIO=" + args.scenario, "RUN_ID=" + args.run_id,
                   "QUEUE_USERS=" + str(args.users)] + args.param
     command = ["run", "--rm", "-T"]
@@ -707,6 +824,8 @@ def measure(args):
     finally:
         sampler.finish()
         docker_stats.finish()
+        if rate_schedule:
+            rate_schedule.finish()
     end = time.time()
     queue_audit_exit = None
     if args.scenario in {"J", "R", "P"}:
@@ -763,9 +882,10 @@ def measure(args):
                   "collection_error": collection_error, "queue_audit_exit": queue_audit_exit,
                   "memory_abort": docker_stats.memory_abort.is_set(), "max_memory_percent": docker_stats.max_memory_percent,
                   "work_minimum": work, "join_server_latency": join_latency,
-                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"] or not join_latency["passed"]) else "FAIL"}
+                  "calibration_schedule_error": rate_schedule.error if rate_schedule else None,
+                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"] or not join_latency["passed"] or (rate_schedule and rate_schedule.error)) else "FAIL"}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
-    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set()) or int(not work["passed"])
+    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set()) or int(not work["passed"]) or int(bool(rate_schedule and rate_schedule.error))
 
 
 def environment():
@@ -809,8 +929,8 @@ def environment():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "checkout", "verify", "queries", "test", "environment", "down"])
-    p.add_argument("--scenario", choices=list("ABCDEFGHWJNRPQSTV"), default="A")
+    p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "checkout", "calibration", "verify", "queries", "test", "environment", "down"])
+    p.add_argument("--scenario", choices=list("ABCDEFGHWJKNRPQSTV"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
     p.add_argument("--background", type=int, default=200)
@@ -874,6 +994,8 @@ def main():
         raise SystemExit(measure(args))
     elif args.command == "checkout":
         raise SystemExit(fresh_checkout(args))
+    elif args.command == "calibration":
+        raise SystemExit(fresh_calibration(args))
     elif args.command == "verify":
         raise SystemExit(tool("verify", "--drain", str(args.drain), "--output", args.run_id + "-verify.json", check=False).returncode)
     elif args.command == "queries":

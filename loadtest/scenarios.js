@@ -1,9 +1,10 @@
 import { SharedArray } from 'k6/data';
 import exec from 'k6/execution';
+import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
-import { request, body, key, outcomes } from './lib/client.js';
-import { checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
+import { request, body, key, outcomes, base } from './lib/client.js';
+import { calibrationStages, checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
 
 const users = new SharedArray('loadtest users', () => JSON.parse(open('./.data/users.json')));
 const data = JSON.parse(open('./.data/dataset.json'));
@@ -43,9 +44,13 @@ const checkoutRate = Number(__ENV.CHECKOUT_RATE || 20);
 const checkoutDuration = __ENV.CHECKOUT_DURATION || '5s';
 const checkoutRetries = Number(__ENV.CHECKOUT_MAX_RETRIES || 3);
 const checkoutKeyOffset = Number(__ENV.CHECKOUT_KEY_OFFSET || 0);
+const calibration = scenario === 'K'
+  ? calibrationStages(__ENV.CALIBRATION_STAGES || '10:45,20:45,40:45,60:30', queueUsers)
+  : { stages: [], offered: 0 };
 const admissionPairs = ['Q', 'V'].includes(scenario)
   ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
-const usersById = ['Q', 'V'].includes(scenario) ? Object.fromEntries(users.map(user => [user.id, user])) : {};
+const usersById = ['K', 'Q', 'V'].includes(scenario) ? Object.fromEntries(users.map(user => [user.id, user])) : {};
+const loadtestAdmin = scenario === 'K' ? JSON.parse(open('./.data/admin.json')) : null;
 const checkoutExpected = checkoutTarget(scenario, admissionPairs.length, checkoutRate, checkoutDuration);
 const checkoutStarted = new Counter('checkout_started');
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
@@ -83,6 +88,11 @@ const checkoutOrderPoolUnavailable = new Counter('checkout_order_pool_unavailabl
 const checkoutReservationInvalidAdmission = new Counter('checkout_reservation_invalid_admission');
 const checkoutReservationAlreadyHeld = new Counter('checkout_reservation_already_held');
 const checkoutReservationOtherConflict = new Counter('checkout_reservation_other_conflict');
+const calibrationFeedEmpty = new Counter('calibration_admission_feed_empty');
+const calibrationFeedErrors = new Counter('calibration_admission_feed_errors');
+const calibrationReserveDuration = new Trend('calibration_reserve_duration', true);
+const calibrationOrderDuration = new Trend('calibration_order_duration', true);
+const calibrationVUs = { preAllocatedVUs: Math.max(10, Math.ceil(vus.preAllocatedVUs / 4)), maxVUs: vus.maxVUs };
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
     ...vus, gracefulStop: '90s' };
@@ -123,8 +133,14 @@ const plans = {
   Q: { checkout: { executor: 'shared-iterations', exec: 'checkout', vus: checkoutVUs, iterations: admissionPairs.length,
     maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
   V: { checkoutPaced: steady('checkout', checkoutRate, checkoutDuration) },
+  K: Object.fromEntries(calibration.stages.reduce((entries, stage, index) => {
+    const start = calibration.stages.slice(0, index).reduce((seconds, value) => seconds + value.duration, 0);
+    entries.push([`calibration_${stage.rate}`, { executor: 'constant-arrival-rate', exec: 'checkoutCalibration',
+      rate: stage.rate, timeUnit: '1s', duration: `${stage.duration}s`, startTime: `${start}s`, ...calibrationVUs, gracefulStop: '90s' }]);
+    return entries;
+  }, [])),
 };
-if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, N, R, P, Q, S, T, V or W');
+if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, K, N, R, P, Q, S, T, V or W');
 export const options = {
   scenarios: plans[scenario],
   // Exclude raw URL, user/token values and VU identifiers from every exported series.
@@ -137,7 +153,7 @@ export const options = {
     ...Object.fromEntries(['sold_out', 'rate_limited', 'waiting_room_required', 'error', 'abandoned', 'paid', 'payment_failed', 'rejected_429', 'rejected_503',
       'browse_ok', 'browse_rate_limited', 'login_ok', 'login_rate_limited', 'queue_sold_out'].map(result =>
       [`business_outcomes{result:${result}}`, ['count>=0']])),
-    ...(['A', 'C', 'D', 'E', 'G', 'H', 'Q', 'V', 'W'].includes(scenario) ? {
+    ...(['A', 'C', 'D', 'E', 'G', 'H', 'K', 'Q', 'V', 'W'].includes(scenario) ? {
       'http_req_duration{name:POST /api/v1/reservations}': ['p(95)<1000', 'p(99)<2000'],
       'http_req_duration{name:POST /api/v1/orders}': ['p(95)<1000', 'p(99)<2000'],
     } : {}),
@@ -159,6 +175,8 @@ export const options = {
       'http_req_duration{name:GET /api/v1/events/{id}/waiting-room/status}': ['p(95)<500', 'p(99)<1000'],
       queue_status_steady_duration: ['p(95)<500', 'p(99)<1000']
     } : {}),
+    ...(scenario === 'K' ? { checkout_started: [`count==${calibration.offered}`], purchases_paid: [`count==${calibration.offered}`],
+      calibration_admission_feed_empty: ['count==0'], calibration_admission_feed_errors: ['count==0'] } : {}),
     ...(scenario === 'E' ? Object.fromEntries(stressRates.map(r => `stage-${r}`).concat(['recovery']).flatMap(phase => [
       [`http_req_failed{phase:${phase}}`, ['rate>=0']],
       [`http_req_duration{phase:${phase}}`, ['p(95)>=0']],
@@ -407,6 +425,65 @@ function requestWithAdmissionRetry(method, path, name, payload, user, headers, a
     sleep(retryAfter + Math.random() * 0.25);
   }
   return { response, result: body(response) };
+}
+
+function nextCalibrationAdmission(event) {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const response = http.get(`${base}/internal/loadtest/events/${event.id}/waiting-room/admissions?limit=1`, {
+      headers: { Authorization: `Bearer ${loadtestAdmin.token}` },
+      tags: { name: 'GET /internal/loadtest/admissions' }, timeout: __ENV.REQUEST_TIMEOUT || '5s',
+    });
+    if (response.status === 200) {
+      const values = body(response);
+      if (Array.isArray(values) && values.length === 1) return values[0];
+      calibrationFeedEmpty.add(1);
+    } else {
+      calibrationFeedErrors.add(1, { status: String(response.status) });
+    }
+    sleep(0.25);
+  }
+  return null;
+}
+
+export function checkoutCalibration() {
+  checkoutStarted.add(1);
+  completed.add(0);
+  const phase = exec.scenario.name.replace('calibration_', '');
+  const offset = calibration.stages.slice(0, calibration.stages.findIndex(stage => String(stage.rate) === phase))
+    .reduce((total, stage) => total + stage.offered, 0);
+  const index = offset + exec.scenario.iterationInScenario;
+  const event = data.events.find(value => value.name === 'HOT');
+  const admission = nextCalibrationAdmission(event);
+  const user = admission && usersById[admission.user];
+  if (!business(Boolean(admission && user), 'calibration admission belongs to a seeded user')) return;
+  const payload = { tierId: event.tiers[index % event.tiers.length], quantity: 1 + index % 4 };
+  const reservationAttempt = requestWithAdmissionRetry('POST', '/api/v1/reservations', 'POST /api/v1/reservations', payload,
+    user, { 'Idempotency-Key': key(index, '3'), 'X-Admission-Token': admission.token }, [201, 409, 429, 403, 503]);
+  calibrationReserveDuration.add(reservationAttempt.response.timings.duration, { phase });
+  const reservation = reservationAttempt.result;
+  if (reservationAttempt.response.status !== 201) {
+    const outcome = reservation.code === 'SOLD_OUT' ? 'sold_out'
+      : reservationAttempt.response.status === 429 ? 'rejected_429'
+      : reservationAttempt.response.status === 503 ? 'rejected_503' : 'error';
+    outcomes.add(1, { result: outcome });
+    business(false, 'calibration reservation must succeed');
+    return;
+  }
+  const orderAttempt = requestWithAdmissionRetry('POST', '/api/v1/orders', 'POST /api/v1/orders', { reservationId: reservation.id }, user,
+    { 'Idempotency-Key': key(index, '4'), 'X-Mock-Scenario': 'SUCCESS', 'X-Mock-Test-Token': __ENV.MOCK_PAYMENT_TEST_TOKEN }, [201, 429, 503]);
+  calibrationOrderDuration.add(orderAttempt.response.timings.duration, { phase });
+  const order = orderAttempt.result;
+  if (!business(orderAttempt.response.status === 201 && Boolean(order.id), 'calibration order created')) return;
+  let status = 'PENDING_PAYMENT';
+  for (let poll = 0; poll < paymentMaxPolls && status === 'PENDING_PAYMENT'; poll++) {
+    const delayMs = Math.min(paymentPollMaxMs, paymentPollBaseMs * (2 ** Math.min(poll, 1)));
+    sleep((delayMs + Math.random() * paymentPollJitterMs) / 1000);
+    status = body(request('GET', `/api/v1/orders/${order.id}`, 'GET /api/v1/orders/{id}', null, user.token)).status;
+  }
+  if (business(status === 'PAID', 'calibration payment paid')) {
+    outcomes.add(1, { result: 'paid' });
+    completed.add(1);
+  }
 }
 
 export function checkout() {

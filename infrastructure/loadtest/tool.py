@@ -116,6 +116,19 @@ def queue_audit(event):
             "positions_contiguous": positions == list(range(1, len(positions) + 1))}
 
 
+def configure_queue(event, rate, output):
+    guard()
+    if not 1 <= rate <= 1000:
+        raise ValueError("rate must be 1..1000")
+    admin = json.loads((Path("/data") / "admin.json").read_text())
+    value = http("PUT", f"http://backend:8080/api/v1/admin/events/{event}/waiting-room", token=admin["token"],
+                 payload={"enabled": True, "rate": rate, "mode": "fifo"})
+    target = Path("/data") / Path(output).name
+    target.write_text(json.dumps(value))
+    target.chmod(0o600)
+    return {"event": str(event), "rate": rate, "settings": value, "output": target.name}
+
+
 def open_queue(db, event):
     guard()
     db.execute("UPDATE events SET sale_start_time=now()-interval '1 second' WHERE id=%s", (event,))
@@ -148,13 +161,16 @@ def admission_pairs(event, count, timeout, output):
     return {"event": str(event), "pairs": len(result), "output": target.name}
 
 
-def http(method, url, token=None, basic=None):
+def http(method, url, token=None, basic=None, payload=None):
     headers = {}
     if token:
         headers["Authorization"] = "Bearer " + token
     if basic:
         headers["Authorization"] = "Basic " + base64.b64encode(basic.encode()).decode()
-    request = urllib.request.Request(url, method=method, headers=headers)
+    if payload is not None:
+        headers["Content-Type"] = "application/json"
+    request = urllib.request.Request(url, method=method, headers=headers,
+                                     data=None if payload is None else json.dumps(payload).encode())
     with urllib.request.urlopen(request, timeout=30) as response:
         body = response.read()
         if method == "DELETE":
@@ -317,7 +333,7 @@ def verify(db, drain=180, grace=5, reconcile=True):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["seed", "reset", "verify", "top-queries", "test", "queue-audit", "queue-open", "admission-pairs"])
+    parser.add_argument("command", choices=["seed", "reset", "verify", "top-queries", "test", "queue-audit", "queue-open", "queue-config", "admission-pairs"])
     parser.add_argument("--users", type=int, default=20000)
     parser.add_argument("--background", type=int, default=200)
     parser.add_argument("--capacity", type=int, default=5000)
@@ -326,6 +342,7 @@ def main():
     parser.add_argument("--queue-closed", action="store_true")
     parser.add_argument("--event")
     parser.add_argument("--count", type=int, default=100)
+    parser.add_argument("--rate", type=int)
     parser.add_argument("--timeout", type=int, default=120)
     parser.add_argument("--drain", type=int, default=180)
     parser.add_argument("--grace", type=int, default=5)
@@ -348,6 +365,10 @@ def main():
             result = queue_audit(uuid.UUID(args.event) if args.event else uid("HOT"))
         elif args.command == "queue-open":
             result = open_queue(db, uuid.UUID(args.event) if args.event else uid("HOT"))
+        elif args.command == "queue-config":
+            if args.rate is None:
+                raise ValueError("queue-config requires --rate")
+            result = configure_queue(uuid.UUID(args.event) if args.event else uid("HOT"), args.rate, args.output)
         elif args.command == "admission-pairs":
             result = admission_pairs(uuid.UUID(args.event) if args.event else uid("HOT"), args.count, args.timeout, args.output)
         else:

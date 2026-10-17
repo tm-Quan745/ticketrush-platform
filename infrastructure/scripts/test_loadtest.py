@@ -52,8 +52,8 @@ class ObservabilityPreflightTest(unittest.TestCase):
         self.assertEqual("10s", metadata["QUEUE_JOIN_DURATION"])
 
     def test_every_scenario_declares_started_completed_and_paid_minimums(self):
-        for scenario in "ABCDEFGHWJRPQSTV":
-            args = SimpleNamespace(scenario=scenario, users=900, param=[])
+        for scenario in "ABCDEFGHWJKNRPQSTV":
+            args = SimpleNamespace(scenario=scenario, users=5000 if scenario == "K" else 900, param=[])
             declaration = loadtest.work_minimum(args)
             self.assertEqual({"started", "completed", "paid"}, set(declaration["minimums"]))
             self.assertEqual({"started", "completed", "paid"}, set(declaration["metrics"]))
@@ -71,6 +71,12 @@ class ObservabilityPreflightTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "older than five minutes"):
             loadtest.validate_admission_age(1000, 1301)
         self.assertEqual(299, loadtest.validate_admission_age(1000, 1299)["age_seconds"])
+
+    def test_calibration_schedule_is_bounded_by_its_finite_queue(self):
+        stages = loadtest.calibration_stages("10:45,20:45,40:45,60:30", 5000)
+        self.assertEqual(4950, sum(stage["offered"] for stage in stages))
+        with self.assertRaisesRegex(ValueError, "more checkout users"):
+            loadtest.calibration_stages("10:45,20:45,40:45,60:45", 5000)
 
 
 if __name__ == '__main__':

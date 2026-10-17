@@ -14,3 +14,19 @@ export function checkoutTarget(scenario, admissions, rate, duration) {
 export function checkoutThresholds(target) {
   return target ? { checkout_started: [`count==${target}`], purchases_paid: [`count==${target}`] } : {};
 }
+
+export function calibrationStages(value, users) {
+  if (!Number.isInteger(users) || users < 1) throw new Error('Calibration needs a positive queue cohort');
+  const stages = String(value).split(',').map(part => {
+    const values = part.split(':');
+    if (values.length !== 2) throw new Error('Calibration stages must use RATE:SECONDS pairs');
+    const [rate, duration] = values.map(Number);
+    if (!Number.isInteger(rate) || !Number.isInteger(duration) || rate < 1 || duration < 1) {
+      throw new Error('Calibration stages must use RATE:SECONDS pairs');
+    }
+    return { rate, duration, offered: rate * duration };
+  });
+  const offered = stages.reduce((total, stage) => total + stage.offered, 0);
+  if (!stages.length || offered > users) throw new Error('Calibration stages exceed the queue cohort');
+  return { stages, offered };
+}

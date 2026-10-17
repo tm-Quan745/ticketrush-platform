@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
+import { calibrationStages, checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
 
 test('paced checkout requires the whole offered cohort to start and pay', () => {
   assert.deepEqual(checkoutThresholds(checkoutTarget('V', 120, 20, '5s')), {
@@ -24,4 +24,14 @@ test('invalid rates and durations cannot silently weaken the target', () => {
 });
 test('other workloads retain their existing contract', () => {
   assert.deepEqual(checkoutThresholds(checkoutTarget('C', 0)), {});
+});
+
+test('calibration schedule preserves a finite queue cohort', () => {
+  assert.deepEqual(calibrationStages('10:45,20:45,40:45,60:30', 5000), {
+    stages: [
+      { rate: 10, duration: 45, offered: 450 }, { rate: 20, duration: 45, offered: 900 },
+      { rate: 40, duration: 45, offered: 1800 }, { rate: 60, duration: 30, offered: 1800 },
+    ], offered: 4950,
+  });
+  assert.throws(() => calibrationStages('10:45,20:45,40:45,60:45', 5000));
 });
