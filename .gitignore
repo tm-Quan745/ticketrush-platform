@@ -18,3 +18,6 @@ docs/performance/results/last-seed.json
 docs/performance/results/admissions.json
 docs/performance/results/*.pid
 docs/performance/results/*-console.log.err
+# Run artifacts remain in the workspace for documentation links, but are not
+# source changes. Curated small summaries may be force-added in their own commit.
+docs/performance/results/*.json

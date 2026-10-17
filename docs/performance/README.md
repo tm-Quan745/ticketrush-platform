@@ -330,3 +330,37 @@ checkout, calibration, or sell-out result. See [run](results/checkout-V20-cpu-1-
 [environment](results/environment.json).
 
 What is proven: 5,000 queue entries with prior contiguous audit, Redis-only steady status at 500/1,000 req/s, and a scheduled 5,000-user first-poll spread at 500 req/s. What is not proven: 2,500 req/s burst capacity, successful paced checkout at 20/s, admission calibration, or 5,000-entry sell-out.
+
+### RedisGuard resilience and paced 900-user join (2026-10-17)
+
+The failed `checkout-V20-cpu-1` join is retained as a negative artifact. Its breaker was the
+old immediate-open implementation: one qualifying `QueryTimeoutException` was sufficient to open,
+then the five-second cooldown converted a transient delay into queue-wide controlled 503s. Its
+logs do not retain the first-open timestamp, so the old open duration cannot be reconstructed.
+
+ADR 0035 changes the front door to a 1,000 ms Redis command timeout and a count-based breaker:
+window 100 calls, minimum 50, failure rate 50%, five-second open wait and three half-open probes.
+It adds `redis_guard_calls_total`, `redis_guard_failures_total` and
+`redis_circuit_transitions_total`. `POST /reservations` remains fail-closed.
+
+The invalid diagnostic `join-900-resilience-1` is not in the table because a
+constant-arrival boundary created a non-existent 901st iteration. Its timestamped Redis artifact
+still answers the persistence question: `appendfsync=everysec`, `aof_delayed_fsync=0`,
+`aof_last_write_status=ok`, no `LATENCY LATEST` event, and no recorded fork; Redis CPU peaked at
+7.24%. Lettuce EVALSHA max was 6.95 ms. It does not support an AOF-fsync or fork stall diagnosis.
+
+The exact-cohort replacement uses 90 users/second for ten rounds. All runs have durable backend
+provenance, zero join 5xx, zero drops, zero RedisGuard transitions/failures, a contiguous
+900-position audit, and verifier PASS. Server p95 is below the one-second criterion.
+
+| run | started / accepted | k6 p50 / p95 / p99 | server p50 / p95 / p99 | max Docker memory | verifier |
+| --- | --- | --- | --- | ---: | --- |
+| join-900-resilience-1b | 900 / 900 | 11.9 / 348.7 / 374.8 ms | 8.7 / 30.9 / 39.0 ms | 35.46% | PASS |
+| join-900-resilience-2 | 900 / 900 | 10.9 / 282.0 / 297.9 ms | 8.4 / 71.6 / 88.7 ms | 35.60% | PASS |
+| join-900-resilience-3 | 900 / 900 | 14.9 / 239.5 / 276.1 ms | 8.1 / 19.7 / 26.2 ms | 35.39% | PASS |
+
+Redis itself did not stall in this repeat. The larger k6 tail than the server histogram is outside
+the backend handler; it is consistent with client/host scheduling or Docker networking. The paced
+runs used only about 0.10–0.13 k6 cores of its 3-core cap, so they do not support a claim that k6
+CPU saturation caused that tail. Checkout may now be rerun; calibration and sell-out are still not
+proven.

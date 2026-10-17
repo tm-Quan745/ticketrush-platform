@@ -1,5 +1,35 @@
 # Performance experiment log
 
+## 2026-10-17 — RedisGuard resilience and paced join gate
+
+The prior `checkout-V20-cpu-1` join failure remains a negative setup artifact. Under the old
+breaker, the first qualifying Redis timeout opened the circuit; `circuit_open` then persisted for
+the configured five seconds. The artifact records fallback counts but not the first-open timestamp,
+so the old duration cannot be measured retrospectively.
+
+Commit `256be50` adds ADR 0035 and changes only front-door Redis resilience: command timeout
+1,000 ms; count-based breaker window 100, minimum calls 50, failure-rate threshold 50%, five-second
+open wait, three half-open probes. It emits call/failure/transition metrics. A unit test proves
+three timeouts do not open the breaker and five sustained timeouts do; reservation admission remains
+fail-closed.
+
+The timestamped `join-900-resilience-1-redis-diagnostics.json` capture has `appendfsync=everysec`,
+`aof_delayed_fsync=0`, `aof_last_write_status=ok`, no latency event and no fork observation;
+Redis CPU peaked at 7.24% and Lettuce EVALSHA max at 6.95 ms. This repeat has no evidence of Redis
+AOF/fsync or fork stall. The initial constant-arrival implementation made an extra 901st iteration,
+so `join-900-resilience-1` is invalid and excluded.
+
+Commit `9903a63` makes a paced join exact: 90 users per second, ten per-VU rounds, no boundary
+iteration. Valid runs `join-900-resilience-1b`, `-2` and `-3` each started/accepted 900/900 with
+zero failed joins, zero drops, zero guard failures/transitions, verifier PASS and server p95
+30.9/71.6/19.7 ms (all below 1 s). k6 p95 was 348.7/282.0/239.5 ms while backend p95 stayed low;
+this difference is outside the handler. k6 peak CPU was only 0.10–0.13 of its 3-core cap.
+
+Generated `environment.json`, `last-reset.json`, `last-seed.json`, admission captures, PIDs and
+new runtime JSON are now ignored. They remain under `results/` locally but do not make source dirty;
+curated small summaries must be force-added in a separate commit. New provenance now reports
+`working_tree_clean=true` with this same tracked-file check.
+
 ## 2026-10-17 — reject empty checkout successes
 
 The next bounded Week 7 task is repairing the checkout acceptance gate before further
