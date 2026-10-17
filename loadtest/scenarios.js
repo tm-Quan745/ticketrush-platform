@@ -3,6 +3,7 @@ import exec from 'k6/execution';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 import { request, body, key, outcomes } from './lib/client.js';
+import { checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
 
 const users = new SharedArray('loadtest users', () => JSON.parse(open('./.data/users.json')));
 const data = JSON.parse(open('./.data/dataset.json'));
@@ -43,6 +44,8 @@ const checkoutKeyOffset = Number(__ENV.CHECKOUT_KEY_OFFSET || 0);
 const admissionPairs = ['Q', 'V'].includes(scenario)
   ? new SharedArray('admission pairs', () => JSON.parse(open('./.data/admissions.json'))) : [];
 const usersById = ['Q', 'V'].includes(scenario) ? Object.fromEntries(users.map(user => [user.id, user])) : {};
+const checkoutExpected = checkoutTarget(scenario, admissionPairs.length, checkoutRate, checkoutDuration);
+const checkoutStarted = new Counter('checkout_started');
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
 const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
@@ -118,6 +121,7 @@ export const options = {
   systemTags: ['status', 'method', 'name', 'scenario', 'expected_response', 'error_code'],
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)'],
   thresholds: {
+    ...checkoutThresholds(checkoutExpected),
     http_req_failed: ['rate<0.01'], unexpected_responses: ['rate<0.01'], unexpected_5xx: ['count==0'],
     dropped_iterations: ['count==0'], checks: ['rate==1'], business_failures: ['count==0'],
     ...Object.fromEntries(['sold_out', 'rate_limited', 'waiting_room_required', 'error', 'abandoned', 'paid', 'payment_failed', 'rejected_429', 'rejected_503',
@@ -380,6 +384,10 @@ function requestWithAdmissionRetry(method, path, name, payload, user, headers, a
 
 export function checkout() {
   const index = exec.scenario.iterationInTest;
+  // k6 can schedule one extra arrival at the duration boundary.
+  if (index >= checkoutExpected) return;
+  checkoutStarted.add(1);
+  completed.add(0);
   const admission = admissionPairs[index];
   const user = admission && usersById[admission.user];
   if (!business(Boolean(admission && user), 'admission pair belongs to a seeded user')) return;
@@ -390,13 +398,11 @@ export function checkout() {
   const reservationResponse = reservationAttempt.response;
   const reservation = reservationAttempt.result;
   if (reservationResponse.status !== 201) {
-    const expected = reservationResponse.status === 409 && reservation.code === 'SOLD_OUT' ||
-      [429, 503, 403].includes(reservationResponse.status);
     const outcome = reservation.code === 'SOLD_OUT' ? 'sold_out'
       : reservationResponse.status === 429 ? 'rejected_429'
       : reservationResponse.status === 503 ? 'rejected_503' : 'error';
     outcomes.add(1, { result: outcome });
-    business(expected, 'checkout reservation has an expected terminal outcome');
+    business(false, 'admitted checkout reservation must succeed');
     return;
   }
   const orderHeaders = { 'Idempotency-Key': key(index + checkoutKeyOffset, '4'), 'X-Mock-Scenario': 'SUCCESS',
@@ -407,7 +413,7 @@ export function checkout() {
   const order = orderAttempt.result;
   if ([429, 503].includes(orderResponse.status)) {
     outcomes.add(1, { result: orderResponse.status === 429 ? 'rejected_429' : 'rejected_503' });
-    business(true, 'checkout order was controlled rejection');
+    business(false, 'admitted checkout order must succeed');
     return;
   }
   if (!business(orderResponse.status === 201 && Boolean(order.id), 'queue checkout order created')) return;

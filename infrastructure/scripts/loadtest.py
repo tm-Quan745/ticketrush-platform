@@ -152,6 +152,80 @@ def k6_queue_parameters(args):
     return selected
 
 
+def parameter(args, name, default):
+    """Return a non-secret run parameter without interpreting unrelated flags."""
+    for item in args.param:
+        key, separator, value = item.partition("=")
+        if key == name and separator == "=" and value:
+            return value
+    return default
+
+
+def seconds(value):
+    if not isinstance(value, str) or not value.endswith("s") or not value[:-1].isdecimal():
+        raise ValueError(f"Expected whole seconds, got {value!r}")
+    return int(value[:-1])
+
+
+def metric_count(summary, metric):
+    values = summary.get("metrics", {}).get(metric, {}).get("values", {})
+    return int(values.get("count", 0))
+
+
+def admission_count():
+    path = ROOT / "loadtest/.data/admissions.json"
+    try:
+        loaded = json.loads(path.read_text())
+        return len(loaded) if isinstance(loaded, list) else 0
+    except (OSError, json.JSONDecodeError):
+        return 0
+
+
+def work_minimum(args):
+    """Declare the smallest useful work unit for every scenario.
+
+    `paid=0` is intentional for non-purchase scenarios. The runner records all
+    three dimensions so a passing invariant report cannot make an empty run look
+    successful.
+    """
+    scenario = args.scenario
+    queue_users = int(parameter(args, "QUEUE_USERS", str(args.users)))
+    rejoin_users = int(parameter(args, "QUEUE_REJOIN_USERS", "100"))
+    checkout_rate = int(parameter(args, "CHECKOUT_RATE", "20"))
+    checkout_duration = seconds(parameter(args, "CHECKOUT_DURATION", "5s"))
+    checkout_admissions = admission_count()
+    checkout_target = checkout_admissions if scenario == "Q" else checkout_rate * checkout_duration
+    declarations = {
+        "A": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "B": ({"started": 1, "completed": 1, "paid": 0}, {"started": "http_reqs", "completed": "http_reqs", "paid": "purchases_paid"}),
+        "C": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "D": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "E": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "F": ({"started": 1, "completed": 1, "paid": 0}, {"started": "http_reqs", "completed": "http_reqs", "paid": "purchases_paid"}),
+        "G": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "H": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "W": ({"started": 1, "completed": 1, "paid": 1}, {"started": "arrivals_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "J": ({"started": queue_users, "completed": queue_users, "paid": 0}, {"started": "queue_joins_started", "completed": "queue_joins_accepted", "paid": "purchases_paid"}),
+        "R": ({"started": rejoin_users, "completed": rejoin_users, "paid": 0}, {"started": "http_reqs", "completed": "queue_rejoin_preserved", "paid": "purchases_paid"}),
+        "P": ({"started": 1, "completed": 1, "paid": 0}, {"started": "queue_status_responses", "completed": "queue_status_responses", "paid": "purchases_paid"}),
+        "S": ({"started": 1, "completed": 1, "paid": 0}, {"started": "queue_status_responses", "completed": "queue_status_responses", "paid": "purchases_paid"}),
+        "T": ({"started": 1, "completed": 1, "paid": 0}, {"started": "queue_status_responses", "completed": "queue_status_responses", "paid": "purchases_paid"}),
+        "Q": ({"started": max(1, checkout_target), "completed": max(1, checkout_target), "paid": max(1, checkout_target)}, {"started": "checkout_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+        "V": ({"started": checkout_target, "completed": checkout_target, "paid": checkout_target}, {"started": "checkout_started", "completed": "purchases_paid", "paid": "purchases_paid"}),
+    }
+    try:
+        minimums, metrics = declarations[scenario]
+    except KeyError as error:
+        raise ValueError(f"No work minimum declared for scenario {scenario}") from error
+    return {"scenario": scenario, "minimums": minimums, "metrics": metrics}
+
+
+def evaluate_work_minimum(summary, declaration):
+    actual = {dimension: metric_count(summary, metric) for dimension, metric in declaration["metrics"].items()}
+    passed = all(actual[dimension] >= expected for dimension, expected in declaration["minimums"].items())
+    return {**declaration, "actual": actual, "passed": passed}
+
+
 def request_json(url):
     with urllib.request.urlopen(url, timeout=20) as response:
         return json.load(response)
@@ -536,6 +610,12 @@ def measure(args):
         verification_error = str(error)
         verification_exit = 1
         print("Correctness verification could not run; the run is invalid")
+    try:
+        work = evaluate_work_minimum(json.loads((RESULTS / f"{args.run_id}.json").read_text()), work_minimum(args))
+    except Exception as error:
+        work = {"passed": False, "error": str(error)}
+    if not work["passed"]:
+        print("Work minimum was not met; verifier invariants do not make this run pass")
     recovery = {"start": end, "end": time.time(), "series": {}}
     for name, query in {
         "hikari_pending": "hikaricp_connections_pending",
@@ -553,9 +633,11 @@ def measure(args):
     run_result = {"scenario": args.scenario, "k6_exit": outcome.returncode, "verification_exit": verification_exit,
                   "verification_error": verification_error, "start": start, "end": end, "parameters": parameters,
                   "collection_error": collection_error, "queue_audit_exit": queue_audit_exit,
-                  "memory_abort": docker_stats.memory_abort.is_set(), "max_memory_percent": docker_stats.max_memory_percent}
+                  "memory_abort": docker_stats.memory_abort.is_set(), "max_memory_percent": docker_stats.max_memory_percent,
+                  "work_minimum": work,
+                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"]) else "FAIL"}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
-    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set())
+    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set()) or int(not work["passed"])
 
 
 def environment():

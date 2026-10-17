@@ -43,8 +43,27 @@ class ObservabilityPreflightTest(unittest.TestCase):
         args = SimpleNamespace(users=5000, background=200, capacity=5000, waiting=True, queue_closed=True,
                                param=["QUEUE_USERS=900", "QUEUE_POLLERS=2500", "QUEUE_POLL_DURATION=90s"])
         self.assertIn("--queue-closed", loadtest.seed_args(args))
-        self.assertEqual({"QUEUE_USERS": 900, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 2500,
-                          "QUEUE_POLL_DURATION": "90s", "CHECKOUT_VUS": 100}, loadtest.k6_queue_parameters(args))
+        metadata = loadtest.k6_queue_parameters(args)
+        expected = {"QUEUE_USERS": 900, "QUEUE_JOIN_VUS": 300, "QUEUE_POLLERS": 2500,
+                    "QUEUE_POLL_DURATION": "90s", "CHECKOUT_VUS": 100,
+                    "CHECKOUT_RATE": 20, "CHECKOUT_DURATION": "5s", "CHECKOUT_MAX_RETRIES": 3}
+        self.assertEqual(expected, {key: metadata[key] for key in expected})
+
+    def test_every_scenario_declares_started_completed_and_paid_minimums(self):
+        for scenario in "ABCDEFGHWJRPQSTV":
+            args = SimpleNamespace(scenario=scenario, users=900, param=[])
+            declaration = loadtest.work_minimum(args)
+            self.assertEqual({"started", "completed", "paid"}, set(declaration["minimums"]))
+            self.assertEqual({"started", "completed", "paid"}, set(declaration["metrics"]))
+
+    def test_empty_paid_checkout_fails_even_when_invariants_can_pass(self):
+        declaration = {"minimums": {"started": 100, "completed": 100, "paid": 100},
+                       "metrics": {"started": "checkout_started", "completed": "purchases_paid", "paid": "purchases_paid"}}
+        summary = {"metrics": {"checkout_started": {"values": {"count": 100}},
+                                "purchases_paid": {"values": {"count": 0}}}}
+        result = loadtest.evaluate_work_minimum(summary, declaration)
+        self.assertFalse(result["passed"])
+        self.assertEqual({"started": 100, "completed": 0, "paid": 0}, result["actual"])
 
 
 if __name__ == '__main__':

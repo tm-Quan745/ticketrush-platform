@@ -1,5 +1,46 @@
 # Performance experiment log
 
+## 2026-10-17 — reject empty checkout successes
+
+The next bounded Week 7 task is repairing the checkout acceptance gate before further
+503 diagnosis. Existing `checkout-V20-paced-diagnose` is **not** a successful checkout:
+its summary records 100 `checkout_reservation_invalid_admission` and 100 `error`
+outcomes, while its verifier records zero orders. Both processes nevertheless returned
+zero. This proves an acceptance defect, not the cause of earlier 503 responses.
+
+Previously Q/V treated terminal 403/429/503 as successful business checks and had no
+minimum PAID count. Now every admitted checkout must succeed, and thresholds require
+exactly the offered cohort to start and reach PAID. Q uses the admission count; V uses
+integer requests/second multiplied by whole seconds. Empty or undersized admission
+fixtures fail before measurement. An extra k6 duration-boundary iteration is ignored.
+Bounded retries and per-response diagnosis remain enabled; an eventual successful
+retry can still pass. These are calibration gates with sufficient inventory, not a
+sell-out contract where SOLD_OUT is an acceptable final outcome.
+
+The earlier checkout verifier PASS wording is retracted as acceptance evidence. `checkout-Q100`
+has 30 orders in its verifier, while `checkout-Q100-retry` and `checkout-V20-fresh` have zero;
+all three verifier reports only establish that their observed rows break no invariant. They do
+not establish that the offered checkout cohort completed. The `100/100 PAID` control is the
+isolated `checkout-contract-smoke.js` contract regression invoked by `checkout-contract.test.mjs`;
+it has no HTTP/backend traffic, no 503 count and no latency, and is excluded from result tables.
+Every scenario now declares minimum started/completed/PAID work in the runner. A verifier PASS
+with unmet work minimum is recorded as runner `FAIL`.
+
+Validation: Node contract tests 5/5; Python runner tests 6/6 after repairing a stale
+metadata assertion; k6 1.3.0 successfully inspected the actual V scenario. The isolated
+`checkout-contract-smoke.js` returned 99 for 100 started / zero paid, and zero for
+100 started / 100 paid. This smoke checks the real k6 threshold engine, not backend
+performance. Reproduce with `node --test loadtest/checkout-contract.test.mjs` and
+`k6 run loadtest/checkout-contract-smoke.js` (expected failure); add `-e PAID=100`
+for the passing control. No fresh checkout benchmark, calibration or sell-out is
+claimed by this change. Next: generate fresh admission tokens and diagnose paced
+checkout at 20/s under the corrected gate.
+
+Backend validation: `mvn -B -ntp -s .mvn-week7-settings.xml -f backend/pom.xml verify`
+completed with BUILD SUCCESS, 106 tests, zero failures/errors/skips, using real
+Testcontainers services. The initial sandbox attempt could not access the Docker pipe;
+the successful rerun had Docker access. Local log: `week7-checkout-verify.log`.
+
 ## Calibration: tooling and observability
 
 The first compile passed. The first observability test failed because Spring Boot disables exporters
@@ -427,4 +468,4 @@ not proven causality. Future load-test composition caps backend/k6/postgres/redi
 
 `frontdoor-T1500-burst` is valid and replaces it as a generator-drivable burst: 27,490 responses, zero HTTP failures/drops, max 9/600 VUs, memory 44.9%, verifier PASS and k6 p50/p95/p99 2.44/11.48/53.95 ms. It scheduled 1,500/s for two seconds; five-second scrape averaging reports ~800/s and is not an exact plateau measurement.
 
-Checkout is blocked. The prior Q100's 70 errors matched the 30-permit bulkhead arithmetic but were not status/code-tagged, so that classification is inference only. Retry-enabled simultaneous Q100 ended in controlled 503 and reserve p95 1,876.4 ms. The first paced V20 used expired 10-minute admission tokens and returned 100 `INVALID_ADMISSION_TOKEN`; a fresh closed-queue setup removed that timing defect, but `checkout-V20-fresh` still had 67 controlled 503 outcomes and 34 dropped iterations. Verifier passed in every checkout run, but the required zero rejected admitted users at 20/s is not met. Do not start calibration or sell-out until the server-side 503 code/path is instrumented and this test passes.
+Checkout is blocked. The prior Q100's 70 errors matched the 30-permit bulkhead arithmetic but were not status/code-tagged, so that classification is inference only. Retry-enabled simultaneous Q100 ended in controlled 503 and reserve p95 1,876.4 ms. The first paced V20 used expired 10-minute admission tokens and returned 100 `INVALID_ADMISSION_TOKEN`; a fresh closed-queue setup removed that timing defect, but `checkout-V20-fresh` still had 67 controlled 503 outcomes and 34 dropped iterations. Its verifier PASS is invariant-only and does not meet the work gate. Do not start calibration or sell-out until the server-side 503 code/path is instrumented and this test passes.
