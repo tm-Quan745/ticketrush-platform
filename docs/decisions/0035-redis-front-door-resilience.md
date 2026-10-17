@@ -12,7 +12,9 @@ The 900-user join setup for `checkout-V20-cpu-1` produced waiting-room 503s when
 
 ## Decision
 
-Use option 3. The load-test defaults use a 1,000 ms Redis command timeout and a count-based window of 100 calls, with at least 50 calls and a 50% failure rate before opening. The open wait remains configurable (`REDIS_CIRCUIT_COOLDOWN`, five seconds by default) and three successful half-open probes close it. The guard records calls, qualifying failures and state transitions.
+Use option 3. The load-test defaults use a 1,000 ms Redis command timeout and a count-based window of 100 calls, with at least 50 calls and a 50% failure rate before opening. The open wait remains configurable (`REDIS_CIRCUIT_COOLDOWN`, two seconds by default) and three successful half-open probes close it. The guard records calls, qualifying failures and state transitions.
+
+For one fault-injection comparison only, the load-test runner can set `REDIS_BREAKER_MODE=legacy-immediate` together with a five-second cooldown. It opens after the first qualifying failure, while retaining the same 1,000 ms Redis command timeout. This is a diagnostic arm, not a production mode or default.
 
 The waiting-room join and status paths can return their existing controlled fallback response while Redis is unavailable. `POST /reservations` remains fail-closed: a Redis failure must not bypass its admission requirement.
 

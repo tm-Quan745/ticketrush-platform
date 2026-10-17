@@ -112,13 +112,14 @@ ticketrush:
     trusted-proxies: ${TRUSTED_PROXIES:}
   redis:
     environment: ${REDIS_ENV:dev}
-    cooldown: ${REDIS_CIRCUIT_COOLDOWN:5s}
+    cooldown: ${REDIS_CIRCUIT_COOLDOWN:2s}
     attempt-lease: ${REDIS_ATTEMPT_LEASE:1m}
     fallback-enabled: ${REDIS_FALLBACK_ENABLED:true}
     breaker-window-size: ${REDIS_BREAKER_WINDOW_SIZE:100}
     breaker-minimum-calls: ${REDIS_BREAKER_MINIMUM_CALLS:50}
     breaker-failure-rate-threshold: ${REDIS_BREAKER_FAILURE_RATE_THRESHOLD:0.5}
     breaker-half-open-probes: ${REDIS_BREAKER_HALF_OPEN_PROBES:3}
+    breaker-mode: ${REDIS_BREAKER_MODE:count-based}
     reconcile-interval: ${REDIS_RECONCILE_INTERVAL:30s}
   queue:
     enabled-by-default: ${WAITING_ROOM_DEFAULT:false}

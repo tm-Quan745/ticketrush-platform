@@ -35,8 +35,21 @@ class RedisGuardTest {
         assertThat(guard.isOpen()).isFalse();
     }
 
+    @Test
+    void legacyLoadTestModeOpensOnFirstQualifyingFailure() {
+        RedisGuard guard = guard(Duration.ofSeconds(5), "legacy-immediate");
+
+        assertThat(guard.call("waiting-room", this::timeout, () -> "fallback")).isEqualTo("fallback");
+        assertThat(guard.isOpen()).isTrue();
+        assertThat(guard.call("waiting-room", () -> "unexpected", () -> "fallback")).isEqualTo("fallback");
+    }
+
     private RedisGuard guard(Duration cooldown) {
-        RedisProperties properties = new RedisProperties("test", cooldown, true, Duration.ofMinutes(1), 10, 5, 0.5, 3);
+        return guard(cooldown, "count-based");
+    }
+
+    private RedisGuard guard(Duration cooldown, String mode) {
+        RedisProperties properties = new RedisProperties("test", cooldown, true, Duration.ofMinutes(1), 10, 5, 0.5, 3, mode);
         ReservationProperties reservations = new ReservationProperties("conditional-update", Duration.ofMinutes(10), 100, 20);
         return new RedisGuard(properties, new SimpleMeterRegistry(), reservations);
     }

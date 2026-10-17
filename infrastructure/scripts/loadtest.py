@@ -830,7 +830,8 @@ def main():
     else:
         os.environ["BACKEND_VCS_REF"] = backend_build_revision(args)
     allowed_backend_env = {"HIKARI_MAX_POOL_SIZE", "HIKARI_CONNECTION_TIMEOUT_MS", "BULKHEAD_ENABLED",
-                           "BULKHEAD_MAX_CONCURRENT", "BULKHEAD_POOL_MULTIPLIER", "ORDER_STATUS_JOINED_READ"}
+                           "BULKHEAD_MAX_CONCURRENT", "BULKHEAD_POOL_MULTIPLIER", "ORDER_STATUS_JOINED_READ",
+                           "REDIS_BREAKER_MODE", "REDIS_CIRCUIT_COOLDOWN"}
     for item in args.backend_env:
         key, separator, value = item.partition("=")
         if separator != "=" or key not in allowed_backend_env:
@@ -838,6 +839,12 @@ def main():
         if key in {"BULKHEAD_ENABLED", "ORDER_STATUS_JOINED_READ"}:
             if value not in {"true", "false"}:
                 p.error(key + " must be true or false")
+        elif key == "REDIS_BREAKER_MODE":
+            if value not in {"count-based", "legacy-immediate"}:
+                p.error("REDIS_BREAKER_MODE must be count-based or legacy-immediate")
+        elif key == "REDIS_CIRCUIT_COOLDOWN":
+            if not value.endswith("s") or not value[:-1].isdecimal() or int(value[:-1]) < 1:
+                p.error("REDIS_CIRCUIT_COOLDOWN must be a positive whole number of seconds")
         elif not value.isdecimal() or (key != "BULKHEAD_MAX_CONCURRENT" and int(value) < 1):
             p.error(key + " must be a positive integer (or zero for derived bulkhead capacity)")
         os.environ[key] = value

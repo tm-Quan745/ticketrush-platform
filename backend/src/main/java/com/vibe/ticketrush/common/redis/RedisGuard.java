@@ -13,7 +13,7 @@ import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.stereotype.Component;
 
-/** Process-local, count-based circuit breaker for Redis. */
+/** Process-local circuit breaker for Redis. The legacy mode exists only for load-test comparison. */
 @Component
 public class RedisGuard implements InfoContributor {
     private static final Logger LOG = LoggerFactory.getLogger(RedisGuard.class);
@@ -95,6 +95,10 @@ public class RedisGuard implements InfoContributor {
             return;
         }
         record(true);
+        if ("legacy-immediate".equals(properties.breakerMode())) {
+            open(reason, 1, 1);
+            return;
+        }
         int failures = (int) outcomes.stream().filter(Boolean::booleanValue).count();
         if (outcomes.size() >= properties.breakerMinimumCalls()
                 && ((double) failures / outcomes.size()) >= properties.breakerFailureRateThreshold()) {
