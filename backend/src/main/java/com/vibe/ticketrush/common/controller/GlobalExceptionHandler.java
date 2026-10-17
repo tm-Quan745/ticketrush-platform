@@ -18,10 +18,12 @@ import java.time.Instant;
 import java.sql.SQLTransientConnectionException;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Pattern UUID_PATH_SEGMENT = Pattern.compile("/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?=/|$)");
     private final MeterRegistry metrics;
 
     public GlobalExceptionHandler(MeterRegistry metrics) {
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ApiException.class)
     ResponseEntity<ApiError> api(ApiException ex, HttpServletRequest request) {
         request.setAttribute("metric.error", ex.getCode());
+        apiException(ex.getCode(), ex.getStatus().value(), request.getRequestURI());
         ResponseEntity.BodyBuilder response=ResponseEntity.status(ex.getStatus());
         if ("WAITING_ROOM_UNAVAILABLE".equals(ex.getCode()) || "WAITING_ROOM_NOT_READY".equals(ex.getCode())) {
             response.header(HttpHeaders.RETRY_AFTER, Integer.toString(1 + ThreadLocalRandom.current().nextInt(2)));
@@ -77,6 +80,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ApiError> poolUnavailable(Exception ex, HttpServletRequest request) {
         LOG.warn("database_pool_timeout correlation_id={}", com.vibe.ticketrush.common.service.CorrelationId.current());
         metrics.counter("database_pool_timeout_total").increment();
+        apiException("DATABASE_POOL_TIMEOUT", HttpStatus.SERVICE_UNAVAILABLE.value(), request.getRequestURI());
         request.setAttribute("metric.error", "DATABASE_POOL_TIMEOUT");
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, "1")
             .body(ApiError.of(503, "DATABASE_POOL_TIMEOUT", "Database capacity is temporarily full", request.getRequestURI()));
@@ -88,6 +92,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     && current.getMessage().contains("HikariPool")) return true;
         }
         return false;
+    }
+
+    private void apiException(String code, int status, String requestUri) {
+        metrics.counter("api_exceptions_total", "code", code, "status", Integer.toString(status),
+                "endpoint", UUID_PATH_SEGMENT.matcher(requestUri).replaceAll("/{id}")).increment();
     }
 
     private String path(WebRequest request) {

@@ -6,5 +6,7 @@
 *.log
 loadtest/.data/
 **/__pycache__/
+.m2-week7/
+.mvn-week7-settings.xml
 .worktrees/
 docs/performance/results/*.jfr

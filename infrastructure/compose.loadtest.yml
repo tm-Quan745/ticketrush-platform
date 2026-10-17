@@ -1,16 +1,32 @@
 # Always use a separate Compose project and ticketrush_loadtest database.
 services:
   postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
     ports: !override ["127.0.0.1:25437:5432"]
   redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
     ports: !override ["127.0.0.1:26387:6379"]
   rabbitmq:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
     ports: !override ["127.0.0.1:25677:5672", "127.0.0.1:25687:15672"]
   mailpit:
     ports: !override ["127.0.0.1:21027:1025", "127.0.0.1:28027:8025"]
     environment:
       MP_MAX_MESSAGES: 30000
   backend:
+    deploy:
+      resources:
+        limits:
+          cpus: "6.0"
     environment:
       SPRING_PROFILES_ACTIVE: dev,loadtest
       DEV_SEED_ENABLED: "false"
@@ -41,6 +57,10 @@ services:
       - ./loadtest/.data:/data
       - ./docs/performance/results:/results
   k6:
+    deploy:
+      resources:
+        limits:
+          cpus: "3.0"
     image: grafana/k6:1.3.0
     # The seeder creates private mode-0600 credentials. Same UID reads them; never make them world-readable.
     user: "0:0"

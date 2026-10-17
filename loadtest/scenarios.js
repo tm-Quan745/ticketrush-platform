@@ -62,7 +62,11 @@ const queueStatusResponses = new Counter('queue_status_responses');
 const queueStatusSteadyDuration = new Trend('queue_status_steady_duration', true);
 const queueStatusBurstDuration = new Trend('queue_status_burst_duration', true);
 const queueStatusPostBurstDuration = new Trend('queue_status_post_burst_duration', true);
+// Every terminal or retried checkout failure is both labelled for remote-write and
+// written to the k6 log. The latter is an audit trail when a remote-write scrape
+// is unavailable after a short run.
 const checkoutResponses = new Counter('checkout_responses');
+const checkoutNon2xxResponses = new Counter('checkout_non_2xx_responses');
 const checkoutRetriesMetric = new Counter('checkout_retries');
 const checkoutReservationBulkheadRejected = new Counter('checkout_reservation_bulkhead_rejected');
 const checkoutOrderBulkheadRejected = new Counter('checkout_order_bulkhead_rejected');
@@ -348,7 +352,12 @@ function requestWithAdmissionRetry(method, path, name, payload, user, headers, a
   for (let attempt = 0; attempt <= checkoutRetries; attempt++) {
     response = request(method, path, name, payload, user.token, headers, accepted);
     const result = body(response);
-    checkoutResponses.add(1, { endpoint: name, status: String(response.status), code: String(result.code || 'NONE') });
+    const responseTags = { endpoint: name, status: String(response.status), code: String(result.code || 'NONE') };
+    checkoutResponses.add(1, responseTags);
+    if (response.status < 200 || response.status >= 300) {
+      checkoutNon2xxResponses.add(1, responseTags);
+      console.warn(`checkout_non_2xx endpoint=${name} status=${response.status} code=${responseTags.code}`);
+    }
     const reservation = name.endsWith('reservations');
     if (result.code === 'BULKHEAD_REJECTED') {
       (reservation ? checkoutReservationBulkheadRejected : checkoutOrderBulkheadRejected).add(1);

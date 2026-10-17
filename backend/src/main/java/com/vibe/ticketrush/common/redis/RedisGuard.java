@@ -30,7 +30,7 @@ public class RedisGuard implements InfoContributor {
     }
     public <T> T call(String feature, Supplier<T> operation, Supplier<T> fallback) {
         Long ticket=permit();
-        if (ticket==null) return fallback(feature, fallback);
+        if (ticket==null) return fallback(feature, "circuit_open", fallback);
         try {
             T result = operation.get();
             success(ticket);
@@ -43,7 +43,7 @@ public class RedisGuard implements InfoContributor {
                     openUntil = System.nanoTime() + properties.cooldown().toNanos(); probing = false;
                 }
             }
-            return fallback(feature, fallback);
+            return fallback(feature, ex.getClass().getSimpleName(), fallback);
         } catch (RuntimeException ex) {
             // A successful Redis probe followed by an application error must not strand HALF_OPEN.
             success(ticket); throw ex;
@@ -52,9 +52,10 @@ public class RedisGuard implements InfoContributor {
     private synchronized void success(long ticket) {
         if (ticket==generation) { openUntil=0; probing=false; }
     }
-    private <T> T fallback(String feature, Supplier<T> fallback) {
-        metrics.counter("redis_fallback_total", "feature", feature).increment();
-        LOG.warn("redis_fallback feature={} correlation_id={}", feature, com.vibe.ticketrush.common.service.CorrelationId.current());
+    private <T> T fallback(String feature, String reason, Supplier<T> fallback) {
+        metrics.counter("redis_fallback_total", "feature", feature, "reason", reason).increment();
+        LOG.warn("redis_fallback feature={} reason={} correlation_id={}", feature, reason,
+                com.vibe.ticketrush.common.service.CorrelationId.current());
         return fallback.get();
     }
     public void contribute(Info.Builder builder) {

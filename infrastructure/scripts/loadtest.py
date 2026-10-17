@@ -566,6 +566,11 @@ def environment():
     data["java"] = compose("exec", "-T", "backend", "java", "-version", capture=True).stderr
     data["k6"] = compose("run", "--rm", "-T", "k6", "version", capture=True).stdout
     data["images"] = compose("images", "--format", "json", capture=True).stdout
+    container_ids = compose("ps", "-q", capture=True).stdout.split()
+    if container_ids:
+        limits = run(["docker", "inspect", "--format", "{{range .}}{{.Name}}={{.HostConfig.NanoCpus}}{{\"\\n\"}}{{end}}", *container_ids], capture=True).stdout
+        data["container_cpu_limits_cores"] = {line.split("=", 1)[0].lstrip("/"): int(line.split("=", 1)[1]) / 1_000_000_000
+                                              for line in limits.splitlines() if "=" in line}
     data["config"] = {k: v for k, v in settings().items() if k in ("RESERVATION_STRATEGY", "RESERVATION_HOLD_DURATION", "RESERVATION_JOB_INTERVAL", "PAYMENT_LATE_GRACE", "HIKARI_MAX_POOL_SIZE", "TOMCAT_MAX_THREADS", "JAVA_TOOL_OPTIONS", "WAITING_ROOM_RATE")}
     data["defaults"] = {"hikari": 10, "tomcat": 200, "heap": "-Xms256m -Xmx768m", "strategy": "conditional-update",
                         "virtual_threads": False, "outbox_batch": 100, "outbox_interval": "1s", "mock_delay": "500ms"}
