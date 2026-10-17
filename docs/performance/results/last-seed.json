@@ -1,9 +1,0 @@
-{
-  "buyers": 900,
-  "admins": 1,
-  "events": 203,
-  "tiers": 205,
-  "hot_capacity": 5000,
-  "waiting": true,
-  "queue_closed": true
-}

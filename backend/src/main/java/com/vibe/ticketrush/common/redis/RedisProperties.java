@@ -7,12 +7,19 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConfigurationProperties("ticketrush.redis")
 public record RedisProperties(@DefaultValue("dev") String environment,
         @DefaultValue("5s") Duration cooldown, @DefaultValue("true") boolean fallbackEnabled,
-        @DefaultValue("1m") Duration attemptLease) {
+        @DefaultValue("1m") Duration attemptLease,
+        @DefaultValue("100") int breakerWindowSize,
+        @DefaultValue("50") int breakerMinimumCalls,
+        @DefaultValue("0.5") double breakerFailureRateThreshold,
+        @DefaultValue("3") int breakerHalfOpenProbes) {
     public RedisProperties {
         if (environment == null || !environment.matches("[a-zA-Z0-9_-]+") || cooldown.isNegative() || cooldown.isZero())
             throw new IllegalArgumentException("Invalid Redis namespace or cooldown");
         if (attemptLease == null || attemptLease.toMillis()<1 || attemptLease.compareTo(Duration.ofHours(24))>=0)
             throw new IllegalArgumentException("Attempt lease must be positive and shorter than refund retention");
+        if (breakerWindowSize < 1 || breakerMinimumCalls < 1 || breakerMinimumCalls > breakerWindowSize
+                || breakerFailureRateThreshold <= 0 || breakerFailureRateThreshold > 1 || breakerHalfOpenProbes < 1)
+            throw new IllegalArgumentException("Invalid Redis circuit breaker settings");
     }
     public String key(String module, Object id, String purpose) {
         return "ticketrush:" + environment + ":" + module + ":" + id + ":" + purpose;

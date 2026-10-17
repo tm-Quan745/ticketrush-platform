@@ -10,3 +10,11 @@ loadtest/.data/
 .mvn-week7-settings.xml
 .worktrees/
 docs/performance/results/*.jfr
+# Mutable Week 7 runtime state. Named evidence artifacts stay versioned; these
+# files are overwritten by every reset, seed, environment capture or checkout.
+docs/performance/results/environment.json
+docs/performance/results/last-reset.json
+docs/performance/results/last-seed.json
+docs/performance/results/admissions.json
+docs/performance/results/*.pid
+docs/performance/results/*-console.log.err
