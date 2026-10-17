@@ -111,7 +111,8 @@ def backend_provenance(args):
                 "fsync": fsync,
                 "observed_at_utc": durability["observedAt"]
             },
-            "k6_vus": k6_vu_parameters(args)}
+            "k6_vus": k6_vu_parameters(args),
+            "measurement_platform": "cpu-capped-2026-10-17"}
 
 
 def backend_build_revision(args):
@@ -558,14 +559,30 @@ def measure(args):
 
 
 def environment():
+    docker_info = json.loads(run(["docker", "info", "--format", "{{json .}}"], capture=True).stdout)
+    if not docker_info.get("ServerVersion") or not docker_info.get("NCPU") or not docker_info.get("MemTotal"):
+        raise RuntimeError("Docker daemon is unavailable; refusing to record a zero-value environment")
     data = {"host": platform.platform(), "processor": platform.processor(), "logical_cpus": os.cpu_count(),
             "git_sha": run(["git", "rev-parse", "HEAD"], capture=True).stdout.strip(),
-            "docker": json.loads(run(["docker", "info", "--format", "{{json .}}"], capture=True).stdout)}
+            "recorded_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "docker": docker_info,
+            "measurement_platform": "cpu-capped-2026-10-17"}
     # Store only useful environment fields, never daemon credentials/configuration.
     data["docker"] = {k: data["docker"][k] for k in ("ServerVersion", "NCPU", "MemTotal", "KernelVersion", "OperatingSystem", "Architecture")}
     data["java"] = compose("exec", "-T", "backend", "java", "-version", capture=True).stderr
     data["k6"] = compose("run", "--rm", "-T", "k6", "version", capture=True).stdout
     data["images"] = compose("images", "--format", "json", capture=True).stdout
+    idle_rows = []
+    for line in run(["docker", "stats", "--no-stream", "--format", "{{json .}}"], capture=True).stdout.splitlines():
+        try:
+            row = json.loads(line)
+            idle_rows.append({"name": row.get("Name"), "memory_usage": row.get("MemUsage"),
+                              "memory_percent": float(row.get("MemPerc", "0%").rstrip("%"))})
+        except (json.JSONDecodeError, TypeError, ValueError):
+            continue
+    data["idle_container_memory"] = {"sampled_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                                      "total_memory_percent": sum(row["memory_percent"] for row in idle_rows),
+                                      "containers": idle_rows}
     container_ids = compose("ps", "-q", capture=True).stdout.split()
     if container_ids:
         limits = run(["docker", "inspect", "--format", "{{range .}}{{.Name}}={{.HostConfig.NanoCpus}}{{\"\\n\"}}{{end}}", *container_ids], capture=True).stdout
@@ -575,6 +592,8 @@ def environment():
     data["defaults"] = {"hikari": 10, "tomcat": 200, "heap": "-Xms256m -Xmx768m", "strategy": "conditional-update",
                         "virtual_threads": False, "outbox_batch": 100, "outbox_interval": "1s", "mock_delay": "500ms"}
     (RESULTS / "environment.json").write_text(json.dumps(data, indent=2))
+    print(json.dumps({"NCPU": data["docker"]["NCPU"], "MemTotal": data["docker"]["MemTotal"],
+                      "idle_container_memory": data["idle_container_memory"]}, indent=2))
     print("Saved environment.json")
 
 
