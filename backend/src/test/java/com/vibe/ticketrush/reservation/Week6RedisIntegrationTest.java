@@ -25,6 +25,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @SpringBootTest(properties={"ticketrush.reservation.strategy=redis-gate","ticketrush.redis.cooldown=200ms",
+    "ticketrush.redis.breaker-mode=legacy-immediate",
     "spring.data.redis.timeout=2s","ticketrush.redis.attempt-lease=5s",
     "ticketrush.queue.capture-admitted=true",
     "ticketrush.payment.delay=24h","ticketrush.payment.dispatch-interval=24h",
@@ -135,8 +136,10 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
             var policy=new RateLimitProperties.Policy(10,Duration.ofHours(1),2,RateLimitProperties.Failure.LOCAL);
             assertThat(concurrent(20,i -> limiter.check("outage","same",policy).allowed()).stream().filter(Boolean::booleanValue).count()).isEqualTo(2);
         } finally { REDIS.getDockerClient().startContainerCmd(id).exec(); }
-        await().atMost(Duration.ofSeconds(30)).until(() -> guard.call("recovery",this::ping,() -> false));
-        assertThat(guard.isOpen()).isFalse();
+        await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+            for (int probe=0;probe<3;probe++) assertThat(guard.call("recovery",this::ping,() -> false)).isTrue();
+            assertThat(guard.isOpen()).isFalse();
+        });
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> { gate.reconcile(event);both(); });
     }
     @Test @Tag("redis-stress") void abandonedAttemptLeaseHealsWithoutLateDoubleRefund() {
