@@ -306,4 +306,27 @@ Earlier checkout verifier PASS values are **invariant-only**, not checkout accep
 
 Use `python infrastructure/scripts/loadtest.py checkout --scenario V --run-id checkout-V20 --users 900 --waiting --queue-closed --param CHECKOUT_RATE=20 --param CHECKOUT_DURATION=5s` for a fresh checkout cohort. It records queue creation, joining, opening, token capture and checkout timestamps in `checkout-V20-checkout-lifecycle.json`; tokens older than five minutes at checkout start abort the run.
 
+### CPU-capped platform: checkout setup failure (2026-10-17)
+
+All measurements with `measurement_platform=cpu-capped-2026-10-17` run on a new platform:
+Docker reports 12 vCPUs and 4,013,400,064 bytes RAM; the idle stack used 27.34% memory. Compose
+caps backend/PostgreSQL/Redis/RabbitMQ/k6 at 6/2/1/1/3 cores. These results are not directly
+comparable with earlier uncapped tables; any future comparison must rerun every arm under these
+same limits. At high offered rates, k6 drops are generator limits unless the run separately proves
+the generator drove the offered rate.
+
+`checkout-V20-cpu-1` stopped at its fresh queue-join stage and never started checkout: 900 joins
+started, 799 were accepted, 101 failed, and there were zero dropped iterations. Join p50/p95/p99
+was 1,039.3/2,719.4/3,503.9 ms. The 792 k6-side 5xx observations include bounded retries; the
+backend log counts identify the source as RedisGuard, not Hikari: 20 `rate-limit` fallback
+`QueryTimeoutException`, then 827 `rate-limit` and 2,580 `waiting-room` `circuit_open` fallbacks;
+Hikari timeout logs/exceptions were both zero. Waiting-room fallback throws
+`WAITING_ROOM_UNAVAILABLE` (503), so the checkout 503 source requested for V20 remains unmeasured:
+V20 did not start. The five-second Prometheus scrape observed zero 503 increase and is too coarse
+to contradict the request/log evidence. The backend/k6 CPU peaks were 3.17/2.85 cores against
+their 6/3 caps, and Docker memory peaked at 38.63%. This is a failed setup artifact, not a passed
+checkout, calibration, or sell-out result. See [run](results/checkout-V20-cpu-1-join-run.json),
+[backend window](results/checkout-V20-cpu-1-join-backend-window.json), and
+[environment](results/environment.json).
+
 What is proven: 5,000 queue entries with prior contiguous audit, Redis-only steady status at 500/1,000 req/s, and a scheduled 5,000-user first-poll spread at 500 req/s. What is not proven: 2,500 req/s burst capacity, successful paced checkout at 20/s, admission calibration, or 5,000-entry sell-out.

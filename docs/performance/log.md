@@ -31,6 +31,30 @@ admission, captures exactly the required token pairs, and then runs Q or V. Its
 `<run>-checkout-lifecycle.json` records queue creation, join, opening, token capture and k6 start
 timestamps. The runner refuses checkout if captured tokens are older than 300 seconds at k6 start.
 
+### 2026-10-17 — CPU-capped platform and failed fresh checkout setup
+
+`environment.json` records the new `cpu-capped-2026-10-17` platform: Docker reports 12 vCPUs,
+4,013,400,064 bytes memory, and 27.34% idle-stack memory. Compose caps backend/PostgreSQL/Redis/
+RabbitMQ/k6 at 6/2/1/1/3 cores. No result under these limits is directly compared with the old
+uncapped platform; every comparison arm must be rerun under the same caps. k6-side drops at high
+offered rates are generator limits unless the run proves the generator achieved that offer.
+
+The first orchestrated fresh V20 attempt, `checkout-V20-cpu-1`, is a **FAIL setup artifact**. Its
+join stage started 900 users and accepted 799, with 101 failed joins, zero dropped iterations, and
+join p50/p95/p99 1,039.3/2,719.4/3,503.9 ms. The orchestrator stopped before opening admission,
+so no checkout k6 run, checkout PAID count, checkout 429/503 classification, or checkout latency
+exists for this attempt. Its verifier was invariant-only PASS, but the runner's work minimum made
+the run FAIL.
+
+The join failure's 792 k6 5xx observations include bounded retries. Backend logs for the exact
+window record 20 `rate-limit|QueryTimeoutException`, 827 `rate-limit|circuit_open`, and 2,580
+`waiting-room|circuit_open` RedisGuard fallbacks; Hikari timeout logs and Hikari exception strings
+both count zero. Waiting-room fallback explicitly throws `WAITING_ROOM_UNAVAILABLE` (503), so this
+is a RedisGuard source, not a Hikari source. A five-second Prometheus scrape reports zero 503
+increase, which is insufficient resolution for this 10.5-second request burst and does not negate
+the k6/log evidence. Backend/k6 CPU peaks were 3.17/2.85 cores against 6/3 caps; Docker memory
+peaked at 38.63%. Stop here: no calibration or sell-out was started.
+
 Validation: Node contract tests 5/5; Python runner tests 6/6 after repairing a stale
 metadata assertion; k6 1.3.0 successfully inspected the actual V scenario. The isolated
 `checkout-contract-smoke.js` returned 99 for 100 started / zero paid, and zero for
