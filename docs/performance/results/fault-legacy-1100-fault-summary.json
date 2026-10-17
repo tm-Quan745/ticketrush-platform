@@ -1,0 +1,12 @@
+{
+  "query_timeout_exception": 5,
+  "open_transitions": 1,
+  "half_open_transitions": 1,
+  "closed_transitions": 1,
+  "circuit_open_fallbacks": 2935,
+  "transition_lines": [
+    "{\"@timestamp\":\"2026-10-17T14:12:08.201199819Z\",\"log\":{\"level\":\"WARN\",\"logger\":\"com.vibe.ticketrush.common.redis.RedisGuard\"},\"process\":{\"pid\":1,\"thread\":{\"name\":\"http-nio-8080-exec-72\"}},\"service\":{\"name\":\"ticketrush\",\"version\":\"0.0.1-SNAPSHOT\",\"node\":{}},\"message\":\"redis_circuit_transition state=open reason=QueryTimeoutException calls=1 failures=1 generation=1\",\"correlation_id\":\"35ddfdc3-6894-4921-9be7-7ff0d28c9b88\",\"ecs\":{\"version\":\"8.11\"}}",
+    "{\"@timestamp\":\"2026-10-17T14:12:13.203077038Z\",\"log\":{\"level\":\"WARN\",\"logger\":\"com.vibe.ticketrush.common.redis.RedisGuard\"},\"process\":{\"pid\":1,\"thread\":{\"name\":\"http-nio-8080-exec-22\"}},\"service\":{\"name\":\"ticketrush\",\"version\":\"0.0.1-SNAPSHOT\",\"node\":{}},\"message\":\"redis_circuit_transition state=half_open reason=cooldown_elapsed calls=0 failures=0 generation=1\",\"correlation_id\":\"915fe5a0-7ac1-49d1-be7a-2c4ee322a93f\",\"ecs\":{\"version\":\"8.11\"}}",
+    "{\"@timestamp\":\"2026-10-17T14:12:13.205880167Z\",\"log\":{\"level\":\"WARN\",\"logger\":\"com.vibe.ticketrush.common.redis.RedisGuard\"},\"process\":{\"pid\":1,\"thread\":{\"name\":\"http-nio-8080-exec-81\"}},\"service\":{\"name\":\"ticketrush\",\"version\":\"0.0.1-SNAPSHOT\",\"node\":{}},\"message\":\"redis_circuit_transition state=closed reason=half_open_success calls=0 failures=0 generation=1\",\"correlation_id\":\"5a34e943-49ef-4844-a9e1-eac56c30aaec\",\"ecs\":{\"version\":\"8.11\"}}"
+  ]
+}

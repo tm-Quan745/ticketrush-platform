@@ -1,0 +1,12 @@
+{
+  "run_id": "fault-new-1100-effective",
+  "started_at_utc": "2026-10-17T14:10:22.2661236Z",
+  "detected_k6_container": "a0cd12c9e105",
+  "redis_cli_output": [
+    "OK"
+  ],
+  "monitor_delay_seconds": 5,
+  "pause_ms": 1100,
+  "valid": true,
+  "command_returned_at_utc": "2026-10-17T14:10:22.3892680Z"
+}

@@ -339,7 +339,7 @@ then the five-second cooldown converted a transient delay into queue-wide contro
 logs do not retain the first-open timestamp, so the old open duration cannot be reconstructed.
 
 ADR 0035 changes the front door to a 1,000 ms Redis command timeout and a count-based breaker:
-window 100 calls, minimum 50, failure rate 50%, five-second open wait and three half-open probes.
+window 100 calls, minimum 50, failure rate 50%, two-second open wait and three half-open probes.
 It adds `redis_guard_calls_total`, `redis_guard_failures_total` and
 `redis_circuit_transitions_total`. `POST /reservations` remains fail-closed.
 
@@ -364,6 +364,36 @@ the backend handler; it is consistent with client/host scheduling or Docker netw
 runs used only about 0.10–0.13 k6 cores of its 3-core cap, so they do not support a claim that k6
 CPU saturation caused that tail. Checkout may now be rerun; calibration and sell-out are still not
 proven.
+
+### Redis fault injection, small causal experiment (2026-10-17)
+
+`9374383` lowers the count-based breaker cooldown from five to two seconds and adds the
+load-test-only runner flag `REDIS_BREAKER_MODE=legacy-immediate`. The legacy arm retains the same
+1,000 ms Redis command timeout, but opens after its first qualifying failure with a five-second
+cooldown. This isolates breaker policy from the timeout value; it is diagnostic only and is not a
+production default. `RedisGuardTest` passed 3/3, including the immediate-open legacy branch.
+
+Each arm is one paced 900-user join at 90 users/s. The monitor records `CLIENT PAUSE` at the shown
+UTC time only after k6 has started `scenarios.js`; all runs have durable provenance (`on/on`), zero
+drops and verifier PASS. The first `fault-new-1100` attempt missed the workload and the first
+rerun's pause did not overlap a Redis command; both are marked invalid and excluded.
+
+| arm / run | Redis pause | accepted / failed after bounded retries | `QueryTimeoutException` | transitions | `circuit_open` fallbacks | open interval | k6 join p95 | result |
+| --- | ---: | ---: | ---: | --- | ---: | --- | ---: | --- |
+| count-based, `fault-new-1100-effective` | 1,100 ms at 14:10:22.266Z | 900 / 0 | 0 | none | 0 | n/a | 959.0 ms | PASS |
+| legacy, `fault-legacy-1100` | 1,100 ms at 14:12:06.925Z | 673 / 227 | 5 | open → half-open → closed | 2,935 | 5.005 s | 1,016.7 ms | FAIL: work minimum |
+| count-based sustained, `fault-new-3000` | 3,000 ms at 14:14:14.018Z | 900 / 0 | 137 | open at 50/100 failures → half-open → closed | 110 | 1.998 s | 3,065.9 ms | FAIL: latency SLO |
+
+The 1,100 ms count-based arm produced latency but no `QueryTimeoutException`; its pause therefore
+does not form an effective fault comparison with the legacy arm. The legacy result does show the
+expected amplification: five qualifying timeouts opened the five-second circuit and 227 users
+exhausted their three attempts. The sustained count-based control proves the intended policy under
+a stronger observed fault: it opened only after 50 failures in 100 calls, returned controlled
+queue-unavailable 503s while open, reached `closed` after three successful probes, and all 900
+users were eventually accepted through the 22 recorded bounded retries. It does **not** prove the
+original 20 timeouts' root cause, which remains unexplained. The earlier passing paced join had a
+different shape (k6 about 0.10 core of its 3-core cap versus 2.85 cores in the earlier failed
+setup), so it cannot by itself explain that failure.
 
 ### Fresh checkout at 20 users/s
 

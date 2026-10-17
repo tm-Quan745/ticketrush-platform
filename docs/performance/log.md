@@ -30,6 +30,33 @@ new runtime JSON are now ignored. They remain under `results/` locally but do no
 curated small summaries must be force-added in a separate commit. New provenance now reports
 `working_tree_clean=true` with this same tracked-file check.
 
+### Fault injection after cooldown change
+
+Commit `9374383` changes the default count-based cooldown to two seconds. Its runner-only
+diagnostic flag `REDIS_BREAKER_MODE=legacy-immediate` keeps the command timeout at 1,000 ms while
+restoring first-qualifying-failure opening and a five-second cooldown. `RedisGuardTest` passed 3/3,
+including both modes. This is load-test-only comparison support, not a production default.
+
+This is a small fault-injection experiment: one effective run per arm, each a 900-user join paced
+at 90/s. The monitor sends `CLIENT PAUSE` only after k6 starts `scenarios.js`. All valid runs have
+provenance with backend durability `on/on`, zero dropped iterations and verifier PASS. The first
+`fault-new-1100` missed the workload, and its rerun did not overlap a Redis call; both are invalid
+and excluded.
+
+| run | pause | accepted / failed after retries | QueryTimeoutException | breaker result | circuit-open fallbacks | result |
+| --- | --- | ---: | ---: | --- | ---: | --- |
+| `fault-new-1100-effective` count-based | 1,100 ms at 14:10:22.266Z | 900 / 0 | 0 | no transition | 0 | PASS |
+| `fault-legacy-1100` legacy | 1,100 ms at 14:12:06.925Z | 673 / 227 | 5 | open 14:12:08.201Z; closed 14:12:13.206Z (5.005 s) | 2,935 | FAIL: work minimum |
+| `fault-new-3000` count-based | 3,000 ms at 14:14:14.018Z | 900 / 0 | 137 | open after 50/100 failures; closed after 1.998 s | 110 | FAIL: join p95 3,065.9 ms |
+
+The count-based 1,100 ms arm saw client latency but no `QueryTimeoutException`; it is not an
+effective comparison with the legacy arm. The legacy result nevertheless shows the old policy's
+amplification. The 3,000 ms control shows the new policy opens only after sustained errors, returns
+controlled 503s while open, then closes after three probes; 22 retryable k6 503s still led to
+900/900 eventual joins. These observations do not explain the original 20 timeouts in
+`checkout-V20-cpu-1`; that root cause remains unknown. The earlier passing join used a different
+load shape (k6 0.10 core versus 2.85 cores in the failed setup), so it is not causal evidence.
+
 ### Fresh checkout V20
 
 `checkout-V20-resilience-1..3` each created their own closed 900-user queue, used admission tokens
