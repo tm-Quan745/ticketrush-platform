@@ -395,6 +395,18 @@ original 20 timeouts' root cause, which remains unexplained. The earlier passing
 different shape (k6 about 0.10 core of its 3-core cap versus 2.85 cores in the earlier failed
 setup), so it cannot by itself explain that failure.
 
+### Client/VM latency control (2026-10-17)
+
+[`health-control-900-summary.json`](results/health-control-900-summary.json) repeats the paced join cadence exactly (90 VUs, ten one-second rounds, 900
+requests) against unauthenticated `GET /actuator/health`; it uses no JWT, Redis, Hikari connection
+or business transaction. It started/completed 900/900 with zero drops, durable provenance, and
+verifier PASS. k6 observed p50/p95/p99 `10.4/60.6/87.9 ms`; the matching backend histogram was
+`5.0/9.4/10.7 ms`. Thus about 51 ms of this control's p95 is outside the handler on this VM
+(client scheduling and Docker networking are plausible contributors, not proven individual causes).
+For user-facing queue figures, this README uses the k6-side latency; server histogram latency is
+reported beside it as a component measurement. The control does not attribute the full earlier
+join p95 (`239.5–348.7 ms`) to one component.
+
 ### Fresh checkout at 20 users/s
 
 Three fresh 900-user queues were joined, opened and consumed in one runner invocation. Each run

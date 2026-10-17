@@ -57,6 +57,15 @@ controlled 503s while open, then closes after three probes; 22 retryable k6 503s
 `checkout-V20-cpu-1`; that root cause remains unknown. The earlier passing join used a different
 load shape (k6 0.10 core versus 2.85 cores in the failed setup), so it is not causal evidence.
 
+### Client/VM control
+
+[`health-control-900-summary.json`](results/health-control-900-summary.json) repeats the paced join shape (90 VUs x ten rounds) against
+`GET /actuator/health`, without JWT, Redis, Hikari or business work. It completed 900/900, zero
+drops, verifier PASS and durable provenance. k6 p50/p95/p99 was 10.4/60.6/87.9 ms; server
+p50/p95/p99 was 5.0/9.4/10.7 ms. The p95 gap is outside the backend handler and is consistent with
+client/VM/network overhead, but does not isolate a single cause or explain all join latency.
+User-facing figures use k6 latency; server histogram values remain component evidence.
+
 ### Fresh checkout V20
 
 `checkout-V20-resilience-1..3` each created their own closed 900-user queue, used admission tokens
