@@ -1,6 +1,7 @@
 """Cross-platform entry point. All mutations target the isolated Week 7 Compose project."""
 import argparse
 import base64
+import copy
 import hashlib
 import json
 import os
@@ -134,7 +135,7 @@ def k6_queue_parameters(args):
     defaults = {"QUEUE_USERS": 5000, "QUEUE_JOIN_VUS": 300, "QUEUE_JOIN_MAX_ATTEMPTS": 3, "QUEUE_POLLERS": 500,
                 "QUEUE_POLL_DURATION": "60s", "CHECKOUT_VUS": 100, "STATUS_RATE": 50,
                 "STATUS_DURATION": "45s", "STATUS_DISTINCT_USERS": 200,
-                "QUEUE_FIRST_POLL_ADVICE_SECONDS": 10, "CHECKOUT_RATE": 20, "CHECKOUT_DURATION": "5s", "CHECKOUT_KEY_OFFSET": 0,
+                "QUEUE_FIRST_POLL_ADVICE_SECONDS": 10, "CHECKOUT_RATE": 20, "CHECKOUT_DURATION": "5s", "CHECKOUT_COUNT": 100, "CHECKOUT_KEY_OFFSET": 0,
                 "CHECKOUT_MAX_RETRIES": 3, "STATUS_TOKEN_POOL": 200,
                 "STATUS_BURST_AFTER_SECONDS": 15, "STATUS_BURST_RAMP_SECONDS": 1, "STATUS_BURST_DURATION_SECONDS": 2,
                 "STATUS_BURST_STEADY_RATE": 500, "STATUS_BURST_RATE": 2500,
@@ -224,6 +225,92 @@ def evaluate_work_minimum(summary, declaration):
     actual = {dimension: metric_count(summary, metric) for dimension, metric in declaration["metrics"].items()}
     passed = all(actual[dimension] >= expected for dimension, expected in declaration["minimums"].items())
     return {**declaration, "actual": actual, "passed": passed}
+
+
+def utc_timestamp(epoch=None):
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() if epoch is None else epoch))
+
+
+def checkout_target(args):
+    if args.scenario == "Q":
+        return int(parameter(args, "CHECKOUT_COUNT", "100"))
+    return int(parameter(args, "CHECKOUT_RATE", "20")) * seconds(parameter(args, "CHECKOUT_DURATION", "5s"))
+
+
+def checkout_lifecycle_path(run_id):
+    return RESULTS / f"{run_id}-checkout-lifecycle.json"
+
+
+def write_checkout_lifecycle(run_id, lifecycle):
+    checkout_lifecycle_path(run_id).write_text(json.dumps(lifecycle, indent=2))
+
+
+def admission_freshness(args, now=None):
+    """Read the orchestrated token capture time and reject stale checkout input."""
+    path = checkout_lifecycle_path(args.run_id)
+    try:
+        lifecycle = json.loads(path.read_text())
+        captured = float(lifecycle["admission_tokens_captured_epoch"])
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        raise RuntimeError("Checkout must be started with the checkout command and fresh admission tokens") from error
+    observed = time.time() if now is None else now
+    record = validate_admission_age(captured, observed)
+    age = record["age_seconds"]
+    record["captured_at_utc"] = lifecycle.get("admission_tokens_captured_at_utc")
+    lifecycle["checkout_k6_started_at_utc"] = record["checkout_start_at_utc"]
+    lifecycle["checkout_k6_started_epoch"] = observed
+    lifecycle["admission_token_age_seconds_at_checkout"] = age
+    write_checkout_lifecycle(args.run_id, lifecycle)
+    return record
+
+
+def validate_admission_age(captured, observed):
+    age = observed - captured
+    record = {"checkout_start_at_utc": utc_timestamp(observed), "age_seconds": age, "max_age_seconds": 300}
+    if age < 0 or age > 300:
+        raise RuntimeError(f"Admission tokens are {age:.1f}s old; refusing checkout older than five minutes")
+    return record
+
+
+def fresh_checkout(args):
+    """Create, join, open and consume one queue cohort without reusable tokens."""
+    if args.scenario not in {"Q", "V"}:
+        raise ValueError("checkout requires scenario Q or V")
+    args.waiting, args.queue_closed = True, True
+    target = checkout_target(args)
+    if target < 1 or target > args.users:
+        raise ValueError(f"Checkout target {target} must be between 1 and the {args.users} fresh queue users")
+    lifecycle = {"run_id": args.run_id, "scenario": args.scenario, "queue_users": args.users,
+                 "checkout_target": target, "queue_created_at_utc": utc_timestamp(), "stages": {}}
+    write_checkout_lifecycle(args.run_id, lifecycle)
+    reset(args)
+    join_args = copy.copy(args)
+    join_args.scenario, join_args.run_id = "J", args.run_id + "-join"
+    join_args.no_reset, join_args.no_warmup = True, True
+    lifecycle["stages"]["join_started_at_utc"] = utc_timestamp()
+    write_checkout_lifecycle(args.run_id, lifecycle)
+    join_exit = measure(join_args)
+    lifecycle["stages"]["join_finished_at_utc"] = utc_timestamp()
+    lifecycle["stages"]["join_exit"] = join_exit
+    write_checkout_lifecycle(args.run_id, lifecycle)
+    if join_exit:
+        lifecycle["result"] = "FAIL"
+        write_checkout_lifecycle(args.run_id, lifecycle)
+        return join_exit
+    lifecycle["queue_opened_at_utc"] = utc_timestamp()
+    tool("queue-open", "--output", f"{args.run_id}-queue-open.json")
+    tool("admission-pairs", "--count", str(target), "--timeout", "120", "--output", "admissions.json")
+    captured = time.time()
+    lifecycle["admission_tokens_captured_epoch"] = captured
+    lifecycle["admission_tokens_captured_at_utc"] = utc_timestamp(captured)
+    write_checkout_lifecycle(args.run_id, lifecycle)
+    args.no_reset, args.no_warmup = True, True
+    exit_code = measure(args)
+    lifecycle = json.loads(checkout_lifecycle_path(args.run_id).read_text())
+    lifecycle["result"] = "PASS" if exit_code == 0 else "FAIL"
+    lifecycle["finished_at_utc"] = utc_timestamp()
+    write_checkout_lifecycle(args.run_id, lifecycle)
+    return exit_code
 
 
 def request_json(url):
@@ -565,6 +652,9 @@ def measure(args):
                        "k6", "run", "--out", "experimental-prometheus-rw", "scenarios.js", check=False)
         if warm.returncode:
             raise RuntimeError("Warm-up failed; refusing to silently measure an unhealthy stack")
+    if args.scenario in {"Q", "V"}:
+        provenance["admission_token_freshness"] = admission_freshness(args)
+        (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
     start = time.time()
     parameters = ["SCENARIO=" + args.scenario, "RUN_ID=" + args.run_id,
                   "QUEUE_USERS=" + str(args.users)] + args.param
@@ -681,7 +771,7 @@ def environment():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "verify", "queries", "test", "environment", "down"])
+    p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "checkout", "verify", "queries", "test", "environment", "down"])
     p.add_argument("--scenario", choices=list("ABCDEFGHWJRPQSTV"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
@@ -737,6 +827,8 @@ def main():
         reset(args)
     elif args.command == "run":
         raise SystemExit(measure(args))
+    elif args.command == "checkout":
+        raise SystemExit(fresh_checkout(args))
     elif args.command == "verify":
         raise SystemExit(tool("verify", "--drain", str(args.drain), "--output", args.run_id + "-verify.json", check=False).returncode)
     elif args.command == "queries":

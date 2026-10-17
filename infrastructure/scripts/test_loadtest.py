@@ -65,6 +65,11 @@ class ObservabilityPreflightTest(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertEqual({"started": 100, "completed": 0, "paid": 0}, result["actual"])
 
+    def test_checkout_rejects_stale_admission_tokens(self):
+        with self.assertRaisesRegex(RuntimeError, "older than five minutes"):
+            loadtest.validate_admission_age(1000, 1301)
+        self.assertEqual(299, loadtest.validate_admission_age(1000, 1299)["age_seconds"])
+
 
 if __name__ == '__main__':
     unittest.main()

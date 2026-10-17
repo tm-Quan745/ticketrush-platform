@@ -26,6 +26,11 @@ it has no HTTP/backend traffic, no 503 count and no latency, and is excluded fro
 Every scenario now declares minimum started/completed/PAID work in the runner. A verifier PASS
 with unmet work minimum is recorded as runner `FAIL`.
 
+The `checkout` runner command creates a closed waiting-room queue, joins its fresh cohort, opens
+admission, captures exactly the required token pairs, and then runs Q or V. Its
+`<run>-checkout-lifecycle.json` records queue creation, join, opening, token capture and k6 start
+timestamps. The runner refuses checkout if captured tokens are older than 300 seconds at k6 start.
+
 Validation: Node contract tests 5/5; Python runner tests 6/6 after repairing a stale
 metadata assertion; k6 1.3.0 successfully inspected the actual V scenario. The isolated
 `checkout-contract-smoke.js` returned 99 for 100 started / zero paid, and zero for
