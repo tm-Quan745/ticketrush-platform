@@ -55,6 +55,11 @@ increase, which is insufficient resolution for this 10.5-second request burst an
 the k6/log evidence. Backend/k6 CPU peaks were 3.17/2.85 cores against 6/3 caps; Docker memory
 peaked at 38.63%. Stop here: no calibration or sell-out was started.
 
+The join provenance records commit/image revision `6d7eb5b` and durable `synchronous_commit=on`,
+`fsync=on`, but `working_tree_clean=false`: `environment.json`, `last-reset.json`, and
+`last-seed.json` were tracked measurement files modified before the join. This reinforces that the
+artifact is a failed setup diagnosis, not a comparison datapoint.
+
 Validation: Node contract tests 5/5; Python runner tests 6/6 after repairing a stale
 metadata assertion; k6 1.3.0 successfully inspected the actual V scenario. The isolated
 `checkout-contract-smoke.js` returned 99 for 100 started / zero paid, and zero for
