@@ -32,6 +32,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
     "ticketrush.rate-limit.enabled=true","ticketrush.rate-limit.policies.reservations.capacity=10",
     "ticketrush.rate-limit.policies.reservations.period=1h","ticketrush.rate-limit.policies.reservations.local-capacity=3",
     "ticketrush.rate-limit.policies.reservations.failure=LOCAL"})
+@ActiveProfiles({"test","loadtest"})
 class Week6RedisIntegrationTest extends ReservationTestFixture {
     static int freePort() {
         try (var socket=new java.net.ServerSocket(0)) { return socket.getLocalPort(); }
@@ -74,6 +75,31 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(Long.valueOf(redis.opsForValue().get(gate.counter(tier)))).isEqualTo(jdbc.queryForObject("SELECT available_quantity FROM ticket_tiers WHERE id=?",Long.class,tier));
     }
     List<UUID> users(int count) { List<UUID> result=new ArrayList<>();for(int i=0;i<count;i++)result.add(addUser());return result; }
+    @Test void closedQueueSeedPreservesInputOrderAndRejectsInvalidCohorts() {
+        roomEvents.configure(event,true,3,"fifo");
+        var cohort=users(5);
+        assertThatThrownBy(() -> queue.seedClosedQueue(event,cohort)).isInstanceOf(ApiException.class);
+        jdbc.update("UPDATE events SET sale_start_time=? WHERE id=?",ts(3600),event);
+        queue.refresh(event);
+        assertThatThrownBy(() -> queue.seedClosedQueue(event,List.of(user,user))).isInstanceOf(ApiException.class);
+        assertThat(queue.seedClosedQueue(event,cohort)).isEqualTo(5);
+        for(int i=0;i<5;i++) assertThat(queue.status(event,cohort.get(i),false).position()).isEqualTo(i+1);
+        assertThat(queue.admit(event)).isZero();
+    }
+    @Test void loadtestSeedRequiresAdminAndValidInput() throws Exception {
+        roomEvents.configure(event,true,3,"fifo");
+        jdbc.update("UPDATE events SET sale_start_time=? WHERE id=?",ts(3600),event);
+        queue.refresh(event);
+        String path="/internal/loadtest/events/"+event+"/waiting-room/seed";
+        String body="{\"users\":[\""+user+"\"]}";
+        http.perform(post(path).contentType("application/json").content(body)).andExpect(status().isUnauthorized());
+        http.perform(post(path).with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
+            .contentType("application/json").content(body)).andExpect(status().isForbidden());
+        http.perform(post(path).with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            .contentType("application/json").content("{\"users\":[]}")).andExpect(status().isBadRequest());
+        http.perform(post(path).with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            .contentType("application/json").content(body)).andExpect(status().isOk()).andExpect(jsonPath("$.seeded").value(1));
+    }
     @Test @Tag("redis-stress") void fiveHundredThreadsForOneHundredTickets() throws Exception {
         capacity(100);var users=users(500);
         var result=concurrent(500,i -> reserve(users.get(i),tier,1));
@@ -197,6 +223,13 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(admitted).hasSize(3).extracting(WaitingRoomService.AdmittedUser::user).containsExactlyElementsOf(users.subList(0,3));
         assertThat(admitted).allSatisfy(value -> assertThat(value.token()).hasSizeGreaterThanOrEqualTo(22));
         assertThat(queue.newlyAdmitted(event,3)).isEmpty();
+        var audit=redis.opsForList().range(keys.key("queue",event,"admitted")+":audit",0,-1);
+        assertThat(audit).hasSize(3);
+        for(int i=0;i<3;i++) {
+            assertThat(json.readTree(audit.get(i)).path("user").asText()).isEqualTo(users.get(i).toString());
+            assertThat(json.readTree(audit.get(i)).path("position").asInt()).isEqualTo(i+1);
+            assertThat(json.readTree(audit.get(i)).has("token")).isFalse();
+        }
         var first=queue.status(event,users.getFirst(),false);assertThat(first.state()).isEqualTo("ADMITTED");
         assertThat(first.token().length()).isGreaterThanOrEqualTo(22);
         queue.requireAdmission(tier,users.getFirst(),first.token());

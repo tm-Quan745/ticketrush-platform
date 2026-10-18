@@ -161,6 +161,16 @@ public class WaitingRoomService implements ReservationAdmission {
         return (int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,Math.round(interval*multiplier)));
     }
     public void leave(UUID event,UUID user) { execute(cached(event).event(),"leave",user,false); }
+    /** Used only by the ADMIN-only loadtest seed controller, before admission opens. */
+    public int seedClosedQueue(UUID eventId,List<UUID> users) {
+        if (users==null || users.isEmpty() || users.size()>5000 || users.stream().anyMatch(Objects::isNull)
+                || new HashSet<>(users).size()!=users.size())
+            throw new ApiException(HttpStatus.BAD_REQUEST,"INVALID_QUEUE_SEED","Expected 1..5000 distinct user IDs");
+        var event=settings(eventId);
+        if (open(event)) throw new ApiException(HttpStatus.CONFLICT,"QUEUE_ALREADY_OPEN","Seed requires a closed queue");
+        for (UUID user:users) status(eventId,user,true);
+        return users.size();
+    }
     public List<AdmittedUser> newlyAdmitted(UUID eventId,int limit) {
         if (limit<1 || limit>1_000) throw new IllegalArgumentException("limit must be 1..1000");
         List<String> values=guard.call("waiting-room",() -> {

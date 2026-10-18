@@ -42,6 +42,9 @@ if op=='admit' then
     redis.call('SET',prefix..id..':admission',value,'PX',ARGV[8])
     if ARGV[#ARGV]=='1' then
       redis.call('RPUSH',KEYS[7],cjson.encode({user=id,token=ARGV[9+i],expiresAt=now+tonumber(ARGV[8])}))
+      -- Retain ordered evidence separately from the destructive loadtest feed. No tokens in this audit.
+      redis.call('RPUSH',KEYS[7]..':audit',cjson.encode({user=id,position=tonumber(redis.call('ZSCORE',KEYS[1],id)),at=now}))
+      redis.call('PEXPIRE',KEYS[7]..':audit',retention)
     end
     redis.call('PEXPIRE',prefix..id..':seen',retention)
     redis.call('ZREM',KEYS[1],id); redis.call('ZREM',KEYS[2],id)

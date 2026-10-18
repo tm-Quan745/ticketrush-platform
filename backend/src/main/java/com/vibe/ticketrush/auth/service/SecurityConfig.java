@@ -74,6 +74,7 @@ public class SecurityConfig {
                     }
                     if (environment.matchesProfiles("loadtest")) {
                         auth.requestMatchers(HttpMethod.GET, "/internal/loadtest/events/*/waiting-room/admissions").hasRole("ADMIN");
+                        auth.requestMatchers(HttpMethod.POST, "/internal/loadtest/events/*/waiting-room/seed").hasRole("ADMIN");
                     }
                     if (!environment.matchesProfiles("prod")) {
                         auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();

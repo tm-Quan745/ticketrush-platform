@@ -19,6 +19,16 @@ public class LoadtestAdmissionController {
         this.queue=queue;
     }
 
+    public record SeedRequest(@jakarta.validation.constraints.Size(min=1,max=5000)
+            @jakarta.validation.constraints.NotNull java.util.List<@jakarta.validation.constraints.NotNull UUID> users) {}
+
+    @org.springframework.web.bind.annotation.PostMapping("/{eventId}/waiting-room/seed")
+    public java.util.Map<String,Integer> seed(
+            @org.springframework.web.bind.annotation.PathVariable UUID eventId,
+            @jakarta.validation.Valid @org.springframework.web.bind.annotation.RequestBody SeedRequest request) {
+        return java.util.Map.of("seeded",queue.seedClosedQueue(eventId,request.users()));
+    }
+
     @GetMapping("/{eventId}/waiting-room/admissions")
     public java.util.List<WaitingRoomService.AdmittedUser> newlyAdmitted(
             @org.springframework.web.bind.annotation.PathVariable UUID eventId,
