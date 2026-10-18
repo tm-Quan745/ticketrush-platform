@@ -1,5 +1,63 @@
 # TicketRush performance laboratory
 
+## Final bounded result (2026-10-18)
+
+Performance work is closed with **one passing 5,000-entry FIFO cohort sell-out**,
+`finish-sellout-20-2`, after one failed generator/work-contract attempt. The workload offered
+20 admission/checkout opportunities per second for 250 seconds, with PRE_VUS=100 and
+MAX_VUS=150. It does not establish 20 completed purchases/s or 5,000 concurrent purchases.
+
+| Evidence | Observed result |
+| --- | --- |
+| HOT capacity / sold tickets / available / held | 5,000 / 5,000 / 0 / 0 |
+| Terminal cohort | 2,001 PAID orders + 19 reservation SOLD_OUT + 2,980 queued soldOut = 5,000 users |
+| Admission fairness | 2,020 admissions match the seed/join sequence exactly; no duplicates |
+| Token binding | All 2,020 admission tokens rejected for another user |
+| Admission after sold-out | Stopped; all 2,980 remaining users report soldOut |
+| Remaining status response latency | k6 p95 9.10 ms; maximum in the full final waiting-user audit 21.82 ms |
+| Work gate | 5,000 opportunities started/completed, zero errors/drops, full terminal cohort accounted for |
+| Correctness verifier / oversell | PASS / zero |
+| Peak aggregate Docker memory | 39.86%; 85% abort not reached |
+| Backend Maven gate | 111 tests, zero failures/errors/skips; BUILD SUCCESS |
+
+Evidence: [run](results/finish-sellout-20-2-run.json), [k6](results/finish-sellout-20-2.json),
+[cohort/FIFO audit](results/finish-sellout-20-2-audit.json),
+[verifier](results/finish-sellout-20-2-verify.json), [provenance](results/finish-sellout-20-2-provenance.json),
+[backend suite](results/minimum-finish-backend-suite.json), and
+[environment](results/minimum-finish-environment.json). Backend image/source is `fcb976f`;
+client and audit corrections were uncommitted at measurement time and are disclosed in provenance.
+Their measured source is preserved in commit `3090fcd`.
+The backend connection reported synchronous_commit=on and fsync=on. The VM has 12 vCPUs and
+4,013,400,064 bytes RAM, with the existing CPU caps; idle container memory was 24.85%.
+
+The loadtest-only ADMIN endpoint seeds the queue through the server's join service. The client
+consumes the internal admission feed; this run excludes HTTP join load and adds one wrong-user
+token probe per admitted user. Empty feed responses end a short iteration as WAITING; they are
+not terminal successes. The independent audit accounts for every user after the run. Response
+latency above measures status requests, not push-notification delay from the instant of sell-out.
+
+**Not proven:** calibration beyond 20 offered opportunities/s, three successful repetitions,
+production or multi-host capacity, or the cause of the earlier Docker HTTP 500. The original
+WSL dmesg request timed out; after restart it had no OOM matches. The diagnosis remains
+inconclusive. Init-only measurement did establish that copying 5,000 complete user records
+per VU consumed 1.519 GiB at 100 VUs, versus 76.95 MiB with shared records; see the
+[experiment log](log.md). The first sell-out's failed work gate remains a negative result.
+
+Reproduction (explicitly starts new measurements; none remain running):
+
+```powershell
+./.tools/apache-maven-3.9.9/bin/mvn.cmd -B -ntp -s .mvn-week7-settings.xml -f backend/pom.xml verify
+python infrastructure/scripts/loadtest.py up
+python infrastructure/scripts/loadtest.py environment
+python infrastructure/scripts/minimum_finish.py sellout --run-id finish-sellout-new
+```
+
+Require a passing full backend suite before sell-out. Stop after two consecutive infrastructure
+failures; do not resume staircase calibration. Historical experiments below retain their original
+platform and acceptance limits and are not additional repetitions of this final result.
+
+## Historical experiments
+
 The baseline does **not** meet the 5,000-user flash-sale target. It recorded 97.6% failed
 HTTP responses, only 131 PAID orders and 332 valid tickets from 5,000 offered users, and
 five-second timeouts. It is retained as a negative result, but it and `final-C-1..3` have no

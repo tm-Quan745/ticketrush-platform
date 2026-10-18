@@ -1,8 +1,106 @@
 # Performance experiment log
 
+## 2026-10-18 — minimum finish plan, no further staircase
+
+The staircase was stopped at the user's request. Before recovery, Docker `info` returned
+HTTP 500 and `NCPU=0`, `MemTotal=0`; `ps -a` also returned HTTP 500. The requested
+`wsl -e sh -c "dmesg | grep -i -E 'out of memory|killed process'"` failed with
+`Wsl/Service/WSAETIMEDOUT`. `docker desktop restart --timeout 120` recovered the engine.
+After restart, the same dmesg filter returned no lines (exit 1). **Cause: inconclusive**;
+post-restart logs cannot rule out an earlier OOM. The recovered `docker ps -a` contained
+no leftover calibration/k6 container; unrelated containers were preserved.
+
+The original HEAD suite passed 109/109. After adding the loadtest-only closed-queue seed
+endpoint, ADMIN/input tests and atomic token-free FIFO audit, HEAD `fcb976f` passed the full
+standard Maven `verify`: **111 tests, zero failures/errors/skips**, including 25 Redis tests.
+Benchmark-only profiles were not included. See [suite record](results/minimum-finish-backend-suite.json).
+The backend image was rebuilt from this HEAD; its connection reported durability **on/on**.
+`environment.json` records 12 vCPUs, MemTotal 4,013,400,064 bytes and 24.85% idle container memory.
+
+The prior K/Q/V script reads users with SharedArray, then `users.map(...)` materializes every
+user/password/token into a private `usersById` object in each VU. Ten-second init-only controls
+used the same 5,000-user fixture and no HTTP traffic. All initialized the requested VU count,
+completed and stayed below the 85% aggregate Docker-memory abort:
+
+| run | initialized VUs | data layout | peak sampled k6 memory | peak aggregate Docker memory |
+| --- | ---: | --- | ---: | ---: |
+| finish-init-legacy-25 | 25 | per-VU records | 441.1 MiB | 38.74% |
+| finish-init-legacy-50 | 50 | per-VU records | 760.8 MiB | 48.95% |
+| finish-init-legacy-100 | 100 | per-VU records | 1.519 GiB | 68.52% |
+| finish-init-shared-100 | 100 | shared records | 76.95 MiB | 30.93% |
+
+Raw `*-docker-stats.json`, `*-run.json` and local `.tools/<run>.log` retain samples, actual VUs,
+and INIT_READY messages. The generic init provenance's k6_vus field contains the sell-out
+defaults (100/150); for these fixed-VU probes, use each run record's `pre_vus` and console,
+not that generic field. This measures duplication cost; it does not prove the previous crash cause.
+The sell-out client retains sorted shared records and uses binary search, with 100 preallocated
+and 150 maximum VUs. Little's law estimates 20 users/s x 3 seconds = 60 VUs; the remainder is
+headroom. The finite cohort is 5,000 queue entries, not simultaneous purchases.
+
+### First sell-out attempt: negative work gate
+
+`finish-sellout-20-1` is **not a passing sell-out acceptance run**. k6 started 4,997
+iterations, dropped four arrivals, completed 4,663 terminal client outcomes (1,998 PAID,
+2,665 SOLD_OUT), and recorded 334 errors. There were zero HTTP failures, unexpected
+responses or 5xx. The client held VUs up to six seconds waiting for an empty admission
+feed; the missing terminal outcomes are consistent with that branch, not HTTP rejection.
+The run's iteration p95 was 6,182.5 ms, invalidating the three-second VU-sizing assumption
+when queue waiting is included. Peak aggregate Docker memory was 40.52%; no memory abort
+or Docker outage occurred. This is a generator/work-contract failure, not evidence of
+backend saturation or a passing work minimum.
+
+Independent evidence still found HOT total/confirmed/tickets 5,000, available/held zero,
+zero oversell, verifier PASS, exactly 2,000 FIFO admissions with no duplicates, all 2,000
+tokens rejected for another user, admission stopped, and all 3,000 remaining users reporting
+soldOut (maximum sequential audit response 14.13 ms). These correctness observations do
+not erase the failed work gate. Raw artifacts retain the negative result.
+
+The second attempt uses short admission/checkout opportunities: an empty feed returns
+WAITING immediately. WAITING does not count as a terminal cohort result. An additional
+independent contract requires the exact 5,000-user seed sequence to partition into admitted
+users with PAID/reservation-SOLD_OUT outcomes and remaining users with soldOut status.
+Two regression tests reject missing outcomes, missing users, empty work, duplicates and
+reordering. Backend source/image remains `fcb976f`; only the client/audit/ADR differ, as
+recorded by dirty-source provenance. This offers 20 opportunities/s; it does not claim
+20 completed purchases/s or 5,000 concurrent purchases.
+
+### Second attempt: terminal cohort PASS, performance work closed
+
+`finish-sellout-20-2` passed k6, verifier and audit (all exit 0). It started/completed all 5,000
+offered opportunities at 20/s, with zero errors, HTTP failures, 5xx or dropped iterations.
+HOT total/confirmed/tickets were 5,000; available/held were zero; oversell was zero. The exact
+terminal partition is **2,001 PAID + 19 reservation SOLD_OUT + 2,980 queued soldOut = 5,000**.
+All 2,020 admissions are a duplicate-free prefix of the seed order, all remaining users form
+the exact suffix, and every admitted token was rejected for another user. The admission audit
+did not grow during the post-sell-out observation. Every remaining user returned soldOut;
+maximum final-audit status latency was 21.82 ms, while k6 sold-out status p95 was 9.10 ms.
+
+Peak aggregate Docker memory was 39.86%, with no abort; 100 VUs were allocated (cap 150).
+Iteration p95/p99 were 1,367.7/2,057.6 ms across the mixed workload, including fast WAITING
+and SOLD_OUT iterations; they are not purchase-only latency. The run used durable on/on
+backend `fcb976f`, image `sha256:6b3c6b8c99cf5c7666958d3407c264a217bbce0c1c1e9a180f2a49dbdc3ad9f4`.
+The corrected client/audit working tree is disclosed in provenance. No backend changes were
+made after the 111-test suite. Only one accepted run is claimed; no three-run repeat or further
+calibration was performed. Performance work stops here under the minimum finish plan.
+The measured client/audit corrections were subsequently committed as `3090fcd`. A final
+Docker check returned 12 / 4,013,400,064 and no remaining k6/calibration containers.
+
 ## 2026-10-17 — RedisGuard resilience and paced join gate
 
 ## 2026-10-18 — interrupted calibration, excluded
+
+`calibration-staircase-4` is excluded before checkout. After rebuilding and starting the isolated
+stack at `3f9a2de`, its join precondition passed: 5,000 started/accepted, queue audit and verifier
+exit 0, server join p95 28.5 ms, maximum sampled Docker memory 33.32% during join. Checkout k6
+initialization stopped progressing at 179/226 VUs. Subsequent `docker stats` and `docker ps`
+returned HTTP 500 from `dockerDesktopLinuxEngine`; no checkout summary or verifier exists.
+This establishes an infrastructure/generator interruption, not a backend capacity result or a
+proven OOM. A stop was requested for `ticketrush-week7-k6-run-d46e62468c19`, but Docker had not
+confirmed it at recording time. See [exclusion record](results/calibration-staircase-4-invalid.json)
+and local console `.tools/week7-calibration-staircase-4.log`. Restore Docker health and confirm
+the interrupted container has stopped before another run. Runner tests passed 10/10 (Python)
+and 7/7 (Node); the Docker build completed using cached layers. The full backend test suite was
+not rerun in this attempt. Calibration and sell-out remain unproven.
 
 `calibration-staircase-1` is invalid and excluded. The runner stopped the backend for its normal isolated reset, then Docker Desktop's Linux engine disappeared before seed, k6, provenance, telemetry, or the verifier ran. At `2026-10-18T05:24:34.530Z`, `docker info --format '{{.NCPU}} {{.MemTotal}}'` returned `0 0` and could not open `dockerDesktopLinuxEngine`. The only retained files are the lifecycle and console logs plus [`calibration-staircase-1-invalid.json`](results/calibration-staircase-1-invalid.json); it must be rerun after Docker is healthy. It contributes no calibration result.
 

@@ -1,0 +1,14 @@
+{
+  "run_id": "finish-sellout-20-1",
+  "mode": "sellout",
+  "k6_exit": 99,
+  "duration_seconds": 252.1744384765625,
+  "memory_abort": false,
+  "max_memory_percent": 40.52,
+  "pre_vus": 100,
+  "max_vus": 150,
+  "materialize": false,
+  "passed": false,
+  "verifier_exit": 0,
+  "audit_exit": 1
+}

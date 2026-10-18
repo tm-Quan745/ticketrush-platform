@@ -1,0 +1,19 @@
+{
+  "run_id": "calibration-staircase-4",
+  "valid": false,
+  "excluded_from_calibration": true,
+  "reason": "k6 initialization stopped progressing at 179/226 VUs before checkout. Docker stats and container listing later returned HTTP 500 from dockerDesktopLinuxEngine.",
+  "join_precondition": "PASS",
+  "join_started": 5000,
+  "join_accepted": 5000,
+  "join_server_p95_seconds": 0.02849645248247829,
+  "join_verifier_exit": 0,
+  "join_queue_audit_exit": 0,
+  "checkout_k6_summary": null,
+  "checkout_verifier": null,
+  "root_cause": "Unknown; OOM is not established by the available evidence.",
+  "stop_requested_container": "ticketrush-week7-k6-run-d46e62468c19",
+  "stop_confirmed": false,
+  "console_log": ".tools/week7-calibration-staircase-4.log",
+  "follow_up": "Restore Docker health, confirm the interrupted container is stopped, then investigate generator initialization before rerunning calibration."
+}

@@ -2,6 +2,13 @@
 
 ## Performance (Week 7)
 
+One bounded sell-out run passed for a 5,000-entry FIFO cohort at 20 offered admission/checkout
+opportunities per second: exactly 5,000 tickets sold, zero available/held, zero oversell,
+verified FIFO/token binding, and all users accounted for as PAID or SOLD_OUT. The full backend
+suite passed 111 tests. This is not a claim of 5,000 concurrent purchases or 20 paid orders/s;
+calibration beyond 20/s and three successful repetitions were not done. Performance work is closed.
+See the [final evidence and limitations](docs/performance/README.md#final-bounded-result-2026-10-18).
+
 The [performance laboratory](docs/performance/README.md) provides an isolated bulk seeder, open-model
 k6 scenarios, automatic SQL/API correctness verification, Prometheus/Grafana dashboards and measured
 artifacts. See the [experiment log](docs/performance/log.md) for failures as well as successes.
