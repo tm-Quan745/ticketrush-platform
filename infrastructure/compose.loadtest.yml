@@ -26,7 +26,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "6.0"
+          # Laptop measurements use 6 cores. CI overrides this to its 4-vCPU Docker host.
+          cpus: "${LOADTEST_BACKEND_CPUS:-6.0}"
     environment:
       SPRING_PROFILES_ACTIVE: dev,loadtest
       DEV_SEED_ENABLED: "false"

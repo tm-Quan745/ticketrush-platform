@@ -10,6 +10,9 @@ on:
         options: [A, B, C, D, E, F, G]
 permissions:
   contents: read
+env:
+  # GitHub-hosted Docker reports four CPUs; the measurement profile's laptop cap is six.
+  LOADTEST_BACKEND_CPUS: "4.0"
 jobs:
   loadtest:
     runs-on: ubuntu-latest

@@ -10,6 +10,12 @@ import loadtest
 
 
 class ObservabilityPreflightTest(unittest.TestCase):
+    def test_ci_overrides_the_laptop_backend_cpu_cap(self):
+        compose = (loadtest.ROOT / "infrastructure/compose.loadtest.yml").read_text()
+        workflow = (loadtest.ROOT / ".github/workflows/loadtest-smoke.yml").read_text()
+        self.assertIn('cpus: "${LOADTEST_BACKEND_CPUS:-6.0}"', compose)
+        self.assertIn('LOADTEST_BACKEND_CPUS: "4.0"', workflow)
+
     def test_start_stack_prints_compose_diagnostics_when_wait_fails(self):
         failed = CalledProcessError(1, ["docker", "compose", "up"])
         success = CompletedProcess([], 0, stdout="diagnostic", stderr="")
