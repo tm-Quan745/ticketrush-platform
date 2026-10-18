@@ -94,6 +94,8 @@ const calibrationFeedEmpty = new Counter('calibration_admission_feed_empty');
 const calibrationFeedErrors = new Counter('calibration_admission_feed_errors');
 const calibrationReserveDuration = new Trend('calibration_reserve_duration', true);
 const calibrationOrderDuration = new Trend('calibration_order_duration', true);
+const calibrationRateChanges = new Counter('calibration_rate_changes');
+const calibrationRateChangeFailures = new Counter('calibration_rate_change_failures');
 const calibrationVUs = { preAllocatedVUs: Math.max(10, Math.ceil(vus.preAllocatedVUs / 4)), maxVUs: vus.maxVUs };
 function steady(fn, arrivalRate, time) {
   return { executor: 'constant-arrival-rate', exec: fn, rate: arrivalRate, timeUnit: '1s', duration: time,
@@ -135,12 +137,16 @@ const plans = {
   Q: { checkout: { executor: 'shared-iterations', exec: 'checkout', vus: checkoutVUs, iterations: admissionPairs.length,
     maxDuration: __ENV.CHECKOUT_MAX_DURATION || '5m', gracefulStop: '90s' } },
   V: { checkoutPaced: steady('checkout', checkoutRate, checkoutDuration) },
-  K: Object.fromEntries(calibration.stages.reduce((entries, stage, index) => {
-    const start = calibration.stages.slice(0, index).reduce((seconds, value) => seconds + value.duration, 0);
-    entries.push([`calibration_${stage.rate}`, { executor: 'constant-arrival-rate', exec: 'checkoutCalibration',
-      rate: stage.rate, timeUnit: '1s', duration: `${stage.duration}s`, startTime: `${start}s`, ...calibrationVUs, gracefulStop: '90s' }]);
-    return entries;
-  }, [])),
+  K: {
+    ...Object.fromEntries(calibration.stages.reduce((entries, stage, index) => {
+      const start = calibration.stages.slice(0, index).reduce((seconds, value) => seconds + value.duration, 0);
+      entries.push([`calibration_${stage.rate}`, { executor: 'constant-arrival-rate', exec: 'checkoutCalibration',
+        rate: stage.rate, timeUnit: '1s', duration: `${stage.duration}s`, startTime: `${start}s`, ...calibrationVUs, gracefulStop: '90s' }]);
+      return entries;
+    }, [])),
+    calibrationControl: { executor: 'per-vu-iterations', exec: 'calibrationControl', vus: 1, iterations: 1,
+      maxDuration: `${calibration.stages.reduce((total, stage) => total + stage.duration, 0) + 30}s`, gracefulStop: '10s' },
+  },
 };
 if (!plans[scenario]) throw new Error('Unknown scenario; choose A..H, J, K, N, R, P, Q, S, T, V or W');
 export const options = {
@@ -178,7 +184,8 @@ export const options = {
       queue_status_steady_duration: ['p(95)<500', 'p(99)<1000']
     } : {}),
     ...(scenario === 'K' ? { checkout_started: [`count==${calibration.offered}`], purchases_paid: [`count==${calibration.offered}`],
-      calibration_admission_feed_empty: ['count==0'], calibration_admission_feed_errors: ['count==0'] } : {}),
+      calibration_admission_feed_empty: ['count==0'], calibration_admission_feed_errors: ['count==0'],
+      calibration_rate_changes: [`count==${Math.max(0, calibration.stages.length - 1)}`], calibration_rate_change_failures: ['count==0'] } : {}),
     ...(scenario === 'E' ? Object.fromEntries(stressRates.map(r => `stage-${r}`).concat(['recovery']).flatMap(phase => [
       [`http_req_failed{phase:${phase}}`, ['rate>=0']],
       [`http_req_duration{phase:${phase}}`, ['p(95)>=0']],
@@ -485,6 +492,22 @@ export function checkoutCalibration() {
   if (business(status === 'PAID', 'calibration payment paid')) {
     outcomes.add(1, { result: 'paid' });
     completed.add(1);
+  }
+}
+
+export function calibrationControl() {
+  const event = data.events.find(value => value.name === 'HOT');
+  for (let index = 1; index < calibration.stages.length; index++) {
+    sleep(calibration.stages[index - 1].duration);
+    const rate = calibration.stages[index].rate;
+    const response = http.put(`${base}/api/v1/admin/events/${event.id}/waiting-room`,
+      JSON.stringify({ enabled: true, rate, mode: 'fifo' }), {
+        headers: { Authorization: `Bearer ${loadtestAdmin.token}`, 'Content-Type': 'application/json' },
+        tags: { name: 'PUT /api/v1/admin/events/{id}/waiting-room' }, timeout: __ENV.REQUEST_TIMEOUT || '5s',
+      });
+    calibrationRateChanges.add(1, { rate: String(rate), status: String(response.status) });
+    if (response.status !== 200) calibrationRateChangeFailures.add(1, { rate: String(rate), status: String(response.status) });
+    business(response.status === 200, 'calibration admission rate changed');
   }
 }
 

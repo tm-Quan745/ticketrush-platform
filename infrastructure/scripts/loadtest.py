@@ -370,34 +370,6 @@ def queue_config(rate, run_id):
             "stdout": result.stdout.strip()[-2000:], "stderr": result.stderr.strip()[-2000:]}
 
 
-class CalibrationRateSchedule:
-    """Apply only the pre-registered event admission rates during scenario K."""
-    def __init__(self, args, stages):
-        self.args, self.stages, self.records, self.error = args, stages, [], None
-        self.stop = threading.Event()
-        self.thread = threading.Thread(target=self.apply, daemon=True)
-
-    def start(self):
-        self.thread.start()
-
-    def finish(self):
-        self.stop.set()
-        self.thread.join(timeout=30)
-        (RESULTS / f"{self.args.run_id}-calibration-schedule.json").write_text(json.dumps({
-            "run_id": self.args.run_id, "stages": self.stages, "transitions": self.records,
-            "error": self.error}, indent=2))
-
-    def apply(self):
-        for previous, next_stage in zip(self.stages, self.stages[1:]):
-            if self.stop.wait(previous["duration_seconds"]):
-                return
-            record = queue_config(next_stage["rate"], self.args.run_id)
-            self.records.append(record)
-            if record["exit"]:
-                self.error = f"Could not set admission rate {next_stage['rate']}"
-                return
-
-
 def fresh_calibration(args):
     """One finite queue with a pre-registered rate schedule and live admission feed."""
     if args.scenario != "K":
@@ -430,7 +402,6 @@ def fresh_calibration(args):
     # Prime the feed before the first constant-arrival stage races the one-second scheduler tick.
     time.sleep(3)
     args.no_reset, args.no_warmup = True, True
-    args._calibration_schedule = CalibrationRateSchedule(args, stages)
     exit_code = measure(args)
     lifecycle["finished_at_utc"] = utc_timestamp(); lifecycle["result"] = "PASS" if exit_code == 0 else "FAIL"
     write_calibration_lifecycle(args.run_id, lifecycle)
@@ -803,9 +774,6 @@ def measure(args):
         provenance["admission_token_freshness"] = admission_freshness(args)
         (RESULTS / f"{args.run_id}-provenance.json").write_text(json.dumps(provenance, indent=2))
     start = time.time()
-    rate_schedule = getattr(args, "_calibration_schedule", None)
-    if rate_schedule:
-        rate_schedule.start()
     parameters = ["SCENARIO=" + args.scenario, "RUN_ID=" + args.run_id,
                   "QUEUE_USERS=" + str(args.users)] + args.param
     command = ["run", "--rm", "-T"]
@@ -824,8 +792,6 @@ def measure(args):
     finally:
         sampler.finish()
         docker_stats.finish()
-        if rate_schedule:
-            rate_schedule.finish()
     end = time.time()
     queue_audit_exit = None
     if args.scenario in {"J", "R", "P"}:
@@ -882,10 +848,9 @@ def measure(args):
                   "collection_error": collection_error, "queue_audit_exit": queue_audit_exit,
                   "memory_abort": docker_stats.memory_abort.is_set(), "max_memory_percent": docker_stats.max_memory_percent,
                   "work_minimum": work, "join_server_latency": join_latency,
-                  "calibration_schedule_error": rate_schedule.error if rate_schedule else None,
-                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"] or not join_latency["passed"] or (rate_schedule and rate_schedule.error)) else "FAIL"}
+                  "result": "PASS" if not (outcome.returncode or verification_exit or collection_error or docker_stats.memory_abort.is_set() or not work["passed"] or not join_latency["passed"]) else "FAIL"}
     (RESULTS / f"{args.run_id}-run.json").write_text(json.dumps(run_result, indent=2))
-    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set()) or int(not work["passed"]) or int(bool(rate_schedule and rate_schedule.error))
+    return outcome.returncode or verification_exit or int(collection_error is not None) or int(docker_stats.memory_abort.is_set()) or int(not work["passed"])
 
 
 def environment():
