@@ -35,6 +35,33 @@ def tool(*args, **kwargs):
     return compose("run", "--rm", "-T", "tools", *args, **kwargs)
 
 
+def compose_diagnostics():
+    """Print bounded, non-secret Compose state after a lifecycle failure."""
+    checks = (
+        ("Compose service state", ("ps", "--all")),
+        ("Backend log tail", ("logs", "--no-color", "--tail", "200", "backend")),
+        ("PostgreSQL log tail", ("logs", "--no-color", "--tail", "100", "postgres")),
+        ("Redis log tail", ("logs", "--no-color", "--tail", "100", "redis")),
+        ("RabbitMQ log tail", ("logs", "--no-color", "--tail", "100", "rabbitmq")),
+        ("Observability log tail", ("logs", "--no-color", "--tail", "100", "prometheus", "cadvisor")),
+    )
+    for label, command in checks:
+        result = compose(*command, check=False, capture=True)
+        print(f"\n===== {label} =====")
+        output = (result.stdout or "") + (result.stderr or "")
+        print(output.rstrip() or "(no output)")
+
+
+def start_loadtest_stack():
+    """Start all smoke-test services and preserve enough evidence to diagnose a failed wait."""
+    try:
+        compose("up", "-d", "--wait", "--wait-timeout", "240", "backend", "prometheus", "grafana",
+                "postgres-exporter", "redis-exporter", "cadvisor")
+    except subprocess.CalledProcessError:
+        compose_diagnostics()
+        raise
+
+
 def init():
     if ENV_FILE.exists():
         print("Preserving existing isolated loadtest environment")
@@ -894,7 +921,7 @@ def environment():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "checkout", "calibration", "verify", "queries", "test", "environment", "down"])
+    p.add_argument("command", choices=["init", "up", "seed", "reset", "run", "checkout", "calibration", "verify", "queries", "test", "environment", "diagnostics", "down"])
     p.add_argument("--scenario", choices=list("ABCDEFGHWJKNRPQSTV"), default="A")
     p.add_argument("--run-id", default=None)
     p.add_argument("--users", type=int, default=20000)
@@ -946,8 +973,7 @@ def main():
         p.error("Run init first")
     if args.command == "up":
         compose("build", "backend", "tools")
-        compose("up", "-d", "--wait", "--wait-timeout", "240", "backend", "prometheus", "grafana",
-                "postgres-exporter", "redis-exporter", "cadvisor")
+        start_loadtest_stack()
         # Existing volumes also need the extension; no Flyway migration is edited.
         compose("exec", "-T", "postgres", "psql", "-U", "ticketrush", "-d", "ticketrush_loadtest", "-v", "ON_ERROR_STOP=1",
                 "-c", "CREATE EXTENSION IF NOT EXISTS pg_stat_statements")
@@ -973,6 +999,8 @@ def main():
             compose("up", "-d", "--wait", "backend")
     elif args.command == "environment":
         environment()
+    elif args.command == "diagnostics":
+        compose_diagnostics()
     elif args.command == "down":
         compose("down")  # Preserve volumes and measurements; no implicit destructive cleanup.
 

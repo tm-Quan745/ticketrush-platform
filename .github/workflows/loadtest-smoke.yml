@@ -20,6 +20,9 @@ jobs:
         run: python3 infrastructure/scripts/loadtest.py init
       - name: Build and start stack
         run: python3 infrastructure/scripts/loadtest.py up
+      - name: Print stack diagnostics on startup failure
+        if: failure()
+        run: python3 infrastructure/scripts/loadtest.py diagnostics
       - name: Verify tooling on real services
         run: python3 infrastructure/scripts/loadtest.py test
       - name: Record environment

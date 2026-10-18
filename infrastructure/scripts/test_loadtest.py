@@ -1,5 +1,7 @@
 import sys
 import unittest
+from subprocess import CalledProcessError, CompletedProcess
+from unittest.mock import patch
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -8,6 +10,16 @@ import loadtest
 
 
 class ObservabilityPreflightTest(unittest.TestCase):
+    def test_start_stack_prints_compose_diagnostics_when_wait_fails(self):
+        failed = CalledProcessError(1, ["docker", "compose", "up"])
+        success = CompletedProcess([], 0, stdout="diagnostic", stderr="")
+        with patch.object(loadtest, "compose", side_effect=[failed, success, success, success, success, success, success]) as compose:
+            with self.assertRaises(CalledProcessError):
+                loadtest.start_loadtest_stack()
+        commands = [call.args for call in compose.call_args_list]
+        self.assertIn(("ps", "--all"), commands)
+        self.assertIn(("logs", "--no-color", "--tail", "200", "backend"), commands)
+
     def test_compose_service_rows_accepts_object_and_array(self):
         self.assertEqual(
             [{"Service": "prometheus"}],
