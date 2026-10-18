@@ -11,6 +11,7 @@ const admin = JSON.parse(open('./.data/admin.json'));
 const started = new Counter('sellout_started'), paid = new Counter('sellout_paid');
 const sold = new Counter('sellout_sold_out'), errors = new Counter('sellout_errors');
 const finished = new Counter('sellout_finished'), bound = new Counter('sellout_token_binding_checked');
+const waiting = new Counter('sellout_waiting'), reserveSold = new Counter('sellout_reservation_sold_out');
 const soldLatency = new Trend('sellout_status_duration', true);
 export const options = {
   scenarios: { sellout: { executor: 'constant-arrival-rate', rate: 20, timeUnit: '1s', duration: '250s',
@@ -37,16 +38,20 @@ export default function () {
   if(i>=5000) return;
   started.add(1); errors.add(0);
   let admission=null;
-  for(let attempt=0;attempt<24;attempt++) {
+  {
     const response=call('GET',`/internal/loadtest/events/${event.id}/waiting-room/admissions?limit=1`,'admission feed',null,admin);
     if(response.status!==200) { errors.add(1);return; }
     const values=body(response);
-    if(Array.isArray(values)&&values.length) { admission=values[0];break; }
-    const status=call('GET',`/api/v1/events/${event.id}/waiting-room/status`,'queue status',null,users[i]);
-    if(status.status===200&&body(status).soldOut===true) {
-      soldLatency.add(status.timings.duration); sold.add(1); finished.add(1);return;
+    if(Array.isArray(values)&&values.length) { admission=values[0]; }
+    else {
+      const status=call('GET',`/api/v1/events/${event.id}/waiting-room/status`,'queue status',null,users[i]);
+      if(status.status!==200) { errors.add(1);return; }
+      if(body(status).soldOut===true) { soldLatency.add(status.timings.duration);sold.add(1); }
+      else { waiting.add(1); }
+      // WAITING is not terminal. The independent audit must account for every
+      // seeded user as admitted/processed or remaining/SOLD_OUT after the run.
+      finished.add(1);return;
     }
-    sleep(0.25);
   }
   const user=admission&&userFor(admission.user);
   if(!user) { errors.add(1);return; }
@@ -58,7 +63,7 @@ export default function () {
   bound.add(1);
   const reserve=call('POST','/api/v1/reservations','reserve',payload,user,
     {'Idempotency-Key':key(i,'3'),'X-Admission-Token':admission.token},[201,409]);
-  if(reserve.status===409&&body(reserve).code==='SOLD_OUT') { sold.add(1);finished.add(1);return; }
+  if(reserve.status===409&&body(reserve).code==='SOLD_OUT') { sold.add(1);reserveSold.add(1);finished.add(1);return; }
   if(reserve.status!==201) { errors.add(1);return; }
   const order=call('POST','/api/v1/orders','order',{reservationId:body(reserve).id},user,
     {'Idempotency-Key':key(i,'4'),'X-Mock-Scenario':'SUCCESS','X-Mock-Test-Token':__ENV.MOCK_PAYMENT_TEST_TOKEN},[201]);

@@ -13,6 +13,14 @@ Use shared sorted user records and binary search in the sell-out client; do not 
 token-bearing records separately in each VU. Little's law estimates 20/s x 3s = 60 VUs; allocate
 100, cap at 150, abort above 85% aggregate Docker memory. No automatic sell-out retries.
 
+An empty admission feed ends the short iteration as WAITING, rather than occupying a checkout
+VU for six seconds. This is not a successful terminal outcome: the independent final audit
+requires all 5,000 seeded users to partition exactly into FIFO admitted users with PAID or
+reservation SOLD_OUT outcomes, and remaining queued users whose status reports soldOut.
+The 20/s rate describes offered admission/checkout opportunities, not guaranteed admission
+or payment throughput. Zero drops/errors and all 5,000 started/completed opportunities are
+additional gates, never substitutes for terminal cohort accounting.
+
 ## Consequences
 The seed and audit add test-only work. HTTP joins are excluded from this measurement, and the
 5,000 entries are a cohort, not simultaneous purchases. Cross-user token probes add one rejected

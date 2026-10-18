@@ -4,6 +4,7 @@ import sys
 import time
 from pathlib import Path
 import tool
+from sellout_contract import cohort_complete
 
 
 def main(command, run_id):
@@ -51,6 +52,8 @@ def main(command, run_id):
             'remaining_sold_out': remaining_sold_out == len(waiting) and bool(waiting),
             'remaining_status_under_one_second': max_status_ms < 1000,
             'all_tokens_checked_cross_user': count('sellout_token_binding_checked') == len(ids),
+            'terminal_cohort': cohort_complete([u['id'] for u in users], ids, waiting, paid,
+                                               count('sellout_reservation_sold_out'), remaining_sold_out),
             'work_minimum': count('sellout_started') == count('sellout_finished') == 5000 and count('sellout_paid') == paid and paid > 0,
             'no_errors_or_drops': count('sellout_errors') == count('dropped_iterations') == 0,
         }
