@@ -2,6 +2,10 @@
 
 ## 2026-10-17 — RedisGuard resilience and paced join gate
 
+## 2026-10-18 — interrupted calibration, excluded
+
+`calibration-staircase-1` is invalid and excluded. The runner stopped the backend for its normal isolated reset, then Docker Desktop's Linux engine disappeared before seed, k6, provenance, telemetry, or the verifier ran. At `2026-10-18T05:24:34.530Z`, `docker info --format '{{.NCPU}} {{.MemTotal}}'` returned `0 0` and could not open `dockerDesktopLinuxEngine`. The only retained files are the lifecycle and console logs plus [`calibration-staircase-1-invalid.json`](results/calibration-staircase-1-invalid.json); it must be rerun after Docker is healthy. It contributes no calibration result.
+
 The prior `checkout-V20-cpu-1` join failure remains a negative setup artifact. Under the old
 breaker, the first qualifying Redis timeout opened the circuit; `circuit_open` then persisted for
 the configured five seconds. The artifact records fallback counts but not the first-open timestamp,
