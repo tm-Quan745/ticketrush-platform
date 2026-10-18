@@ -6,6 +6,10 @@
 
 `calibration-staircase-1` is invalid and excluded. The runner stopped the backend for its normal isolated reset, then Docker Desktop's Linux engine disappeared before seed, k6, provenance, telemetry, or the verifier ran. At `2026-10-18T05:24:34.530Z`, `docker info --format '{{.NCPU}} {{.MemTotal}}'` returned `0 0` and could not open `dockerDesktopLinuxEngine`. The only retained files are the lifecycle and console logs plus [`calibration-staircase-1-invalid.json`](results/calibration-staircase-1-invalid.json); it must be rerun after Docker is healthy. It contributes no calibration result.
 
+`calibration-staircase-2` is also excluded, but it completed its join precondition and verifier. Its fixed 45-second generator timeout could not contain 100 VUs × 50 rounds with a one-second sleep: only 4,329/5,000 joins started/accepted and 671 iterations dropped. Backend join p95 was only 33.3 ms, so this is a generator-duration setup error, not backend capacity evidence. [`calibration-staircase-2-invalid.json`](results/calibration-staircase-2-invalid.json) retains the negative result. Commit `d46ffe0` derives the duration from `cohort / rate + 30 seconds`.
+
+`calibration-staircase-3` has a passing join precondition but is invalid and stopped before checkout traffic. Its external Python scheduler began its 45-second rate clock while k6 was still creating 225 VUs, so its admission rate would have changed before the named k6 stages began. There is no checkout summary or verifier to interpret. [`calibration-staircase-3-invalid.json`](results/calibration-staircase-3-invalid.json) records the exclusion. Commit `f2963cc` moves the three rate changes into a k6 control VU, whose clock begins with the calibrated workload.
+
 The prior `checkout-V20-cpu-1` join failure remains a negative setup artifact. Under the old
 breaker, the first qualifying Redis timeout opened the circuit; `circuit_open` then persisted for
 the configured five seconds. The artifact records fallback counts but not the first-open timestamp,
