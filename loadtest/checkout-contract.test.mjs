@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calibrationStages, checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
+import { calibrationStages, checkoutTarget, checkoutThresholds, pacedJoinMaxDuration } from './lib/checkout-contract.mjs';
 
 test('paced checkout requires the whole offered cohort to start and pay', () => {
   assert.deepEqual(checkoutThresholds(checkoutTarget('V', 120, 20, '5s')), {
@@ -34,4 +34,10 @@ test('calibration schedule preserves a finite queue cohort', () => {
     ], offered: 4950,
   });
   assert.throws(() => calibrationStages('10:45,20:45,40:45,60:45', 5000));
+});
+
+test('paced join duration includes every one-second round plus scheduler grace', () => {
+  assert.equal(pacedJoinMaxDuration(5000, 100), '80s');
+  assert.equal(pacedJoinMaxDuration(900, 90), '40s');
+  assert.throws(() => pacedJoinMaxDuration(5000, 90));
 });

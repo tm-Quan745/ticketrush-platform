@@ -30,3 +30,13 @@ export function calibrationStages(value, users) {
   if (!stages.length || offered > users) throw new Error('Calibration stages exceed the queue cohort');
   return { stages, offered };
 }
+
+export function pacedJoinMaxDuration(users, rate, graceSeconds = 30) {
+  if (!Number.isInteger(users) || !Number.isInteger(rate) || !Number.isInteger(graceSeconds)
+      || users < 1 || rate < 1 || graceSeconds < 0 || users % rate !== 0) {
+    throw new Error('Paced join duration needs a positive, divisible cohort and rate');
+  }
+  // One round ends with sleep(1), so the exact VU rounds themselves consume
+  // users / rate seconds before request latency and k6 scheduling overhead.
+  return `${users / rate + graceSeconds}s`;
+}

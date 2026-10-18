@@ -4,7 +4,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 import { request, body, key, outcomes, base } from './lib/client.js';
-import { calibrationStages, checkoutTarget, checkoutThresholds } from './lib/checkout-contract.mjs';
+import { calibrationStages, checkoutTarget, checkoutThresholds, pacedJoinMaxDuration } from './lib/checkout-contract.mjs';
 
 const users = new SharedArray('loadtest users', () => JSON.parse(open('./.data/users.json')));
 const data = JSON.parse(open('./.data/dataset.json'));
@@ -55,6 +55,8 @@ const checkoutExpected = checkoutTarget(scenario, admissionPairs.length, checkou
 const checkoutStarted = new Counter('checkout_started');
 if (!/^\d+s$/.test(stressPlateau)) throw new Error('STEP_DURATION must be an integer number of seconds');
 if (queueJoinRate > 0 && queueUsers % queueJoinRate !== 0) throw new Error('QUEUE_USERS must divide evenly by QUEUE_JOIN_RATE');
+const pacedJoinDuration = queueJoinRate > 0
+  ? (__ENV.QUEUE_JOIN_MAX_DURATION || pacedJoinMaxDuration(queueUsers, queueJoinRate)) : '2m';
 const stressPhaseSeconds = 1 + Number(stressPlateau.slice(0, -1));
 const businessFailures = new Counter('business_failures');
 const completed = new Counter('purchases_paid');
@@ -112,11 +114,11 @@ const plans = {
   H: { spike }, W: { warmup: steady('purchase', 2, __ENV.WARMUP_DURATION || '60s') },
   J: { join: queueJoinRate > 0
     ? { executor: 'per-vu-iterations', exec: 'queueJoin', vus: queueJoinRate, iterations: queueUsers / queueJoinRate,
-      maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '45s', gracefulStop: '30s' }
+      maxDuration: pacedJoinDuration, gracefulStop: '30s' }
     : { executor: 'shared-iterations', exec: 'queueJoin', vus: queueJoinVUs, iterations: queueUsers,
       maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '2m', gracefulStop: '30s' } },
   N: { health: { executor: 'per-vu-iterations', exec: 'healthCheck', vus: queueJoinRate,
-    iterations: queueUsers / queueJoinRate, maxDuration: __ENV.QUEUE_JOIN_MAX_DURATION || '45s', gracefulStop: '30s' } },
+    iterations: queueUsers / queueJoinRate, maxDuration: pacedJoinDuration, gracefulStop: '30s' } },
   R: { rejoin: { executor: 'shared-iterations', exec: 'queueRejoin', vus: Math.min(100, queueJoinVUs),
     iterations: Number(__ENV.QUEUE_REJOIN_USERS || 100), maxDuration: '30s', gracefulStop: '10s' } },
   P: { poll: { executor: 'constant-vus', exec: 'queuePoll', vus: queuePollers, duration: queuePollDuration,
