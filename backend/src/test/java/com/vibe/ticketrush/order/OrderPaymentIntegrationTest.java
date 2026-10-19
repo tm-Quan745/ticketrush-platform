@@ -338,4 +338,62 @@ class OrderPaymentIntegrationTest {
             assertThat(idempotency.execute(user,"lease-race",key,"payload",() -> {throw new AssertionError("Must replay");}).replayed()).isTrue();
         } finally {finish.countDown();pool.shutdownNow();assertThat(pool.awaitTermination(10,TimeUnit.SECONDS)).isTrue();}
     }
+
+    @Test void gatePermissionsAndValidation() {
+        String body = "{\"ticketCode\":\"unknown\"}";
+        for (String path : List.of("/api/v1/gate/tickets/verify", "/api/v1/gate/tickets/check-in")) {
+            assertThat(request("POST", path, body, null, Map.of()).statusCode()).isEqualTo(401);
+            assertThat(request("POST", path, body, token(user, "USER"), Map.of()).statusCode()).isEqualTo(403);
+            assertThat(request("POST", path, body, token(user, "ADMIN"), Map.of()).statusCode()).isEqualTo(403);
+            assertThat(request("POST", path, body, token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(404);
+            assertThat(request("POST", path, "{\"ticketCode\":\"\"}", token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(400);
+        }
+        for (String path : List.of("/api/v1/admin/orders", "/api/v1/admin/outbox", "/api/v1/admin/notifications")) {
+            assertThat(request("GET", path, null, null, Map.of()).statusCode()).isEqualTo(401);
+            for (String role : List.of("USER", "STAFF"))
+                assertThat(request("GET", path, null, token(user, role), Map.of()).statusCode()).isEqualTo(403);
+            assertThat(request("GET", path, null, token(user, "ADMIN"), Map.of()).statusCode()).isEqualTo(200);
+        }
+        assertThat(request("GET", "/api/v1/auth/me", null, token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(200);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM roles WHERE name='STAFF'", Integer.class)).isEqualTo(1);
+    }
+
+    @Test void concurrentGateCheckInsHaveExactlyOneWinner() throws Exception {
+        UUID id = order(user, 1);
+        assertThat(webhook(event(id, Type.SUCCEEDED, UUID.randomUUID().toString())).statusCode()).isEqualTo(200);
+        String code = jdbc.queryForObject("SELECT ticket_code FROM tickets WHERE order_id=?", String.class, id);
+        String body = json.writeValueAsString(Map.of("ticketCode", code));
+        String staff = token(user, "STAFF");
+        String path = "/api/v1/gate/tickets/";
+        assertThat(request("POST", path + "verify", body, staff, Map.of()).body()).contains("VALID");
+        int count = 16;
+        var barrier = new CyclicBarrier(count);
+        try (var pool = Executors.newFixedThreadPool(count)) {
+            List<Future<Integer>> results = new ArrayList<>();
+            for (int i = 0; i < count; i++) results.add(pool.submit(() -> {
+                barrier.await(20, TimeUnit.SECONDS);
+                return request("POST", path + "check-in", body, staff, Map.of()).statusCode();
+            }));
+            List<Integer> statuses = new ArrayList<>();
+            for (var result : results) statuses.add(result.get(45, TimeUnit.SECONDS));
+            assertThat(statuses.stream().filter(x -> x == 200).count()).isEqualTo(1);
+            assertThat(statuses.stream().filter(x -> x == 409).count()).isEqualTo(count - 1);
+        }
+        var usedAt = jdbc.queryForObject("SELECT used_at FROM tickets WHERE ticket_code=?", Timestamp.class, code);
+        assertThat(usedAt).isNotNull();
+        assertThat(request("POST", path + "verify", body, staff, Map.of()).body()).contains("USED");
+        assertThat(request("POST", path + "check-in", body, staff, Map.of()).statusCode()).isEqualTo(409);
+        assertThat(jdbc.queryForObject("SELECT used_at FROM tickets WHERE ticket_code=?", Timestamp.class, code)).isEqualTo(usedAt);
+        assertThat(jdbc.queryForObject("SELECT used_by FROM tickets WHERE ticket_code=?", UUID.class, code)).isEqualTo(user);
+    }
+
+    @Test void gateRejectsRefundPendingAndCancelledTickets() throws Exception {
+        UUID id = order(user, 1);
+        assertThat(webhook(event(id, Type.SUCCEEDED, UUID.randomUUID().toString())).statusCode()).isEqualTo(200);
+        String code = jdbc.queryForObject("SELECT ticket_code FROM tickets WHERE order_id=?", String.class, id);
+        orders.refund(id);
+        String body = json.writeValueAsString(Map.of("ticketCode", code));
+        assertThat(request("POST", "/api/v1/gate/tickets/check-in", body, token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(409);
+        assertThat(jdbc.queryForObject("SELECT used_at FROM tickets WHERE ticket_code=?", Timestamp.class, code)).isNull();
+    }
 }
