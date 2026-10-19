@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791902041.1104677,
+  "end": 1791902078.992043,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=week7-legacy-A1"
+  ],
+  "collection_error": "<urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+}

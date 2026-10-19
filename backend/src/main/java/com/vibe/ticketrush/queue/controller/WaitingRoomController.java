@@ -2,6 +2,8 @@ package com.vibe.ticketrush.queue.controller;
 
 import com.vibe.ticketrush.queue.service.WaitingRoomService;
 import com.vibe.ticketrush.event.service.WaitingRoomEvents;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -24,19 +26,27 @@ import java.util.UUID;
 public class WaitingRoomController {
     private final WaitingRoomService queue;
     private final WaitingRoomEvents events;
-    public WaitingRoomController(WaitingRoomService queue,WaitingRoomEvents events) { this.queue=queue; this.events=events; }
+    private final Timer statusResponse;
+    public WaitingRoomController(WaitingRoomService queue,WaitingRoomEvents events,MeterRegistry metrics) {
+        this.queue=queue; this.events=events;
+        this.statusResponse=Timer.builder("waiting_room_status_response_seconds").publishPercentileHistogram().register(metrics);
+    }
     public record Configure(boolean enabled,@Min(1) @Max(1000) int rate,@NotNull @Pattern(regexp="fifo|lottery") String mode) {}
     @PutMapping("/admin/events/{id}/waiting-room")
     @Operation(summary="Configure waiting room (ADMIN)")
     public WaitingRoomEvents.Settings configure(@PathVariable UUID id,@Valid @RequestBody Configure request) {
-        return events.configure(id,request.enabled(),request.rate(),request.mode());
+        WaitingRoomEvents.Settings settings=events.configure(id,request.enabled(),request.rate(),request.mode());
+        queue.refresh(id);
+        return settings;
     }
     @PostMapping("/events/{id}/waiting-room/join")
     @Operation(summary="Join once, preserving the original position (USER)")
     public ResponseEntity<WaitingRoomService.Status> join(@PathVariable UUID id,@AuthenticationPrincipal Jwt jwt) { return status(id,jwt,true); }
     @GetMapping("/events/{id}/waiting-room/status")
     @Operation(summary="Poll admission and refresh heartbeat (USER)")
-    public ResponseEntity<WaitingRoomService.Status> status(@PathVariable UUID id,@AuthenticationPrincipal Jwt jwt) { return status(id,jwt,false); }
+    public ResponseEntity<WaitingRoomService.Status> status(@PathVariable UUID id,@AuthenticationPrincipal Jwt jwt) {
+        return statusResponse.record(() -> status(id,jwt,false));
+    }
     private ResponseEntity<WaitingRoomService.Status> status(UUID id,Jwt jwt,boolean join) {
         var result=queue.status(id,UUID.fromString(jwt.getSubject()),join);
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).header("Retry-After",Integer.toString(result.pollIntervalSeconds())).body(result);

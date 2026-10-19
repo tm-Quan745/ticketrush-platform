@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791865400.852499,
+  "end": 1791865452.4257762,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=attribution-C-3-provenanced-final"
+  ],
+  "collection_error": null
+}

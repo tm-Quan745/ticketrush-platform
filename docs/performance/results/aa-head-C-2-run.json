@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791868180.0460997,
+  "end": 1791868232.9570103,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=aa-head-C-2"
+  ],
+  "collection_error": null
+}

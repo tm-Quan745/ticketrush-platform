@@ -1,0 +1,16 @@
+{
+  "run_id": "health-control-900",
+  "scenario": "N",
+  "purpose": "Client/VM latency control at the same cadence as join-900-resilience",
+  "provenance": {
+    "backend_commit": "edd1d20d42a2555bfbb2e71c83c16f2aca316953",
+    "backend_image_id": "sha256:ed03f5bafd4da53806a5e1ccc0c537ef283fd0526ba96111505a7dfe0e323198",
+    "durability": { "synchronous_commit": "on", "fsync": "on" }
+  },
+  "work": { "started": 900, "completed": 900, "dropped_iterations": 0, "verifier": "PASS" },
+  "latency_ms": {
+    "k6": { "p50": 10.366, "p95": 60.645, "p99": 87.873 },
+    "server": { "p50": 5.039, "p95": 9.357, "p99": 10.681 }
+  },
+  "max_docker_memory_percent": 34.09
+}

@@ -25,6 +25,10 @@ public class IdempotencyService {
     }
     public record StoredResponse(int status,String body,boolean replayed) {}
     public StoredResponse execute(UUID user,String endpoint,UUID key,String canonicalRequest,Supplier<StoredResponse> action) {
+        return execute(user,endpoint,key,canonicalRequest,() -> {},action);
+    }
+    /** Preparation runs after claiming the key, without holding the business transaction's connection. */
+    public StoredResponse execute(UUID user,String endpoint,UUID key,String canonicalRequest,Runnable preparation,Supplier<StoredResponse> action) {
         String hash=hash(canonicalRequest);
         UUID claim=UUID.randomUUID();
         var prior=tx.execute(s -> {
@@ -38,6 +42,7 @@ public class IdempotencyService {
         });
         if (prior!=null) return prior;
         try {
+            preparation.run();
             return tx.execute(s -> {
                 keys.lock(claim);
                 var response=action.get();

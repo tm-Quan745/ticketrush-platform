@@ -1,0 +1,15 @@
+{
+  "commit": "fcb976f3bed21efdb3808084290a35ebe3daba4d",
+  "command": ".tools/apache-maven-3.9.9/bin/mvn.cmd -B -ntp -s .mvn-week7-settings.xml -f backend/pom.xml verify",
+  "exit_code": 0,
+  "build": "SUCCESS",
+  "tests": 111,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "benchmark_profiles_included": false,
+  "week6_redis_tests": 25,
+  "duration_seconds": 206,
+  "finished_at": "2026-10-18T13:32:09+07:00",
+  "log": ".tools/minimum-finish-final-verify.log"
+}

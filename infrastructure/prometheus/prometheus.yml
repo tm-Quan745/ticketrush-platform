@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+rule_files: [alerts.yml]
+scrape_configs:
+  - job_name: backend
+    metrics_path: /actuator/prometheus
+    basic_auth:
+      username: prometheus
+      password_file: /tmp/metrics-password
+    static_configs: [{targets: ['backend:8080']}]
+  - job_name: postgres
+    static_configs: [{targets: ['postgres-exporter:9187']}]
+  - job_name: redis
+    static_configs: [{targets: ['redis-exporter:9121']}]
+  - job_name: rabbitmq
+    metrics_path: /metrics/per-object
+    static_configs: [{targets: ['rabbitmq:15692']}]
+  - job_name: containers
+    static_configs: [{targets: ['cadvisor:8080']}]
+  - job_name: prometheus
+    static_configs: [{targets: ['localhost:9090']}]

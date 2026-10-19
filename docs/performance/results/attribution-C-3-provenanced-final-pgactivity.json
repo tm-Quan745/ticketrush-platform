@@ -1,0 +1,3290 @@
+[
+  {
+    "at": "2026-10-13T04:23:20.999228+00:00",
+    "sessions": [
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 4.164781,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.521422,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.348515,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.354002,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.508287,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.507276,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 72.655077,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 72.614358,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 72.571096,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 72.529934,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 72.489133,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      }
+    ],
+    "idle_in_transaction": 0,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0
+  },
+  {
+    "at": "2026-10-13T04:23:22.21736+00:00",
+    "sessions": [
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.37119,
+        "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),0)/1000 FR"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.711364,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.566648,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.572135,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.717444,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.733884,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 73.87321,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 73.83249,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 73.789228,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 73.748065,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 73.707265,
+        "query": "SET application_name = 'PostgreSQL JDBC Driver'"
+      }
+    ],
+    "idle_in_transaction": 0,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0
+  },
+  {
+    "at": "2026-10-13T04:23:23.733621+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.356611,
+        "query_age_s": 0.337033,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.340577,
+        "query_age_s": 0.301128,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.257207,
+        "query_age_s": 0.225593,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.181197,
+        "query_age_s": 0.154559,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.097454,
+        "query_age_s": 0.087417,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.075215,
+        "query_age_s": 0.000984,
+        "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.05516,
+        "query_age_s": 0.035969,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.010368,
+        "query_age_s": 0.008037,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.000779,
+        "query_age_s": 0.000418,
+        "query": "select tt1_0.event_id from ticket_tiers tt1_0 where tt1_0.id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.887534,
+        "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),0)/1000 FR"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004853,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 1,
+    "waiting_on_lock": 6,
+    "oldest_xact_age_s": 0.356611
+  },
+  {
+    "at": "2026-10-13T04:23:25.289063+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.057285,
+        "query_age_s": 0.001063,
+        "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.045156,
+        "query_age_s": 0.032017,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.039542,
+        "query_age_s": 0.025469,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.023098,
+        "query_age_s": 0.018774,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "tuple",
+        "xact_age_s": 0.021925,
+        "query_age_s": 0.017064,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.013999,
+        "query_age_s": 0.002425,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006012,
+        "query_age_s": 0.004601,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005892,
+        "query_age_s": 0.003347,
+        "query": "SELECT * FROM reservations WHERE user_id=$1 AND status='HELD' AND expires_at<$2 ORDER BY id FOR UPDATE"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.003616,
+        "query_age_s": 0.001921,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.00176,
+        "query_age_s": 0.001653,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.442927,
+        "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),0)/1000 FR"
+      }
+    ],
+    "idle_in_transaction": 2,
+    "waiting_on_lock": 4,
+    "oldest_xact_age_s": 0.057285
+  },
+  {
+    "at": "2026-10-13T04:23:27.013634+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.29106,
+        "query_age_s": 0.000731,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.048485,
+        "query_age_s": 0.043358,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.047443,
+        "query_age_s": 0.043366,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.041422,
+        "query_age_s": 0.001857,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.031856,
+        "query_age_s": 0.031857,
+        "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(las"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.019729,
+        "query_age_s": 0.000722,
+        "query": "INSERT INTO payments(id,order_id,provider,provider_payment_id,amount,currency,status,scenario,next_dispatch_at,created_at,updated_at)\nVALUES ($1,$2,'MOCK',$3,$4,$5,'INITIATED',$6,$7,$8,$9)\n"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "tuple",
+        "xact_age_s": 0.01709,
+        "query_age_s": 0.007584,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.014748,
+        "query_age_s": 0.009228,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006601,
+        "query_age_s": 0.006548,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.004976,
+        "query_age_s": 0.002622,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.005799,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.084721,
+        "query": "SELECT (SELECT count(*) FROM orders) AS orders_created,\n  (SELECT count(*) FROM orders WHERE status='PAID') AS orders_paid,\n  (SELECT count(*) FROM tickets WHERE status='VALID') AS tickets_issued\n"
+      }
+    ],
+    "idle_in_transaction": 3,
+    "waiting_on_lock": 4,
+    "oldest_xact_age_s": 0.29106
+  },
+  {
+    "at": "2026-10-13T04:23:28.731469+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.038183,
+        "query_age_s": 0.013856,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.028402,
+        "query_age_s": 0.000982,
+        "query": "insert into reservations (created_at,expires_at,quantity,status,tier_id,updated_at,user_id,version,id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.024267,
+        "query_age_s": 0.017827,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.009945,
+        "query_age_s": 0.000974,
+        "query": "UPDATE idempotency_keys SET status='COMPLETED',response_status=$1,response_body=$2 WHERE id=$3 AND status='IN_PROGRESS'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.008036,
+        "query_age_s": 0.002108,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.007407,
+        "query_age_s": 0.004081,
+        "query": "select tt1_0.id,tt1_0.available_quantity,tt1_0.created_at,tt1_0.currency,tt1_0.description,tt1_0.event_id,tt1_0.max_per_order,tt1_0.name,tt1_0.price,tt1_0.total_quantity,tt1_0.updated_at,tt1_0.version from ticket_tiers tt1_0 where tt1_0.id="
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.007215,
+        "query_age_s": 0.000932,
+        "query": "INSERT INTO payments(id,order_id,provider,provider_payment_id,amount,currency,status,scenario,next_dispatch_at,created_at,updated_at)\nVALUES ($1,$2,'MOCK',$3,$4,$5,'INITIATED',$6,$7,$8,$9)\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.004137,
+        "query_age_s": 0.001194,
+        "query": "select e1_0.id,e1_0.created_at,e1_0.created_by,e1_0.description,e1_0.end_time,e1_0.image_url,e1_0.sale_end_time,e1_0.sale_start_time,e1_0.start_time,e1_0.status,e1_0.title,e1_0.updated_at,e1_0.venue_address,e1_0.venue_name,e1_0.waiting_room"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.003913,
+        "query_age_s": 0.001948,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.002715,
+        "query_age_s": 0.001659,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.802649,
+        "query": "SELECT (SELECT count(*) FROM orders) AS orders_created,\n  (SELECT count(*) FROM orders WHERE status='PAID') AS orders_paid,\n  (SELECT count(*) FROM tickets WHERE status='VALID') AS tickets_issued\n"
+      }
+    ],
+    "idle_in_transaction": 4,
+    "waiting_on_lock": 2,
+    "oldest_xact_age_s": 0.038183
+  },
+  {
+    "at": "2026-10-13T04:23:30.297763+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.024157,
+        "query_age_s": 0.014224,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.021744,
+        "query_age_s": 0.003496,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.018389,
+        "query_age_s": 0.002643,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.01194,
+        "query_age_s": 0.002208,
+        "query": "select r1_0.id from reservations r1_0 where r1_0.user_id=$1 and r1_0.tier_id=$2 and r1_0.status=$3 fetch first $4 rows only"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.009782,
+        "query_age_s": 0.008732,
+        "query": "select e1_0.id,e1_0.created_at,e1_0.created_by,e1_0.description,e1_0.end_time,e1_0.image_url,e1_0.sale_end_time,e1_0.sale_start_time,e1_0.start_time,e1_0.status,e1_0.title,e1_0.updated_at,e1_0.venue_address,e1_0.venue_name,e1_0.waiting_room"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003157,
+        "query_age_s": 0.003157,
+        "query": "BEGIN"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002698,
+        "query_age_s": 0.002559,
+        "query": "SELECT id FROM idempotency_keys WHERE id=$1 AND status='IN_PROGRESS' FOR UPDATE"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.014355,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.011467,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.009061,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.368922,
+        "query": "SELECT (SELECT count(*) FROM orders) AS orders_created,\n  (SELECT count(*) FROM orders WHERE status='PAID') AS orders_paid,\n  (SELECT count(*) FROM tickets WHERE status='VALID') AS tickets_issued\n"
+      }
+    ],
+    "idle_in_transaction": 5,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.024157
+  },
+  {
+    "at": "2026-10-13T04:23:31.809407+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.027412,
+        "query_age_s": 0.000644,
+        "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.026108,
+        "query_age_s": 0.010493,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "tuple",
+        "xact_age_s": 0.024613,
+        "query_age_s": 0.009681,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.019032,
+        "query_age_s": 0.003179,
+        "query": "INSERT INTO order_items(id,order_id,tier_id,event_id,tier_name,unit_price,quantity) VALUES ($1,$2,$3,$4,$5,$6,$7)"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "tuple",
+        "xact_age_s": 0.017176,
+        "query_age_s": 0.005192,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.012629,
+        "query_age_s": 0.010714,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.010448,
+        "query_age_s": 0.010347,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003329,
+        "query_age_s": 0.00333,
+        "query": "BEGIN"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002168,
+        "query_age_s": 0.001584,
+        "query": "select e1_0.id,e1_0.created_at,e1_0.created_by,e1_0.description,e1_0.end_time,e1_0.image_url,e1_0.sale_end_time,e1_0.sale_start_time,e1_0.start_time,e1_0.status,e1_0.title,e1_0.updated_at,e1_0.venue_address,e1_0.venue_name,e1_0.waiting_room"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002164,
+        "query_age_s": 0.001922,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 4.880588,
+        "query": "SELECT (SELECT count(*) FROM orders) AS orders_created,\n  (SELECT count(*) FROM orders WHERE status='PAID') AS orders_paid,\n  (SELECT count(*) FROM tickets WHERE status='VALID') AS tickets_issued\n"
+      }
+    ],
+    "idle_in_transaction": 5,
+    "waiting_on_lock": 3,
+    "oldest_xact_age_s": 0.027412
+  },
+  {
+    "at": "2026-10-13T04:23:33.441405+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.328413,
+        "query_age_s": 0.001091,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.060304,
+        "query_age_s": 0.050892,
+        "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,'PENDING_PAYMENT',$4,$5,$6,$7,$8)\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.051294,
+        "query_age_s": 0.037079,
+        "query": "select tt1_0.id,tt1_0.available_quantity,tt1_0.created_at,tt1_0.currency,tt1_0.description,tt1_0.event_id,tt1_0.max_per_order,tt1_0.name,tt1_0.price,tt1_0.total_quantity,tt1_0.updated_at,tt1_0.version from ticket_tiers tt1_0 where tt1_0.id="
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.048884,
+        "query_age_s": 0.019088,
+        "query": "INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)\nVALUES ($1,$2,$3,$4,$5,$6,$7,'VALID',$8) ON CONFLICT(order_id,ticket_index) DO NOTHING\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.025339,
+        "query_age_s": 0.018935,
+        "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,'PENDING_PAYMENT',$4,$5,$6,$7,$8)\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.02309,
+        "query_age_s": 0.014773,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.020816,
+        "query_age_s": 0.020295,
+        "query": "INSERT INTO idempotency_keys(id,user_id,endpoint,key,request_hash,status,created_at,expires_at,lease_until)\nVALUES ($1,$2,$3,$4,$5,'IN_PROGRESS',$6,$7,$8) ON CONFLICT(user_id,endpoint,key) DO NOTHING\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.017705,
+        "query_age_s": 0.001677,
+        "query": "select r1_0.id from reservations r1_0 where r1_0.user_id=$1 and r1_0.tier_id=$2 and r1_0.status=$3 fetch first $4 rows only"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.011899,
+        "query_age_s": 0.002965,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005845,
+        "query_age_s": 0.00112,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.498965,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\textract(epoch from now() - last_archived_time) AS last_archive_age\n\t\t\tFROM pg_stat_archiver\n\t\t\t"
+      }
+    ],
+    "idle_in_transaction": 10,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.328413
+  },
+  {
+    "at": "2026-10-13T04:23:35.024608+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.055741,
+        "query_age_s": 0.01279,
+        "query": "select r1_0.id,r1_0.created_at,r1_0.expires_at,r1_0.quantity,r1_0.status,r1_0.tier_id,r1_0.updated_at,r1_0.user_id,r1_0.version from reservations r1_0 where r1_0.id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.026297,
+        "query_age_s": 0.003712,
+        "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,'PENDING_PAYMENT',$4,$5,$6,$7,$8)\n"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALInsert",
+        "xact_age_s": 0.024458,
+        "query_age_s": 0.001579,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.019836,
+        "query_age_s": 0.019718,
+        "query": "SELECT id FROM idempotency_keys WHERE id=$1 AND status='IN_PROGRESS' FOR UPDATE"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.013386,
+        "query_age_s": 0.011133,
+        "query": "SELECT EXISTS(SELECT 1 FROM orders WHERE reservation_id=$1)"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.009169,
+        "query_age_s": 0.009169,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006675,
+        "query_age_s": 0.003863,
+        "query": "SELECT * FROM reservations WHERE id=$1 FOR UPDATE"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005495,
+        "query_age_s": 0.005495,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002259,
+        "query_age_s": 0.000981,
+        "query": "select tt1_0.id,tt1_0.available_quantity,tt1_0.created_at,tt1_0.currency,tt1_0.description,tt1_0.event_id,tt1_0.max_per_order,tt1_0.name,tt1_0.price,tt1_0.total_quantity,tt1_0.updated_at,tt1_0.version from ticket_tiers tt1_0 where tt1_0.id="
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.082165,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\textract(epoch from now() - last_archived_time) AS last_archive_age\n\t\t\tFROM pg_stat_archiver\n\t\t\t"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.013899,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 5,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.055741
+  },
+  {
+    "at": "2026-10-13T04:23:36.622581+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.142631,
+        "query_age_s": 0.126863,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.066191,
+        "query_age_s": 0.060205,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.042981,
+        "query_age_s": 0.036418,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.038596,
+        "query_age_s": 0.03049,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.022177,
+        "query_age_s": 0.004731,
+        "query": "select r1_0.id,r1_0.created_at,r1_0.expires_at,r1_0.quantity,r1_0.status,r1_0.tier_id,r1_0.updated_at,r1_0.user_id,r1_0.version from reservations r1_0 where r1_0.id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.020127,
+        "query_age_s": 0.014427,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.007705,
+        "query_age_s": 0.005594,
+        "query": "select e1_0.id,e1_0.created_at,e1_0.created_by,e1_0.description,e1_0.end_time,e1_0.image_url,e1_0.sale_end_time,e1_0.sale_start_time,e1_0.start_time,e1_0.status,e1_0.title,e1_0.updated_at,e1_0.venue_address,e1_0.venue_name,e1_0.waiting_room"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003035,
+        "query_age_s": 0.002433,
+        "query": "select tt1_0.id,tt1_0.available_quantity,tt1_0.created_at,tt1_0.currency,tt1_0.description,tt1_0.event_id,tt1_0.max_per_order,tt1_0.name,tt1_0.price,tt1_0.total_quantity,tt1_0.updated_at,tt1_0.version from ticket_tiers tt1_0 where tt1_0.id="
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.004075,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004109,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 4.680105,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\textract(epoch from now() - last_archived_time) AS last_archive_age\n\t\t\tFROM pg_stat_archiver\n\t\t\t"
+      }
+    ],
+    "idle_in_transaction": 3,
+    "waiting_on_lock": 5,
+    "oldest_xact_age_s": 0.142631
+  },
+  {
+    "at": "2026-10-13T04:23:38.122452+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.568345,
+        "query_age_s": 0.009849,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.064538,
+        "query_age_s": 0.050214,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.062352,
+        "query_age_s": 0.006068,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.034247,
+        "query_age_s": 0.017196,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.019099,
+        "query_age_s": 0.014276,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.009119,
+        "query_age_s": 0.001751,
+        "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.008879,
+        "query_age_s": 0.006507,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.006982,
+        "query_age_s": 0.006577,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.003396,
+        "query_age_s": 0.003396,
+        "query": "BEGIN"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.001856,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.253309,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_last_wal_receive_lsn() else pg_current_wal_lsn() end) AS pg_current_wal_lsn,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), pg_lsn('0/0')):"
+      }
+    ],
+    "idle_in_transaction": 3,
+    "waiting_on_lock": 3,
+    "oldest_xact_age_s": 0.568345
+  },
+  {
+    "at": "2026-10-13T04:23:39.900219+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.137903,
+        "query_age_s": 0.003426,
+        "query": "select r1_0.id,r1_0.created_at,r1_0.expires_at,r1_0.quantity,r1_0.status,r1_0.tier_id,r1_0.updated_at,r1_0.user_id,r1_0.version from reservations r1_0 where r1_0.id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.043295,
+        "query_age_s": 0.0368,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.014536,
+        "query_age_s": 0.007697,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.014349,
+        "query_age_s": 0.000918,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.003374,
+        "query_age_s": 0.003284,
+        "query": "INSERT INTO idempotency_keys(id,user_id,endpoint,key,request_hash,status,created_at,expires_at,lease_until)\nVALUES ($1,$2,$3,$4,$5,'IN_PROGRESS',$6,$7,$8) ON CONFLICT(user_id,endpoint,key) DO NOTHING\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.001933,
+        "query_age_s": 0.001117,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.000621,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.001011,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.007321,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.0179,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.031139,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_last_wal_receive_lsn() else pg_current_wal_lsn() end) AS pg_current_wal_lsn,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), pg_lsn('0/0')):"
+      }
+    ],
+    "idle_in_transaction": 2,
+    "waiting_on_lock": 2,
+    "oldest_xact_age_s": 0.137903
+  },
+  {
+    "at": "2026-10-13T04:23:41.571171+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.075383,
+        "query_age_s": 0.066467,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.040058,
+        "query_age_s": 0.033725,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.03507,
+        "query_age_s": 0.002147,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.034814,
+        "query_age_s": 0.002799,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.034414,
+        "query_age_s": 0.00435,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.033895,
+        "query_age_s": 0.033812,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006517,
+        "query_age_s": 0.004233,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.004308,
+        "query_age_s": 0.004308,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.035931,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.034744,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 4.702038,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_last_wal_receive_lsn() else pg_current_wal_lsn() end) AS pg_current_wal_lsn,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), pg_lsn('0/0')):"
+      }
+    ],
+    "idle_in_transaction": 7,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.075383
+  },
+  {
+    "at": "2026-10-13T04:23:43.028968+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.099388,
+        "query_age_s": 0.000728,
+        "query": "select r1_0.id,r1_0.created_at,r1_0.expires_at,r1_0.quantity,r1_0.status,r1_0.tier_id,r1_0.updated_at,r1_0.user_id,r1_0.version from reservations r1_0 where r1_0.id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.036482,
+        "query_age_s": 0.010033,
+        "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.035495,
+        "query_age_s": 0.014195,
+        "query": "SELECT * FROM reservations WHERE user_id=$1 AND status='HELD' AND expires_at<$2 ORDER BY id FOR UPDATE"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.015886,
+        "query_age_s": 0.013511,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005719,
+        "query_age_s": 0.00197,
+        "query": "SELECT * FROM reservations WHERE user_id=$1 AND status='HELD' AND expires_at<$2 ORDER BY id FOR UPDATE"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.004843,
+        "query_age_s": 0.004731,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002994,
+        "query_age_s": 0.002923,
+        "query": "SET LOCAL lock_timeout = '3s'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002242,
+        "query_age_s": 0.000614,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.011754,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.009456,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.005686,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\textract(epoch from now() - last_archived_time) AS last_archive_age\n\t\t\tFROM pg_stat_archiver\n\t\t\t"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 1,
+    "oldest_xact_age_s": 0.099388
+  },
+  {
+    "at": "2026-10-13T04:23:44.303401+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.010692,
+        "query_age_s": 0.000757,
+        "query": "UPDATE reservations SET status=$1, updated_at=$2, version=version+1 WHERE id=$3 AND status='HELD'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.007508,
+        "query_age_s": 0.000725,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006817,
+        "query_age_s": 0.001994,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003138,
+        "query_age_s": 0.000916,
+        "query": "SELECT * FROM reservations WHERE id=$1 FOR UPDATE"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002579,
+        "query_age_s": 0.00247,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002411,
+        "query_age_s": 0.000552,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002272,
+        "query_age_s": 0.002159,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.00119,
+        "query_age_s": 0.001092,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001183,
+        "query_age_s": 0.000596,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.000738,
+        "query_age_s": 0.000387,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.280119,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\textract(epoch from now() - last_archived_time) AS last_archive_age\n\t\t\tFROM pg_stat_archiver\n\t\t\t"
+      }
+    ],
+    "idle_in_transaction": 9,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.010692
+  },
+  {
+    "at": "2026-10-13T04:23:45.601239+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.480505,
+        "query_age_s": 0.001523,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.009914,
+        "query_age_s": 0.009812,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.009224,
+        "query_age_s": 0.001857,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005661,
+        "query_age_s": 0.000406,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005067,
+        "query_age_s": 0.004646,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002269,
+        "query_age_s": 0.000339,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002081,
+        "query_age_s": 0.002081,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002065,
+        "query_age_s": 0.001985,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001508,
+        "query_age_s": 0.000371,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.577954,
+        "query": "\n\t\t\tSELECT *,\n\t\t\t\textract(epoch from now() - last_archived_time) AS last_archive_age\n\t\t\tFROM pg_stat_archiver\n\t\t\t"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.002053,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.480505
+  },
+  {
+    "at": "2026-10-13T04:23:46.994339+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.291686,
+        "query_age_s": 0.001093,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.016603,
+        "query_age_s": 0.001272,
+        "query": "SELECT * FROM orders WHERE reservation_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.010601,
+        "query_age_s": 0.009056,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.007942,
+        "query_age_s": 0.007942,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.007929,
+        "query_age_s": 0.00202,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005533,
+        "query_age_s": 0.005403,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.003676,
+        "query_age_s": 0.001834,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.0028,
+        "query_age_s": 0.001092,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002536,
+        "query_age_s": 0.002441,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.001214,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.027693,
+        "query": "SELECT pg_database_size($1)"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.119469,
+        "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),0)/1000 FR"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.291686
+  },
+  {
+    "at": "2026-10-13T04:23:48.707562+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.521163,
+        "query_age_s": 0.002322,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.04712,
+        "query_age_s": 0.001373,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.006795,
+        "query_age_s": 0.000808,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006137,
+        "query_age_s": 0.001137,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002815,
+        "query_age_s": 0.001879,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002007,
+        "query_age_s": 0.001885,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.001702,
+        "query_age_s": 0.000439,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001492,
+        "query_age_s": 0.001493,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000899,
+        "query_age_s": 0.000603,
+        "query": "SELECT count(*) FROM outbox_events WHERE status='PENDING'"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.832739,
+        "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),0)/1000 FR"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.001616,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 7,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.521163
+  },
+  {
+    "at": "2026-10-13T04:23:50.402304+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.02546,
+        "query_age_s": 0.002046,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.014059,
+        "query_age_s": 0.014059,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.009466,
+        "query_age_s": 0.002194,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.00834,
+        "query_age_s": 0.001315,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.006395,
+        "query_age_s": 0.005323,
+        "query": "SELECT e.* FROM outbox_events e\nWHERE e.status='PENDING' AND e.next_attempt_at<=$1\n  AND NOT EXISTS (SELECT 1 FROM outbox_events earlier WHERE earlier.aggregate_type=e.aggregate_type\n    AND earlier.aggregate_id=e.aggregate_id AND earlier.s"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006327,
+        "query_age_s": 0.000689,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.0053,
+        "query_age_s": 0.001507,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001254,
+        "query_age_s": 0.001254,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.527479,
+        "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),0)/1000 FR"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.001075,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.003004,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 4,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.02546
+  },
+  {
+    "at": "2026-10-13T04:23:52.221124+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.217278,
+        "query_age_s": 0.009089,
+        "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.028618,
+        "query_age_s": 0.022852,
+        "query": "select u1_0.id,u1_0.created_at,u1_0.email,u1_0.password_hash from users u1_0 where u1_0.id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.028026,
+        "query_age_s": 0.000613,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.013467,
+        "query_age_s": 0.000408,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.013157,
+        "query_age_s": 0.00239,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.001972,
+        "query_age_s": 0.001972,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.002833,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004528,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.000513,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.33467,
+        "query": "\n\t\t\tSELECT slot_name, database, active,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), restart_lsn) else pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) end) as pg_wal_lsn_diff\n\t\t\tFROM pg_replicati"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.00212,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 5,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.217278
+  },
+  {
+    "at": "2026-10-13T04:23:53.791123+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.058973,
+        "query_age_s": 0.003457,
+        "query": "UPDATE orders SET status=$1,updated_at=$2,version=version+1 WHERE id=$3 AND status=$4"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.015727,
+        "query_age_s": 0.015728,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.007835,
+        "query_age_s": 0.003327,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005794,
+        "query_age_s": 0.005649,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005049,
+        "query_age_s": 0.005049,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.004687,
+        "query_age_s": 0.004687,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003944,
+        "query_age_s": 0.00383,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.003755,
+        "query_age_s": 0.00321,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.904582,
+        "query": "\n\t\t\tSELECT slot_name, database, active,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), restart_lsn) else pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) end) as pg_wal_lsn_diff\n\t\t\tFROM pg_replicati"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.016063,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.00382,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.058973
+  },
+  {
+    "at": "2026-10-13T04:23:55.102781+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.0125,
+        "query_age_s": 0.012513,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.012498,
+        "query_age_s": 0.012498,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.008977,
+        "query_age_s": 0.000566,
+        "query": "UPDATE reservations SET status=$1, updated_at=$2, version=version+1 WHERE id=$3 AND status='HELD'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.007071,
+        "query_age_s": 0.00697,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.004217,
+        "query_age_s": 0.00408,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001156,
+        "query_age_s": 0.001157,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000789,
+        "query_age_s": 0.000594,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.018814,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.002142,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.002459,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.216329,
+        "query": "\n\t\t\tSELECT slot_name, database, active,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), restart_lsn) else pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) end) as pg_wal_lsn_diff\n\t\t\tFROM pg_replicati"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.0125
+  },
+  {
+    "at": "2026-10-13T04:23:56.451671+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.353745,
+        "query_age_s": 0.000738,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.024476,
+        "query_age_s": 0.024476,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.012676,
+        "query_age_s": 0.003876,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.012031,
+        "query_age_s": 0.012031,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.00772,
+        "query_age_s": 0.000926,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005828,
+        "query_age_s": 0.000302,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.004023,
+        "query_age_s": 0.003946,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001576,
+        "query_age_s": 0.001576,
+        "query": "BEGIN"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001254,
+        "query_age_s": 0.000483,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.00124,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 4.565219,
+        "query": "\n\t\t\tSELECT slot_name, database, active,\n\t\t\t\t(case pg_is_in_recovery() when 't' then pg_wal_lsn_diff(pg_last_wal_receive_lsn(), restart_lsn) else pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) end) as pg_wal_lsn_diff\n\t\t\tFROM pg_replicati"
+      }
+    ],
+    "idle_in_transaction": 8,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.353745
+  },
+  {
+    "at": "2026-10-13T04:23:57.752927+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.023333,
+        "query_age_s": 0.023253,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.010886,
+        "query_age_s": 0.000311,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.00687,
+        "query_age_s": 0.006738,
+        "query": "SELECT * FROM payments WHERE provider_payment_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.003713,
+        "query_age_s": 0.002754,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002559,
+        "query_age_s": 0.002428,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.002129,
+        "query_age_s": 0.001461,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.001961,
+        "query_age_s": 0.000304,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.00186,
+        "query_age_s": 0.000487,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.000848,
+        "query_age_s": 0.000474,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": null,
+        "query_age_s": 0.000437,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.865795,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      }
+    ],
+    "idle_in_transaction": 5,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.023333
+  },
+  {
+    "at": "2026-10-13T04:23:59.182011+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.030414,
+        "query_age_s": 0.023921,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.026951,
+        "query_age_s": 0.026951,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.009606,
+        "query_age_s": 0.002961,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.008092,
+        "query_age_s": 0.008003,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.006934,
+        "query_age_s": 0.000969,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.003914,
+        "query_age_s": 0.002166,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003288,
+        "query_age_s": 0.003198,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001404,
+        "query_age_s": 0.001104,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.001325,
+        "query_age_s": 0.001089,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.003079,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.294862,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      }
+    ],
+    "idle_in_transaction": 8,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.030414
+  },
+  {
+    "at": "2026-10-13T04:24:00.547643+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.103957,
+        "query_age_s": 0.003089,
+        "query": "SELECT * FROM reservations WHERE id=$1 FOR UPDATE"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.046277,
+        "query_age_s": 0.003262,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.019055,
+        "query_age_s": 0.011865,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.010842,
+        "query_age_s": 0.004137,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.0075,
+        "query_age_s": 0.007395,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000956,
+        "query_age_s": 0.000584,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000932,
+        "query_age_s": 0.000849,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.000935,
+        "query_age_s": 0.000365,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.020833,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.020841,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.660513,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.103957
+  },
+  {
+    "at": "2026-10-13T04:24:01.958301+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.006793,
+        "query_age_s": 0.003264,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.005052,
+        "query_age_s": 0.000253,
+        "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003489,
+        "query_age_s": 0.00063,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.003253,
+        "query_age_s": 0.003159,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.002171,
+        "query_age_s": 0.001798,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.000893,
+        "query_age_s": 0.000273,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000561,
+        "query_age_s": 0.000561,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000344,
+        "query_age_s": 0.000344,
+        "query": "SELECT\n\tCASE\n\t\tWHEN NOT pg_is_in_recovery() THEN 0\n                WHEN pg_last_wal_receive_lsn () = pg_last_wal_replay_lsn () THEN 0\n\t\tELSE GREATEST (0, EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp())))\n\tEND AS lag,\n\tCASE\n\t\tWH"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.06947,
+        "query": "SELECT row_number() OVER (ORDER BY (e.title='HOT') DESC,(e.title='MIXED') DESC,e.title,t.name)::text AS slot,t.available_quantity AS remaining\nFROM ticket_tiers t JOIN events e ON e.id=t.event_id ORDER BY (e.title='HOT') DESC,(e.title='MIXE"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.00047,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004434,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.001216,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 6,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.006793
+  },
+  {
+    "at": "2026-10-13T04:24:03.609629+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.051807,
+        "query_age_s": 0.005125,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.033059,
+        "query_age_s": 0.032503,
+        "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING\n"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.02509,
+        "query_age_s": 0.024585,
+        "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING\n"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "xact_age_s": 0.021391,
+        "query_age_s": 0.021006,
+        "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING\n"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.016629,
+        "query_age_s": 0.00108,
+        "query": "UPDATE reservations SET status=$1, updated_at=$2, version=version+1 WHERE id=$3 AND status='HELD'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.006466,
+        "query_age_s": 0.00634,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.004144,
+        "query_age_s": 0.003552,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.002738,
+        "query_age_s": 0.00225,
+        "query": "SELECT * FROM payments WHERE order_id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.00195,
+        "query_age_s": 0.001826,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.00583,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.720811,
+        "query": "SELECT row_number() OVER (ORDER BY (e.title='HOT') DESC,(e.title='MIXED') DESC,e.title,t.name)::text AS slot,t.available_quantity AS remaining\nFROM ticket_tiers t JOIN events e ON e.id=t.event_id ORDER BY (e.title='HOT') DESC,(e.title='MIXE"
+      }
+    ],
+    "idle_in_transaction": 2,
+    "waiting_on_lock": 3,
+    "oldest_xact_age_s": 0.051807
+  },
+  {
+    "at": "2026-10-13T04:24:05.53135+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.940459,
+        "query_age_s": 0.017929,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.069283,
+        "query_age_s": 0.012,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.021793,
+        "query_age_s": 0.002535,
+        "query": "UPDATE reservations SET status=$1, updated_at=$2, version=version+1 WHERE id=$3 AND status='HELD'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.014312,
+        "query_age_s": 0.00138,
+        "query": "UPDATE reservations SET status=$1, updated_at=$2, version=version+1 WHERE id=$3 AND status='HELD'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "LWLock",
+        "wait_event": "WALWrite",
+        "xact_age_s": 0.007804,
+        "query_age_s": 0.003154,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.005663,
+        "query_age_s": 0.001915,
+        "query": "SELECT * FROM reservations WHERE id=$1 FOR UPDATE"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004894,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.001327,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004466,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.642526,
+        "query": "SELECT row_number() OVER (ORDER BY (e.title='HOT') DESC,(e.title='MIXED') DESC,e.title,t.name)::text AS slot,t.available_quantity AS remaining\nFROM ticket_tiers t JOIN events e ON e.id=t.event_id ORDER BY (e.title='HOT') DESC,(e.title='MIXE"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.003359,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 3,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.940459
+  },
+  {
+    "at": "2026-10-13T04:24:07.188043+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.511815,
+        "query_age_s": 0.004305,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.031644,
+        "query_age_s": 0.025774,
+        "query": "SELECT * FROM tickets WHERE order_id=$1 ORDER BY ticket_index"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.015851,
+        "query_age_s": 0.001694,
+        "query": "SELECT * FROM orders WHERE id=$1 FOR UPDATE"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.014937,
+        "query_age_s": 0.000432,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.013083,
+        "query_age_s": 0.000845,
+        "query": "SELECT * FROM orders WHERE id=$1"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.012217,
+        "query_age_s": 0.000553,
+        "query": "SELECT * FROM orders WHERE id=$1 FOR UPDATE"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.004968,
+        "query_age_s": 0.00037,
+        "query": "UPDATE reservations SET status=$1, updated_at=$2, version=version+1 WHERE id=$3 AND status='HELD'"
+      },
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.001068,
+        "query_age_s": 0.000625,
+        "query": "COMMIT"
+      },
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.000318,
+        "query_age_s": 0.000318,
+        "query": "BEGIN READ ONLY"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.338781,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.004274,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 5,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.511815
+  },
+  {
+    "at": "2026-10-13T04:24:08.966972+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": "IO",
+        "wait_event": "WalSync",
+        "xact_age_s": 0.001413,
+        "query_age_s": 0.001023,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.079108,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.136801,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.334964,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.002766,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.451587,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.463266,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.037793,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.076366,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.117727,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.45741,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 0,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.001413
+  },
+  {
+    "at": "2026-10-13T04:24:10.55178+00:00",
+    "sessions": [
+      {
+        "state": "active",
+        "wait_event_type": null,
+        "wait_event": null,
+        "xact_age_s": 0.62078,
+        "query_age_s": 0.00049,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.026283,
+        "query_age_s": 0.023503,
+        "query": "SELECT * FROM tickets WHERE order_id=$1 ORDER BY ticket_index"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.721579,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.003178,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.919749,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.036372,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.048055,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.661154,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.702516,
+        "query": "\n\t\t\tSELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,0) as count,\n\t\t\t\tCOALESCE(max_tx_duration,0) as max_tx_"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 2.042206,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 1.663938,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 1,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.62078
+  },
+  {
+    "at": "2026-10-13T04:24:11.97331+00:00",
+    "sessions": [
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.104238,
+        "query_age_s": 0.001371,
+        "query": "UPDATE outbox_events SET status='PUBLISHED',published_at=$1,last_error=NULL WHERE id=$2 AND status='PENDING'"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.01752,
+        "query_age_s": 0.013072,
+        "query": "SELECT * FROM tickets WHERE order_id=$1 ORDER BY ticket_index"
+      },
+      {
+        "state": "idle in transaction",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": 0.016005,
+        "query_age_s": 0.012051,
+        "query": "SELECT * FROM tickets WHERE order_id=$1 ORDER BY ticket_index"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.341216,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.45784,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.46952,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.082657,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 0.131425,
+        "query": "SELECT row_number() OVER (ORDER BY (e.title='HOT') DESC,(e.title='MIXED') DESC,e.title,t.name)::text AS slot,t.available_quantity AS remaining\nFROM ticket_tiers t JOIN events e ON e.id=t.event_id ORDER BY (e.title='HOT') DESC,(e.title='MIXE"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.463732,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.085466,
+        "query": "COMMIT"
+      },
+      {
+        "state": "idle",
+        "wait_event_type": "Client",
+        "wait_event": "ClientRead",
+        "xact_age_s": null,
+        "query_age_s": 3.143159,
+        "query": "COMMIT"
+      }
+    ],
+    "idle_in_transaction": 3,
+    "waiting_on_lock": 0,
+    "oldest_xact_age_s": 0.104238
+  }
+]

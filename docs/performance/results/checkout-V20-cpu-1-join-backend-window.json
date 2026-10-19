@@ -1,0 +1,27 @@
+{
+  "run_id": "checkout-V20-cpu-1-join",
+  "window_start_utc": "2026-10-17T09:44:19Z",
+  "window_end_utc": "2026-10-17T09:44:30Z",
+  "redis_guard_fallbacks": {
+    "waiting-room|circuit_open": 2580,
+    "rate-limit|QueryTimeoutException": 20,
+    "rate-limit|circuit_open": 827
+  },
+  "hikari_pool_timeout_log_count": 0,
+  "hikari_pool_timeout_exception_count": 0,
+  "waiting_room_unavailable_log_count": 0,
+  "server_5xx_increase": [
+    {
+      "metric": {
+        "error": "none",
+        "status": "503",
+        "uri": "/api/v1/events/{id}/waiting-room/join"
+      },
+      "value": [
+        1792230353.127,
+        "0"
+      ]
+    }
+  ],
+  "backend_log_lines": 3428
+}

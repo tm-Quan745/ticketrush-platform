@@ -1,0 +1,13 @@
+{
+  "run_id": "checkout-V20-cpu-1",
+  "scenario": "V",
+  "queue_users": 900,
+  "checkout_target": 100,
+  "queue_created_at_utc": "2026-10-17T09:43:43Z",
+  "stages": {
+    "join_started_at_utc": "2026-10-17T09:44:11Z",
+    "join_finished_at_utc": "2026-10-17T09:44:37Z",
+    "join_exit": 99
+  },
+  "result": "FAIL"
+}

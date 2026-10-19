@@ -1,0 +1,23 @@
+{
+  "recorded_at_utc": "2026-10-13T12:44:52.8611918Z",
+  "reason": "Docker Desktop stopped while restoring the diagnostic durability setting.",
+  "recovery": {
+    "action": "ALTER SYSTEM RESET synchronous_commit; SELECT pg_reload_conf();",
+    "new_postgres_session": {
+      "synchronous_commit": "on",
+      "fsync": "on",
+      "settings": [
+        { "name": "fsync", "setting": "on", "source": "default", "sourcefile": null },
+        { "name": "synchronous_commit", "setting": "on", "source": "default", "sourcefile": null }
+      ]
+    },
+    "postgresql_auto_conf": [
+      "log_line_prefix and log_statement reset with ALTER SYSTEM RESET; pg_reload_conf() returned true"
+    ],
+    "backend": {
+      "status": "running",
+      "image_id": "sha256:f65f62d2c8a824e0569b93c50f86647ff6cec5e44718434f159fb91a1b1ac356"
+    }
+  },
+  "limitation": "The durable values above are verified from a newly opened PostgreSQL session. Backend-JDBC verification has not yet been implemented."
+}

@@ -1,0 +1,13 @@
+{
+  "scenario": "G",
+  "k6_exit": 0,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791785120.6008675,
+  "end": 1791786332.9593563,
+  "parameters": [
+    "SCENARIO=G",
+    "RUN_ID=soak-1"
+  ],
+  "collection_error": null
+}

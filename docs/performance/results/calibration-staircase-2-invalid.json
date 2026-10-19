@@ -1,0 +1,12 @@
+{
+  "run_id": "calibration-staircase-2",
+  "valid": false,
+  "reason": "The 5,000-user join precondition failed before calibration. The generator used 100 VUs x 50 rounds with sleep(1) but a fixed 45-second maxDuration.",
+  "join_started": 4329,
+  "join_accepted": 4329,
+  "dropped_iterations": 671,
+  "join_server_p95_seconds": 0.03333518736300786,
+  "verification": "PASS with zero business work",
+  "excluded_from_calibration": true,
+  "follow_up": "Generator maxDuration changed to cohort/rate plus 30 seconds in commit d46ffe0."
+}

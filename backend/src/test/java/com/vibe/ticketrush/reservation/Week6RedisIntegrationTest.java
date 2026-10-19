@@ -25,11 +25,14 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @SpringBootTest(properties={"ticketrush.reservation.strategy=redis-gate","ticketrush.redis.cooldown=200ms",
+    "ticketrush.redis.breaker-mode=legacy-immediate",
     "spring.data.redis.timeout=2s","ticketrush.redis.attempt-lease=5s",
+    "ticketrush.queue.capture-admitted=true",
     "ticketrush.payment.delay=24h","ticketrush.payment.dispatch-interval=24h",
     "ticketrush.rate-limit.enabled=true","ticketrush.rate-limit.policies.reservations.capacity=10",
     "ticketrush.rate-limit.policies.reservations.period=1h","ticketrush.rate-limit.policies.reservations.local-capacity=3",
     "ticketrush.rate-limit.policies.reservations.failure=LOCAL"})
+@ActiveProfiles({"test","loadtest"})
 class Week6RedisIntegrationTest extends ReservationTestFixture {
     static int freePort() {
         try (var socket=new java.net.ServerSocket(0)) { return socket.getLocalPort(); }
@@ -72,6 +75,31 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(Long.valueOf(redis.opsForValue().get(gate.counter(tier)))).isEqualTo(jdbc.queryForObject("SELECT available_quantity FROM ticket_tiers WHERE id=?",Long.class,tier));
     }
     List<UUID> users(int count) { List<UUID> result=new ArrayList<>();for(int i=0;i<count;i++)result.add(addUser());return result; }
+    @Test void closedQueueSeedPreservesInputOrderAndRejectsInvalidCohorts() {
+        roomEvents.configure(event,true,3,"fifo");
+        var cohort=users(5);
+        assertThatThrownBy(() -> queue.seedClosedQueue(event,cohort)).isInstanceOf(ApiException.class);
+        jdbc.update("UPDATE events SET sale_start_time=? WHERE id=?",ts(3600),event);
+        queue.refresh(event);
+        assertThatThrownBy(() -> queue.seedClosedQueue(event,List.of(user,user))).isInstanceOf(ApiException.class);
+        assertThat(queue.seedClosedQueue(event,cohort)).isEqualTo(5);
+        for(int i=0;i<5;i++) assertThat(queue.status(event,cohort.get(i),false).position()).isEqualTo(i+1);
+        assertThat(queue.admit(event)).isZero();
+    }
+    @Test void loadtestSeedRequiresAdminAndValidInput() throws Exception {
+        roomEvents.configure(event,true,3,"fifo");
+        jdbc.update("UPDATE events SET sale_start_time=? WHERE id=?",ts(3600),event);
+        queue.refresh(event);
+        String path="/internal/loadtest/events/"+event+"/waiting-room/seed";
+        String body="{\"users\":[\""+user+"\"]}";
+        http.perform(post(path).contentType("application/json").content(body)).andExpect(status().isUnauthorized());
+        http.perform(post(path).with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
+            .contentType("application/json").content(body)).andExpect(status().isForbidden());
+        http.perform(post(path).with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            .contentType("application/json").content("{\"users\":[]}")).andExpect(status().isBadRequest());
+        http.perform(post(path).with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            .contentType("application/json").content(body)).andExpect(status().isOk()).andExpect(jsonPath("$.seeded").value(1));
+    }
     @Test @Tag("redis-stress") void fiveHundredThreadsForOneHundredTickets() throws Exception {
         capacity(100);var users=users(500);
         var result=concurrent(500,i -> reserve(users.get(i),tier,1));
@@ -134,8 +162,10 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
             var policy=new RateLimitProperties.Policy(10,Duration.ofHours(1),2,RateLimitProperties.Failure.LOCAL);
             assertThat(concurrent(20,i -> limiter.check("outage","same",policy).allowed()).stream().filter(Boolean::booleanValue).count()).isEqualTo(2);
         } finally { REDIS.getDockerClient().startContainerCmd(id).exec(); }
-        await().atMost(Duration.ofSeconds(30)).until(() -> guard.call("recovery",this::ping,() -> false));
-        assertThat(guard.isOpen()).isFalse();
+        await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+            for (int probe=0;probe<3;probe++) assertThat(guard.call("recovery",this::ping,() -> false)).isTrue();
+            assertThat(guard.isOpen()).isFalse();
+        });
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> { gate.reconcile(event);both(); });
     }
     @Test @Tag("redis-stress") void abandonedAttemptLeaseHealsWithoutLateDoubleRefund() {
@@ -174,6 +204,13 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(new HashSet<>(positions)).hasSize(1000);assertThat(Collections.min(positions)).isEqualTo(1);assertThat(Collections.max(positions)).isEqualTo(1000);
         for (int i=0;i<10;i++) assertThat(queue.status(event,users.get(i),true).position()).isEqualTo(positions.get(i));
     }
+    @Test @Tag("redis-stress") void warmJoinSettingsAvoidDatabasePoolFanout() throws Exception {
+        roomEvents.configure(event,true,10,"fifo");
+        queue.refresh(event);
+        var users=users(300);
+        var positions=concurrent(300,i -> queue.status(event,users.get(i),true).position());
+        assertThat(new HashSet<>(positions)).hasSize(300);
+    }
     @Test @Tag("redis-stress") void threeAdmittersShareOneBudgetAndTokensAreBound() throws Exception {
         roomEvents.configure(event,true,3,"fifo");var users=users(9);
         for(UUID id:users)queue.status(event,id,true);
@@ -182,6 +219,17 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
             keys,context.getBean(QueueProperties.class),roomEvents,inventoryService,guard,json,clock,new io.micrometer.core.instrument.simple.SimpleMeterRegistry()));
         assertThat(concurrent(3,i -> instances.get(i).admit(event)).stream().mapToInt(Integer::intValue).sum()).isEqualTo(3);
         assertThat(queue.admit(event)).isZero();
+        var admitted=queue.newlyAdmitted(event,3);
+        assertThat(admitted).hasSize(3).extracting(WaitingRoomService.AdmittedUser::user).containsExactlyElementsOf(users.subList(0,3));
+        assertThat(admitted).allSatisfy(value -> assertThat(value.token()).hasSizeGreaterThanOrEqualTo(22));
+        assertThat(queue.newlyAdmitted(event,3)).isEmpty();
+        var audit=redis.opsForList().range(keys.key("queue",event,"admitted")+":audit",0,-1);
+        assertThat(audit).hasSize(3);
+        for(int i=0;i<3;i++) {
+            assertThat(json.readTree(audit.get(i)).path("user").asText()).isEqualTo(users.get(i).toString());
+            assertThat(json.readTree(audit.get(i)).path("position").asInt()).isEqualTo(i+1);
+            assertThat(json.readTree(audit.get(i)).has("token")).isFalse();
+        }
         var first=queue.status(event,users.getFirst(),false);assertThat(first.state()).isEqualTo("ADMITTED");
         assertThat(first.token().length()).isGreaterThanOrEqualTo(22);
         queue.requireAdmission(tier,users.getFirst(),first.token());
@@ -193,12 +241,51 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         assertThat(queue.status(event,users.getFirst(),false).state()).isEqualTo("EXPIRED");
         assertThatThrownBy(() -> queue.requireAdmission(tier,users.getFirst(),first.token())).isInstanceOf(ApiException.class);
     }
+    @Test void statusUsesRedisSettingsAndPollIntervalGrowsWithQueuePosition() {
+        roomEvents.configure(event,true,3,"fifo");
+        UUID second=addUser(); UUID third=addUser();
+        queue.status(event,user,true);queue.status(event,second,true);queue.status(event,third,true);
+        var status=queue.status(event,third,false);
+        assertThat(status.position()).isEqualTo(3);
+        assertThat(status.pollIntervalSeconds()).isEqualTo(1);
+        for(int i=0;i<500;i++) queue.status(event,addUser(),true);
+        jdbc.update("UPDATE events SET waiting_room_enabled=false WHERE id=?",event);
+        status=queue.status(event,third,false);
+        assertThat(status.queueLength()).isGreaterThan(3);
+        assertThat(status.pollIntervalSeconds()).isGreaterThan(1);
+    }
+    @Test void statusJittersLongPollIntervalsByTwentyFivePercent() {
+        roomEvents.configure(event,true,3,"fifo");
+        queue.status(event,user,true);
+        for (int i=0;i<2_000;i++) queue.status(event,addUser(),true);
+        var intervals=new HashSet<Integer>();
+        for (int i=0;i<30;i++) intervals.add(queue.status(event,user,false).pollIntervalSeconds());
+        // 2,001 queued users / the default 500 status req/s gives a base interval of 5 s.
+        assertThat(intervals).allSatisfy(value -> assertThat(value).isBetween(4,6));
+        assertThat(intervals).hasSizeGreaterThan(1);
+    }
+    @Test void statusHttpReturnsItsJitteredPollAdvice() throws Exception {
+        roomEvents.configure(event,true,3,"fifo");
+        queue.status(event,user,true);
+        for (int i=0;i<2_000;i++) queue.status(event,addUser(),true);
+        var owner=jwt().jwt(j -> j.subject(user.toString())).authorities(new SimpleGrantedAuthority("ROLE_USER"));
+        for (int i=0;i<10;i++) {
+            var response=http.perform(get("/api/v1/events/"+event+"/waiting-room/status").with(owner))
+                .andExpect(status().isOk()).andReturn().getResponse();
+            int retryAfter=Integer.parseInt(response.getHeader("Retry-After"));
+            assertThat(retryAfter).isBetween(4,6);
+            assertThat(response.getContentAsString()).contains("\"pollIntervalSeconds\":"+retryAfter);
+        }
+    }
     @Test void admissionHttpBindingAndAdminAuthorization() throws Exception {
         roomEvents.configure(event,true,3,"fifo");UUID other=addUser();
         queue.status(event,user,true);queue.admit(event);String token=queue.status(event,user,false).token();
         var owner=jwt().jwt(j -> j.subject(user.toString())).authorities(new SimpleGrantedAuthority("ROLE_USER"));
         var stranger=jwt().jwt(j -> j.subject(other.toString())).authorities(new SimpleGrantedAuthority("ROLE_USER"));
         String body="{\"tierId\":\""+tier+"\",\"quantity\":1}";
+        http.perform(get("/api/v1/events/"+event+"/waiting-room/status").with(owner))
+            .andExpect(status().isOk()).andExpect(header().string("X-RateLimit-Limit","120"))
+            .andExpect(header().string("Retry-After","1"));
         http.perform(post("/api/v1/reservations").with(stranger).header("X-Admission-Token",token).contentType("application/json").content(body))
             .andExpect(status().isForbidden()).andExpect(jsonPath("$.code").value("INVALID_ADMISSION_TOKEN"));
         http.perform(post("/api/v1/reservations").with(owner).contentType("application/json").content(body))
@@ -237,7 +324,7 @@ class Week6RedisIntegrationTest extends ReservationTestFixture {
         redis.opsForZSet().add(keys.key("queue",event,"heartbeat"),user.toString(),1);
         assertThat(queue.status(event,second,false).position()).isEqualTo(1);
         assertThat(queue.status(event,user,false).state()).isEqualTo("EXPIRED");
-        capacity(0);assertThat(queue.status(event,second,false).soldOut()).isTrue();assertThat(queue.admit(event)).isZero();
+        capacity(0);queue.refresh(event);assertThat(queue.status(event,second,false).soldOut()).isTrue();assertThat(queue.admit(event)).isZero();
         redis.opsForZSet().add(keys.key("queue",event,"heartbeat"),second.toString(),1);
         assertThat(queue.admit(event)).isZero();
         assertThat(redis.opsForZSet().zCard(keys.key("queue",event,"waiting"))).isZero();

@@ -1,0 +1,12 @@
+{
+  "detected_k6_container": "28b4fbdb922f",
+  "pause_ms": 3000,
+  "redis_cli_output": [
+    "OK"
+  ],
+  "valid": true,
+  "command_returned_at_utc": "2026-10-17T14:14:14.1470955Z",
+  "started_at_utc": "2026-10-17T14:14:14.0179250Z",
+  "monitor_delay_seconds": 5,
+  "run_id": "fault-new-3000"
+}

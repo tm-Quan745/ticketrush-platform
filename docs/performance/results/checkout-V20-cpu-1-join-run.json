@@ -1,0 +1,42 @@
+{
+  "scenario": "J",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1792230259.3374317,
+  "end": 1792230269.8425875,
+  "parameters": [
+    "SCENARIO=J",
+    "RUN_ID=checkout-V20-cpu-1-join",
+    "QUEUE_USERS=900",
+    "CHECKOUT_RATE=20",
+    "CHECKOUT_DURATION=5s",
+    "PRE_VUS=300",
+    "MAX_VUS=500",
+    "CHECKOUT_KEY_OFFSET=5000"
+  ],
+  "collection_error": null,
+  "queue_audit_exit": 0,
+  "memory_abort": false,
+  "max_memory_percent": 38.63,
+  "work_minimum": {
+    "scenario": "J",
+    "minimums": {
+      "started": 900,
+      "completed": 900,
+      "paid": 0
+    },
+    "metrics": {
+      "started": "queue_joins_started",
+      "completed": "queue_joins_accepted",
+      "paid": "purchases_paid"
+    },
+    "actual": {
+      "started": 900,
+      "completed": 799,
+      "paid": 0
+    },
+    "passed": false
+  },
+  "result": "FAIL"
+}

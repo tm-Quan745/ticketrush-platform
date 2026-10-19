@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 
 @Configuration
 public class SecurityConfig {
@@ -34,14 +36,15 @@ public class SecurityConfig {
     JwtEncoder jwtEncoder(SecretKey key) { return new NimbusJwtEncoder(new ImmutableSecret<>(key)); }
 
     @Bean
-    JwtDecoder jwtDecoder(SecretKey key, AuthProperties properties) {
+    JwtDecoder jwtDecoder(SecretKey key, AuthProperties properties, MeterRegistry metrics) {
         var decoder = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
         OAuth2TokenValidator<Jwt> audience = jwt -> jwt.getAudience().contains("ticketrush-api")
                 ? OAuth2TokenValidatorResult.success()
                 : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token"));
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
                 JwtValidators.createDefaultWithIssuer(properties.issuer()), audience));
-        return decoder;
+        Timer validation = Timer.builder("jwt_validation_seconds").publishPercentileHistogram().register(metrics);
+        return token -> validation.record(() -> decoder.decode(token));
     }
 
     @Bean
@@ -50,7 +53,9 @@ public class SecurityConfig {
                                  com.vibe.ticketrush.common.ratelimit.RedisRateLimiter limiter,
                                  com.vibe.ticketrush.common.ratelimit.RateLimitProperties limits,
                                  com.vibe.ticketrush.common.ratelimit.ClientAddress addresses,
-                                 com.fasterxml.jackson.databind.ObjectMapper json) throws Exception {
+                                 com.fasterxml.jackson.databind.ObjectMapper json,
+                                 com.vibe.ticketrush.common.bulkhead.RequestBulkhead bulkhead,
+                                 io.micrometer.core.instrument.MeterRegistry metrics) throws Exception {
         var authorities = new JwtGrantedAuthoritiesConverter();
         authorities.setAuthoritiesClaimName("roles");
         authorities.setAuthorityPrefix("ROLE_");
@@ -64,6 +69,13 @@ public class SecurityConfig {
                             "/api/v1/auth/refresh", "/api/v1/auth/logout").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
                             "/actuator/health/readiness").permitAll();
+                    if (environment.matchesProfiles("loadtest", "test")) {
+                        auth.requestMatchers(HttpMethod.GET, "/internal/loadtest/durability").permitAll();
+                    }
+                    if (environment.matchesProfiles("loadtest")) {
+                        auth.requestMatchers(HttpMethod.GET, "/internal/loadtest/events/*/waiting-room/admissions").hasRole("ADMIN");
+                        auth.requestMatchers(HttpMethod.POST, "/internal/loadtest/events/*/waiting-room/seed").hasRole("ADMIN");
+                    }
                     if (!environment.matchesProfiles("prod")) {
                         auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     }
@@ -83,6 +95,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint((req, res, e) -> errors.write(req, res, 401, "UNAUTHORIZED", "Invalid access token"))
                         .accessDeniedHandler((req, res, e) -> errors.write(req, res, 403, "FORBIDDEN", "Access denied")))
                 .addFilterBefore(new com.vibe.ticketrush.common.ratelimit.RateLimitFilter(limiter,limits,addresses,properties,errors,json),
+                    org.springframework.security.web.access.intercept.AuthorizationFilter.class)
+                .addFilterAfter(new com.vibe.ticketrush.common.bulkhead.BulkheadFilter(bulkhead,errors,metrics),
                     org.springframework.security.web.access.intercept.AuthorizationFilter.class);
         return http.build();
     }

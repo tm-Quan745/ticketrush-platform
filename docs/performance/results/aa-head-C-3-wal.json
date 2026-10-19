@@ -1,0 +1,34 @@
+{
+  "before": {
+    "wal_records": 1753527,
+    "wal_fpi": 811,
+    "wal_bytes": 188141427,
+    "wal_buffers_full": 3413,
+    "wal_write": 53515,
+    "wal_sync": 50080,
+    "wal_write_time": 3726.858,
+    "wal_sync_time": 94573.321
+  },
+  "after": {
+    "wal_records": 1811945,
+    "wal_fpi": 1279,
+    "wal_bytes": 197116624,
+    "wal_buffers_full": 3413,
+    "wal_write": 55896,
+    "wal_sync": 52459,
+    "wal_write_time": 4370.743,
+    "wal_sync_time": 125222.233
+  },
+  "delta": {
+    "wal_records": 58418,
+    "wal_fpi": 468,
+    "wal_bytes": 8975197,
+    "wal_buffers_full": 0,
+    "wal_write": 2381,
+    "wal_sync": 2379,
+    "wal_write_time": 643.8850000000002,
+    "wal_sync_time": 30648.911999999997,
+    "avg_wal_sync_ms": 12.88310718789407,
+    "avg_wal_write_ms": 0.27042629147417063
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "scenario": "A",
+  "k6_exit": 0,
+  "verification_exit": 0,
+  "start": 1791779522.5220468,
+  "end": 1791779584.8601508,
+  "parameters": [
+    "SCENARIO=A",
+    "RUN_ID=post-outbox-smoke"
+  ],
+  "collection_error": null
+}

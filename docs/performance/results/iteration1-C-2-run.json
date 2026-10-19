@@ -1,0 +1,12 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 1,
+  "start": 1791745275.3243,
+  "end": 1791745332.530866,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=iteration1-C-2"
+  ],
+  "collection_error": null
+}

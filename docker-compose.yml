@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:17-alpine
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "compute_query_id=on", "-c", "track_wal_io_timing=on", "-c", "log_min_duration_statement=${POSTGRES_SLOW_QUERY_MS:-250}"]
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-ticketrush}
       POSTGRES_USER: ${POSTGRES_USER:-ticketrush}
@@ -9,6 +10,7 @@ services:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init-observability.sql:/docker-entrypoint-initdb.d/observability.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -40,6 +42,7 @@ services:
       - "127.0.0.1:15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+      - ./infrastructure/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
@@ -58,22 +61,38 @@ services:
       retries: 20
 
   backend:
-    build: ./backend
+    image: ${BACKEND_IMAGE:-ticketrush-week7-backend}
+    build:
+      context: ./backend
+      args:
+        VCS_REF: ${BACKEND_VCS_REF:-unknown}
     environment:
+      METRICS_PASSWORD: ${METRICS_PASSWORD:-}
+      HIKARI_MAX_POOL_SIZE: ${HIKARI_MAX_POOL_SIZE:-10}
+      HIKARI_CONNECTION_TIMEOUT_MS: ${HIKARI_CONNECTION_TIMEOUT_MS:-1500}
+      TOMCAT_MAX_THREADS: ${TOMCAT_MAX_THREADS:-200}
+      SPRING_THREADS_VIRTUAL_ENABLED: ${VIRTUAL_THREADS_ENABLED:-false}
+      JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:--Xms256m -Xmx768m}
       RESERVATION_STRATEGY: ${RESERVATION_STRATEGY:-conditional-update}
       REDIS_ENV: ${REDIS_ENV:-dev}
-      REDIS_COMMAND_TIMEOUT: ${REDIS_COMMAND_TIMEOUT:-300ms}
+      REDIS_COMMAND_TIMEOUT: ${REDIS_COMMAND_TIMEOUT:-1000ms}
       REDIS_CONNECT_TIMEOUT: ${REDIS_CONNECT_TIMEOUT:-300ms}
-      REDIS_CIRCUIT_COOLDOWN: ${REDIS_CIRCUIT_COOLDOWN:-5s}
+      REDIS_CIRCUIT_COOLDOWN: ${REDIS_CIRCUIT_COOLDOWN:-2s}
+      REDIS_BREAKER_WINDOW_SIZE: ${REDIS_BREAKER_WINDOW_SIZE:-100}
+      REDIS_BREAKER_MINIMUM_CALLS: ${REDIS_BREAKER_MINIMUM_CALLS:-50}
+      REDIS_BREAKER_FAILURE_RATE_THRESHOLD: ${REDIS_BREAKER_FAILURE_RATE_THRESHOLD:-0.5}
+      REDIS_BREAKER_HALF_OPEN_PROBES: ${REDIS_BREAKER_HALF_OPEN_PROBES:-3}
+      REDIS_BREAKER_MODE: ${REDIS_BREAKER_MODE:-count-based}
       REDIS_ATTEMPT_LEASE: ${REDIS_ATTEMPT_LEASE:-1m}
       REDIS_FALLBACK_ENABLED: ${REDIS_FALLBACK_ENABLED:-true}
       REDIS_RECONCILE_INTERVAL: ${REDIS_RECONCILE_INTERVAL:-30s}
       WAITING_ROOM_DEFAULT: ${WAITING_ROOM_DEFAULT:-false}
       WAITING_ROOM_MODE: ${WAITING_ROOM_MODE:-fifo}
-      WAITING_ROOM_RATE: ${WAITING_ROOM_RATE:-10}
+      WAITING_ROOM_RATE: ${WAITING_ROOM_RATE:-20}
       WAITING_ROOM_INTERVAL: ${WAITING_ROOM_INTERVAL:-1s}
       WAITING_ROOM_HEARTBEAT_TTL: ${WAITING_ROOM_HEARTBEAT_TTL:-30s}
       WAITING_ROOM_TOKEN_TTL: ${WAITING_ROOM_TOKEN_TTL:-10m}
+      WAITING_ROOM_MAX_POLL_INTERVAL_SECONDS: ${WAITING_ROOM_MAX_POLL_INTERVAL_SECONDS:-15}
       TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
       PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET:?Set PAYMENT_WEBHOOK_SECRET in .env}
       PAYMENT_WEBHOOK_URL: http://127.0.0.1:8080/api/v1/payments/webhook
@@ -89,7 +108,11 @@ services:
       RESERVATION_BATCH_SIZE: ${RESERVATION_BATCH_SIZE:-100}
       RESERVATION_OPTIMISTIC_ATTEMPTS: ${RESERVATION_OPTIMISTIC_ATTEMPTS:-20}
       RESERVATION_EXPIRY_ENABLED: ${RESERVATION_EXPIRY_ENABLED:-true}
-      SPRING_PROFILES_ACTIVE: dev
+      ORDER_STATUS_JOINED_READ: ${ORDER_STATUS_JOINED_READ:-true}
+      BULKHEAD_ENABLED: ${BULKHEAD_ENABLED:-true}
+      BULKHEAD_MAX_CONCURRENT: ${BULKHEAD_MAX_CONCURRENT:-0}
+      BULKHEAD_POOL_MULTIPLIER: ${BULKHEAD_POOL_MULTIPLIER:-3}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
       DEV_SEED_ENABLED: ${DEV_SEED_ENABLED:-true}
       DEV_SEED_EVENTS: ${DEV_SEED_EVENTS:-50}
       DEV_SEED_TIERS_PER_EVENT: ${DEV_SEED_TIERS_PER_EVENT:-3}
@@ -122,7 +145,64 @@ services:
       start_period: 40s
       retries: 15
 
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    profiles: [observability]
+    environment:
+      METRICS_PASSWORD: ${METRICS_PASSWORD:-}
+    entrypoint: [/bin/sh, -ec]
+    command:
+      - 'umask 077; printf "%s" "$$METRICS_PASSWORD" > /tmp/metrics-password; exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=7d --web.enable-remote-write-receiver'
+    volumes:
+      - ./infrastructure/prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    ports: ["127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"]
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    profiles: [observability]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports: ["127.0.0.1:${GRAFANA_PORT:-3000}:3000"]
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    profiles: [observability]
+    environment:
+      DATA_SOURCE_URI: postgres:5432/${POSTGRES_DB:-ticketrush}?sslmode=disable
+      DATA_SOURCE_USER: ${POSTGRES_USER:-ticketrush}
+      DATA_SOURCE_PASS: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/exporter/queries.yml
+    volumes: ["./infrastructure/postgres/queries.yml:/etc/exporter/queries.yml:ro"]
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.77.0
+    profiles: [observability]
+    environment:
+      REDIS_ADDR: redis://redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:0.54.0
+    profiles: [observability]
+    privileged: true
+    command: ["--docker_only=true", "--housekeeping_interval=10s", "--enable_metrics=cpu,memory,network,process"]
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+
 volumes:
+  prometheus_data:
+  grafana_data:
   redis_data:
   postgres_data:
   rabbitmq_data:
