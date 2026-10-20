@@ -1,4 +1,11 @@
 .env
+node_modules/
+dist/
+.env.frontend.local
+.tmp/
+test-results/
+playwright-report/
+tmpkz_18cce/
 .tools/
 **/target/
 .idea/

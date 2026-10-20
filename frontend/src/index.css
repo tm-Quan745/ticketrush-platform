@@ -1,0 +1,335 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* ========================================================
+   TicketRush Light & Dark Mode Universal Theme System
+   Designed for High-Contrast, Professional Visual Hierarchy
+   ======================================================== */
+
+/* Root & Document Defaults */
+html {
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark theme base (Default) */
+html.dark,
+:root.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #020617;
+  color: #f8fafc;
+}
+
+/* Light theme base (High-Contrast Porcelain & Deep Slate) */
+html.light,
+:root.light {
+  color-scheme: light;
+}
+
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* ========================================================
+   Light Mode Overrides: Surfaces & Backgrounds
+   ======================================================== */
+html.light .bg-slate-950 {
+  background-color: #f8fafc;
+}
+
+html.light .bg-slate-950\/40,
+html.light .bg-slate-950\/50,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/85,
+html.light .bg-slate-950\/90,
+html.light .bg-slate-950\/95 {
+  background-color: rgba(248, 250, 252, 0.95);
+}
+
+html.light .bg-slate-900 {
+  background-color: #ffffff;
+}
+
+html.light .bg-slate-900\/40,
+html.light .bg-slate-900\/50 {
+  background-color: #f8fafc;
+}
+
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/70,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/95 {
+  background-color: #ffffff;
+}
+
+html.light .bg-slate-800 {
+  background-color: #f1f5f9;
+}
+
+html.light .bg-slate-800\/40,
+html.light .bg-slate-800\/50,
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/70,
+html.light .bg-slate-800\/80 {
+  background-color: #f1f5f9;
+}
+
+/* ========================================================
+   Light Mode: Borders & Separators
+   ======================================================== */
+html.light .border-slate-800,
+html.light .border-slate-800\/40,
+html.light .border-slate-800\/50,
+html.light .border-slate-800\/60,
+html.light .border-slate-800\/80,
+html.light .border-slate-800\/90 {
+  border-color: #e2e8f0;
+}
+
+html.light .border-slate-700,
+html.light .border-slate-700\/40,
+html.light .border-slate-700\/60,
+html.light .border-slate-700\/80 {
+  border-color: #cbd5e1;
+}
+
+html.light .border-slate-900 {
+  border-color: #e2e8f0;
+}
+
+/* ========================================================
+   Light Mode: High-Legibility Typography
+   ======================================================== */
+html.light .text-slate-100 {
+  color: #0f172a; /* Slate 900 */
+}
+
+html.light .text-slate-200 {
+  color: #1e293b; /* Slate 800 */
+}
+
+html.light .text-slate-300 {
+  color: #334155; /* Slate 700 */
+}
+
+html.light .text-slate-400 {
+  color: #475569; /* Slate 600 - High contrast WCAG AA */
+}
+
+html.light .text-slate-500 {
+  color: #64748b; /* Slate 500 */
+}
+
+html.light .text-slate-600 {
+  color: #94a3b8; /* Slate 400 */
+}
+
+/* Headings with text-white become crisp text-slate-900 unless on solid colored button */
+html.light .text-white:not([class*="bg-indigo-"]):not([class*="bg-rose-"]):not([class*="bg-emerald-"]):not([class*="bg-amber-"]):not([class*="bg-blue-"]):not(button):not(.btn-colored) {
+  color: #0f172a;
+}
+
+/* Ensure colorful buttons retain white text */
+html.light .bg-indigo-600,
+html.light .bg-indigo-500,
+html.light .bg-rose-600,
+html.light .bg-rose-500,
+html.light .bg-emerald-600,
+html.light .bg-emerald-500,
+html.light .bg-amber-600,
+html.light [class*="bg-indigo-600"],
+html.light [class*="bg-rose-600"],
+html.light [class*="bg-emerald-600"] {
+  color: #ffffff !important;
+}
+
+html.light .bg-indigo-600 .text-white,
+html.light .bg-rose-600 .text-white,
+html.light .bg-emerald-600 .text-white,
+html.light .bg-amber-600 .text-white,
+html.light .bg-indigo-600 span,
+html.light .bg-rose-600 span,
+html.light .bg-emerald-600 span,
+html.light .bg-amber-600 span {
+  color: #ffffff;
+}
+
+/* Brand logo gradient in light mode */
+html.light .bg-gradient-to-r.from-white.via-slate-100.to-slate-400 {
+  background-image: linear-gradient(to right, #4f46e5, #0f172a, #1e293b) !important;
+}
+
+/* ========================================================
+   Light Mode: Adaptive Gradients on Cards
+   ======================================================== */
+/* Convert dark slate card gradients to crisp white/porcelain surfaces */
+html.light .rounded-3xl[class*="from-slate-9"],
+html.light .rounded-2xl[class*="from-slate-9"],
+html.light div[class*="from-slate-900"][class*="to-slate-950"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+}
+
+/* Header highlight bar & banners */
+html.light div[class*="from-slate-900"][class*="via-indigo-950"] {
+  background-image: linear-gradient(90deg, #f8fafc 0%, #ede9fe 50%, #f8fafc 100%) !important;
+}
+
+/* Preserving Photo Hero Vignettes: keep a clean dark gradient overlay ONLY over photo images */
+html.light .absolute.inset-0[class*="from-slate-9"][class*="to-transparent"],
+html.light .absolute.bottom-0[class*="from-slate-9"][class*="to-transparent"] {
+  background-image: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.25) 50%, transparent 100%) !important;
+}
+
+/* ========================================================
+   Light Mode: Status Badges & Chips
+   ======================================================== */
+html.light .bg-indigo-500\/10,
+html.light .bg-indigo-500\/20,
+html.light .bg-indigo-950,
+html.light .bg-indigo-950\/60,
+html.light .bg-indigo-950\/70 {
+  background-color: #ede9fe !important;
+  color: #4338ca !important;
+  border-color: #c7d2fe !important;
+}
+
+html.light .bg-emerald-500\/10,
+html.light .bg-emerald-500\/20,
+html.light .bg-emerald-950,
+html.light .bg-emerald-950\/60 {
+  background-color: #ecfdf5 !important;
+  color: #047857 !important;
+  border-color: #a7f3d0 !important;
+}
+
+html.light .bg-amber-500\/10,
+html.light .bg-amber-500\/20,
+html.light .bg-amber-950,
+html.light .bg-amber-950\/60 {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+}
+
+html.light .bg-rose-500\/10,
+html.light .bg-rose-500\/20,
+html.light .bg-rose-950,
+html.light .bg-rose-950\/60 {
+  background-color: #fff1f2 !important;
+  color: #be123c !important;
+  border-color: #fecdd3 !important;
+}
+
+/* ========================================================
+   Light Mode: Forms, Inputs & Keyboards
+   ======================================================== */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8;
+}
+
+html.light kbd {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+/* ========================================================
+   Light Mode: Hovers & Tables
+   ======================================================== */
+html.light .hover\:bg-slate-900:hover {
+  background-color: #f1f5f9;
+}
+
+html.light .hover\:bg-slate-800:hover,
+html.light .hover\:bg-slate-800\/60:hover,
+html.light .hover\:bg-slate-800\/80:hover {
+  background-color: #e2e8f0;
+}
+
+html.light .hover\:border-slate-700:hover {
+  border-color: #94a3b8;
+}
+
+html.light .hover\:text-white:hover {
+  color: #0f172a;
+}
+
+html.light thead {
+  background-color: #f1f5f9;
+}
+
+html.light thead th {
+  color: #334155;
+  font-weight: 700;
+}
+
+/* ========================================================
+   Light Mode: Modals & Dialogs
+   ======================================================== */
+/* Keep backdrop overlay dim so white dialogs stand out cleanly */
+html.light .fixed.inset-0.bg-slate-950\/85,
+html.light .fixed.inset-0.bg-slate-950\/80,
+html.light .fixed.inset-0.bg-slate-950\/90,
+html.light [class*="fixed inset-0"][class*="bg-slate-950"] {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+}
+
+/* Modal Dialog Windows */
+html.light div.relative.bg-slate-900.border,
+html.light div.relative.w-full.bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
+}
+
+/* ========================================================
+   Light Mode: Card Shadows & Elevations
+   ======================================================== */
+html.light .rounded-2xl.border,
+html.light .rounded-3xl.border {
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+}
+
+html.light .rounded-2xl.border:hover,
+html.light .rounded-3xl.border:hover {
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+}
+
+/* Ticket notch cutouts in Light Mode */
+html.light .rounded-full[class*="bg-slate-950"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
