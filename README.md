@@ -158,3 +158,54 @@ Compose project, exercises gate/queue/outage/login behavior, then removes only
 that project's containers and volumes. `week6-mutations.ps1` temporarily mutates
 sources and restores their original bytes in `finally`; run it without other builds
 or edits in progress. k6, dashboards and frontend remain outside Week 6.
+
+## Imported frontend integration
+
+The active frontend is `frontend/src/` (React 19/Vite/TypeScript SPA). The duplicate
+root `src/` was removed at the user's request. Build output is `frontend/dist/`.
+The root Express server only proxies `/api/*` and `/actuator/health` to Spring
+Boot. The retained old UI still contains demo behavior and API/auth mismatches;
+it is not yet a production-ready Spring client. See
+[M0 baseline verification](docs/m0-baseline-verification.md).
+
+1. Fill required secrets in `.env`, including `PAYMENT_WEBHOOK_SECRET` (32+ random
+   characters); start the backend with `docker compose up --build -d --wait`.
+2. Set `BACKEND_URL=http://127.0.0.1:8080` and `PORT=3000` as needed in `.env`.
+3. Run `npm ci`, then `npm run dev`; open http://localhost:3000.
+4. Open the retained UI for visual review. Its demo login, routing and payment
+   calls still need the approved API/auth integration; a full browser purchase
+   flow is not currently verified. ADMIN is provisioned as described above.
+
+Validation: `npm run lint`, `npm test`, `npm run build`, and
+`mvn -B -ntp -f backend/pom.xml verify`. Frontend tests still reference the removed
+shell and fail; backend integration tests require Docker and exercise real
+databases/services. The historical 111-test result belongs to commit `fcb976f`
+on `feat/observability-load-testing`, not this checkout. M0's per-class comparison
+and exact results are recorded in the linked verification report.
+For production static hosting, build first, set `NODE_ENV=production`, then
+`npm start`. Do not use `vite preview` as the API proxy.
+
+Current limits: no real payment provider, seat assignment, ticket
+transfer, browser reseeding or profile-update API. Illustrative notification and
+profile widgets are not persisted to the backend. Public inventory intentionally
+returns availability buckets, not exact quantities. Spring STAFF gate endpoints
+exist, but the retained UI still calls different endpoints. See ADR 0027.
+
+### Existing-machine isolated dev stack
+
+If the existing PostgreSQL volume credentials differ from `.env`, preserve that
+volume. This workspace has an ignored `.env.frontend.local` with independent
+random secrets and an isolated `ticketrush-frontend` Compose project:
+
+```powershell
+docker compose --env-file .env.frontend.local -p ticketrush-frontend -f docker-compose.yml -f infrastructure/frontend-compose.yml up -d --wait
+npm run dev:isolated
+npm run test:smoke
+```
+
+Frontend: http://localhost:3000; isolated backend: http://localhost:18080;
+PostgreSQL: localhost:15433. The smoke test creates a USER and purchases one dev
+ticket; it never uses a real payment provider. Stop this stack using the same
+Compose arguments followed by `stop`; do not remove volumes to repair credentials.
+The ignored env file is local-only, not included in a fresh checkout. Fresh
+checkouts should follow the normal setup above with independently generated secrets.
