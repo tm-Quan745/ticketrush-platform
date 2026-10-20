@@ -1,9 +1,12 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
+import cleanup from './teardown';
 export default async function setup() {
   const base = process.env.E2E_BASE_URL || 'http://127.0.0.1:3100';
   if (!['localhost', '127.0.0.1'].includes(new URL(base).hostname)) throw new Error('Generated E2E fixtures require a local stack');
+  // Recover the journal from an interrupted prior run before creating another event.
+  await cleanup();
   async function request(path: string, body: unknown, token?: string, method = 'POST'): Promise<any> {
     for (let attempt = 0; attempt < 5; attempt++) {
       const response = await fetch(base + '/api/v1' + path, { method, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
@@ -26,10 +29,12 @@ export default async function setup() {
   const auth = await request('/auth/login', accounts.ADMIN);
   const now = Date.now(); const iso = (offset: number) => new Date(now + offset).toISOString();
   const event = await request('/admin/events', { title: `E2E live purchase ${randomUUID()}`, description: 'Browser test fixture', venueName: 'Test hall', venueAddress: 'Test city', startTime: iso(86400000), endTime: iso(90000000), saleStartTime: iso(-60000), saleEndTime: iso(3600000) }, auth.accessToken);
+  await mkdir('.tmp', { recursive: true }); await mkdir('docs/screenshots', { recursive: true });
+  await writeFile('.tmp/e2e-accounts.json', JSON.stringify({ accounts, eventId: event.id }));
+  try {
   await request(`/admin/events/${event.id}/tiers`, { name: 'E2E Standard', price: 10000, currency: 'VND', totalQuantity: 100, maxPerOrder: 2 }, auth.accessToken);
   await request(`/admin/events/${event.id}/publish`, undefined, auth.accessToken);
   await request(`/admin/events/${event.id}/waiting-room`, { enabled: true, rate: 10, mode: 'fifo' }, auth.accessToken, 'PUT');
   await request('/auth/logout', { refreshToken: auth.refreshToken });
-  await mkdir('.tmp', { recursive: true }); await mkdir('docs/screenshots', { recursive: true });
-  await writeFile('.tmp/e2e-accounts.json', JSON.stringify({ accounts, eventId: event.id }));
+  } catch (error) { await cleanup(); throw error; }
 }
