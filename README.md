@@ -189,24 +189,30 @@ or edits in progress. k6, dashboards and frontend remain outside Week 6.
 The active frontend is `frontend/src/` (React 19/Vite/TypeScript SPA). The duplicate
 root `src/` was removed at the user's request. Build output is `frontend/dist/`.
 The root Express server only proxies `/api/*` and `/actuator/health` to Spring
-Boot. The retained old UI still contains demo behavior and API/auth mismatches;
-it is not yet a production-ready Spring client. See
-[M0 baseline verification](docs/m0-baseline-verification.md).
+Boot. M0b restores normal login, URL routes, role guards and the COUNTER purchase
+flow in this canonical app. Legacy map/seat components remain in source awaiting
+the seating milestone; they are not connected to a new seating backend. See
+[M0b lineage and verification](docs/m0b-lineage-and-baseline.md) and
+[generated role matrix/page map](docs/frontend-access.md).
 
 1. Fill required secrets in `.env`, including `PAYMENT_WEBHOOK_SECRET` (32+ random
    characters); start the backend with `docker compose up --build -d --wait`.
 2. Set `BACKEND_URL=http://127.0.0.1:8080` and `PORT=3000` as needed in `.env`.
 3. Run `npm ci`, then `npm run dev`; open http://localhost:3000.
-4. Open the retained UI for visual review. Its demo login, routing and payment
-   calls still need the approved API/auth integration; a full browser purchase
-   flow is not currently verified. ADMIN is provisioned as described above.
+4. Register/login normally. USER buys tickets, STAFF uses `/gate`, and ADMIN uses
+   `/admin`. ADMIN/STAFF provisioning is not exposed by the frontend.
+   The mock gateway sends a signed webhook; the browser only polls order status.
 
 Validation: `npm run lint`, `npm test`, `npm run build`, and
-`mvn -B -ntp -f backend/pom.xml verify`. Frontend tests still reference the removed
-shell and fail; backend integration tests require Docker and exercise real
-databases/services. The historical 111-test result belongs to commit `fcb976f`
-on `feat/observability-load-testing`, not this checkout. M0's per-class comparison
-and exact results are recorded in the linked verification report.
+`mvn -B -ntp -f backend/pom.xml clean verify`. M0b results: 115 backend tests,
+35 frontend unit tests, lint/build and all 5 authored Playwright access/purchase
+tests pass against the real Compose stack. The historical **111-test execution
+tested `fcb976f`**; its report was committed in **`b19db2b`**. Local annotated tag
+**`perf-v1` points to `b19db2b`**, which contains the performance work and evidence.
+`codex/m0b-integration` joins that line (tip `494a33d`) with M0 in merge `b4803bf`;
+both `fcb976f` and M0 are now ancestors. The initial merge base was `13c36d9`.
+The additional four tests are three STAFF/gate tests and one inventory audit test.
+No benchmark profile was part of 111 or 115.
 For production static hosting, build first, set `NODE_ENV=production`, then
 `npm start`. Do not use `vite preview` as the API proxy.
 
@@ -214,7 +220,11 @@ Current limits: no real payment provider, seat assignment, ticket
 transfer, browser reseeding or profile-update API. Illustrative notification and
 profile widgets are not persisted to the backend. Public inventory intentionally
 returns availability buckets, not exact quantities. Spring STAFF gate endpoints
-exist, but the retained UI still calls different endpoints. See ADR 0027.
+exist and the active staff page uses them. Access and refresh tokens stay in
+memory because the backend returns the refresh token in JSON, not an httpOnly
+cookie; reloading requires login. There is no active demo login or role-switch UI.
+Backend APIs remain authoritative. Public admin event listing currently excludes
+drafts because a dedicated admin listing endpoint is absent.
 
 ### Existing-machine isolated dev stack
 
@@ -228,8 +238,10 @@ npm run dev:isolated
 npm run test:smoke
 ```
 
-Frontend: http://localhost:3000; isolated backend: http://localhost:18080;
-PostgreSQL: localhost:15433. The smoke test creates a USER and purchases one dev
+Compose frontend: http://localhost:3100; local dev server: http://localhost:3000;
+isolated backend: http://localhost:18080. This machine's local PostgreSQL host
+port is now 25433: Windows reserved 15433 after a Docker restart. The internal
+database port and existing volume are unchanged. The smoke test creates a USER and purchases one dev
 ticket; it never uses a real payment provider. Stop this stack using the same
 Compose arguments followed by `stop`; do not remove volumes to repair credentials.
 The ignored env file is local-only, not included in a fresh checkout. Fresh
