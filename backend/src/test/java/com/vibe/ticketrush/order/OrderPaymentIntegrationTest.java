@@ -387,6 +387,20 @@ class OrderPaymentIntegrationTest {
         assertThat(jdbc.queryForObject("SELECT used_by FROM tickets WHERE ticket_code=?", UUID.class, code)).isEqualTo(user);
     }
 
+    @Test void reconciliationCountsUsedTicketsButStillDetectsMissingTickets() throws Exception {
+        UUID id = order(user, 2);
+        assertThat(webhook(event(id, Type.SUCCEEDED, UUID.randomUUID().toString())).statusCode()).isEqualTo(200);
+        String code = jdbc.queryForObject("SELECT min(ticket_code) FROM tickets WHERE order_id=?", String.class, id);
+        String body = json.writeValueAsString(Map.of("ticketCode", code));
+        assertThat(request("POST", "/api/v1/gate/tickets/check-in", body,
+                token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(200);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM tickets WHERE order_id=? AND status='USED'",
+                Integer.class, id)).isEqualTo(1);
+        invariant();
+        jdbc.update("DELETE FROM tickets WHERE ticket_code=?", code);
+        assertThat(reconciliation.reconcile(event)).hasSize(1);
+    }
+
     @Test void gateRejectsRefundPendingAndCancelledTickets() throws Exception {
         UUID id = order(user, 1);
         assertThat(webhook(event(id, Type.SUCCEEDED, UUID.randomUUID().toString())).statusCode()).isEqualTo(200);

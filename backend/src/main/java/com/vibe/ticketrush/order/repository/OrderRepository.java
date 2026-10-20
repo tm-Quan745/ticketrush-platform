@@ -82,7 +82,7 @@ public class OrderRepository {
     public void cancelTickets(UUID order) { jdbc.update("UPDATE tickets SET status='CANCELLED' WHERE order_id=? AND status='VALID'",order); }
     public Map<UUID,Long> validTicketCounts(UUID event) {
         Map<UUID,Long> result=new HashMap<>();
-        jdbc.query("SELECT tier_id,count(*) AS quantity FROM tickets WHERE event_id=? AND status='VALID' GROUP BY tier_id",
+        jdbc.query("SELECT tier_id,count(*) AS quantity FROM tickets WHERE event_id=? AND status IN ('VALID','USED') GROUP BY tier_id",
             (org.springframework.jdbc.core.RowCallbackHandler)rs -> result.put(rs.getObject("tier_id",UUID.class),rs.getLong("quantity")),event);
         return result;
     }
