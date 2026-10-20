@@ -1,0 +1,331 @@
+{
+  "memory_abort": false,
+  "max_memory_percent": 38.74,
+  "samples": [
+    {
+      "at_utc": "2026-10-18T06:37:42Z",
+      "total_memory_percent": 36.13,
+      "containers": [
+        {
+          "name": "ticketrush-week7-backend-1",
+          "cpu_percent": 9.06,
+          "cpu_cores": 0.0906,
+          "memory_usage": "483.7MiB / 3.738GiB",
+          "memory_percent": 12.64
+        },
+        {
+          "name": "ticketrush-week7-cadvisor-1",
+          "cpu_percent": 0.73,
+          "cpu_cores": 0.0073,
+          "memory_usage": "27.11MiB / 3.738GiB",
+          "memory_percent": 0.71
+        },
+        {
+          "name": "ticketrush-week7-prometheus-1",
+          "cpu_percent": 0.43,
+          "cpu_cores": 0.0043,
+          "memory_usage": "118.3MiB / 3.738GiB",
+          "memory_percent": 3.09
+        },
+        {
+          "name": "ticketrush-week7-rabbitmq-1",
+          "cpu_percent": 0.18,
+          "cpu_cores": 0.0018,
+          "memory_usage": "127.4MiB / 3.738GiB",
+          "memory_percent": 3.33
+        },
+        {
+          "name": "ticketrush-week7-postgres-1",
+          "cpu_percent": 4.48,
+          "cpu_cores": 0.044800000000000006,
+          "memory_usage": "64.53MiB / 3.738GiB",
+          "memory_percent": 1.69
+        },
+        {
+          "name": "ticketrush-week7-redis-1",
+          "cpu_percent": 0.62,
+          "cpu_cores": 0.0062,
+          "memory_usage": "13.43MiB / 3.738GiB",
+          "memory_percent": 0.35
+        },
+        {
+          "name": "ticketrush-week7-mailpit-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "21.18MiB / 3.738GiB",
+          "memory_percent": 0.55
+        },
+        {
+          "name": "ticketrush-week7-redis-exporter-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "11.66MiB / 3.738GiB",
+          "memory_percent": 0.3
+        },
+        {
+          "name": "ticketrush-week7-postgres-exporter-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "8.316MiB / 3.738GiB",
+          "memory_percent": 0.22
+        },
+        {
+          "name": "ticketrush-week7-grafana-1",
+          "cpu_percent": 0.22,
+          "cpu_cores": 0.0022,
+          "memory_usage": "122.5MiB / 3.738GiB",
+          "memory_percent": 3.2
+        },
+        {
+          "name": "ticketrush-week7-k6-run-4702acf869a7",
+          "cpu_percent": 300.86,
+          "cpu_cores": 3.0086,
+          "memory_usage": "384.7MiB / 3.738GiB",
+          "memory_percent": 10.05
+        }
+      ]
+    },
+    {
+      "at_utc": "2026-10-18T06:37:46Z",
+      "total_memory_percent": 38.160000000000004,
+      "containers": [
+        {
+          "name": "ticketrush-week7-k6-run-4702acf869a7",
+          "cpu_percent": 5.19,
+          "cpu_cores": 0.0519,
+          "memory_usage": "427.1MiB / 3.738GiB",
+          "memory_percent": 11.16
+        },
+        {
+          "name": "ticketrush-week7-backend-1",
+          "cpu_percent": 2.01,
+          "cpu_cores": 0.020099999999999996,
+          "memory_usage": "484MiB / 3.738GiB",
+          "memory_percent": 12.65
+        },
+        {
+          "name": "ticketrush-week7-cadvisor-1",
+          "cpu_percent": 0.23,
+          "cpu_cores": 0.0023,
+          "memory_usage": "36.43MiB / 3.738GiB",
+          "memory_percent": 0.95
+        },
+        {
+          "name": "ticketrush-week7-prometheus-1",
+          "cpu_percent": 0.79,
+          "cpu_cores": 0.0079,
+          "memory_usage": "122.3MiB / 3.738GiB",
+          "memory_percent": 3.2
+        },
+        {
+          "name": "ticketrush-week7-rabbitmq-1",
+          "cpu_percent": 37.64,
+          "cpu_cores": 0.3764,
+          "memory_usage": "128.2MiB / 3.738GiB",
+          "memory_percent": 3.35
+        },
+        {
+          "name": "ticketrush-week7-postgres-1",
+          "cpu_percent": 3.09,
+          "cpu_cores": 0.030899999999999997,
+          "memory_usage": "66.96MiB / 3.738GiB",
+          "memory_percent": 1.75
+        },
+        {
+          "name": "ticketrush-week7-redis-1",
+          "cpu_percent": 2.78,
+          "cpu_cores": 0.0278,
+          "memory_usage": "17.48MiB / 3.738GiB",
+          "memory_percent": 0.46
+        },
+        {
+          "name": "ticketrush-week7-mailpit-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "22.46MiB / 3.738GiB",
+          "memory_percent": 0.59
+        },
+        {
+          "name": "ticketrush-week7-redis-exporter-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "12.24MiB / 3.738GiB",
+          "memory_percent": 0.32
+        },
+        {
+          "name": "ticketrush-week7-postgres-exporter-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "8.758MiB / 3.738GiB",
+          "memory_percent": 0.23
+        },
+        {
+          "name": "ticketrush-week7-grafana-1",
+          "cpu_percent": 0.19,
+          "cpu_cores": 0.0019,
+          "memory_usage": "134.1MiB / 3.738GiB",
+          "memory_percent": 3.5
+        }
+      ]
+    },
+    {
+      "at_utc": "2026-10-18T06:37:50Z",
+      "total_memory_percent": 38.74,
+      "containers": [
+        {
+          "name": "ticketrush-week7-k6-run-4702acf869a7",
+          "cpu_percent": 5.2,
+          "cpu_cores": 0.052000000000000005,
+          "memory_usage": "441.1MiB / 3.738GiB",
+          "memory_percent": 11.52
+        },
+        {
+          "name": "ticketrush-week7-backend-1",
+          "cpu_percent": 2.64,
+          "cpu_cores": 0.0264,
+          "memory_usage": "484.6MiB / 3.738GiB",
+          "memory_percent": 12.66
+        },
+        {
+          "name": "ticketrush-week7-cadvisor-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "35.09MiB / 3.738GiB",
+          "memory_percent": 0.92
+        },
+        {
+          "name": "ticketrush-week7-prometheus-1",
+          "cpu_percent": 0.47,
+          "cpu_cores": 0.004699999999999999,
+          "memory_usage": "124.8MiB / 3.738GiB",
+          "memory_percent": 3.26
+        },
+        {
+          "name": "ticketrush-week7-rabbitmq-1",
+          "cpu_percent": 4.16,
+          "cpu_cores": 0.0416,
+          "memory_usage": "128.2MiB / 3.738GiB",
+          "memory_percent": 3.35
+        },
+        {
+          "name": "ticketrush-week7-postgres-1",
+          "cpu_percent": 0.16,
+          "cpu_cores": 0.0016,
+          "memory_usage": "66.27MiB / 3.738GiB",
+          "memory_percent": 1.73
+        },
+        {
+          "name": "ticketrush-week7-redis-1",
+          "cpu_percent": 0.79,
+          "cpu_cores": 0.0079,
+          "memory_usage": "16.57MiB / 3.738GiB",
+          "memory_percent": 0.43
+        },
+        {
+          "name": "ticketrush-week7-mailpit-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "22.69MiB / 3.738GiB",
+          "memory_percent": 0.59
+        },
+        {
+          "name": "ticketrush-week7-redis-exporter-1",
+          "cpu_percent": 1.49,
+          "cpu_cores": 0.0149,
+          "memory_usage": "13.41MiB / 3.738GiB",
+          "memory_percent": 0.35
+        },
+        {
+          "name": "ticketrush-week7-postgres-exporter-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "9.887MiB / 3.738GiB",
+          "memory_percent": 0.26
+        },
+        {
+          "name": "ticketrush-week7-grafana-1",
+          "cpu_percent": 0.6,
+          "cpu_cores": 0.006,
+          "memory_usage": "140.6MiB / 3.738GiB",
+          "memory_percent": 3.67
+        }
+      ]
+    },
+    {
+      "at_utc": "2026-10-18T06:37:54Z",
+      "total_memory_percent": 27.73,
+      "containers": [
+        {
+          "name": "ticketrush-week7-backend-1",
+          "cpu_percent": 2.37,
+          "cpu_cores": 0.023700000000000002,
+          "memory_usage": "484.6MiB / 3.738GiB",
+          "memory_percent": 12.66
+        },
+        {
+          "name": "ticketrush-week7-cadvisor-1",
+          "cpu_percent": 5.34,
+          "cpu_cores": 0.053399999999999996,
+          "memory_usage": "38.24MiB / 3.738GiB",
+          "memory_percent": 1.0
+        },
+        {
+          "name": "ticketrush-week7-prometheus-1",
+          "cpu_percent": 0.25,
+          "cpu_cores": 0.0025,
+          "memory_usage": "133.1MiB / 3.738GiB",
+          "memory_percent": 3.48
+        },
+        {
+          "name": "ticketrush-week7-rabbitmq-1",
+          "cpu_percent": 0.45,
+          "cpu_cores": 0.0045000000000000005,
+          "memory_usage": "127.5MiB / 3.738GiB",
+          "memory_percent": 3.33
+        },
+        {
+          "name": "ticketrush-week7-postgres-1",
+          "cpu_percent": 4.6,
+          "cpu_cores": 0.046,
+          "memory_usage": "67.15MiB / 3.738GiB",
+          "memory_percent": 1.75
+        },
+        {
+          "name": "ticketrush-week7-redis-1",
+          "cpu_percent": 0.47,
+          "cpu_cores": 0.004699999999999999,
+          "memory_usage": "15.81MiB / 3.738GiB",
+          "memory_percent": 0.41
+        },
+        {
+          "name": "ticketrush-week7-mailpit-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "22.46MiB / 3.738GiB",
+          "memory_percent": 0.59
+        },
+        {
+          "name": "ticketrush-week7-redis-exporter-1",
+          "cpu_percent": 0.0,
+          "cpu_cores": 0.0,
+          "memory_usage": "12.17MiB / 3.738GiB",
+          "memory_percent": 0.32
+        },
+        {
+          "name": "ticketrush-week7-postgres-exporter-1",
+          "cpu_percent": 2.84,
+          "cpu_cores": 0.028399999999999998,
+          "memory_usage": "14.04MiB / 3.738GiB",
+          "memory_percent": 0.37
+        },
+        {
+          "name": "ticketrush-week7-grafana-1",
+          "cpu_percent": 0.19,
+          "cpu_cores": 0.0019,
+          "memory_usage": "146.2MiB / 3.738GiB",
+          "memory_percent": 3.82
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+name: Loadtest smoke
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'A smoke, B browse, C spike, D mixed, E stress, F auth, G soak'
+        default: A
+        type: choice
+        options: [A, B, C, D, E, F, G]
+permissions:
+  contents: read
+env:
+  # GitHub-hosted Docker reports four CPUs; the measurement profile's laptop cap is six.
+  LOADTEST_BACKEND_CPUS: "4.0"
+jobs:
+  loadtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize isolated environment
+        run: python3 infrastructure/scripts/loadtest.py init
+      - name: Build and start stack
+        run: python3 infrastructure/scripts/loadtest.py up
+      - name: Print stack diagnostics on startup failure
+        if: failure()
+        run: python3 infrastructure/scripts/loadtest.py diagnostics
+      - name: Verify tooling on real services
+        run: python3 infrastructure/scripts/loadtest.py test
+      - name: Record environment
+        run: python3 infrastructure/scripts/loadtest.py environment
+      - name: Smoke or explicitly dispatched scenario
+        env:
+          SCENARIO: ${{ inputs.scenario || 'A' }}
+        run: |
+          USERS=20000
+          if [ "$SCENARIO" = A ]; then USERS=1200; fi
+          python3 infrastructure/scripts/loadtest.py run --scenario "$SCENARIO" --users "$USERS" --run-id ci-"$SCENARIO"
+      - name: Upload sanitized measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loadtest-results
+          path: docs/performance/results/
+      - name: Stop isolated stack
+        if: always()
+        run: python3 infrastructure/scripts/loadtest.py down

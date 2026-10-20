@@ -1,0 +1,8 @@
+{
+  "commit_sha": "e29ce4f4b104cf6360406d502121f392620e1415",
+  "backend_image_id": "sha256:c7cbafd5bb5927408ce3df573fccc24a7bc348fba726d11c6d86f296c6d74f40",
+  "image_revision_label": "e29ce4f4b104cf6360406d502121f392620e1415",
+  "run_id": "attribution-C-1-provenanced",
+  "utc_start": "2026-10-12T11:09:22Z",
+  "working_tree_clean": true
+}

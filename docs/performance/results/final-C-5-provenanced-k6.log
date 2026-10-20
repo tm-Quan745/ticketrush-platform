@@ -1,0 +1,1359 @@
+ Container ticketrush-week7-backend-1 Stopping 
+ Container ticketrush-week7-backend-1 Stopped 
+ Container ticketrush-week7-tools-run-20084f98ac4f Creating 
+ Container ticketrush-week7-tools-run-20084f98ac4f Created 
+{
+  "redis_keys_deleted": 615,
+  "queues_purged": [
+    "notification.email",
+    "notification.email.dlq",
+    "notification.email.retry.10m",
+    "notification.email.retry.10s",
+    "notification.email.retry.1m"
+  ]
+}
+ Container ticketrush-week7-tools-run-b408290e412a Creating 
+ Container ticketrush-week7-tools-run-b408290e412a Created 
+{
+  "buyers": 20000,
+  "admins": 1,
+  "events": 203,
+  "tiers": 205,
+  "hot_capacity": 5000,
+  "waiting": false
+}
+ Container ticketrush-week7-redis-1 Running 
+ Container ticketrush-week7-postgres-1 Running 
+ Container ticketrush-week7-mailpit-1 Running 
+ Container ticketrush-week7-rabbitmq-1 Running 
+ Container ticketrush-week7-backend-1 Recreate 
+ Container ticketrush-week7-backend-1 Recreated 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-backend-1 Starting 
+ Container ticketrush-week7-backend-1 Started 
+ Container ticketrush-week7-backend-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-backend-1 Healthy 
+ Container ticketrush-week7-k6-run-05f2d38fcca5 Creating 
+ Container ticketrush-week7-k6-run-05f2d38fcca5 Created 
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: scenarios.js
+        output: Prometheus remote write (http://prometheus:9090/api/v1/write)
+
+     scenarios: (100.00%) 1 scenario, 1000 max VUs, 2m30s max duration (incl. graceful stop):
+              * warmup: 2.00 iterations/s for 1m0s (maxVUs: 200-1000, exec: purchase, gracefulStop: 1m30s)
+
+
+running (0m00.8s), 0002/0200 VUs, 0 complete and 0 interrupted iterations
+warmup   [   1% ] 0002/0200 VUs  0m00.8s/1m0s  2.00 iters/s
+
+running (0m01.8s), 0004/0200 VUs, 0 complete and 0 interrupted iterations
+warmup   [   3% ] 0004/0200 VUs  0m01.8s/1m0s  2.00 iters/s
+
+running (0m02.8s), 0002/0200 VUs, 4 complete and 0 interrupted iterations
+warmup   [   5% ] 0002/0200 VUs  0m02.8s/1m0s  2.00 iters/s
+
+running (0m03.8s), 0002/0200 VUs, 6 complete and 0 interrupted iterations
+warmup   [   6% ] 0002/0200 VUs  0m03.8s/1m0s  2.00 iters/s
+
+running (0m04.8s), 0002/0200 VUs, 8 complete and 0 interrupted iterations
+warmup   [   8% ] 0002/0200 VUs  0m04.8s/1m0s  2.00 iters/s
+
+running (0m05.8s), 0002/0200 VUs, 10 complete and 0 interrupted iterations
+warmup   [  10% ] 0002/0200 VUs  0m05.8s/1m0s  2.00 iters/s
+
+running (0m06.8s), 0002/0200 VUs, 12 complete and 0 interrupted iterations
+warmup   [  11% ] 0002/0200 VUs  0m06.8s/1m0s  2.00 iters/s
+
+running (0m07.8s), 0002/0200 VUs, 14 complete and 0 interrupted iterations
+warmup   [  13% ] 0002/0200 VUs  0m07.8s/1m0s  2.00 iters/s
+
+running (0m08.8s), 0002/0200 VUs, 16 complete and 0 interrupted iterations
+warmup   [  15% ] 0002/0200 VUs  0m08.8s/1m0s  2.00 iters/s
+
+running (0m09.8s), 0002/0200 VUs, 18 complete and 0 interrupted iterations
+warmup   [  16% ] 0002/0200 VUs  0m09.8s/1m0s  2.00 iters/s
+
+running (0m10.8s), 0002/0200 VUs, 20 complete and 0 interrupted iterations
+warmup   [  18% ] 0002/0200 VUs  0m10.8s/1m0s  2.00 iters/s
+
+running (0m11.8s), 0002/0200 VUs, 22 complete and 0 interrupted iterations
+warmup   [  20% ] 0002/0200 VUs  0m11.8s/1m0s  2.00 iters/s
+
+running (0m12.8s), 0002/0200 VUs, 24 complete and 0 interrupted iterations
+warmup   [  21% ] 0002/0200 VUs  0m12.8s/1m0s  2.00 iters/s
+
+running (0m13.8s), 0002/0200 VUs, 26 complete and 0 interrupted iterations
+warmup   [  23% ] 0002/0200 VUs  0m13.8s/1m0s  2.00 iters/s
+
+running (0m14.8s), 0002/0200 VUs, 28 complete and 0 interrupted iterations
+warmup   [  25% ] 0002/0200 VUs  0m14.8s/1m0s  2.00 iters/s
+
+running (0m15.8s), 0002/0200 VUs, 30 complete and 0 interrupted iterations
+warmup   [  26% ] 0002/0200 VUs  0m15.8s/1m0s  2.00 iters/s
+
+running (0m16.8s), 0002/0200 VUs, 32 complete and 0 interrupted iterations
+warmup   [  28% ] 0002/0200 VUs  0m16.8s/1m0s  2.00 iters/s
+
+running (0m17.8s), 0002/0200 VUs, 34 complete and 0 interrupted iterations
+warmup   [  30% ] 0002/0200 VUs  0m17.8s/1m0s  2.00 iters/s
+
+running (0m18.8s), 0002/0200 VUs, 36 complete and 0 interrupted iterations
+warmup   [  31% ] 0002/0200 VUs  0m18.8s/1m0s  2.00 iters/s
+
+running (0m19.8s), 0002/0200 VUs, 38 complete and 0 interrupted iterations
+warmup   [  33% ] 0002/0200 VUs  0m19.8s/1m0s  2.00 iters/s
+
+running (0m20.8s), 0002/0200 VUs, 40 complete and 0 interrupted iterations
+warmup   [  35% ] 0002/0200 VUs  0m20.8s/1m0s  2.00 iters/s
+
+running (0m21.8s), 0002/0200 VUs, 42 complete and 0 interrupted iterations
+warmup   [  36% ] 0002/0200 VUs  0m21.8s/1m0s  2.00 iters/s
+
+running (0m22.8s), 0002/0200 VUs, 44 complete and 0 interrupted iterations
+warmup   [  38% ] 0002/0200 VUs  0m22.8s/1m0s  2.00 iters/s
+
+running (0m23.8s), 0002/0200 VUs, 46 complete and 0 interrupted iterations
+warmup   [  40% ] 0002/0200 VUs  0m23.8s/1m0s  2.00 iters/s
+
+running (0m24.8s), 0002/0200 VUs, 48 complete and 0 interrupted iterations
+warmup   [  41% ] 0002/0200 VUs  0m24.8s/1m0s  2.00 iters/s
+
+running (0m25.8s), 0002/0200 VUs, 50 complete and 0 interrupted iterations
+warmup   [  43% ] 0002/0200 VUs  0m25.8s/1m0s  2.00 iters/s
+
+running (0m26.8s), 0002/0200 VUs, 52 complete and 0 interrupted iterations
+warmup   [  45% ] 0002/0200 VUs  0m26.8s/1m0s  2.00 iters/s
+
+running (0m27.8s), 0002/0200 VUs, 54 complete and 0 interrupted iterations
+warmup   [  46% ] 0002/0200 VUs  0m27.8s/1m0s  2.00 iters/s
+
+running (0m28.8s), 0002/0200 VUs, 56 complete and 0 interrupted iterations
+warmup   [  48% ] 0002/0200 VUs  0m28.8s/1m0s  2.00 iters/s
+
+running (0m29.8s), 0002/0200 VUs, 58 complete and 0 interrupted iterations
+warmup   [  50% ] 0002/0200 VUs  0m29.8s/1m0s  2.00 iters/s
+
+running (0m30.8s), 0002/0200 VUs, 60 complete and 0 interrupted iterations
+warmup   [  51% ] 0002/0200 VUs  0m30.8s/1m0s  2.00 iters/s
+
+running (0m31.8s), 0002/0200 VUs, 62 complete and 0 interrupted iterations
+warmup   [  53% ] 0002/0200 VUs  0m31.8s/1m0s  2.00 iters/s
+
+running (0m32.8s), 0002/0200 VUs, 64 complete and 0 interrupted iterations
+warmup   [  55% ] 0002/0200 VUs  0m32.8s/1m0s  2.00 iters/s
+
+running (0m33.8s), 0002/0200 VUs, 66 complete and 0 interrupted iterations
+warmup   [  56% ] 0002/0200 VUs  0m33.8s/1m0s  2.00 iters/s
+
+running (0m34.8s), 0002/0200 VUs, 68 complete and 0 interrupted iterations
+warmup   [  58% ] 0002/0200 VUs  0m34.8s/1m0s  2.00 iters/s
+
+running (0m35.8s), 0002/0200 VUs, 70 complete and 0 interrupted iterations
+warmup   [  60% ] 0002/0200 VUs  0m35.8s/1m0s  2.00 iters/s
+
+running (0m36.8s), 0002/0200 VUs, 72 complete and 0 interrupted iterations
+warmup   [  61% ] 0002/0200 VUs  0m36.8s/1m0s  2.00 iters/s
+
+running (0m37.8s), 0002/0200 VUs, 74 complete and 0 interrupted iterations
+warmup   [  63% ] 0002/0200 VUs  0m37.8s/1m0s  2.00 iters/s
+
+running (0m38.8s), 0002/0200 VUs, 76 complete and 0 interrupted iterations
+warmup   [  65% ] 0002/0200 VUs  0m38.8s/1m0s  2.00 iters/s
+
+running (0m39.8s), 0002/0200 VUs, 78 complete and 0 interrupted iterations
+warmup   [  66% ] 0002/0200 VUs  0m39.8s/1m0s  2.00 iters/s
+
+running (0m40.8s), 0002/0200 VUs, 80 complete and 0 interrupted iterations
+warmup   [  68% ] 0002/0200 VUs  0m40.8s/1m0s  2.00 iters/s
+
+running (0m41.8s), 0001/0200 VUs, 83 complete and 0 interrupted iterations
+warmup   [  70% ] 0001/0200 VUs  0m41.8s/1m0s  2.00 iters/s
+
+running (0m42.8s), 0002/0200 VUs, 84 complete and 0 interrupted iterations
+warmup   [  71% ] 0002/0200 VUs  0m42.8s/1m0s  2.00 iters/s
+
+running (0m43.8s), 0002/0200 VUs, 86 complete and 0 interrupted iterations
+warmup   [  73% ] 0002/0200 VUs  0m43.8s/1m0s  2.00 iters/s
+
+running (0m44.8s), 0002/0200 VUs, 88 complete and 0 interrupted iterations
+warmup   [  75% ] 0002/0200 VUs  0m44.8s/1m0s  2.00 iters/s
+
+running (0m45.8s), 0002/0200 VUs, 90 complete and 0 interrupted iterations
+warmup   [  76% ] 0002/0200 VUs  0m45.8s/1m0s  2.00 iters/s
+
+running (0m46.8s), 0002/0200 VUs, 92 complete and 0 interrupted iterations
+warmup   [  78% ] 0002/0200 VUs  0m46.8s/1m0s  2.00 iters/s
+
+running (0m47.8s), 0002/0200 VUs, 94 complete and 0 interrupted iterations
+warmup   [  80% ] 0002/0200 VUs  0m47.8s/1m0s  2.00 iters/s
+
+running (0m48.8s), 0002/0200 VUs, 96 complete and 0 interrupted iterations
+warmup   [  81% ] 0002/0200 VUs  0m48.8s/1m0s  2.00 iters/s
+
+running (0m49.8s), 0002/0200 VUs, 98 complete and 0 interrupted iterations
+warmup   [  83% ] 0002/0200 VUs  0m49.8s/1m0s  2.00 iters/s
+
+running (0m50.8s), 0002/0200 VUs, 100 complete and 0 interrupted iterations
+warmup   [  85% ] 0002/0200 VUs  0m50.8s/1m0s  2.00 iters/s
+
+running (0m51.8s), 0002/0200 VUs, 102 complete and 0 interrupted iterations
+warmup   [  86% ] 0002/0200 VUs  0m51.8s/1m0s  2.00 iters/s
+
+running (0m52.8s), 0002/0200 VUs, 104 complete and 0 interrupted iterations
+warmup   [  88% ] 0002/0200 VUs  0m52.8s/1m0s  2.00 iters/s
+
+running (0m53.8s), 0002/0200 VUs, 106 complete and 0 interrupted iterations
+warmup   [  90% ] 0002/0200 VUs  0m53.8s/1m0s  2.00 iters/s
+
+running (0m54.8s), 0002/0200 VUs, 108 complete and 0 interrupted iterations
+warmup   [  91% ] 0002/0200 VUs  0m54.8s/1m0s  2.00 iters/s
+
+running (0m55.8s), 0001/0200 VUs, 111 complete and 0 interrupted iterations
+warmup   [  93% ] 0001/0200 VUs  0m55.8s/1m0s  2.00 iters/s
+
+running (0m56.8s), 0002/0200 VUs, 112 complete and 0 interrupted iterations
+warmup   [  95% ] 0002/0200 VUs  0m56.8s/1m0s  2.00 iters/s
+
+running (0m57.8s), 0002/0200 VUs, 114 complete and 0 interrupted iterations
+warmup   [  96% ] 0002/0200 VUs  0m57.8s/1m0s  2.00 iters/s
+
+running (0m58.8s), 0002/0200 VUs, 116 complete and 0 interrupted iterations
+warmup   [  98% ] 0002/0200 VUs  0m58.8s/1m0s  2.00 iters/s
+
+running (0m59.8s), 0002/0200 VUs, 118 complete and 0 interrupted iterations
+warmup   [ 100% ] 0002/0200 VUs  0m59.8s/1m0s  2.00 iters/s
+
+running (1m00.8s), 0001/0200 VUs, 120 complete and 0 interrupted iterations
+warmup ↓ [ 100% ] 0003/0200 VUs  1m0s  2.00 iters/s
+{"scenario":"W","thresholds":{"business_outcomes{result:login_rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:queue_sold_out}":{"count>=0":{"ok":true}},"dropped_iterations":{"count==0":{"ok":true}},"unexpected_5xx":{"count==0":{"ok":true}},"business_outcomes{result:error}":{"count>=0":{"ok":true}},"http_req_duration{name:POST /api/v1/orders}":{"p(99)<2000":{"ok":true},"p(95)<1000":{"ok":true}},"http_req_duration{name:POST /api/v1/reservations}":{"p(95)<1000":{"ok":true},"p(99)<2000":{"ok":true}},"business_outcomes{result:browse_ok}":{"count>=0":{"ok":true}},"business_outcomes{result:rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:sold_out}":{"count>=0":{"ok":true}},"business_outcomes{result:paid}":{"count>=0":{"ok":true}},"business_outcomes{result:payment_failed}":{"count>=0":{"ok":true}},"checks":{"rate==1":{"ok":true}},"unexpected_responses":{"rate<0.01":{"ok":true}},"business_outcomes{result:waiting_room_required}":{"count>=0":{"ok":true}},"business_failures":{"count==0":{"ok":true}},"business_outcomes{result:login_ok}":{"count>=0":{"ok":true}},"business_outcomes{result:abandoned}":{"count>=0":{"ok":true}},"http_req_failed":{"rate<0.01":{"ok":true}},"business_outcomes{result:browse_rate_limited}":{"count>=0":{"ok":true}}}}
+
+running (1m01.1s), 0000/0200 VUs, 121 complete and 0 interrupted iterations
+warmup ✓ [ 100% ] 0000/0200 VUs  1m0s  2.00 iters/s
+ Container ticketrush-week7-k6-run-1219398a61d3 Creating 
+ Container ticketrush-week7-k6-run-1219398a61d3 Created 
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: scenarios.js
+        output: Prometheus remote write (http://prometheus:9090/api/v1/write)
+
+     scenarios: (100.00%) 1 scenario, 1000 max VUs, 3m20s max duration (incl. graceful stop):
+              * spike: 250.00 iterations/s for 20s (maxVUs: 200-1000, exec: purchase, gracefulStop: 3m0s)
+
+
+running (0m00.9s), 0207/0207 VUs, 7 complete and 0 interrupted iterations
+spike   [   5% ] 0207/0207 VUs  00.9s/20s  250.00 iters/s
+
+running (0m01.9s), 0302/0302 VUs, 11 complete and 0 interrupted iterations
+spike   [  10% ] 0302/0302 VUs  01.9s/20s  250.00 iters/s
+
+running (0m02.9s), 0338/0338 VUs, 20 complete and 0 interrupted iterations
+spike   [  15% ] 0338/0338 VUs  02.9s/20s  250.00 iters/s
+
+running (0m03.9s), 0348/0348 VUs, 24 complete and 0 interrupted iterations
+spike   [  20% ] 0348/0348 VUs  03.9s/20s  250.00 iters/s
+
+running (0m05.0s), 0353/0353 VUs, 27 complete and 0 interrupted iterations
+spike   [  25% ] 0353/0353 VUs  05.0s/20s  250.00 iters/s
+time="2026-10-12T12:02:26Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:26Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:26Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m05.9s), 0365/0365 VUs, 39 complete and 0 interrupted iterations
+spike   [  30% ] 0365/0365 VUs  05.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:27Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+
+running (0m06.9s), 0373/0373 VUs, 61 complete and 0 interrupted iterations
+spike   [  35% ] 0373/0373 VUs  06.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/49ab8883-f83b-4182-9d5f-2827db28edb3\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1835c371-409c-4d49-955c-e1964f93a3ac\": request timeout"
+time="2026-10-12T12:02:28Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fd60368a-530c-4263-bd06-a9173b7ca6f5\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e130d4dd-1cc1-4ca8-bc52-9b3d88398246\": request timeout"
+
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+running (0m07.9s), 0376/0376 VUs, 91 complete and 0 interrupted iterations
+spike   [  40% ] 0376/0376 VUs  07.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/29e7d33e-005a-4b69-87c6-b36468fd4440\": request timeout"
+time="2026-10-12T12:02:29Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+running (0m08.9s), 0380/0380 VUs, 121 complete and 0 interrupted iterations
+spike   [  45% ] 0380/0380 VUs  08.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ee7199b9-98e6-40ba-8e7c-5f9704660442\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:30Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/892900d7-5773-41c8-94c4-a01ac96819eb\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/afe3b8dd-ebe5-4866-9479-14987802c062\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/616f4a41-c3e1-4e0c-8dbe-5129d6b2a112\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c0efc764-e16d-4996-9be5-93a452f42347\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8f8cbf5c-3202-410a-ba87-eaf99a876a0e\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/00aeab6a-2f7e-4293-a459-0ba1cc3fccbf\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/59c4b820-f7e2-4fd3-9b23-03fef3fac36a\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5d90fc73-c82f-49f8-aa23-8cab71bf8f50\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6ad39bf7-f244-4650-a140-7c630aa30454\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+
+running (0m10.5s), 0352/0383 VUs, 169 complete and 0 interrupted iterations
+spike   [  52% ] 0352/0383 VUs  10.5s/20s  250.00 iters/s
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7a40c554-16fe-43f3-86e4-911ebe955bd2\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/03c3f3fe-7be8-4a1f-9010-6f0473f9528d\": request timeout"
+time="2026-10-12T12:02:31Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6114c891-3315-4e34-8181-30469f4ab819\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2f8e085f-0720-453b-91c6-f33a6562f28e\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/971d181d-aacc-4354-9132-dd480e6b5637\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/363f725a-efd8-4e18-aa43-a087f09dc2e1\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7f417a37-4b7f-444c-9c29-e0ed599ae48a\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8551ca9e-8114-49c0-83a5-411c036f669d\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e1d5c082-3668-4de8-93fe-c0d8a2eff824\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/039727f5-fd86-478d-a0a1-b06eb42e7adc\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3bf4882f-5fa9-4f70-803d-2890c0e33cf3\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1975d9d5-941c-476b-ba66-7c9f8b9b8732\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2ec3b10e-12d6-482f-8947-f23093f09e4f\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/af0b7fa9-1813-49dc-9fbf-4a5c30cc9e80\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/30362d9b-1dfc-4700-84b2-2d527c1f4eab\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bee3d916-cec3-4022-855b-03e54f8ed2f5\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7ce85cc0-195a-4a9f-9c83-936eec4af458\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c33cc2b2-5cf6-45a6-bcad-287dceaf2710\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/4b75311e-0c28-496a-84b9-00dd4f7acb76\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/96f8db76-c3eb-424d-96f2-8beff47ce152\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/aa7eab14-8279-472c-81b3-c7441dc0b5f3\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a3273e74-57da-47d0-ad61-caf5330a33ff\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/205ab823-69ed-417f-abc8-9881ab84e52c\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7e3cac98-305d-4f68-8072-0f2d4c3d0a98\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/77190708-56e4-4267-89de-74ad823b6618\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d592e033-da8d-4478-9c01-3cac4f2eebcb\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/77172283-7d66-4c8b-87bb-4293c34612ce\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d97cd3f0-b0b4-411a-b84d-7d644bca15ff\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/39a56371-1a71-4741-84c2-2470a0432e7b\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/600c311e-447c-42d0-91cb-2e6036846ab7\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d336f0eb-24f9-492a-8f0c-03fc90d4f240\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/84e9f8ab-f2d0-4e35-9ed9-d92f9c18c64f\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ea429394-c770-4b66-8ba8-2fd35c95ef28\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e930cdf1-3939-43dd-ba2b-9269d400a8c8\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/dd45f9ee-2bd9-4247-99ca-856d5afe7109\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/cac9e1a2-ff98-4e3d-84b5-5ae06021d193\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/16807331-2ae1-418e-a184-a6e2f9f96f4d\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f66c6720-ce51-4493-b6d1-4873420d4206\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2e673b38-46fa-4b1f-8eff-fd02b29f88e2\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6ded79c1-b96c-4a46-84d9-c5d44973a89b\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e87912f7-0a68-4d47-a5fd-dcdc4854506d\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5a7e2997-557d-485f-aa7f-c634c9287169\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/fe748517-540d-4f0b-9a4f-4cf656bdf414\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b85d299f-82c9-42fc-8719-7e156eb04565\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/7f83cf16-055c-449e-9790-9a8744bf0b0c\": request timeout"
+
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0db6d224-d90e-4de3-88f2-b7c6391bfb1d\": request timeout"
+running (0m11.2s), 0347/0383 VUs, 296 complete and 0 interrupted iterations
+spike   [  56% ] 0347/0383 VUs  11.2s/20s  250.00 iters/s
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bd0518c3-1c6b-4ea3-badc-16cc7ff87e90\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a82167d2-0228-4a53-bc0c-aed3746194d7\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/8f0407e2-9da7-4f6d-825c-09ff277dc150\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b87a115f-39ad-40db-9cdd-61d718b8af0a\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f61f40ea-c9a4-4539-a5f2-6bdc146e44e3\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d0fd5a5d-75d6-4ad9-af2c-f0c18cfe7370\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/f422fa37-7a45-4a5e-91a0-9b947ca07d85\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/998d9b56-1666-46c4-855c-12a1f6328784\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e54f64f7-4b79-4b20-8928-e30c5f5ce993\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/75de00f1-b1b7-4b78-97fd-0c28fbe99bbb\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/401dc6ae-86ee-443b-af9c-719e18875614\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3ab3d3da-5357-42af-a42a-3c0b23021ba2\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/14c0ebda-67e8-455a-b9e4-7373c05889dc\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b34c49d8-1ec0-4645-8f27-2605cd3ac0b1\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5112a03f-24d3-479e-ae6d-bf66cd0fcbfb\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:32Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/46b4910f-4b0d-416b-b857-79731960dc86\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b88b17c3-38f0-4701-8237-53a179399944\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6f12111e-ea34-4c70-9fca-921dff557f94\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/5449de77-93a4-41f6-9014-d173f010de12\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/eff97a58-1b79-4dd2-b652-e76bd57b954f\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9c064edd-f1a4-46b6-b11c-21705be03a57\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/409649b4-9550-4ee1-947f-caa500bc3989\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/72a5417d-ab38-48ad-9fb8-c712f9aa4f3c\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1206f91b-ff50-4532-82ea-1195b8383816\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/cdc3b7d4-0002-4932-9308-efcec5673289\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/54d6ac0d-cceb-461c-a63a-a8e3f700fbde\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/759219e5-5332-4442-b42a-26cb9dc107d0\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/646e2a93-1b00-4ab0-a655-b55d5e1d8dcd\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1703baed-b3ef-4ec0-bb0c-9a28539ff860\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/083e6598-ea79-4267-acc5-142ff82b4ea0\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+running (0m12.0s), 0376/0386 VUs, 368 complete and 0 interrupted iterations
+spike   [  60% ] 0376/0386 VUs  12.0s/20s  250.00 iters/s
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9d1d6732-4b7e-4f23-935e-d87ca7b20508\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/ebdd0ddb-fafe-44fd-80f2-4dac8f378e55\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e5948efc-2d16-44d6-9205-47d6b8c2e015\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/743b4724-3d62-4497-850e-8eea3647386a\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2fbea412-5879-4850-a95d-b8625d5785ef\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/25214600-2d69-46e9-b99c-800b43b7a31e\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/2e3203c2-4d60-47ea-9ec3-021fb5bf8f11\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b55fd06f-11f3-4dd0-bf90-1c57ff4fc0d4\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a2f52aed-818b-4123-bb8e-0c1fe46df982\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b0317254-3883-43df-b7f8-56f326c9c172\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/1bc445b2-8f2a-4bd5-a861-2408e05f2330\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/35fcc977-d24b-474a-98f3-e66512b55a2b\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d0013b1e-f1c0-44f4-98fe-c3010283b9cd\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a60f85a7-0a2b-452e-8ede-e63d3ff7ee59\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/3c2b5b17-c23c-446c-93fd-9f98de3670ca\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/e66de1c4-1f16-4c99-9909-515df3e9b6d5\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/db517885-496b-45e1-9e76-751a43f46206\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/0a6b54c5-3a05-425f-9185-246914b932c5\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/c1521e81-7080-4a42-ae28-22841a829554\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/74a43233-1d4f-4e14-833a-34b70b987186\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/d1029215-91a5-43f1-b6b5-ccdae2a3dad7\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/a0ad0360-ee73-464b-8ef9-5c7d3da81ff8\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/28198029-6e6e-420b-914f-1b0ba3a5c937\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/6af4dac6-6f67-4665-bb05-a1f1c5596a68\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/db839571-5f7b-4d70-a4de-ba5f4b08eb08\": request timeout"
+time="2026-10-12T12:02:33Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/eff55b5a-90f5-4f57-8414-aa4bde5d35b8\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/b77406e3-33be-4cb1-994e-c2b0be8bc11a\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/9f47b924-6542-46aa-806f-f10f39eee3c2\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bd29c07c-2e45-47eb-94dd-ca6390fd390c\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m12.9s), 0427/0427 VUs, 434 complete and 0 interrupted iterations
+spike   [  65% ] 0427/0427 VUs  12.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:34Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m13.9s), 0433/0433 VUs, 461 complete and 0 interrupted iterations
+spike   [  70% ] 0433/0433 VUs  13.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/780887a2-261f-4a25-af92-feb2e5dfd1d9\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:35Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:36Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:36Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:36Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m14.9s), 0440/0440 VUs, 473 complete and 0 interrupted iterations
+spike   [  75% ] 0440/0440 VUs  14.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:36Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/bc86f9aa-7adc-4365-9c1a-e9b2a413acf4\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m15.9s), 0459/0461 VUs, 500 complete and 0 interrupted iterations
+spike   [  80% ] 0459/0461 VUs  15.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Get \"http://backend:8080/api/v1/orders/739bb60b-75fa-4839-87a4-d1be5eb939ef\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:37Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m16.9s), 0468/0468 VUs, 587 complete and 0 interrupted iterations
+spike   [  85% ] 0468/0468 VUs  16.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:38Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m17.9s), 0475/0475 VUs, 667 complete and 0 interrupted iterations
+spike   [  90% ] 0475/0475 VUs  17.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:39Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m18.9s), 0499/0499 VUs, 691 complete and 0 interrupted iterations
+spike   [  95% ] 0499/0499 VUs  18.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:40Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m19.9s), 0512/0512 VUs, 703 complete and 0 interrupted iterations
+spike   [ 100% ] 0512/0512 VUs  19.9s/20s  250.00 iters/s
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:41Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m20.9s), 0495/0514 VUs, 723 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:42Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:43Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/orders\": request timeout"
+time="2026-10-12T12:02:43Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:43Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:43Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:43Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+time="2026-10-12T12:02:43Z" level=warning msg="Request Failed" error="Post \"http://backend:8080/api/v1/reservations\": request timeout"
+
+running (0m21.9s), 0453/0514 VUs, 765 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m22.9s), 0425/0514 VUs, 793 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m23.9s), 0418/0514 VUs, 800 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m24.9s), 0411/0514 VUs, 807 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m25.9s), 0409/0514 VUs, 809 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m26.9s), 0409/0514 VUs, 809 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m27.9s), 0409/0514 VUs, 809 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m28.9s), 0405/0514 VUs, 813 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m29.9s), 0393/0514 VUs, 825 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m30.9s), 0360/0514 VUs, 858 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m31.9s), 0310/0514 VUs, 908 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m32.9s), 0282/0514 VUs, 936 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m33.9s), 0179/0514 VUs, 1039 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+
+running (0m34.9s), 0099/0514 VUs, 1119 complete and 0 interrupted iterations
+spike ↓ [ 100% ] 0513/0513 VUs  20s  250.00 iters/s
+{"scenario":"C","thresholds":{"http_req_duration{name:POST /api/v1/orders}":{"p(95)<1000":{"ok":false},"p(99)<2000":{"ok":false}},"business_outcomes{result:browse_ok}":{"count>=0":{"ok":true}},"arrivals_started":{"count==5000":{"ok":false}},"dropped_iterations":{"count==0":{"ok":false}},"checks":{"rate==1":{"ok":false}},"business_outcomes{result:login_rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:payment_failed}":{"count>=0":{"ok":true}},"unexpected_5xx":{"count==0":{"ok":true}},"http_req_failed":{"rate<0.01":{"ok":false}},"business_outcomes{result:abandoned}":{"count>=0":{"ok":true}},"business_outcomes{result:error}":{"count>=0":{"ok":true}},"business_outcomes{result:rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:login_ok}":{"count>=0":{"ok":true}},"http_req_duration{name:POST /api/v1/reservations}":{"p(95)<1000":{"ok":false},"p(99)<2000":{"ok":false}},"business_outcomes{result:waiting_room_required}":{"count>=0":{"ok":true}},"business_outcomes{result:paid}":{"count>=0":{"ok":true}},"business_failures":{"count==0":{"ok":false}},"business_outcomes{result:browse_rate_limited}":{"count>=0":{"ok":true}},"business_outcomes{result:queue_sold_out}":{"count>=0":{"ok":true}},"business_outcomes{result:sold_out}":{"count>=0":{"ok":true}},"unexpected_responses":{"rate<0.01":{"ok":false}}}}
+
+running (0m35.8s), 0000/0514 VUs, 1218 complete and 0 interrupted iterations
+spike ✓ [ 100% ] 0000/0514 VUs  20s  250.00 iters/s
+time="2026-10-12T12:02:57Z" level=error msg="thresholds on metrics 'arrivals_started, business_failures, checks, dropped_iterations, http_req_duration{name:POST /api/v1/orders}, http_req_duration{name:POST /api/v1/reservations}, http_req_failed, unexpected_responses' have been crossed"
+
+ Container ticketrush-week7-tools-run-cad0a15e2762 Creating 
+ Container ticketrush-week7-tools-run-cad0a15e2762 Created 
+{
+  "total_exec_time": [
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 1339,
+      "total_exec_time": 53263.55250700003,
+      "mean_exec_time": 39.77860530769237,
+      "rows": 1339
+    },
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 1804,
+      "total_exec_time": 4762.9166090000035,
+      "mean_exec_time": 2.640197676829267,
+      "rows": 835
+    },
+    {
+      "queryid": 3220699736740390017,
+      "query": "insert into reservations (created_at,expires_at,quantity,status,tier_id,updated_at,user_id,version,id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+      "calls": 1339,
+      "total_exec_time": 4282.188966999997,
+      "mean_exec_time": 3.198050012696046,
+      "rows": 1339
+    },
+    {
+      "queryid": 4752457557041058143,
+      "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id",
+      "calls": 9007,
+      "total_exec_time": 3514.285422999985,
+      "mean_exec_time": 0.39017269046297487,
+      "rows": 9007
+    },
+    {
+      "queryid": 1451592005812453505,
+      "query": "INSERT INTO idempotency_keys(id,user_id,endpoint,key,request_hash,status,created_at,expires_at,lease_until)\nVALUES ($1,$2,$3,$4,$5,$9,$6,$7,$8) ON CONFLICT(user_id,endpoint,key) DO NOTHING",
+      "calls": 1017,
+      "total_exec_time": 3505.3067640000013,
+      "mean_exec_time": 3.446712648967547,
+      "rows": 835
+    },
+    {
+      "queryid": -8101211000551547893,
+      "query": "SELECT * FROM orders WHERE id=$1",
+      "calls": 12451,
+      "total_exec_time": 2875.1838899999907,
+      "mean_exec_time": 0.23091991727572184,
+      "rows": 12451
+    },
+    {
+      "queryid": -185380479601638175,
+      "query": "SELECT * FROM reservations WHERE id=$1 FOR UPDATE",
+      "calls": 3340,
+      "total_exec_time": 2383.2094049999987,
+      "mean_exec_time": 0.7135357499999987,
+      "rows": 3340
+    },
+    {
+      "queryid": -3854080420358358271,
+      "query": "INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)\nVALUES ($1,$2,$3,$4,$5,$6,$7,$9,$8) ON CONFLICT(order_id,ticket_index) DO NOTHING",
+      "calls": 2001,
+      "total_exec_time": 2172.082716000007,
+      "mean_exec_time": 1.0854986086956524,
+      "rows": 2001
+    },
+    {
+      "queryid": 245626904635024902,
+      "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,$9,$4,$5,$6,$7,$8)",
+      "calls": 835,
+      "total_exec_time": 2094.1390439999977,
+      "mean_exec_time": 2.5079509508982047,
+      "rows": 835
+    },
+    {
+      "queryid": 1907361671576918022,
+      "query": "SELECT * FROM payments WHERE order_id=$1",
+      "calls": 8172,
+      "total_exec_time": 2071.0141920000024,
+      "mean_exec_time": 0.2534280704845817,
+      "rows": 8172
+    }
+  ],
+  "mean_exec_time": [
+    {
+      "queryid": 8986880392822749325,
+      "query": "INSERT INTO user_roles SELECT id,$1 FROM users",
+      "calls": 1,
+      "total_exec_time": 1516.397383,
+      "mean_exec_time": 1516.397383,
+      "rows": 20001
+    },
+    {
+      "queryid": 2529582894003489060,
+      "query": "COPY users (id,email,password_hash) FROM STDIN",
+      "calls": 1,
+      "total_exec_time": 320.892245,
+      "mean_exec_time": 320.892245,
+      "rows": 20001
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 28,
+      "total_exec_time": 1290.6394179999998,
+      "mean_exec_time": 46.094264928571434,
+      "rows": 476
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 1339,
+      "total_exec_time": 53263.55250700003,
+      "mean_exec_time": 39.77860530769237,
+      "rows": 1339
+    },
+    {
+      "queryid": 6342828237680505206,
+      "query": "SELECT * FROM (SELECT current_database() AS current_database, n.nspname,c.relname,a.attname,a.atttypid,a.attnotnull  OR (t.typtype = $1 AND t.typnotnull) AS attnotnull,a.atttypmod,a.attlen,t.typtypmod,row_number() OVER (PARTITION BY a.attrelid ORDER BY a.attnum) AS attnum, nullif(a.attidentity, $2) as attidentity,nullif(a.attgenerated, $3) as attgenerated,pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS adsrc,dsc.description,t.typbasetype,t.typtype  FROM pg_catalog.pg_namespace n  JOIN pg_catalog.pg_class c ON (c.relnamespace = n.oid)  JOIN pg_catalog.pg_attribute a ON (a.attrelid=c.oid)  JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid)  LEFT JOIN pg_catalog.pg_attrdef def ON (a.attrelid=def.adrelid AND a.attnum = def.adnum)  LEFT JOIN pg_catalog.pg_description dsc ON (c.oid=dsc.objoid AND a.attnum = dsc.objsubid)  LEFT JOIN pg_catalog.pg_class dc ON (dc.oid=dsc.classoid AND dc.relname=$4)  LEFT JOIN pg_catalog.pg_namespace dn ON (dc.relnamespace=dn.oid AND dn.nspname=$5)  WHERE c.relkind in ($6,$7,$8,$9,$10) and a.attnum > $11 AND NOT a.attisdropped  AND n.nspname LIKE $12) c WHERE $13  AND attname LIKE $14 ORDER BY nspname,c.relname,attnum",
+      "calls": 1,
+      "total_exec_time": 22.470703,
+      "mean_exec_time": 22.470703,
+      "rows": 195
+    },
+    {
+      "queryid": -4274481145482781420,
+      "query": "SELECT name, setting, COALESCE(unit, $1), short_desc, vartype FROM pg_settings WHERE vartype IN ($2, $3, $4) AND name != $5",
+      "calls": 28,
+      "total_exec_time": 353.3724710000001,
+      "mean_exec_time": 12.620445392857144,
+      "rows": 7672
+    },
+    {
+      "queryid": 3914026115026614898,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity+$1, version=version+$4, updated_at=$2 WHERE id=$3",
+      "calls": 42,
+      "total_exec_time": 324.1044749999999,
+      "mean_exec_time": 7.716773214285714,
+      "rows": 42
+    },
+    {
+      "queryid": -1104071183735899680,
+      "query": "SELECT e.* FROM outbox_events e\nWHERE e.status=$3 AND e.next_attempt_at<=$1\n  AND NOT EXISTS (SELECT $4 FROM outbox_events earlier WHERE earlier.aggregate_type=e.aggregate_type\n    AND earlier.aggregate_id=e.aggregate_id AND earlier.status<>$5\n    AND (earlier.created_at<e.created_at OR (earlier.created_at=e.created_at AND earlier.id<e.id)))\nORDER BY e.created_at,e.id LIMIT $2 FOR UPDATE SKIP LOCKED",
+      "calls": 88,
+      "total_exec_time": 480.68250400000005,
+      "mean_exec_time": 5.462301181818182,
+      "rows": 2250
+    },
+    {
+      "queryid": -8345769629607369406,
+      "query": "SELECT json_build_object($1,clock_timestamp(),$2,coalesce(json_agg(json_build_object(\n      $3,state,$4,wait_event_type,$5,wait_event,\n      $6,extract($7 from clock_timestamp()-xact_start),\n      $8,extract($9 from clock_timestamp()-query_start),$10,left(query,$11))\n      ORDER BY xact_start NULLS LAST),$12::json)) FROM pg_stat_activity\n      WHERE datname=current_database() AND pid<>pg_backend_pid()",
+      "calls": 20,
+      "total_exec_time": 107.81533800000001,
+      "mean_exec_time": 5.390766899999998,
+      "rows": 20
+    },
+    {
+      "queryid": -1677136239082965199,
+      "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type=$1) AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= $2) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),$3)/$4 FROM pg_stat_statements) AS slowest_mean_seconds",
+      "calls": 28,
+      "total_exec_time": 138.31016200000005,
+      "mean_exec_time": 4.939648642857143,
+      "rows": 28
+    }
+  ]
+}
+ Container ticketrush-week7-tools-run-632c53f6de90 Creating 
+ Container ticketrush-week7-tools-run-632c53f6de90 Created 
+{
+  "passed": true,
+  "checks": {
+    "1_inventory_conservation": {
+      "violations": 0,
+      "tiers_checked": 205,
+      "passed": true
+    },
+    "2_ticket_conservation": {
+      "violations": 0,
+      "sold": 2001,
+      "oversold": 0,
+      "passed": true
+    },
+    "3_idempotency": {
+      "orders": 835,
+      "successful_keys": 835,
+      "distinct_keys": 835,
+      "distinct_effects": 835,
+      "violations": 0,
+      "passed": true
+    },
+    "4_paid_consistency": {
+      "paid_without_tickets": 0,
+      "confirmed_without_paid": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "5_outbox": {
+      "pending": 0,
+      "failed": 0,
+      "published": 4348,
+      "violations": 0,
+      "passed": true
+    },
+    "6_emails": {
+      "paid_orders": 793,
+      "exactly_one": 793,
+      "sent_confirmations": 793,
+      "violations": 0,
+      "passed": true
+    },
+    "8_expiry": {
+      "overdue_orders": 0,
+      "overdue_holds": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "7_redis_drift": {
+      "tiers_checked": 205,
+      "before_mismatches": 205,
+      "after_mismatches": 0,
+      "violations": 0,
+      "passed": true
+    },
+    "admin_inventory_audit": {
+      "violations": 0,
+      "errors": [],
+      "passed": true
+    }
+  }
+}

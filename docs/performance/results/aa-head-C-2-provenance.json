@@ -1,0 +1,50 @@
+{
+  "commit_sha": "c18ba94ed98c389ac4eff07d7e95acd387eb1f2f",
+  "backend_image_id": "sha256:f65f62d2c8a824e0569b93c50f86647ff6cec5e44718434f159fb91a1b1ac356",
+  "image_revision_label": "c18ba94ed98c389ac4eff07d7e95acd387eb1f2f",
+  "run_id": "aa-head-C-2",
+  "utc_start": "2026-10-13T05:08:35Z",
+  "working_tree_clean": false,
+  "tracked_status": [
+    " M docs/performance/results/last-reset.json"
+  ],
+  "untracked_files": [
+    "docs/performance/results/aa-head-C-1-pgactivity.json",
+    "docs/performance/results/aa-head-C-1-provenance.json",
+    "docs/performance/results/aa-head-C-1-queries.json",
+    "docs/performance/results/aa-head-C-1-recovery.json",
+    "docs/performance/results/aa-head-C-1-run.json",
+    "docs/performance/results/aa-head-C-1-telemetry.json",
+    "docs/performance/results/aa-head-C-1-verify.json",
+    "docs/performance/results/aa-head-C-1-wal.json",
+    "docs/performance/results/aa-head-C-1-warmup.json",
+    "docs/performance/results/aa-head-C-1.json",
+    "docs/performance/results/attribution-C-1-queries.json",
+    "docs/performance/results/attribution-C-1-recovery.json",
+    "docs/performance/results/attribution-C-1-rerun-provenance.json",
+    "docs/performance/results/attribution-C-1-rerun-queries.json",
+    "docs/performance/results/attribution-C-1-rerun-recovery.json",
+    "docs/performance/results/attribution-C-1-rerun-run.json",
+    "docs/performance/results/attribution-C-1-rerun-telemetry.json",
+    "docs/performance/results/attribution-C-1-rerun-verify.json",
+    "docs/performance/results/attribution-C-1-rerun-warmup.json",
+    "docs/performance/results/attribution-C-1-rerun.json",
+    "docs/performance/results/attribution-C-1-run.json",
+    "docs/performance/results/attribution-C-1-telemetry.json",
+    "docs/performance/results/attribution-C-1-verify.json",
+    "docs/performance/results/attribution-C-1-warmup.json",
+    "docs/performance/results/attribution-C-1.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun-pgactivity.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun-provenance.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun-recovery.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun-run.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun-verify.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun-warmup.json",
+    "docs/performance/results/attribution-C-3-provenanced-rerun.json"
+  ],
+  "hikari_connection_timeout_ms": 30000,
+  "k6_vus": {
+    "preAllocatedVUs": 200,
+    "maxVUs": 1000
+  }
+}

@@ -7,9 +7,13 @@ import com.vibe.ticketrush.inventory.service.InventoryRead;
 import com.vibe.ticketrush.inventory.dto.TierDtos.Availability;
 import com.fasterxml.jackson.databind.*;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
 import java.security.SecureRandom;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,8 +25,10 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableConfigurationProperties(QueueProperties.class)
 public class WaitingRoomService implements ReservationAdmission {
-    public record Status(String state,long position,long estimatedWaitSeconds,int pollIntervalSeconds,
+    public record Status(String state,long position,long queueLength,long estimatedWaitSeconds,int pollIntervalSeconds,
                          boolean soldOut,String token,Instant expiresAt) {}
+    public record AdmittedUser(UUID user,String token,Instant expiresAt) {}
+    private record CachedSettings(WaitingRoomEvents.Settings event, boolean soldOut) {}
     private final StringRedisTemplate redis;
     private final RedisScript<String> script;
     private final RedisProperties keys;
@@ -33,6 +39,15 @@ public class WaitingRoomService implements ReservationAdmission {
     private final ObjectMapper json;
     private final Clock clock;
     private final MeterRegistry metrics;
+    private final Counter redisCommands;
+    private final Counter joinRequests;
+    private final Counter statusRequests;
+    // Tier/event ownership and admission configuration change only through the
+    // inventory and waiting-room admin flows.  Keep the pre-transaction gate
+    // off the JDBC pool while hot-row transactions are queued.
+    private final ConcurrentMap<UUID,UUID> tierEvents=new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID,WaitingRoomEvents.Settings> admissionEvents=new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID,CachedSettings> cachedEvents=new ConcurrentHashMap<>();
     private final AtomicLong size=new AtomicLong();
     private final SecureRandom random=new SecureRandom();
     public WaitingRoomService(StringRedisTemplate redis,RedisScript<String> waitingRoomScript,RedisProperties keys,
@@ -41,18 +56,33 @@ public class WaitingRoomService implements ReservationAdmission {
         this.redis=redis; this.script=waitingRoomScript; this.keys=keys; this.properties=properties; this.events=events;
         this.inventory=inventory; this.guard=guard; this.json=json; this.clock=clock; this.metrics=metrics;
         metrics.gauge("waiting_room_size",size);
+        metrics.counter("waiting_room_admitted_total");
+        io.micrometer.core.instrument.Timer.builder("waiting_room_wait_seconds").publishPercentileHistogram().register(metrics);
+        redisCommands=Counter.builder("waiting_room_redis_commands_total").register(metrics);
+        joinRequests=Counter.builder("waiting_room_requests_total").tag("operation","join").register(metrics);
+        statusRequests=Counter.builder("waiting_room_requests_total").tag("operation","status").register(metrics);
     }
     private String execute(WaitingRoomEvents.Settings event,String op,UUID user,boolean open,String... tokens) {
         List<String> names=List.of(keys.key("queue",event.id(),"waiting"),keys.key("queue",event.id(),"heartbeat"),
             keys.key("queue",event.id(),"sequence"),keys.key("queue",event.id(),"opened"),
-            keys.key("queue",event.id(),"budget"),keys.key("queue",event.id(),"user")+":");
+            keys.key("queue",event.id(),"budget"),keys.key("queue",event.id(),"user")+":",
+            admittedKey(event.id()));
         List<String> args=new ArrayList<>(List.of(op,user.toString(),open ? "1":"0",event.mode(),Integer.toString(event.rate()),
             Long.toString(properties.interval().toMillis()),Long.toString(properties.heartbeatTtl().toMillis()),
             Long.toString(properties.tokenTtl().toMillis()),"604800000"));
         args.addAll(Arrays.asList(tokens));
-        return guard.call("waiting-room",() -> redis.execute(script,names,args.toArray()),() -> {
+        args.add(properties.captureAdmitted() ? "1":"0");
+        Timer.Sample sample="status".equals(op) ? Timer.start(metrics):null;
+        try {
+            return guard.call("waiting-room",() -> {
+            redisCommands.increment();
+            return redis.execute(script,names,args.toArray());
+        },() -> {
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_UNAVAILABLE","Waiting room temporarily unavailable; retry later");
         });
+        } finally {
+            if (sample!=null) sample.stop(Timer.builder("waiting_room_status_script_seconds").publishPercentileHistogram().register(metrics));
+        }
     }
     private JsonNode parse(String raw) {
         try { return json.readTree(raw); } catch (com.fasterxml.jackson.core.JsonProcessingException e) { throw new IllegalStateException(e); }
@@ -63,20 +93,103 @@ public class WaitingRoomService implements ReservationAdmission {
         if (!event.enabled()) throw new ApiException(HttpStatus.CONFLICT,"WAITING_ROOM_DISABLED","Waiting room is disabled");
         return event;
     }
+    private String settingsKey(UUID event) { return keys.key("queue",event,"settings"); }
+    private CachedSettings cache(WaitingRoomEvents.Settings event,boolean soldOut) {
+        CachedSettings cached=new CachedSettings(event,soldOut);
+        admissionEvents.put(event.id(),event);
+        try {
+            redis.opsForValue().set(settingsKey(event.id()),json.writeValueAsString(cached),Duration.ofDays(7));
+            cachedEvents.put(event.id(),cached);
+            return cached;
+        } catch (com.fasterxml.jackson.core.JsonProcessingException error) {
+            throw new IllegalStateException("Could not cache waiting room settings",error);
+        }
+    }
+    private CachedSettings cached(UUID event) {
+        Timer.Sample sample=Timer.start(metrics);
+        String raw;
+        try {
+            raw=guard.call("waiting-room",() -> redis.opsForValue().get(settingsKey(event)),() -> null);
+        } finally {
+            sample.stop(Timer.builder("waiting_room_status_settings_seconds").publishPercentileHistogram().register(metrics));
+        }
+        if (raw==null) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_NOT_READY","Join the waiting room before polling status");
+        try {
+            CachedSettings cached=json.readValue(raw,CachedSettings.class);
+            if (!cached.event().enabled() || !cached.event().published())
+                throw new ApiException(HttpStatus.CONFLICT,"WAITING_ROOM_DISABLED","Waiting room is disabled");
+            cachedEvents.put(event,cached);
+            return cached;
+        } catch (com.fasterxml.jackson.core.JsonProcessingException error) {
+            throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,"WAITING_ROOM_UNAVAILABLE","Waiting room settings are unavailable");
+        }
+    }
     private boolean open(WaitingRoomEvents.Settings e) { return !clock.instant().isBefore(e.saleStart()) && clock.instant().isBefore(e.saleEnd()); }
     private boolean soldOut(UUID event) { return inventory.publicTiers(event).stream().noneMatch(t -> t.availability()!=Availability.SOLD_OUT); }
+    private CachedSettings joinSettings(UUID event) {
+        // Redis is the source shared by all application instances. Do not let a
+        // local entry survive a Redis flush or an admin configuration change.
+        try { return cached(event); }
+        catch (ApiException error) {
+            if (!"WAITING_ROOM_NOT_READY".equals(error.getCode())) throw error;
+        }
+        synchronized (cachedEvents) {
+            try { return cached(event); }
+            catch (ApiException error) {
+                if (!"WAITING_ROOM_NOT_READY".equals(error.getCode())) throw error;
+                return cache(settings(event),soldOut(event));
+            }
+        }
+    }
     public Status status(UUID eventId,UUID user,boolean join) {
-        var event=settings(eventId);
+        CachedSettings cached=join ? joinSettings(eventId) : cached(eventId);
+        var event=cached.event();
         var data=parse(execute(event,join ? "join":"status",user,open(event)));
         long position=data.path("position").asLong();
-        return new Status(data.path("state").asText(),position,(long)Math.ceil((double)position/event.rate())*Math.max(1,properties.interval().toSeconds()),
-            2,soldOut(eventId),data.path("token").isMissingNode() ? null:data.path("token").asText(),
+        long queueLength=data.path("queueLength").asLong(position);
+        int pollInterval=(int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,
+            Math.ceil((double)queueLength/properties.statusTargetRequestsPerSecond())));
+        pollInterval=jitterPollInterval(pollInterval);
+        if (join) joinRequests.increment(); else statusRequests.increment();
+        return new Status(data.path("state").asText(),position,queueLength,(long)Math.ceil((double)position/event.rate())*Math.max(1,properties.interval().toSeconds()),
+            pollInterval,cached.soldOut(),data.path("token").isMissingNode() ? null:data.path("token").asText(),
             data.has("expiresAt") ? Instant.ofEpochMilli(data.path("expiresAt").asLong()):null);
     }
-    public void leave(UUID event,UUID user) { execute(settings(event),"leave",user,false); }
+    private int jitterPollInterval(int interval) {
+        if (interval==1) return 1;
+        double multiplier=.75+random.nextDouble()*.5;
+        return (int)Math.min(properties.maxPollIntervalSeconds(),Math.max(1,Math.round(interval*multiplier)));
+    }
+    public void leave(UUID event,UUID user) { execute(cached(event).event(),"leave",user,false); }
+    /** Used only by the ADMIN-only loadtest seed controller, before admission opens. */
+    public int seedClosedQueue(UUID eventId,List<UUID> users) {
+        if (users==null || users.isEmpty() || users.size()>5000 || users.stream().anyMatch(Objects::isNull)
+                || new HashSet<>(users).size()!=users.size())
+            throw new ApiException(HttpStatus.BAD_REQUEST,"INVALID_QUEUE_SEED","Expected 1..5000 distinct user IDs");
+        var event=settings(eventId);
+        if (open(event)) throw new ApiException(HttpStatus.CONFLICT,"QUEUE_ALREADY_OPEN","Seed requires a closed queue");
+        for (UUID user:users) status(eventId,user,true);
+        return users.size();
+    }
+    public List<AdmittedUser> newlyAdmitted(UUID eventId,int limit) {
+        if (limit<1 || limit>1_000) throw new IllegalArgumentException("limit must be 1..1000");
+        List<String> values=guard.call("waiting-room",() -> {
+            redisCommands.increment();
+            List<String> popped=redis.opsForList().leftPop(admittedKey(eventId),limit);
+            return popped==null ? List.of():popped;
+        },List::of);
+        return values.stream().map(this::parse).map(value -> new AdmittedUser(
+            UUID.fromString(value.path("user").asText()),value.path("token").asText(),
+            Instant.ofEpochMilli(value.path("expiresAt").asLong()))).toList();
+    }
+    private String admittedKey(UUID event) { return keys.key("queue",event,"admitted"); }
+    public void refresh(UUID eventId) {
+        WaitingRoomEvents.Settings event=events.settings(eventId);
+        cache(event,soldOut(eventId));
+    }
     public void requireAdmission(UUID tier,UUID user,String token) {
-        UUID eventId=inventory.eventId(tier);
-        var event=events.settings(eventId);
+        UUID eventId=tierEvents.computeIfAbsent(tier,inventory::eventId);
+        var event=admissionEvents.computeIfAbsent(eventId,events::settings);
         if (!event.enabled()) return;
         if (token==null || token.isBlank()) throw denied("WAITING_ROOM_REQUIRED");
         if (token.length()>128 || !"VALID".equals(execute(event,"validate",user,false,token))) throw denied("INVALID_ADMISSION_TOKEN");
@@ -84,7 +197,10 @@ public class WaitingRoomService implements ReservationAdmission {
     private ApiException denied(String code) { return new ApiException(HttpStatus.FORBIDDEN,code,"Valid admission for this user and event required"); }
     public int admit(UUID id) {
         var event=settings(id);
-        if (!open(event) || soldOut(id)) {
+        return admit(event,soldOut(id));
+    }
+    private int admit(WaitingRoomEvents.Settings event,boolean soldOut) {
+        if (!open(event) || soldOut) {
             // Liveness cleanup must continue even when no new admission is allowed.
             execute(event,"admit",new UUID(0,0),false);
             return 0;
@@ -95,7 +211,7 @@ public class WaitingRoomService implements ReservationAdmission {
         for (var wait:admitted) io.micrometer.core.instrument.Timer.builder("waiting_room_wait_seconds").publishPercentileHistogram().register(metrics).record(Duration.ofMillis(wait.asLong()));
         metrics.counter("waiting_room_admitted_total").increment(admitted.size());
         if (!admitted.isEmpty()) org.slf4j.LoggerFactory.getLogger(getClass()).info("waiting_room_admit correlation_id={} event_id={} count={}",
-            com.vibe.ticketrush.common.service.CorrelationId.current(),id,admitted.size());
+            com.vibe.ticketrush.common.service.CorrelationId.current(),event.id(),admitted.size());
         return admitted.size();
     }
     @Scheduled(fixedDelayString="${ticketrush.queue.interval:1s}",initialDelayString="${ticketrush.queue.initial-delay:1s}")
@@ -103,7 +219,10 @@ public class WaitingRoomService implements ReservationAdmission {
         long count=0;
         for (UUID event:events.enabledEvents()) {
             try {
-                admit(event);
+                WaitingRoomEvents.Settings settings=settings(event);
+                boolean soldOut=soldOut(event);
+                cache(settings,soldOut);
+                admit(settings,soldOut);
                 Long value=guard.call("waiting-room",() -> redis.opsForZSet().zCard(keys.key("queue",event,"waiting")),() -> 0L);
                 if (value!=null) count+=value;
             } catch (ApiException ex) { /* Retry next interval; no tokens are admitted locally. */ }

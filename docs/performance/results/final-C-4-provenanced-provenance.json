@@ -1,0 +1,8 @@
+{
+  "commit_sha": "174aac39338fccf6ffdac7b921e26512568d8d26",
+  "backend_image_id": "sha256:7afe13af0e503735b24759ee75f9d8b4c8ab097c863bbf2c23df87b9a5943e73",
+  "image_revision_label": "174aac39338fccf6ffdac7b921e26512568d8d26",
+  "run_id": "final-C-4-provenanced",
+  "utc_start": "2026-10-12T11:19:51Z",
+  "working_tree_clean": true
+}

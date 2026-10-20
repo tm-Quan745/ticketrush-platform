@@ -1,0 +1,78 @@
+# Always use a separate Compose project and ticketrush_loadtest database.
+services:
+  postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+    ports: !override ["127.0.0.1:25437:5432"]
+  redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+    ports: !override ["127.0.0.1:26387:6379"]
+  rabbitmq:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+    ports: !override ["127.0.0.1:25677:5672", "127.0.0.1:25687:15672"]
+  mailpit:
+    ports: !override ["127.0.0.1:21027:1025", "127.0.0.1:28027:8025"]
+    environment:
+      MP_MAX_MESSAGES: 30000
+  backend:
+    deploy:
+      resources:
+        limits:
+          # Laptop measurements use 6 cores. CI overrides this to its 4-vCPU Docker host.
+          cpus: "${LOADTEST_BACKEND_CPUS:-6.0}"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,loadtest
+      DEV_SEED_ENABLED: "false"
+      REDIS_ENV: loadtest
+      MOCK_PAYMENT_SCENARIOS_ENABLED: "true"
+      MOCK_PAYMENT_TEST_TOKEN: ${MOCK_PAYMENT_TEST_TOKEN:?Set loadtest mock token}
+    ports: !override ["127.0.0.1:28087:8080"]
+  tools:
+    profiles: [loadtest]
+    build: ./infrastructure/loadtest
+    environment:
+      LOADTEST_PROFILE: loadtest
+      SPRING_PROFILES_ACTIVE: dev,loadtest
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGHOST: postgres
+      JWT_SECRET: ${JWT_SECRET}
+      LOADTEST_PASSWORD: ${LOADTEST_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_ENV: loadtest
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      METRICS_PASSWORD: ${METRICS_PASSWORD}
+      API_URL: http://backend:8080
+    volumes:
+      - ./infrastructure/loadtest:/tool:ro
+      - ./loadtest/.data:/data
+      - ./docs/performance/results:/results
+  k6:
+    deploy:
+      resources:
+        limits:
+          cpus: "3.0"
+    image: grafana/k6:1.3.0
+    # The seeder creates private mode-0600 credentials. Same UID reads them; never make them world-readable.
+    user: "0:0"
+    profiles: [loadtest]
+    environment:
+      BASE_URL: http://backend:8080
+      MOCK_PAYMENT_TEST_TOKEN: ${MOCK_PAYMENT_TEST_TOKEN}
+      K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
+      K6_PROMETHEUS_RW_TREND_STATS: p(50),p(95),p(99),max
+      K6_PROMETHEUS_RW_STALE_MARKERS: "true"
+    volumes:
+      - ./loadtest:/scripts:ro
+      - ./docs/performance/results:/results
+    working_dir: /scripts

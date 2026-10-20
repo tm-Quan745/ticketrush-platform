@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,6 +35,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 abstract class ReservationTestFixture {
     @Container static final PostgreSQLContainer<?> POSTGRES=new PostgreSQLContainer<>("postgres:17-alpine");
+    protected static Supplier<String> rabbitPassword=() -> "unused-test-password";
     @DynamicPropertySource static void configure(DynamicPropertyRegistry r) {
         r.add("spring.datasource.url",POSTGRES::getJdbcUrl);
         r.add("spring.datasource.username",POSTGRES::getUsername);
@@ -41,7 +43,7 @@ abstract class ReservationTestFixture {
         byte[] secret=new byte[32];new java.security.SecureRandom().nextBytes(secret);
         r.add("app.auth.jwt-secret",() -> Base64.getEncoder().encodeToString(secret));
         r.add("spring.data.redis.password",() -> "unused-test-password");
-        r.add("spring.rabbitmq.password",() -> "unused-test-password");
+        r.add("spring.rabbitmq.password",() -> rabbitPassword.get());
     }
     static class MutableClock extends Clock {
         final AtomicReference<Instant> value=new AtomicReference<>(Instant.parse("2030-01-01T00:00:00Z"));

@@ -82,3 +82,21 @@ This milestone does not implement reservations, overselling prevention logic,
 payments, idempotency keys, queues, outbox publishing, frontend, or monitoring
 dashboards. Quantity constraints prepare the schema but do not prove booking
 correctness. See the ADRs for rotation and rate-limit tradeoffs.
+
+## Week 7 observed behavior and scaling experiments
+
+The historical foundation notes above describe Week 1. The current modular monolith also includes
+reservation strategies, order/payment idempotency, TTL expiry, outbox, notification, Redis admission
+and waiting room. Week 7 adds bounded-cardinality metrics, ECS JSON logs, provisioned dashboards,
+open-model load generation and an independent post-run SQL/admin-API verifier.
+
+Initial end-to-end measurement exposed a correctness bottleneck before capacity tuning: unbound
+reservation.created/order.created messages cause mandatory RabbitMQ returns, and per-aggregate outbox
+ordering then blocks order.paid delivery. See [actual counts](performance/log.md). Pool sizing cannot
+repair a routing defect. PostgreSQL remains authoritative; no durability setting or inventory guard
+is weakened for headline results. The deliberately broken image is limited to the verifier proof.
+
+Further scaling should separate load generation from services, measure one backend's database budget,
+then add instances behind Nginx with a shared PostgreSQL/Redis/RabbitMQ deployment. Read replicas can
+serve browse traffic with explicit staleness guarantees; reservation and payment writes still require
+the authoritative database. Final strategy/pool decisions must follow the recorded experiments.

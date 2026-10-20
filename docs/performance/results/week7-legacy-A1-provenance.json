@@ -1,0 +1,31 @@
+{
+  "commit_sha": "7a242d002d08f1e93fea4b521a77ee259cf1b44b",
+  "backend_image_id": "sha256:bb8f576368a47bedddc86d879bdb676098258100c887392f311d42a73feaf0cb",
+  "image_revision_label": "7a242d002d08f1e93fea4b521a77ee259cf1b44b",
+  "run_id": "week7-legacy-A1",
+  "utc_start": "2026-10-13T14:32:48Z",
+  "working_tree_clean": false,
+  "tracked_status": [
+    " M docs/performance/results/last-reset.json",
+    " M docs/performance/results/last-seed.json"
+  ],
+  "untracked_files": [
+    "docs/performance/results/week7-legacy-A1-console.log.err"
+  ],
+  "hikari_connection_timeout_ms": 30000,
+  "backend_connection_durability": {
+    "synchronous_commit": "on",
+    "fsync": "on",
+    "observed_at_utc": "2026-10-13T14:32:48.487071432Z"
+  },
+  "k6_vus": {
+    "preAllocatedVUs": 200,
+    "maxVUs": 1000
+  },
+  "k6_order_poll": {
+    "PAYMENT_POLL_BASE_MS": 1000,
+    "PAYMENT_POLL_MAX_MS": 2000,
+    "PAYMENT_POLL_JITTER_MS": 250,
+    "PAYMENT_MAX_POLLS": 20
+  }
+}

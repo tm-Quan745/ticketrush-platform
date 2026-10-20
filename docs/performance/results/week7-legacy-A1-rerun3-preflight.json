@@ -1,0 +1,48 @@
+{
+  "run_id": "week7-legacy-A1-rerun3",
+  "checked_at_utc": "2026-10-14T06:45:23Z",
+  "checks": {
+    "prometheus_container": {
+      "running": true
+    },
+    "cadvisor_container": {
+      "running": true
+    },
+    "prometheus_ready": {
+      "status": 200
+    },
+    "cadvisor_scrape": {
+      "up": true,
+      "targets": 1
+    },
+    "k6_remote_write": {
+      "exit_code": 0,
+      "received_by_prometheus": true,
+      "ok": true,
+      "output_tail": [
+        "    http_req_duration..............: avg=696.53\u00c2\u00b5s min=399.02\u00c2\u00b5s med=507.43\u00c2\u00b5s max=1.75ms p(90)=1.14ms p(95)=1.45ms",
+        "      { expected_response:true }...: avg=696.53\u00c2\u00b5s min=399.02\u00c2\u00b5s med=507.43\u00c2\u00b5s max=1.75ms p(90)=1.14ms p(95)=1.45ms",
+        "    http_req_failed................: 0.00% 0 out of 6",
+        "    http_reqs......................: 6     0.998264/s",
+        "",
+        "    EXECUTION",
+        "    iteration_duration.............: avg=1s       min=1s       med=1s       max=1s     p(90)=1s     p(95)=1s    ",
+        "    iterations.....................: 6     0.998264/s",
+        "    vus............................: 1     min=1      max=1",
+        "    vus_max........................: 1     min=1      max=1",
+        "",
+        "    NETWORK",
+        "    data_received..................: 870 B 145 B/s",
+        "    data_sent......................: 468 B 78 B/s",
+        "",
+        "",
+        "",
+        "",
+        " Container ticketrush-week7-k6-run-868aa2bf23c5 Creating ",
+        " Container ticketrush-week7-k6-run-868aa2bf23c5 Created "
+      ]
+    }
+  },
+  "valid": true,
+  "errors": []
+}

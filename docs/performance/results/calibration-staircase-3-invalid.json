@@ -1,0 +1,10 @@
+{
+  "run_id": "calibration-staircase-3",
+  "valid": false,
+  "reason": "Stopped before checkout traffic because the external Python rate scheduler began before k6 finished initializing 225 VUs, so admission-rate stages would not align with k6 stages.",
+  "join_precondition": "PASS",
+  "checkout_k6_summary": null,
+  "checkout_verifier": null,
+  "excluded_from_calibration": true,
+  "follow_up": "Rate transitions moved into a k6 control VU in commit f2963cc."
+}

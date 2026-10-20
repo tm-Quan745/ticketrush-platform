@@ -1,0 +1,11 @@
+{
+  "before": "2026-10-13T04:34:01.3734579Z",
+  "after": "2026-10-13T04:34:02.2921348Z",
+  "response": {
+    "id": "22626c02-74bd-46ec-87c1-f0dc05edde66",
+    "status": "HELD",
+    "quantity": 1,
+    "expires_at": "2026-10-13T04:35:02.084514026Z",
+    "seconds_remaining": 60
+  }
+}

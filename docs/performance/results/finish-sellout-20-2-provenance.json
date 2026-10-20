@@ -1,0 +1,34 @@
+{
+  "commit_sha": "fcb976f3bed21efdb3808084290a35ebe3daba4d",
+  "backend_image_id": "sha256:6b3c6b8c99cf5c7666958d3407c264a217bbce0c1c1e9a180f2a49dbdc3ad9f4",
+  "image_revision_label": "fcb976f3bed21efdb3808084290a35ebe3daba4d",
+  "run_id": "finish-sellout-20-2",
+  "utc_start": "2026-10-18T10:52:37Z",
+  "working_tree_clean": false,
+  "tracked_status": [
+    " M docs/decisions/0036-bounded-sellout-evidence.md",
+    " M docs/performance/log.md",
+    " M infrastructure/loadtest/finish_tool.py",
+    " M loadtest/sellout.js"
+  ],
+  "untracked_files": [
+    "25444",
+    "docs/performance/results/run-frontdoor-random-matrix.ps1",
+    "docs/performance/results/run-frontdoor-vu400-matrix.ps1",
+    "docs/performance/results/run-status-matrix.ps1",
+    "infrastructure/loadtest/sellout_contract.py",
+    "infrastructure/loadtest/test_sellout_contract.py",
+    "week7-checkout-k6-inspect.json"
+  ],
+  "hikari_connection_timeout_ms": 1500,
+  "backend_connection_durability": {
+    "synchronous_commit": "on",
+    "fsync": "on",
+    "observed_at_utc": "2026-10-18T10:52:36.901198148Z"
+  },
+  "k6_vus": {
+    "preAllocatedVUs": 100,
+    "maxVUs": 150
+  },
+  "measurement_platform": "cpu-capped-2026-10-17"
+}
