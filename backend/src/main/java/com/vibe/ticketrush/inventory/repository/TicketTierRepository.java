@@ -3,6 +3,16 @@ import com.vibe.ticketrush.inventory.domain.TicketTier;
 import org.springframework.data.jpa.repository.*;
 import java.util.*;
 public interface TicketTierRepository extends JpaRepository<TicketTier, UUID> {
+    interface Committed { long getHeld(); long getSold(); }
+    @Query(value="SELECT COALESCE(sum(quantity) FILTER(WHERE status='HELD'),0) AS held, COALESCE(sum(quantity) FILTER(WHERE status='CONFIRMED'),0) AS sold FROM reservations WHERE tier_id=:id",nativeQuery=true)
+    Committed committed(UUID id);
+    @Modifying(clearAutomatically=true,flushAutomatically=true)
+    @Query(value="""
+        UPDATE ticket_tiers SET available_quantity=available_quantity+(:total-total_quantity),total_quantity=:total,
+        version=version+1,updated_at=CURRENT_TIMESTAMP WHERE id=:id AND inventory_mode='COUNTER'
+        AND version=:expectedVersion AND :total>=total_quantity-available_quantity
+        """,nativeQuery=true)
+    int changeCapacity(UUID id,int total,long expectedVersion);
     List<TicketTier> findByEventIdOrderByNameAsc(UUID eventId);
     @Query("select t.eventId from TicketTier t where t.id = :id")
     Optional<UUID> findEventId(UUID id);

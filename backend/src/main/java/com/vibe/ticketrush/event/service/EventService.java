@@ -16,11 +16,12 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 public class EventService implements EventAccess {
+    private final com.vibe.ticketrush.inventory.service.VenueOperations seating;
     private final java.time.Clock clock;
     private final EventRepository events;
     private final PublicEventCache cache;
     private final com.vibe.ticketrush.queue.service.QueueProperties queue;
-    public EventService(EventRepository events, java.time.Clock clock,PublicEventCache cache,com.vibe.ticketrush.queue.service.QueueProperties queue) { this.events = events; this.clock=clock; this.cache=cache; this.queue=queue; }
+    public EventService(EventRepository events, java.time.Clock clock,PublicEventCache cache,com.vibe.ticketrush.queue.service.QueueProperties queue,com.vibe.ticketrush.inventory.service.VenueOperations seating) { this.seating=seating; this.events = events; this.clock=clock; this.cache=cache; this.queue=queue; }
     public EventPage list(int page, int size, String keyword, Instant from, Instant to, boolean onSale) {
         if (page < 0 || size < 1 || size > 50 || (from != null && to != null && from.isAfter(to)))
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_FILTER", "page >= 0, size 1..50, and from <= to required");
@@ -47,7 +48,8 @@ public class EventService implements EventAccess {
     @Transactional
     public EventView create(WriteEvent r, UUID creator) {
         validate(r);
-        Event e = new Event(); e.setId(UUID.randomUUID()); e.setCreatedBy(creator);
+        seating.requireVenue(r.venueId());
+        Event e = new Event(); e.setVenueId(r.venueId()); e.setId(UUID.randomUUID()); e.setCreatedBy(creator);
         e.setWaitingRoomEnabled(queue.enabledByDefault());
         e.setStatus(EventStatus.DRAFT); e.setCreatedAt(clock.instant()); e.setUpdatedAt(e.getCreatedAt());
         EventMapper.apply(e, r);
@@ -57,6 +59,10 @@ public class EventService implements EventAccess {
     public EventView update(UUID id, WriteEvent r) {
         validate(r);
         Event e = lock(id);
+        if (!java.util.Objects.equals(r.venueId(),e.getVenueId())) {
+            if (e.getStatus()!=EventStatus.DRAFT) throw new ApiException(HttpStatus.CONFLICT,"TOPOLOGY_FROZEN","Venue is immutable after publication");
+            seating.requireVenue(r.venueId()); seating.clearMapping(id); e.setVenueId(r.venueId());
+        }
         // Once sales begin, moving the window forward would bypass the tier price rule.
         if (e.getStatus() == EventStatus.PUBLISHED && !clock.instant().isBefore(e.getSaleStartTime())
                 && !r.saleStartTime().equals(e.getSaleStartTime()))
@@ -70,6 +76,7 @@ public class EventService implements EventAccess {
         Event e = lock(id);
         if (!e.getStatus().canTransitionTo(next))
             throw new ApiException(HttpStatus.CONFLICT, "INVALID_EVENT_TRANSITION", "Cannot transition from " + e.getStatus() + " to " + next);
+        if (next==EventStatus.PUBLISHED) seating.publish(id,e.getVenueId());
         e.setStatus(next); e.setUpdatedAt(clock.instant());
         cache.invalidate();
         return EventMapper.view(e);

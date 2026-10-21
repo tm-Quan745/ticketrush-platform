@@ -16,6 +16,8 @@ import java.util.*;
 @Service
 @Transactional(propagation=Propagation.REQUIRES_NEW)
 public class ReservationTransactions {
+    private final SeatingOperations seats;
+    private final PurchaseInventory prices;
     private final ReservationRepository reservations;
     private final ReservationInventory inventory;
     private final InventoryReservationStrategy strategy;
@@ -26,7 +28,9 @@ public class ReservationTransactions {
     private final OutboxPublisher outbox;
     public ReservationTransactions(ReservationRepository reservations, ReservationInventory inventory,
             InventoryReservationStrategy strategy, ReservationProperties properties, Clock clock, EntityManager em,
-            org.springframework.context.ApplicationEventPublisher events, OutboxPublisher outbox) {
+            org.springframework.context.ApplicationEventPublisher events, OutboxPublisher outbox, SeatingOperations seats,PurchaseInventory prices) {
+        this.prices=prices;
+        this.seats=seats;
         this.reservations=reservations; this.inventory=inventory; this.strategy=strategy;
         this.properties=properties; this.clock=clock; this.em=em; this.events=events; this.outbox=outbox;
     }
@@ -47,6 +51,20 @@ public class ReservationTransactions {
         // Keep the contended tier row locked only for this final write and commit. A failed
         // conditional update rolls back the reservation and its outbox event atomically.
         strategy.take(tier,quantity);
+        return view(r,now);
+    }
+    public View createSeated(UUID user,UUID tier,List<UUID> ids) {
+        seats.tryUserTierLock(user,tier);
+        Instant now=clock.instant();
+        inventory.validateSale(tier,ids.size(),now);
+        for (var old:reservations.expiredForUser(user,now)) expire(old,now);
+        if (reservations.existsByUserIdAndTierIdAndStatus(user,tier,ReservationStatus.HELD)) throw duplicate();
+        Reservation r=new Reservation(); r.setId(UUID.randomUUID()); r.setUserId(user); r.setTierId(tier);
+        r.setQuantity(ids.size()); r.setStatus(ReservationStatus.HELD); r.setExpiresAt(now.plus(properties.holdDuration()));
+        r.setCreatedAt(now); r.setUpdatedAt(now);
+        reservations.saveAndFlush(r);
+        seats.hold(r.getId(),tier,ids,r.getExpiresAt());
+        outbox.publish("reservation.created","reservation",r.getId(),new EventPayloads.Reservation(r.getId(),user));
         return view(r,now);
     }
     public View get(UUID user, UUID id) {
@@ -72,6 +90,7 @@ public class ReservationTransactions {
     public boolean confirm(UUID id) {
         lockTimeout(); Reservation r=locked(id); Instant now=clock.instant();
         if (expire(r,now) || !r.getStatus().canTransitionTo(ReservationStatus.CONFIRMED)) return false;
+        if (seats.isSeated(r.getTierId())) throw new IllegalStateException("Seated confirmation requires the payment lifecycle");
         return reservations.transition(id,"CONFIRMED",now)==1;
     }
     public int expireBatch() {
@@ -86,7 +105,8 @@ public class ReservationTransactions {
     private boolean release(Reservation r, ReservationStatus next, Instant now) {
         if (!r.getStatus().canTransitionTo(next)) return false;
         if (reservations.transition(r.getId(),next.name(),now)!=1) return false;
-        inventory.restore(r.getTierId(),r.getQuantity(),now);
+        if (seats.isSeated(r.getTierId())) seats.release(r.getId(),false);
+        else inventory.restore(r.getTierId(),r.getQuantity(),now);
         outbox.publish(next==ReservationStatus.EXPIRED ? "reservation.expired" : "reservation.cancelled","reservation",r.getId(),new EventPayloads.Reservation(r.getId(),r.getUserId()));
         events.publishEvent(new ReservationChanged(r.getId(),next));
         r.setStatus(next); return true;
@@ -101,7 +121,9 @@ public class ReservationTransactions {
     }
     private View view(Reservation r, Instant now) {
         long seconds=r.getStatus()==ReservationStatus.HELD ? Math.max(0,Duration.between(now,r.getExpiresAt()).getSeconds()) : 0;
-        return new View(r.getId(),r.getStatus(),r.getQuantity(),r.getExpiresAt(),seconds);
+        var price=prices.snapshot(r.getTierId());
+        return new View(r.getId(),r.getStatus(),r.getQuantity(),r.getExpiresAt(),seconds,r.getUserId(),r.getTierId(),price.eventId(),price.name(),price.unitPrice(),price.currency(),
+            seats.isSeated(r.getTierId())?"SEATED":"COUNTER",r.getCreatedAt(),seats.assignments(r.getId()));
     }
     public static ApiException duplicate() { return new ApiException(HttpStatus.CONFLICT,"ALREADY_HELD","User already holds this tier"); }
 }

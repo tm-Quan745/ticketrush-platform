@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 @Service
 public class ReservationService {
+    private final com.vibe.ticketrush.inventory.service.SeatingOperations seats;
     private final ReservationTransactions transactions;
     private final ReservationProperties properties;
     private final LongAdder retries=new LongAdder();
@@ -22,8 +23,21 @@ public class ReservationService {
     private final ReentrantLock[] pessimisticStripes=java.util.stream.IntStream.range(0,256)
             .mapToObj(ignored -> new ReentrantLock()).toArray(ReentrantLock[]::new);
     public ReservationService(ReservationTransactions transactions, ReservationProperties properties,
-            com.vibe.ticketrush.inventory.service.InventoryAdmission gate, com.vibe.ticketrush.queue.service.ReservationAdmission queue) {
+            com.vibe.ticketrush.inventory.service.InventoryAdmission gate, com.vibe.ticketrush.queue.service.ReservationAdmission queue,com.vibe.ticketrush.inventory.service.SeatingOperations seats) {
+        this.seats=seats;
         this.transactions=transactions; this.properties=properties; this.gate=gate; this.queue=queue;
+    }
+    public View create(UUID user,Create request,String token) {
+        if (request.seatIds()!=null) {
+            if (request.tierId()!=null || request.quantity()!=null) throw com.vibe.ticketrush.inventory.service.SeatedInventory.invalid("WRONG_INVENTORY_MODE","Use either seatIds or tierId and quantity");
+            UUID tier=seats.tierFor(request.seatIds());
+            queue.requireAdmission(tier,user,token);
+            try { return transactions.createSeated(user,tier,request.seatIds()); }
+            catch (PessimisticLockingFailureException ex) { throw busy(); }
+        }
+        if (request.tierId()==null || request.quantity()==null || request.quantity()<1)
+            throw new ApiException(HttpStatus.BAD_REQUEST,"INVALID_REQUEST","tierId and positive quantity required");
+        return create(user,request.tierId(),request.quantity(),token);
     }
     public long databaseAttempts() { return databaseAttempts.sum(); }
     public long retryCount() { return retries.sum(); }
@@ -31,6 +45,7 @@ public class ReservationService {
         return create(user,tier,quantity,null);
     }
     public View create(UUID user, UUID tier, int quantity,String token) {
+        if (seats.isSeated(tier)) throw com.vibe.ticketrush.inventory.service.SeatedInventory.invalid("WRONG_INVENTORY_MODE","Select event seat IDs for this tier");
         var admission="redis-gate".equals(properties.strategy()) ? gate.begin(tier,quantity) : null;
         boolean committed=false;
         try {

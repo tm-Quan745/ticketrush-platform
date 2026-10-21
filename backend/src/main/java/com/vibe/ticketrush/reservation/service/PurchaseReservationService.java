@@ -16,6 +16,7 @@ import java.util.*;
 @Service
 @Transactional(propagation=Propagation.MANDATORY)
 public class PurchaseReservationService implements PurchaseReservation {
+    private final com.vibe.ticketrush.inventory.service.SeatingOperations seats;
     private final ReservationRepository reservations;
     private final ReservationInventory inventory;
     private final PurchaseInventory purchaseInventory;
@@ -23,7 +24,8 @@ public class PurchaseReservationService implements PurchaseReservation {
     private final ReservationTransactions transactions;
     private final OutboxPublisher outbox;
     public PurchaseReservationService(ReservationRepository reservations, ReservationInventory inventory,
-            PurchaseInventory purchaseInventory, ApplicationEventPublisher events,ReservationTransactions transactions,OutboxPublisher outbox) {
+            PurchaseInventory purchaseInventory, ApplicationEventPublisher events,ReservationTransactions transactions,OutboxPublisher outbox,SeatingOperations seats) {
+        this.seats=seats;
         this.reservations=reservations; this.inventory=inventory; this.purchaseInventory=purchaseInventory; this.events=events;
         this.transactions=transactions; this.outbox=outbox;
     }
@@ -35,23 +37,29 @@ public class PurchaseReservationService implements PurchaseReservation {
     }
     public void release(Hold hold,ReservationStatus next,Instant now) {
         if (reservations.transition(hold.id(),next.name(),now)==1) {
-            inventory.restore(hold.tierId(),hold.quantity(),now);
+            if (seats.isSeated(hold.tierId())) seats.release(hold.id(),false);
+            else inventory.restore(hold.tierId(),hold.quantity(),now);
             outbox.publish(next==ReservationStatus.EXPIRED ? "reservation.expired" : "reservation.cancelled","reservation",hold.id(),new EventPayloads.Reservation(hold.id(),hold.userId()));
             events.publishEvent(new ReservationChanged(hold.id(),next));
         }
     }
     public boolean confirm(Hold hold,Instant now,Duration grace) {
-        if (hold.status()==ReservationStatus.HELD && !hold.expiresAt().isBefore(now))
+        if (hold.status()==ReservationStatus.HELD && !hold.expiresAt().isBefore(now)) {
+            if (seats.isSeated(hold.tierId())) seats.sellHeld(hold.id(),hold.quantity());
             return reservations.transition(hold.id(),"CONFIRMED",now)==1;
+        }
         if (hold.status()==ReservationStatus.HELD) release(hold,ReservationStatus.EXPIRED,now);
         if (now.isAfter(hold.expiresAt().plus(grace))) return false;
-        if (!purchaseInventory.reacquire(hold.tierId(),hold.quantity(),now)) return false;
+        if (seats.isSeated(hold.tierId())) {
+            if (!seats.reacquire(hold.id(),hold.tierId(),hold.quantity())) return false;
+        } else if (!purchaseInventory.reacquire(hold.tierId(),hold.quantity(),now)) return false;
         if (reservations.confirmReleased(hold.id(),now)!=1) throw new IllegalStateException("Reservation changed under lock");
         return true;
     }
     public void refund(Hold hold,Instant now) {
         if (reservations.cancelConfirmed(hold.id(),now)!=1) throw new IllegalStateException("Confirmed reservation required");
-        inventory.restore(hold.tierId(),hold.quantity(),now);
+        if (seats.isSeated(hold.tierId())) seats.release(hold.id(),true);
+        else inventory.restore(hold.tierId(),hold.quantity(),now);
         outbox.publish("reservation.cancelled","reservation",hold.id(),new EventPayloads.Reservation(hold.id(),hold.userId()));
     }
 }

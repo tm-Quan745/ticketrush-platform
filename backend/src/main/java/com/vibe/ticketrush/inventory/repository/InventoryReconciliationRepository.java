@@ -14,8 +14,8 @@ public class InventoryReconciliationRepository {
             """, rs -> rs.next() ? rs.getLong(1) : null,tier);
     }
     public List<UUID> tierIds(UUID event) {
-        if (event == null) return jdbc.query("SELECT id FROM ticket_tiers ORDER BY id",(rs,n) -> rs.getObject(1,UUID.class));
-        return jdbc.query("SELECT id FROM ticket_tiers WHERE event_id=? ORDER BY id",(rs,n) -> rs.getObject(1,UUID.class),event);
+        if (event == null) return jdbc.query("SELECT id FROM ticket_tiers WHERE inventory_mode='COUNTER' ORDER BY id",(rs,n) -> rs.getObject(1,UUID.class));
+        return jdbc.query("SELECT id FROM ticket_tiers WHERE event_id=? AND inventory_mode='COUNTER' ORDER BY id",(rs,n) -> rs.getObject(1,UUID.class),event);
     }
     public List<InventoryViolation> violations(UUID eventId) {
         return jdbc.query("""
@@ -23,7 +23,7 @@ public class InventoryReconciliationRepository {
                 COALESCE(SUM(r.quantity) FILTER (WHERE r.status='HELD'),0) held,
                 COALESCE(SUM(r.quantity) FILTER (WHERE r.status='CONFIRMED'),0) confirmed
             FROM ticket_tiers t LEFT JOIN reservations r ON r.tier_id=t.id
-            WHERE t.event_id=? GROUP BY t.id
+            WHERE t.event_id=? AND t.inventory_mode='COUNTER' GROUP BY t.id
             ORDER BY t.id
             """, (rs,n) -> new InventoryViolation(rs.getObject("id",UUID.class),rs.getLong("available_quantity"),rs.getLong("held"),rs.getLong("confirmed"),rs.getLong("total_quantity"),0),eventId);
     }

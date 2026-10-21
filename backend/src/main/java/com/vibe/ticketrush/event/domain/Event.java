@@ -9,6 +9,9 @@ import java.util.UUID;
 public class Event {
     @Id
     private UUID id;
+    private UUID venueId;
+    public UUID getVenueId() { return venueId; }
+    public void setVenueId(UUID value) { venueId=value; }
     private boolean waitingRoomEnabled;
     private Integer waitingRoomRate;
     private String waitingRoomMode;
