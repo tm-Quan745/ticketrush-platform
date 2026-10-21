@@ -207,3 +207,46 @@ cost more than counters; capacity is constrained by actual seat topology.
 Partial unique constraints are a last defence, not a replacement for transaction
 design. Price/seat labels must be server snapshots. Counting only VALID tickets
 would falsely report drift after check-in: USED remains a sold ticket.
+
+## M1 implementation details (2026-10-21)
+
+V8 adds `event_seats.section_id` as deliberate denormalization. Composite foreign
+keys bind a physical seat to its section and the event/section to its tier. Venue
+ownership and section-type/mode compatibility are validated under the event lock;
+publication requires the complete mapping. The current-claim FK is deferred until
+commit, so inserting membership and setting the claim is atomic despite the cycle.
+One combined state CHECK also rejects unknown seat states. SQL triggers freeze
+published venue geometry/seats and issued ticket snapshots.
+
+The server-owned stadium JSON contains 3,200 reserved seats (A 800, B 600, C 600,
+Upper 1,200), with VIP Pit remaining GA. Bilinear interpolation uses each section's
+stage-facing edge; ten-seat adjacency segments reserve aisle boundaries. First-row
+edge seats carry accessibility flags. Suggestion scoring and accessible-seat
+filtering remain M2; no suggestion endpoint was added in M1.
+
+SEATED holds use a transaction-scoped `pg_try_advisory_xact_lock` for user+tier,
+then sorted `FOR UPDATE SKIP LOCKED` seat acquisition. This avoids a hidden wait on
+the existing active-reservation unique index. Advisory hash collisions can cause a
+conservative 503 retry but cannot oversell. A 100 ms lock timeout and 5 s statement
+timeout bound incidental database contention. A missing/locked seat produces 409
+with unavailable IDs and rolls back the reservation, membership and outbox together.
+
+`reservations.expires_at` is the sole expiry clock. The existing reservation job
+releases current seat claims in the same transaction; auxiliary seat expiry is
+checked by the verifier. Late success reacquires only the original seats within
+the existing grace period; otherwise the existing gateway refund path applies.
+Refund and check-in serialize on the same order row, and any USED ticket refuses
+refund. Cancelled ticket history remains while the partial unique index allows a
+new live ticket on a legitimately refunded seat.
+
+COUNTER capacity/strategy/Redis behavior remains intact. COUNTER still requires an
+explicit max-per-order; only SEATED creation defaults to six. Tier mode is immutable
+through the update API (create another draft tier to change it). SEATED counts are
+computed from rows, never the counter columns. Numeric capacity PATCH is COUNTER
+only and checks expected version plus held/sold stock.
+
+The shared SQL verifier runs under a repeatable-read snapshot in Spring and in the
+loadtest tooling. Its strict SOLD -> PAID check can report REFUND_PENDING as a
+transitional violation; terminal-run verification should drain payment processing.
+The 200-thread test is correctness evidence, not throughput or latency evidence.
+Existing performance evidence continues to apply to COUNTER only.
