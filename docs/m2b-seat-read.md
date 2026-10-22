@@ -35,11 +35,11 @@ production build passed. No frontend components changed.
 
 ## Repository size and secrets
 
-`git count-objects -vH` after implementation commits:
+`git count-objects -vH` after evidence commit 577f9e0:
 
 ```text
-count: 4744
-size: 62.50 MiB
+count: 4797
+size: 62.85 MiB
 in-pack: 113
 packs: 1
 size-pack: 197.74 KiB
@@ -71,6 +71,10 @@ loadtest/.data/admissions.json and loadtest/.data/admin.json: JWT and generic AP
 key detections. These files are absent from HEAD, but the history is **not clean**.
 Before a first push: assess/revoke relevant credentials and explicitly authorize
 history cleanup if desired; a private repository does not erase this exposure.
+Final incremental scan covered all 39 new blob versions through 577f9e0: no
+additional findings (gitleaks exit 0). Combined coverage: 2,397 unique historical
+blobs across 131 reachable commits. The 10,083 original historical findings remain;
+this incremental result does not make the history clean.
 No secret values are included in this report. Detector output is not a guarantee
 that every possible secret type is detectable.
 
