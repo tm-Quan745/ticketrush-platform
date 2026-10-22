@@ -1,0 +1,106 @@
+{
+  "concurrency": {
+    "finalTargetTier": {
+      "physical": 30,
+      "available": 4,
+      "held": 0,
+      "sold": 26,
+      "blocked": 0
+    },
+    "seatsUnavailable409": 193,
+    "timeoutsSeconds": {
+      "barrier": 15,
+      "poolTermination": 10,
+      "test": 90,
+      "future": 60
+    },
+    "requestMax": 6,
+    "accepted": 7,
+    "seatBlockSize": 30,
+    "requestMin": 2,
+    "elapsedMillis": 1796,
+    "threads": 200
+  },
+  "logs": [
+    {
+      "name": "m2-evidence-baseline",
+      "sha256": "f5983231736b97a5b15eac22e5ef823e7dead65d6d8af4540c5144363f55139d",
+      "resultLines": [
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 26.64 s -- in com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] Finished at: 2026-10-21T21:31:29+07:00"
+      ],
+      "assertions": []
+    },
+    {
+      "name": "m2-mutation-skip-locked",
+      "sha256": "157d784558ae509c33bfd789bd3a8667f8e1b9cfef7f291015fb6c738ff2ecef",
+      "resultLines": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 21.38 s <<< FAILURE! -- in com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[INFO] Finished at: 2026-10-21T21:32:21+07:00"
+      ],
+      "assertions": [
+        "  org.springframework.jdbc.UncategorizedSQLException: PreparedStatementCallback; uncategorized SQLException for SQL [SELECT id FROM event_seats WHERE id IN (?) AND tier_id=? AND status='AVAILABLE' ORDER BY id FOR UPDATE]; SQL state [55P03]; error code [0]; ERROR: canceling statement due to lock timeout",
+        "  org.springframework.jdbc.UncategorizedSQLException: PreparedStatementCallback; uncategorized SQLException for SQL [SELECT id FROM event_seats WHERE id IN (?) AND tier_id=? AND status='AVAILABLE' ORDER BY id FOR UPDATE]; SQL state [55P03]; error code [0]; ERROR: canceling statement due to lock timeout"
+      ]
+    },
+    {
+      "name": "m2-mutation-live-index",
+      "sha256": "96245d2b09fb14f7e4b3329bbb4830958fa6399a4bc9e76e63b3a6158aff2894",
+      "resultLines": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 20.62 s <<< FAILURE! -- in com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[INFO] Finished at: 2026-10-21T21:33:19+07:00"
+      ],
+      "assertions": [
+        "Expecting code to raise a throwable.",
+        "Expecting code to raise a throwable."
+      ]
+    },
+    {
+      "name": "m2-mutation-claim-fk",
+      "sha256": "6ac5046990d74336854f448aa9934fabde322376d1fc76c1da9bca0653b244a3",
+      "resultLines": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 19.21 s <<< FAILURE! -- in com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[INFO] Finished at: 2026-10-21T21:33:52+07:00"
+      ],
+      "assertions": [
+        "Expecting code to raise a throwable.",
+        "Expecting code to raise a throwable."
+      ]
+    },
+    {
+      "name": "m2-preflight-verify",
+      "sha256": "c51a29a39e321de92633c24ee4a6a8112ee146e112dc678715b2cceb980c19c8",
+      "resultLines": [
+        "[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.68 s -- in com.vibe.ticketrush.auth.AuthIntegrationTest",
+        "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in com.vibe.ticketrush.common.controller.GlobalExceptionHandlerTest",
+        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in com.vibe.ticketrush.common.redis.RedisGuardTest",
+        "[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.59 s -- in com.vibe.ticketrush.event.EventInventoryIntegrationTest",
+        "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.537 s -- in com.vibe.ticketrush.event.MigrationIntegrationTest",
+        "[INFO] Tests run: 61, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.12 s -- in com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.554 s -- in com.vibe.ticketrush.observability.ObservabilityIntegrationTest",
+        "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.62 s -- in com.vibe.ticketrush.order.MockGatewayIntegrationTest",
+        "[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.22 s -- in com.vibe.ticketrush.order.OrderPaymentIntegrationTest",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.510 s -- in com.vibe.ticketrush.reservation.ConditionalReservationIntegrationTest",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.68 s -- in com.vibe.ticketrush.reservation.OptimisticReservationIntegrationTest",
+        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.366 s -- in com.vibe.ticketrush.reservation.OrderSmallPoolIntegrationTest",
+        "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.48 s -- in com.vibe.ticketrush.reservation.OutboxDeliveryIntegrationTest",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.122 s -- in com.vibe.ticketrush.reservation.OutboxIntegrationTest",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.51 s -- in com.vibe.ticketrush.reservation.PessimisticReservationIntegrationTest",
+        "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.vibe.ticketrush.reservation.ReservationStatusTest",
+        "[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 40.74 s -- in com.vibe.ticketrush.reservation.Week6RedisIntegrationTest",
+        "[INFO] Tests run: 176, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] Finished at: 2026-10-21T21:38:29+07:00"
+      ],
+      "assertions": []
+    }
+  ]
+}
