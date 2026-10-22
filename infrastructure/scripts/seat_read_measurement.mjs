@@ -9,6 +9,10 @@ const envFile=path.join(runtime,'private.env');
 const compose=['compose','--env-file',envFile,'-p',project,'-f','docker-compose.yml','-f','infrastructure/compose.seat-read.yml'];
 const run=(args,options={})=>execFileSync('docker',args,{cwd:root,encoding:'utf8',windowsHide:true,maxBuffer:20*1024*1024,...options});
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
+function workResult(evidence){
+ const passed=evidence.runs.length===6&&evidence.runs.every(r=>r.workMinimum&&r.exit===0);
+ console.log(`Work-minimum result: ${passed?'PASS':'FAIL'}`);process.exitCode=passed?0:2;
+}
 function env(){return Object.fromEntries(fs.readFileSync(envFile,'utf8').trim().split(/\r?\n/).map(line=>{const i=line.indexOf('=');return [line.slice(0,i),line.slice(i+1)];}));}
 function token(user,role,secret){const b=v=>Buffer.from(JSON.stringify(v)).toString('base64url');const now=Math.floor(Date.now()/1000);const body=b({alg:'HS256',typ:'JWT'})+'.'+b({sub:user,iss:'ticketrush',aud:['ticketrush-api'],roles:[role],iat:now,exp:now+3600});return body+'.'+crypto.createHmac('sha256',Buffer.from(secret,'base64')).update(body).digest('base64url');}
 async function scrape(){const secret=env().METRICS_PASSWORD;const response=await fetch('http://127.0.0.1:28882/actuator/prometheus',{headers:{Authorization:'Basic '+Buffer.from('prometheus:'+secret).toString('base64')}});if(!response.ok)throw new Error('Metrics '+response.status);return response.text();}
@@ -81,4 +85,6 @@ if(mode==='up'){
  const caps=JSON.parse(run(['inspect',...ids])).map(c=>({name:c.Name,image:c.Image,cpuLimit:c.HostConfig.NanoCpus/1e9,memoryLimitBytes:c.HostConfig.Memory}));
  provenance.containers=caps;provenance.k6Cap={cpus:2,memoryBytes:536870912};provenance.finishedAt=new Date().toISOString();
  fs.writeFileSync(path.join(runtime,'measurement.json'),JSON.stringify(provenance,null,2));
-}else if(mode==='down'){run([...compose,'down'],{stdio:'inherit'});}else throw new Error('Use up | fixture | measure | down');
+ workResult(provenance);
+}else if(mode==='report'){workResult(JSON.parse(fs.readFileSync(path.join(runtime,'measurement.json'))));
+}else if(mode==='down'){run([...compose,'down'],{stdio:'inherit'});}else throw new Error('Use up | fixture | measure | report | down');
