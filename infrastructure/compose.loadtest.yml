@@ -55,6 +55,7 @@ services:
       API_URL: http://backend:8080
     volumes:
       - ./infrastructure/loadtest:/tool:ro
+      - ./backend/src/main/resources/sql/verify-seating.sql:/verify-seating.sql:ro
       - ./loadtest/.data:/data
       - ./docs/performance/results:/results
   k6:

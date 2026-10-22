@@ -32,6 +32,8 @@ public class InventoryController {
     @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = true)
     @Operation(summary = "Update tier and capacity atomically (ADMIN)", description = "409 if total is below sold+held, name conflicts, or price/currency changes after published sales start.")
     public InventoryView update(@PathVariable UUID id, @Valid @RequestBody WriteTier request) { return inventory.update(id, request); }
+    @PatchMapping("/tiers/{id}/capacity")
+    public InventoryView capacity(@PathVariable UUID id,@Valid @RequestBody CapacityChange request) { return inventory.capacity(id,request); }
     @GetMapping("/events/{id}/inventory")
     @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = true)
     @Operation(summary = "Read exact tier inventory (ADMIN)")

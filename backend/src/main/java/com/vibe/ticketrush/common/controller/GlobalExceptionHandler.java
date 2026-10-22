@@ -38,6 +38,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         if ("WAITING_ROOM_UNAVAILABLE".equals(ex.getCode()) || "WAITING_ROOM_NOT_READY".equals(ex.getCode())) {
             response.header(HttpHeaders.RETRY_AFTER, Integer.toString(1 + ThreadLocalRandom.current().nextInt(2)));
         }
+        if ("INVENTORY_BUSY".equals(ex.getCode())) response.header(HttpHeaders.RETRY_AFTER,"1");
+        if (ex instanceof com.vibe.ticketrush.inventory.service.SeatedInventory.SeatsUnavailable seats)
+            return response.body(new ApiError(Instant.now(),ex.getStatus().value(),ex.getCode(),ex.getMessage(),request.getRequestURI(),java.util.Map.of(),seats.unavailableSeatIds()));
         return response.body(ApiError.of(ex.getStatus().value(),
                 ex.getCode(), ex.getMessage(), request.getRequestURI()));
     }

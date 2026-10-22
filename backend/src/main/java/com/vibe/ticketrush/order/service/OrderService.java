@@ -93,6 +93,7 @@ public class OrderService {
         reservations.lock(initial.reservationId());
         var order=orders.lock(id);
         if (order.status()!=OrderStatus.PAID) throw conflict("ORDER_NOT_REFUNDABLE");
+        if (orders.hasUsedTickets(id)) throw conflict("TICKET_ALREADY_USED");
         orders.transition(id,OrderStatus.PAID,OrderStatus.REFUND_PENDING,clock.instant());
         payments.refund(id);
         outbox.publish("order.refund_requested","order",id,new EventPayloads.Order(id,initial.userId()));

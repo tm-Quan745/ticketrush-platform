@@ -1,0 +1,11 @@
+{
+  "key": "ticketrush-stadium", "version": 1, "name": "TicketRush Stadium",
+  "geometry": {"width":640,"height":520,"stage":[260,100,380,150]},
+  "sections": [
+    {"code":"VIP_PIT","name":"VIP Pit","type":"GA","rows":0,"columns":0,"geometry":{"polygon":[[260,210],[380,210],[380,290],[260,290]],"color":"#f59e0b"}},
+    {"code":"STAND_A","name":"Stand A","type":"SEATED","rows":20,"columns":40,"geometry":{"polygon":[[220,310],[420,310],[440,390],[200,390]],"color":"#6366f1"}},
+    {"code":"STAND_B","name":"Stand B","type":"SEATED","rows":20,"columns":30,"geometry":{"polygon":[[190,200],[170,380],[90,350],[110,180]],"color":"#06b6d4"}},
+    {"code":"STAND_C","name":"Stand C","type":"SEATED","rows":20,"columns":30,"geometry":{"polygon":[[470,380],[450,200],[530,180],[550,350]],"color":"#ec4899"}},
+    {"code":"UPPER","name":"Upper","type":"SEATED","rows":30,"columns":40,"geometry":{"polygon":[[160,410],[480,410],[510,470],[130,470]],"color":"#10b981"}}
+  ]
+}

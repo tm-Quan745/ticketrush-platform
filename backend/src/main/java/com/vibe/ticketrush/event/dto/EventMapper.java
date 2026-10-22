@@ -6,7 +6,7 @@ public final class EventMapper {
     public static EventView view(Event e) {
         return new EventView(e.getId(), e.getTitle(), e.getDescription(), e.getVenueName(),
                 e.getVenueAddress(), e.getImageUrl(), e.getStartTime(), e.getEndTime(),
-                e.getSaleStartTime(), e.getSaleEndTime(), e.getStatus(), e.getCreatedAt(), e.getUpdatedAt());
+                e.getSaleStartTime(), e.getSaleEndTime(), e.getStatus(), e.getCreatedAt(), e.getUpdatedAt(), e.getVenueId());
     }
     public static void apply(Event e, WriteEvent r) {
         e.setTitle(r.title().trim()); e.setDescription(r.description());

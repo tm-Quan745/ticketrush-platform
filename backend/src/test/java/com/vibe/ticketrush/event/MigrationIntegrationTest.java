@@ -28,7 +28,7 @@ class MigrationIntegrationTest {
             var latest = Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load();
             var pendingVersions = java.util.Arrays.stream(latest.info().pending())
                     .map(migration -> migration.getVersion().getVersion()).toList();
-            assertThat(pendingVersions).containsExactly("3", "4", "5", "6", "7");
+            assertThat(pendingVersions).containsExactly("3", "4", "5", "6", "7", "8");
             var migrationResult = latest.migrate();
             assertThat(migrationResult.migrations).extracting(migration -> migration.version)
                     .containsExactlyElementsOf(pendingVersions);

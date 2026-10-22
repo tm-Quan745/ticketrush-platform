@@ -1,6 +1,7 @@
 # Proposed hybrid seating data model
 
-Status: design only. No Flyway files are created or existing migrations changed.
+Status: approved; schema and lifecycle implemented in M1 through new migration V8.
+Seatmap/status/suggestion reads remain M2. V1–V7 are unchanged.
 All UUIDs below are server-generated. New tables belong to inventory unless noted.
 
 ```mermaid
@@ -71,6 +72,7 @@ erDiagram
         uuid event_id FK
         uuid seat_id FK "physical template ID"
         uuid tier_id FK
+        uuid section_id FK "composite topology validation"
         enum status "AVAILABLE HELD SOLD BLOCKED"
         uuid reservation_id FK "current claim or sale"
         timestamp expires_at "HELD only"

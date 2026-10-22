@@ -246,3 +246,17 @@ ticket; it never uses a real payment provider. Stop this stack using the same
 Compose arguments followed by `stop`; do not remove volumes to repair credentials.
 The ignored env file is local-only, not included in a fresh checkout. Fresh
 checkouts should follow the normal setup above with independently generated secrets.
+
+### M1: seated inventory backend
+
+The Spring backend now supports hybrid inventory: existing COUNTER tiers plus
+SEATED holds using event-scoped `event_seats.id`. V8 introduces immutable stadium
+templates, event/section mapping, atomic publication, block/unblock, seat claims,
+seat ticket snapshots and live-sale uniqueness. The stadium has 3,200 reserved
+seats; VIP Pit remains GA. See [M1 implementation and verification](docs/m1-seated-inventory.md),
+[the data model](docs/seating-data-model.md), and [ADR 0029](docs/decisions/0029-hybrid-counter-seated-inventory.md).
+
+M1 changes Spring and verification tooling only. Seatmap/status/suggest APIs (M2),
+SPA integration (M3), demo mode (M4), and seat-mode performance evidence (M5) are
+not implemented by this milestone. The earlier 5,000-ticket sell-out evidence is
+for COUNTER inventory. No seat-mode performance claim is made.

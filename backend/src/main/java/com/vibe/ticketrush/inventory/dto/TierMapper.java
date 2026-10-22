@@ -7,11 +7,11 @@ public final class TierMapper {
         Availability availability = t.getAvailableQuantity() == 0 ? Availability.SOLD_OUT
                 : (long) t.getAvailableQuantity() * 10 < t.getTotalQuantity() ? Availability.LOW : Availability.AVAILABLE;
         return new PublicTier(t.getId(), t.getName(), t.getDescription(), t.getPrice(),
-                t.getCurrency(), t.getMaxPerOrder(), availability);
+                t.getCurrency(), t.getMaxPerOrder(), availability, t.getInventoryMode());
     }
     public static InventoryView inventory(TicketTier t) {
         return new InventoryView(t.getId(), t.getEventId(), t.getName(), t.getDescription(), t.getPrice(),
                 t.getCurrency(), t.getTotalQuantity(), t.getAvailableQuantity(), t.getMaxPerOrder(),
-                t.getVersion(), t.getCreatedAt(), t.getUpdatedAt());
+                t.getVersion(), t.getCreatedAt(), t.getUpdatedAt(), t.getInventoryMode(),0,0,java.util.List.of());
     }
 }
