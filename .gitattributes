@@ -1,0 +1,3 @@
+# Preserve captured evidence bytes so SHA-256 manifests also verify on Windows.
+docs/performance/m2-read/*.json -text
+docs/performance/m2-read/*.prom -text whitespace=-blank-at-eol
