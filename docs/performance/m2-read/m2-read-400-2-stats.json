@@ -1,0 +1,1415 @@
+[
+  {
+    "at": "2026-10-22T06:59:25.992Z",
+    "stats": [
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "189.58%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "63.45%",
+        "MemUsage": "649.7MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "2.96GB / 2.9GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.47%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.83%",
+        "MemUsage": "106.6MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.5kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.6MB / 32.4MB",
+        "CPUPerc": "10.82%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "8.00%",
+        "MemUsage": "20.47MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "42.1MB / 2.75GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "12.24%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.80%",
+        "MemUsage": "90.1MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "15MB / 149MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.28%",
+        "MemUsage": "8.043MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.25kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:29.174Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "26.15%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "28.53%",
+        "MemUsage": "146.1MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "78.1MB / 1.09MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "203.65%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "62.57%",
+        "MemUsage": "640.8MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.02GB / 2.97GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.55%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.65%",
+        "MemUsage": "105.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 33.5MB",
+        "CPUPerc": "12.42%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "14.95%",
+        "MemUsage": "38.28MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "43.3MB / 2.84GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "18.14%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.85%",
+        "MemUsage": "90.64MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "15.3MB / 150MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.10%",
+        "MemUsage": "9.086MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:32.228Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "34.20%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "32.56%",
+        "MemUsage": "166.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "168MB / 2.08MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "207.83%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "62.78%",
+        "MemUsage": "642.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.09GB / 3.04GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.32%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.65%",
+        "MemUsage": "105.8MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 34MB",
+        "CPUPerc": "17.15%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "13.86%",
+        "MemUsage": "35.49MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "44.2MB / 2.91GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "16.79%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.86%",
+        "MemUsage": "90.71MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "15.6MB / 151MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.29%",
+        "MemUsage": "8.051MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:35.410Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "28.21%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "32.77%",
+        "MemUsage": "167.8MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "235MB / 2.77MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "198.85%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "62.39%",
+        "MemUsage": "638.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.16GB / 3.11GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.23%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.71%",
+        "MemUsage": "106MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 34.8MB",
+        "CPUPerc": "8.96%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "13.46%",
+        "MemUsage": "34.45MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "45MB / 2.97GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "14.58%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.90%",
+        "MemUsage": "91.14MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "15.9MB / 151MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.83%",
+        "MemUsage": "8.746MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:38.602Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "27.00%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.29%",
+        "MemUsage": "170.5MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "307MB / 3.48MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "207.51%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "62.98%",
+        "MemUsage": "644.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.23GB / 3.18GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.65%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.77%",
+        "MemUsage": "106.3MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 35.4MB",
+        "CPUPerc": "23.22%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "12.23%",
+        "MemUsage": "31.3MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "45.7MB / 3.03GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "12.31%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.82%",
+        "MemUsage": "90.31MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "16.2MB / 152MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "3.09%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.27%",
+        "MemUsage": "9.305MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:41.808Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "27.35%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.31%",
+        "MemUsage": "170.6MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "379MB / 4.18MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "187.72%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "62.72%",
+        "MemUsage": "642.2MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.28GB / 3.23GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.36%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.62%",
+        "MemUsage": "105.6MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 36.4MB",
+        "CPUPerc": "17.76%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "11.65%",
+        "MemUsage": "29.82MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "47MB / 3.12GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "13.52%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.82%",
+        "MemUsage": "90.34MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "16.5MB / 152MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.98%",
+        "MemUsage": "8.934MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:44.989Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "36.49%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.38%",
+        "MemUsage": "170.9MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "450MB / 4.87MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "203.82%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "62.91%",
+        "MemUsage": "644.2MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.37GB / 3.33GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.16%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.64%",
+        "MemUsage": "105.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 37MB",
+        "CPUPerc": "12.49%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "12.52%",
+        "MemUsage": "32.05MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "48.1MB / 3.18GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "11.87%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.85%",
+        "MemUsage": "90.64MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "16.7MB / 153MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.76%",
+        "MemUsage": "8.656MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:48.177Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "32.55%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.60%",
+        "MemUsage": "172MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "513MB / 5.47MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "193.93%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "63.53%",
+        "MemUsage": "650.5MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.45GB / 3.39GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.30%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.59%",
+        "MemUsage": "105.4MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.7MB / 37.6MB",
+        "CPUPerc": "16.47%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "14.16%",
+        "MemUsage": "36.24MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "48.9MB / 3.26GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "15.47%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.83%",
+        "MemUsage": "90.43MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "17.1MB / 153MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.68%",
+        "MemUsage": "8.551MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:51.371Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "51.44%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.72%",
+        "MemUsage": "172.6MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "579MB / 6.04MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 242kB",
+        "CPUPerc": "197.26%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "63.08%",
+        "MemUsage": "645.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.49GB / 3.45GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "23.53%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.71%",
+        "MemUsage": "106MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.8MB / 38.3MB",
+        "CPUPerc": "27.90%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "17.90%",
+        "MemUsage": "45.82MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "49.9MB / 3.31GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.9MB / 63.4MB",
+        "CPUPerc": "19.30%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.84%",
+        "MemUsage": "90.48MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "17.4MB / 154MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.68%",
+        "MemUsage": "8.551MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:54.558Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "31.95%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.83%",
+        "MemUsage": "173.2MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "650MB / 6.69MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "198.95%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "63.45%",
+        "MemUsage": "649.7MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.58GB / 3.53GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.18%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.63%",
+        "MemUsage": "105.6MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.8MB / 39MB",
+        "CPUPerc": "14.72%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "14.65%",
+        "MemUsage": "37.5MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "50.8MB / 3.39GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 63.4MB",
+        "CPUPerc": "15.18%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.84%",
+        "MemUsage": "90.47MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "17.6MB / 154MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "2.72%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.14%",
+        "MemUsage": "9.145MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T06:59:57.769Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "22.23%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.74%",
+        "MemUsage": "172.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "720MB / 7.29MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "200.66%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "64.58%",
+        "MemUsage": "661.3MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.62GB / 3.58GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.54%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.70%",
+        "MemUsage": "106MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.8MB / 39.7MB",
+        "CPUPerc": "15.32%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "11.70%",
+        "MemUsage": "29.95MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "51.8MB / 3.45GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 63.7MB",
+        "CPUPerc": "15.97%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.87%",
+        "MemUsage": "90.82MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "17.9MB / 155MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.29%",
+        "MemUsage": "8.055MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:00.943Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "32.70%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.72%",
+        "MemUsage": "172.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "766MB / 7.71MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "189.64%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.76%",
+        "MemUsage": "673.4MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.72GB / 3.67GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "9.30%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "27.18%",
+        "MemUsage": "139.1MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "87"
+      },
+      {
+        "BlockIO": "18.8MB / 40.3MB",
+        "CPUPerc": "11.96%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "10.61%",
+        "MemUsage": "27.16MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "52.7MB / 3.53GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 63.9MB",
+        "CPUPerc": "13.45%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.79%",
+        "MemUsage": "90.05MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "18.2MB / 155MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.14%",
+        "MemUsage": "9.133MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:03.996Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "23.47%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.80%",
+        "MemUsage": "173MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "862MB / 8.57MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "197.56%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.61%",
+        "MemUsage": "671.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.79GB / 3.75GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.72%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.59%",
+        "MemUsage": "105.4MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.8MB / 41.2MB",
+        "CPUPerc": "18.03%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "10.83%",
+        "MemUsage": "27.73MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "53.6MB / 3.6GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 64.2MB",
+        "CPUPerc": "12.04%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.86%",
+        "MemUsage": "90.76MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "18.5MB / 156MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "2.93%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.61%",
+        "MemUsage": "9.742MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:07.184Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "21.63%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.77%",
+        "MemUsage": "172.9MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "913MB / 9MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "199.90%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.01%",
+        "MemUsage": "665.7MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.86GB / 3.83GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "3.13%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "22.09%",
+        "MemUsage": "113.1MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "48"
+      },
+      {
+        "BlockIO": "18.8MB / 41.9MB",
+        "CPUPerc": "13.27%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "14.22%",
+        "MemUsage": "36.4MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "54.6MB / 3.67GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 64.4MB",
+        "CPUPerc": "12.87%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.88%",
+        "MemUsage": "90.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "18.7MB / 156MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.86%",
+        "MemUsage": "8.785MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:10.369Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "27.57%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.93%",
+        "MemUsage": "173.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "1.01GB / 9.75MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "179.18%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.45%",
+        "MemUsage": "670.2MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "3.93GB / 3.9GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.35%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.65%",
+        "MemUsage": "105.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.8MB / 42.7MB",
+        "CPUPerc": "8.01%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "13.69%",
+        "MemUsage": "35.04MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "55.6MB / 3.73GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 64.7MB",
+        "CPUPerc": "11.45%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.86%",
+        "MemUsage": "90.77MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "19.1MB / 157MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.81%",
+        "MemUsage": "8.715MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:13.424Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "22.73%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.94%",
+        "MemUsage": "173.8MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "1.07GB / 10.3MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "187.71%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "66.21%",
+        "MemUsage": "678MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "4.01GB / 3.96GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "3.12%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "21.12%",
+        "MemUsage": "108.1MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "52"
+      },
+      {
+        "BlockIO": "18.8MB / 43.3MB",
+        "CPUPerc": "20.60%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "16.02%",
+        "MemUsage": "41.01MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "56.6MB / 3.81GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 65MB",
+        "CPUPerc": "14.80%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.83%",
+        "MemUsage": "90.38MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "19.4MB / 157MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "3.50%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.95%",
+        "MemUsage": "8.895MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:16.620Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "33.21%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.91%",
+        "MemUsage": "173.6MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "1.15GB / 11MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "201.40%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.12%",
+        "MemUsage": "666.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "4.08GB / 4.05GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "1.64%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.75%",
+        "MemUsage": "106.3MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.6kB / 6.07kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.9MB / 44MB",
+        "CPUPerc": "9.68%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "13.09%",
+        "MemUsage": "33.51MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "57.5MB / 3.88GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 65.2MB",
+        "CPUPerc": "13.37%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.89%",
+        "MemUsage": "91MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "19.7MB / 158MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.30%",
+        "MemUsage": "8.059MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:19.863Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "31.55%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "33.97%",
+        "MemUsage": "173.9MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "1.22GB / 11.5MB",
+        "PIDs": "17"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "198.70%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.86%",
+        "MemUsage": "674.4MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "4.15GB / 4.11GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "20.67%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "28.94%",
+        "MemUsage": "148.2MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.7kB / 6.21kB",
+        "PIDs": "87"
+      },
+      {
+        "BlockIO": "18.9MB / 44.5MB",
+        "CPUPerc": "14.10%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "11.65%",
+        "MemUsage": "29.84MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "58.1MB / 3.93GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 65.5MB",
+        "CPUPerc": "14.45%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.84%",
+        "MemUsage": "90.51MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "20MB / 159MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "3.14%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.45%",
+        "MemUsage": "9.539MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:22.967Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "29.73%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "34.00%",
+        "MemUsage": "174.1MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "1.27GB / 11.9MB",
+        "PIDs": "18"
+      },
+      {
+        "BlockIO": "279kB / 254kB",
+        "CPUPerc": "205.85%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.14%",
+        "MemUsage": "667MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "4.2GB / 4.17GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.43%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.79%",
+        "MemUsage": "106.5MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.8kB / 6.29kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.9MB / 45.4MB",
+        "CPUPerc": "21.43%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "12.51%",
+        "MemUsage": "32.03MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "59.1MB / 4GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 65.8MB",
+        "CPUPerc": "21.14%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.90%",
+        "MemUsage": "91.17MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "20.3MB / 159MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "6.30%",
+        "MemUsage": "8.059MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:26.236Z",
+    "stats": [
+      {
+        "BlockIO": "0B / 0B",
+        "CPUPerc": "18.49%",
+        "Container": "c1c790bba817",
+        "ID": "c1c790bba817",
+        "MemPerc": "34.11%",
+        "MemUsage": "174.7MiB / 512MiB",
+        "Name": "ticketrush-m2-read-k6-run",
+        "NetIO": "1.33GB / 12.3MB",
+        "PIDs": "18"
+      },
+      {
+        "BlockIO": "279kB / 266kB",
+        "CPUPerc": "207.12%",
+        "Container": "b2c9bbbb500a",
+        "ID": "b2c9bbbb500a",
+        "MemPerc": "65.03%",
+        "MemUsage": "665.9MiB / 1GiB",
+        "Name": "ticketrush-m2-read-backend-1",
+        "NetIO": "4.24GB / 4.21GB",
+        "PIDs": "238"
+      },
+      {
+        "BlockIO": "15.6MB / 741kB",
+        "CPUPerc": "0.82%",
+        "Container": "e94575e90cb8",
+        "ID": "e94575e90cb8",
+        "MemPerc": "20.69%",
+        "MemUsage": "105.9MiB / 512MiB",
+        "Name": "ticketrush-m2-read-rabbitmq-1",
+        "NetIO": "11.8kB / 6.29kB",
+        "PIDs": "45"
+      },
+      {
+        "BlockIO": "18.9MB / 46MB",
+        "CPUPerc": "14.29%",
+        "Container": "6c13f276cc6d",
+        "ID": "6c13f276cc6d",
+        "MemPerc": "13.60%",
+        "MemUsage": "34.81MiB / 256MiB",
+        "Name": "ticketrush-m2-read-redis-1",
+        "NetIO": "59.9MB / 4.06GB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "2.92MB / 66MB",
+        "CPUPerc": "9.53%",
+        "Container": "f16bd12701d1",
+        "ID": "f16bd12701d1",
+        "MemPerc": "8.85%",
+        "MemUsage": "90.64MiB / 1GiB",
+        "Name": "ticketrush-m2-read-postgres-1",
+        "NetIO": "20.5MB / 159MB",
+        "PIDs": "22"
+      },
+      {
+        "BlockIO": "1.52MB / 500kB",
+        "CPUPerc": "0.00%",
+        "Container": "24252c00e04f",
+        "ID": "24252c00e04f",
+        "MemPerc": "7.10%",
+        "MemUsage": "9.082MiB / 128MiB",
+        "Name": "ticketrush-m2-read-mailpit-1",
+        "NetIO": "4.3kB / 126B",
+        "PIDs": "12"
+      }
+    ]
+  },
+  {
+    "at": "2026-10-22T07:00:29.463Z",
+    "error": "stats sampling failed"
+  }
+]
