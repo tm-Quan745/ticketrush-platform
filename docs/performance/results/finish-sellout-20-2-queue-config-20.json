@@ -1,0 +1,14 @@
+{
+  "event": "289cf7d6-2328-5da6-8a2e-6f5d30d2d4f3",
+  "rate": 20,
+  "settings": {
+    "id": "289cf7d6-2328-5da6-8a2e-6f5d30d2d4f3",
+    "enabled": true,
+    "rate": 20,
+    "mode": "fifo",
+    "saleStart": "2026-10-18T11:52:48.788815Z",
+    "saleEnd": "2026-10-24T10:52:48.788815Z",
+    "published": true
+  },
+  "output": "finish-sellout-20-2-queue-config-20.json"
+}

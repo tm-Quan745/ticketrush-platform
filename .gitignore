@@ -1,6 +1,30 @@
 .env
+node_modules/
+dist/
+.env.frontend.local
+.tmp/
+test-results/
+playwright-report/
+tmpkz_18cce/
 .tools/
 **/target/
 .idea/
 *.iml
 *.log
+loadtest/.data/
+**/__pycache__/
+.m2-week7/
+.mvn-week7-settings.xml
+.worktrees/
+docs/performance/results/*.jfr
+# Mutable Week 7 runtime state. Named evidence artifacts stay versioned; these
+# files are overwritten by every reset, seed, environment capture or checkout.
+docs/performance/results/environment.json
+docs/performance/results/last-reset.json
+docs/performance/results/last-seed.json
+docs/performance/results/admissions.json
+docs/performance/results/*.pid
+docs/performance/results/*-console.log.err
+# Run artifacts remain in the workspace for documentation links, but are not
+# source changes. Curated small summaries may be force-added in their own commit.
+docs/performance/results/*.json

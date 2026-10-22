@@ -1,0 +1,62 @@
+ Container ticketrush-week7-backend-1 Stopping 
+ Container ticketrush-week7-backend-1 Stopped 
+ Container ticketrush-week7-tools-run-204adc05c6a6 Creating 
+ Container ticketrush-week7-tools-run-204adc05c6a6 Created 
+ Container ticketrush-week7-tools-run-5a1f0fa9e79d Creating 
+ Container ticketrush-week7-tools-run-5a1f0fa9e79d Created 
+ Container ticketrush-week7-mailpit-1 Running 
+ Container ticketrush-week7-redis-1 Running 
+ Container ticketrush-week7-rabbitmq-1 Running 
+ Container ticketrush-week7-postgres-1 Running 
+ Container ticketrush-week7-backend-1 Recreate 
+ Container ticketrush-week7-backend-1 Recreated 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-backend-1 Starting 
+ Container ticketrush-week7-backend-1 Started 
+ Container ticketrush-week7-mailpit-1 Waiting 
+ Container ticketrush-week7-rabbitmq-1 Waiting 
+ Container ticketrush-week7-redis-1 Waiting 
+ Container ticketrush-week7-backend-1 Waiting 
+ Container ticketrush-week7-postgres-1 Waiting 
+ Container ticketrush-week7-postgres-1 Healthy 
+ Container ticketrush-week7-mailpit-1 Healthy 
+ Container ticketrush-week7-redis-1 Healthy 
+ Container ticketrush-week7-rabbitmq-1 Healthy 
+ Container ticketrush-week7-backend-1 Healthy 
+ Container ticketrush-week7-k6-run-1547074f6a26 Creating 
+ Container ticketrush-week7-k6-run-1547074f6a26 Created 
+time="2026-10-13T14:32:58Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:03Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:08Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:13Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:18Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:23Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:28Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:33Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:38Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:43Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:48Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:53Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:33:57Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:00Z" level=error msg="Stopping output 0 failed" component=output-manager error="marking time series as stale failed: HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host"
+ Container ticketrush-week7-k6-run-ef99ede580ed Creating 
+ Container ticketrush-week7-k6-run-ef99ede580ed Created 
+time="2026-10-13T14:34:10Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:15Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:18Z" level=warning msg="Insufficient VUs, reached 1000 active VUs and cannot initialize more" executor=constant-arrival-rate scenario=spike
+time="2026-10-13T14:34:20Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:25Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:30Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:34Z" level=error msg="Failed to send the time series data to the endpoint" error="HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host" output="Prometheus remote write"
+time="2026-10-13T14:34:38Z" level=error msg="Stopping output 0 failed" component=output-manager error="marking time series as stale failed: HTTP POST request failed: Post \"http://prometheus:9090/api/v1/write\": dial tcp: lookup prometheus on 127.0.0.11:53: no such host"
+time="2026-10-13T14:34:38Z" level=error msg="thresholds on metrics 'arrivals_started, dropped_iterations' have been crossed"
+
+ Container ticketrush-week7-tools-run-e257f3704900 Creating 
+ Container ticketrush-week7-tools-run-e257f3704900 Created 

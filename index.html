@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TicketRush</title>
+    <meta name="description" content="High-load ticket booking and flash-sale platform with reservation TTL, queue waiting room, idempotent payments, and inventory protection." />
+    <meta property="og:title" content="TicketRush" />
+    <meta property="og:description" content="High-load ticket booking and flash-sale platform with reservation TTL, queue waiting room, idempotent payments, and inventory protection." />
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('ticketrush_theme');
+          var isDark = t === 'dark' || (!t && true) || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (t === 'light' || (!isDark && t === 'system')) {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased min-h-screen transition-colors duration-150">
+    <div id="root"></div>
+    <script type="module" src="/frontend/src/main.tsx"></script>
+  </body>
+</html>

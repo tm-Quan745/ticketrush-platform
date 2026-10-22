@@ -1,0 +1,166 @@
+{
+  "total_exec_time": [
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 12930,
+      "total_exec_time": 38316.87705299991,
+      "mean_exec_time": 2.963408898143875,
+      "rows": 5520
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 6121,
+      "total_exec_time": 14570.144394999994,
+      "mean_exec_time": 2.3803536015357007,
+      "rows": 6121
+    },
+    {
+      "queryid": -3854080420358358271,
+      "query": "INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)\nVALUES ($1,$2,$3,$4,$5,$6,$7,$9,$8) ON CONFLICT(order_id,ticket_index) DO NOTHING",
+      "calls": 13291,
+      "total_exec_time": 6104.179747999996,
+      "mean_exec_time": 0.4592716686479571,
+      "rows": 13291
+    },
+    {
+      "queryid": -6563490191634940614,
+      "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)",
+      "calls": 23258,
+      "total_exec_time": 5184.3912169999985,
+      "mean_exec_time": 0.22290786899131396,
+      "rows": 23258
+    },
+    {
+      "queryid": -363173014630700666,
+      "query": "INSERT INTO processed_messages(consumer_name,message_id,processed_at) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING",
+      "calls": 23258,
+      "total_exec_time": 3925.9055399999515,
+      "mean_exec_time": 0.16879807120130774,
+      "rows": 23258
+    },
+    {
+      "queryid": 7290069031147222470,
+      "query": "UPDATE outbox_events SET status=$3,published_at=$1,last_error=$4 WHERE id=$2 AND status=$5",
+      "calls": 23258,
+      "total_exec_time": 3544.654153999973,
+      "mean_exec_time": 0.15240580247656615,
+      "rows": 23258
+    },
+    {
+      "queryid": 3220699736740390017,
+      "query": "insert into reservations (created_at,expires_at,quantity,status,tier_id,updated_at,user_id,version,id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+      "calls": 6121,
+      "total_exec_time": 3233.9593419999896,
+      "mean_exec_time": 0.5283383992811669,
+      "rows": 6121
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 260,
+      "total_exec_time": 3169.156224000001,
+      "mean_exec_time": 12.1890624,
+      "rows": 4420
+    },
+    {
+      "queryid": -1795754896078556557,
+      "query": "INSERT INTO email_notifications(id,event_id,type,user_id,to_address,status,attempts,created_at) VALUES ($1,$2,$3,$4,$5,$7,$8,$6) ON CONFLICT(event_id,type) DO UPDATE SET status=$9,attempts=email_notifications.attempts+$10,last_error=$11",
+      "calls": 5520,
+      "total_exec_time": 2904.622266999994,
+      "mean_exec_time": 0.5261996860507254,
+      "rows": 5520
+    },
+    {
+      "queryid": -8101211000551547893,
+      "query": "SELECT * FROM orders WHERE id=$1",
+      "calls": 43778,
+      "total_exec_time": 2350.1006719999987,
+      "mean_exec_time": 0.05368223016126849,
+      "rows": 43778
+    }
+  ],
+  "mean_exec_time": [
+    {
+      "queryid": 8986880392822749325,
+      "query": "INSERT INTO user_roles SELECT id,$1 FROM users",
+      "calls": 1,
+      "total_exec_time": 1370.084914,
+      "mean_exec_time": 1370.084914,
+      "rows": 20001
+    },
+    {
+      "queryid": 2529582894003489060,
+      "query": "COPY users (id,email,password_hash) FROM STDIN",
+      "calls": 1,
+      "total_exec_time": 120.251638,
+      "mean_exec_time": 120.251638,
+      "rows": 20001
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 260,
+      "total_exec_time": 3169.156224000001,
+      "mean_exec_time": 12.1890624,
+      "rows": 4420
+    },
+    {
+      "queryid": 6342828237680505206,
+      "query": "SELECT * FROM (SELECT current_database() AS current_database, n.nspname,c.relname,a.attname,a.atttypid,a.attnotnull  OR (t.typtype = $1 AND t.typnotnull) AS attnotnull,a.atttypmod,a.attlen,t.typtypmod,row_number() OVER (PARTITION BY a.attrelid ORDER BY a.attnum) AS attnum, nullif(a.attidentity, $2) as attidentity,nullif(a.attgenerated, $3) as attgenerated,pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS adsrc,dsc.description,t.typbasetype,t.typtype  FROM pg_catalog.pg_namespace n  JOIN pg_catalog.pg_class c ON (c.relnamespace = n.oid)  JOIN pg_catalog.pg_attribute a ON (a.attrelid=c.oid)  JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid)  LEFT JOIN pg_catalog.pg_attrdef def ON (a.attrelid=def.adrelid AND a.attnum = def.adnum)  LEFT JOIN pg_catalog.pg_description dsc ON (c.oid=dsc.objoid AND a.attnum = dsc.objsubid)  LEFT JOIN pg_catalog.pg_class dc ON (dc.oid=dsc.classoid AND dc.relname=$4)  LEFT JOIN pg_catalog.pg_namespace dn ON (dc.relnamespace=dn.oid AND dn.nspname=$5)  WHERE c.relkind in ($6,$7,$8,$9,$10) and a.attnum > $11 AND NOT a.attisdropped  AND n.nspname LIKE $12) c WHERE $13  AND attname LIKE $14 ORDER BY nspname,c.relname,attnum",
+      "calls": 1,
+      "total_exec_time": 6.729589,
+      "mean_exec_time": 6.729589,
+      "rows": 195
+    },
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 12930,
+      "total_exec_time": 38316.87705299991,
+      "mean_exec_time": 2.963408898143875,
+      "rows": 5520
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 6121,
+      "total_exec_time": 14570.144394999994,
+      "mean_exec_time": 2.3803536015357007,
+      "rows": 6121
+    },
+    {
+      "queryid": 2165888253355131128,
+      "query": "INSERT INTO ticket_tiers\n                (id,event_id,name,price,currency,total_quantity,available_quantity,max_per_order)\n                VALUES ($1,$2,$3,$6,$7,$4,$5,$8)",
+      "calls": 1,
+      "total_exec_time": 2.175996,
+      "mean_exec_time": 2.175996,
+      "rows": 1
+    },
+    {
+      "queryid": -7914764542362292651,
+      "query": "SELECT p.* FROM payments p JOIN orders o ON o.id=p.order_id\nWHERE ((p.status=$2) OR (p.status=$3 AND o.status=$4))\nAND p.next_dispatch_at<=$1 ORDER BY p.next_dispatch_at LIMIT $5 FOR UPDATE OF p SKIP LOCKED",
+      "calls": 128,
+      "total_exec_time": 263.555319,
+      "mean_exec_time": 2.0590259296874995,
+      "rows": 0
+    },
+    {
+      "queryid": -4274481145482781420,
+      "query": "SELECT name, setting, COALESCE(unit, $1), short_desc, vartype FROM pg_settings WHERE vartype IN ($2, $3, $4) AND name != $5",
+      "calls": 260,
+      "total_exec_time": 417.26953000000015,
+      "mean_exec_time": 1.6048828076923078,
+      "rows": 71240
+    },
+    {
+      "queryid": -9075732106701271419,
+      "query": "SELECT (SELECT count(*) FROM orders) AS orders_created,\n  (SELECT count(*) FROM orders WHERE status=$1) AS orders_paid,\n  (SELECT count(*) FROM tickets WHERE status=$2) AS tickets_issued",
+      "calls": 260,
+      "total_exec_time": 372.1975129999998,
+      "mean_exec_time": 1.4315288961538468,
+      "rows": 260
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+ticketrush_funnel:
+  query: |
+    SELECT (SELECT count(*) FROM orders) AS orders_created,
+      (SELECT count(*) FROM orders WHERE status='PAID') AS orders_paid,
+      (SELECT count(*) FROM tickets WHERE status='VALID') AS tickets_issued
+  metrics:
+    - orders_created: {usage: GAUGE, description: 'Orders in the current dataset'}
+    - orders_paid: {usage: GAUGE, description: 'Paid orders in the current dataset'}
+    - tickets_issued: {usage: GAUGE, description: 'Valid tickets in the current dataset'}
+ticketrush_inventory:
+  query: |
+    SELECT row_number() OVER (ORDER BY (e.title='HOT') DESC,(e.title='MIXED') DESC,e.title,t.name)::text AS slot,t.available_quantity AS remaining
+    FROM ticket_tiers t JOIN events e ON e.id=t.event_id ORDER BY (e.title='HOT') DESC,(e.title='MIXED') DESC,e.title,t.name LIMIT 8
+  metrics:
+    - slot: {usage: LABEL, description: 'Bounded tier slot, stable during a run; see dataset mapping'}
+    - remaining: {usage: GAUGE, description: 'Available tickets in the first eight tier slots'}
+ticketrush_database:
+  query: |
+    SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock') AS lock_waits,
+      (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= 250) AS slow_query_fingerprints,
+      (SELECT coalesce(max(mean_exec_time),0)/1000 FROM pg_stat_statements) AS slowest_mean_seconds
+  metrics:
+    - lock_waits: {usage: GAUGE, description: 'Sessions currently waiting for a lock'}
+    - slow_query_fingerprints: {usage: GAUGE, description: 'Query fingerprints with mean execution at least 250ms; slow statement log remains authoritative'}
+    - slowest_mean_seconds: {usage: GAUGE, description: 'Slowest mean statement time'}

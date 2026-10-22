@@ -7,6 +7,6 @@ public final class CorrelationId {
     private static final ThreadLocal<String> CURRENT = new ThreadLocal<>();
     private CorrelationId() {}
     public static String current() { return CURRENT.get() == null ? UUID.randomUUID().toString() : CURRENT.get(); }
-    public static void set(String value) { CURRENT.set(value); }
-    public static void clear() { CURRENT.remove(); }
+    public static void set(String value) { CURRENT.set(value); org.slf4j.MDC.put("correlation_id", value); }
+    public static void clear() { CURRENT.remove(); org.slf4j.MDC.remove("correlation_id"); }
 }

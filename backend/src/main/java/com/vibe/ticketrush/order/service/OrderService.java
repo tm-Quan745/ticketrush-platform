@@ -14,6 +14,7 @@ import com.vibe.ticketrush.outbox.service.OutboxPublisher;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.event.EventListener;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
@@ -21,6 +22,7 @@ import java.time.*;
 import java.util.*;
 
 @Service
+@EnableConfigurationProperties(OrderProperties.class)
 public class OrderService {
     private final OrderRepository orders;
     private final PurchaseReservation reservations;
@@ -30,15 +32,17 @@ public class OrderService {
     private final ObjectMapper json;
     private final Clock clock;
     private final OutboxPublisher outbox;
+    private final OrderProperties properties;
     public OrderService(OrderRepository orders,PurchaseReservation reservations,
-            PurchaseInventory inventory,PaymentOperations payments,IdempotencyService idempotency,ObjectMapper json,Clock clock,OutboxPublisher outbox) {
+            PurchaseInventory inventory,PaymentOperations payments,IdempotencyService idempotency,ObjectMapper json,Clock clock,
+            OutboxPublisher outbox,OrderProperties properties) {
         this.orders=orders; this.reservations=reservations;
-        this.inventory=inventory; this.payments=payments; this.idempotency=idempotency; this.json=json; this.clock=clock; this.outbox=outbox;
+        this.inventory=inventory; this.payments=payments; this.idempotency=idempotency; this.json=json; this.clock=clock; this.outbox=outbox; this.properties=properties;
     }
     public IdempotencyService.StoredResponse create(UUID user,UUID reservation,UUID key,PaymentScenario scenario) {
-        return idempotency.execute(user,"POST /api/v1/orders",key,reservation+":"+scenario,() -> {
-            // Lazy expiry must commit even when an expired reservation is rejected below.
-            reservations.expireOwned(user,reservation);
+        // Lazy expiry commits independently before the business transaction borrows a connection.
+        return idempotency.execute(user,"POST /api/v1/orders",key,reservation+":"+scenario,
+            () -> reservations.expireOwned(user,reservation),() -> {
             var hold=reservations.lock(reservation);
             if (!hold.userId().equals(user)) throw forbidden();
             if (orders.exists(reservation)) throw conflict("RESERVATION_ALREADY_ORDERED");
@@ -55,7 +59,12 @@ public class OrderService {
         });
     }
     @Transactional(readOnly=true)
-    public View get(UUID user,UUID id) { return view(owned(user,id)); }
+    public View get(UUID user,UUID id) {
+        if (!properties.joinedStatusRead()) return view(owned(user,id));
+        OrderRepository.OwnedView found=orders.getView(id);
+        if (!found.userId().equals(user)) throw forbidden();
+        return found.view();
+    }
     @Transactional(readOnly=true)
     public Listing list(UUID user,OrderStatus status,int page,int size) {
         if (page<0 || size<1 || size>100) throw new ApiException(HttpStatus.BAD_REQUEST,"INVALID_PAGE","page >= 0 and size 1..100 required");

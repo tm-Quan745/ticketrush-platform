@@ -1,0 +1,12 @@
+{
+  "command_returned_at_utc": "2026-10-17T14:12:07.0527498Z",
+  "run_id": "fault-legacy-1100",
+  "started_at_utc": "2026-10-17T14:12:06.9245704Z",
+  "valid": true,
+  "redis_cli_output": [
+    "OK"
+  ],
+  "detected_k6_container": "749a99379c4f",
+  "monitor_delay_seconds": 5,
+  "pause_ms": 1100
+}

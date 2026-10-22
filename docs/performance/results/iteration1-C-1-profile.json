@@ -1,0 +1,547 @@
+[
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/LinkedTransferQueue$DualNode.await",
+      "java/util/concurrent/LinkedTransferQueue.xfer",
+      "java/util/concurrent/SynchronousQueue.xfer"
+    ],
+    "samples": 2374
+  },
+  {
+    "event": "jdk.SocketRead",
+    "stack": [
+      "java/net/Socket$SocketInputStream.read",
+      "org/postgresql/core/VisibleBufferedInputStream.readMore",
+      "org/postgresql/core/VisibleBufferedInputStream.ensureBytes",
+      "org/postgresql/core/VisibleBufferedInputStream.ensureBytes",
+      "org/postgresql/core/VisibleBufferedInputStream.read"
+    ],
+    "samples": 1607
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/LinkedBlockingQueue.poll",
+      "java/util/concurrent/ThreadPoolExecutor.getTask"
+    ],
+    "samples": 998
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/LinkedTransferQueue$DualNode.await",
+      "java/util/concurrent/SynchronousQueue$Transferer.xferLifo",
+      "java/util/concurrent/SynchronousQueue.xfer"
+    ],
+    "samples": 502
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/CompletableFuture$Signaller.block",
+      "java/util/concurrent/ForkJoinPool.unmanagedBlock",
+      "java/util/concurrent/ForkJoinPool.managedBlock"
+    ],
+    "samples": 386
+  },
+  {
+    "event": "jdk.SocketRead",
+    "stack": [
+      "java/net/Socket$SocketInputStream.read",
+      "java/io/BufferedInputStream.fill",
+      "java/io/BufferedInputStream.implRead",
+      "java/io/BufferedInputStream.read",
+      "java/io/DataInputStream.readUnsignedByte"
+    ],
+    "samples": 213
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/LinkedBlockingQueue.poll",
+      "org/springframework/amqp/rabbit/listener/BlockingQueueConsumer.nextMessage"
+    ],
+    "samples": 88
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.park",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer.acquire",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer.acquire",
+      "java/util/concurrent/locks/ReentrantLock$Sync.lock"
+    ],
+    "samples": 83
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/ScheduledThreadPoolExecutor$DelayedWorkQueue.take",
+      "java/util/concurrent/ScheduledThreadPoolExecutor$DelayedWorkQueue.take"
+    ],
+    "samples": 75
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.park",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionNode.block",
+      "java/util/concurrent/ForkJoinPool.unmanagedBlock",
+      "java/util/concurrent/ForkJoinPool.managedBlock"
+    ],
+    "samples": 53
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.park",
+      "java/util/concurrent/CompletableFuture$Signaller.block",
+      "java/util/concurrent/ForkJoinPool.unmanagedBlock",
+      "java/util/concurrent/ForkJoinPool.managedBlock"
+    ],
+    "samples": 24
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.awaitNanos",
+      "java/util/concurrent/LinkedBlockingQueue.poll",
+      "org/apache/tomcat/util/threads/TaskQueue.poll"
+    ],
+    "samples": 13
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "sun/security/provider/SecureRandom.engineNextBytes",
+      "sun/security/provider/NativePRNG$RandomIO.implNextBytes",
+      "sun/security/provider/NativePRNG.engineNextBytes",
+      "java/security/SecureRandom.nextBytes",
+      "java/util/UUID.randomUUID"
+    ],
+    "samples": 11
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "sun/nio/ch/EPollSelectorImpl.clearInterrupt",
+      "sun/nio/ch/EPollSelectorImpl.processEvents",
+      "sun/nio/ch/EPollSelectorImpl.doSelect",
+      "sun/nio/ch/SelectorImpl.lockAndDoSelect",
+      "sun/nio/ch/SelectorImpl.select"
+    ],
+    "samples": 10
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/nio/HeapByteBuffer.<init>",
+      "java/nio/ByteBuffer.allocate",
+      "org/apache/tomcat/util/net/SocketBufferHandler.<init>",
+      "org/apache/tomcat/util/net/NioEndpoint.setSocketOptions",
+      "org/apache/tomcat/util/net/NioEndpoint.setSocketOptions"
+    ],
+    "samples": 10
+  },
+  {
+    "event": "jdk.SocketRead",
+    "stack": [
+      "sun/nio/ch/SocketChannelImpl.read",
+      "org/apache/tomcat/util/net/NioChannel.read",
+      "org/apache/tomcat/util/net/NioEndpoint$NioSocketWrapper.fillReadBuffer",
+      "org/apache/tomcat/util/net/NioEndpoint$NioSocketWrapper.read",
+      "org/apache/coyote/http11/Http11InputBuffer.fill"
+    ],
+    "samples": 8
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/net/Socket$SocketInputStream.read",
+      "org/postgresql/core/VisibleBufferedInputStream.readMore",
+      "org/postgresql/core/VisibleBufferedInputStream.ensureBytes",
+      "org/postgresql/core/VisibleBufferedInputStream.ensureBytes",
+      "org/postgresql/core/VisibleBufferedInputStream.read"
+    ],
+    "samples": 7
+  },
+  {
+    "event": "jdk.JavaMonitorEnter",
+    "stack": [
+      "org/apache/coyote/AbstractProtocol$ConnectionHandler.register",
+      "org/apache/coyote/AbstractProtocol$ConnectionHandler.process",
+      "org/apache/tomcat/util/net/NioEndpoint$SocketProcessor.doRun",
+      "org/apache/tomcat/util/net/SocketProcessorBase.run",
+      "org/apache/tomcat/util/threads/ThreadPoolExecutor.runWorker"
+    ],
+    "samples": 6
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/Thread.run"
+    ],
+    "samples": 5
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "ch/qos/logback/classic/Logger.getEffectiveLevel",
+      "io/micrometer/core/instrument/binder/logging/MetricsTurboFilter.decide",
+      "ch/qos/logback/classic/spi/TurboFilterList.getTurboFilterChainDecision",
+      "ch/qos/logback/classic/LoggerContext.getTurboFilterChainDecision_0_3OrMore",
+      "ch/qos/logback/classic/Logger.callTurboFilters"
+    ],
+    "samples": 5
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "io/netty/channel/nio/NioEventLoop.run",
+      "io/netty/util/concurrent/SingleThreadEventExecutor$4.run",
+      "io/netty/util/internal/ThreadExecutorMap$2.run",
+      "io/netty/util/concurrent/FastThreadLocalRunnable.run",
+      "java/lang/Thread.runWith"
+    ],
+    "samples": 5
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/apache/tomcat/util/net/NioEndpoint$Poller.timeout",
+      "org/apache/tomcat/util/net/NioEndpoint$Poller.run",
+      "java/lang/Thread.runWith",
+      "java/lang/Thread.run"
+    ],
+    "samples": 4
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/resource/jdbc/internal/LogicalConnectionManagedImpl.getPhysicalConnection",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl.connection",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl$4.doPrepare",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl$StatementPreparationTemplate.prepareStatement",
+      "org/hibernate/engine/jdbc/internal/StatementPreparerImpl.prepareQueryStatement"
+    ],
+    "samples": 4
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/postgresql/core/v3/QueryExecutorImpl.processResults",
+      "org/postgresql/core/v3/QueryExecutorImpl.execute",
+      "org/postgresql/jdbc/PgStatement.executeInternal",
+      "org/postgresql/jdbc/PgStatement.execute",
+      "org/postgresql/jdbc/PgPreparedStatement.executeWithFlags"
+    ],
+    "samples": 4
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/net/Socket$SocketOutputStream.write",
+      "org/postgresql/util/internal/PgBufferedOutputStream.flushBuffer",
+      "org/postgresql/util/internal/PgBufferedOutputStream.flush",
+      "org/postgresql/core/PGStream.flush",
+      "org/postgresql/core/v3/QueryExecutorImpl.sendSync"
+    ],
+    "samples": 4
+  },
+  {
+    "event": "jdk.ThreadPark",
+    "stack": [
+      "jdk/internal/misc/Unsafe.park",
+      "java/util/concurrent/locks/LockSupport.parkNanos",
+      "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.await",
+      "java/lang/ref/ReferenceQueue.await",
+      "java/lang/ref/ReferenceQueue.remove0"
+    ],
+    "samples": 4
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "jdk/internal/misc/Unsafe.allocateUninitializedArray",
+      "java/lang/StringConcatHelper.newArray",
+      "java/lang/StringConcatHelper.simpleConcat",
+      "java/lang/invoke/DirectMethodHandle$Holder.invokeStatic",
+      "java.lang.invoke.LambdaForm$MH/0x000070bdb300b800.invoke"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/sql/exec/internal/JdbcSelectExecutorStandardImpl.resolveJdbcValuesSource",
+      "org/hibernate/sql/exec/internal/JdbcSelectExecutorStandardImpl.doExecuteQuery",
+      "org/hibernate/sql/exec/internal/JdbcSelectExecutorStandardImpl.executeQuery",
+      "org/hibernate/sql/exec/spi/JdbcSelectExecutor.executeQuery",
+      "org/hibernate/sql/exec/spi/JdbcSelectExecutor.list"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/engine/jdbc/internal/JdbcCoordinatorImpl.<init>",
+      "org/hibernate/internal/AbstractSharedSessionContract.createJdbcCoordinator",
+      "org/hibernate/internal/AbstractSharedSessionContract.<init>",
+      "org/hibernate/internal/SessionImpl.<init>",
+      "org/hibernate/internal/SessionFactoryImpl$SessionBuilderImpl.openSession"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/transaction/interceptor/TransactionAspectSupport.prepareTransactionInfo",
+      "org/springframework/transaction/interceptor/TransactionAspectSupport.createTransactionIfNecessary",
+      "org/springframework/transaction/interceptor/TransactionAspectSupport.invokeWithinTransaction",
+      "org/springframework/transaction/interceptor/TransactionInterceptor.invoke",
+      "org/springframework/aop/framework/ReflectiveMethodInvocation.proceed"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/loader/ast/internal/SingleIdLoadPlan.load",
+      "org/hibernate/loader/ast/internal/SingleIdLoadPlan.load",
+      "org/hibernate/loader/ast/internal/SingleIdEntityLoaderStandardImpl.load",
+      "org/hibernate/persister/entity/AbstractEntityPersister.doLoad",
+      "org/hibernate/persister/entity/AbstractEntityPersister.load"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/Class.getName",
+      "org/springframework/aop/support/AopUtils.isCglibProxy",
+      "org/springframework/aop/support/AopUtils.getTargetClass",
+      "org/springframework/transaction/interceptor/TransactionInterceptor.invoke",
+      "org/springframework/aop/framework/ReflectiveMethodInvocation.proceed"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/util/concurrent/ConcurrentLinkedQueue.poll",
+      "org/hibernate/internal/util/collections/BoundedConcurrentHashMap$LIRS.execute",
+      "org/hibernate/internal/util/collections/BoundedConcurrentHashMap$Segment.attemptEviction",
+      "org/hibernate/internal/util/collections/BoundedConcurrentHashMap$Segment.get",
+      "org/hibernate/internal/util/collections/BoundedConcurrentHashMap.get"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/resource/jdbc/internal/ResourceRegistryStandardImpl.release",
+      "org/hibernate/sql/results/jdbc/internal/DeferredResultSetAccess.release",
+      "org/hibernate/sql/results/jdbc/internal/JdbcValuesResultSetImpl.finishUp",
+      "org/hibernate/sql/results/spi/ListResultsConsumer.consume",
+      "org/hibernate/sql/results/spi/ListResultsConsumer.consume"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.writeWithMessageConverters",
+      "org/springframework/web/servlet/mvc/method/annotation/RequestResponseBodyMethodProcessor.handleReturnValue",
+      "org/springframework/web/method/support/HandlerMethodReturnValueHandlerComposite.handleReturnValue",
+      "org/springframework/web/servlet/mvc/method/annotation/ServletInvocableHandlerMethod.invokeAndHandle",
+      "org/springframework/web/servlet/mvc/method/annotation/RequestMappingHandlerAdapter.invokeHandlerMethod"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodArgumentResolver.readWithMessageConverters",
+      "org/springframework/web/servlet/mvc/method/annotation/RequestResponseBodyMethodProcessor.readWithMessageConverters",
+      "org/springframework/web/servlet/mvc/method/annotation/RequestResponseBodyMethodProcessor.resolveArgument",
+      "org/springframework/web/method/support/HandlerMethodArgumentResolverComposite.resolveArgument",
+      "org/springframework/web/method/support/InvocableHandlerMethod.getMethodArgumentValues"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/postgresql/core/PGStream.isClosed",
+      "org/postgresql/core/QueryExecutorCloseAction.isClosed",
+      "org/postgresql/core/QueryExecutorBase.isClosed",
+      "org/postgresql/jdbc/PgConnection.isClosed",
+      "org/postgresql/jdbc/PgConnection.checkClosed"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "com/vibe/ticketrush/reservation/service/ReservationTransactions.create",
+      "java.lang.invoke.LambdaForm$DMH/0x000070bdb4104c00.invokeVirtual",
+      "java.lang.invoke.LambdaForm$MH/0x000070bdb3f23c00.invoke",
+      "java.lang.invoke.LambdaForm$MH/0x000070bdb30c0000.invokeExact_MT",
+      "jdk/internal/reflect/DirectMethodHandleAccessor.invokeImpl"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/sql/exec/internal/StandardJdbcMutationExecutor.execute",
+      "org/hibernate/query/sql/internal/NativeNonSelectQueryPlanImpl.executeUpdate",
+      "org/hibernate/query/sql/internal/NativeQueryImpl.doExecuteUpdate",
+      "org/hibernate/query/spi/AbstractQuery.executeUpdate",
+      "com/vibe/ticketrush/reservation/service/ReservationTransactions.lockTimeout"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "jdk/internal/misc/Unsafe.allocateUninitializedArray0",
+      "jdk/internal/misc/Unsafe.allocateUninitializedArray",
+      "java/lang/StringConcatHelper.newArray",
+      "java/lang/StringConcatHelper.simpleConcat",
+      "java/lang/invoke/DirectMethodHandle$Holder.invokeStatic"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/util/concurrent/atomic/AtomicInteger.incrementAndGet",
+      "com/zaxxer/hikari/util/ConcurrentBag.borrow",
+      "com/zaxxer/hikari/pool/HikariPool.getConnection",
+      "com/zaxxer/hikari/pool/HikariPool.getConnection",
+      "com/zaxxer/hikari/HikariDataSource.getConnection"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/engine/internal/StatefulPersistenceContext.postLoad",
+      "org/hibernate/sql/results/jdbc/internal/JdbcValuesSourceProcessingStateStandardImpl.finishUp",
+      "org/hibernate/sql/results/spi/ListResultsConsumer.consume",
+      "org/hibernate/sql/results/spi/ListResultsConsumer.consume",
+      "org/hibernate/sql/exec/internal/JdbcSelectExecutorStandardImpl.doExecuteQuery"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/hibernate/event/internal/DefaultMergeEventListener.entityIsDetached",
+      "org/hibernate/event/internal/DefaultMergeEventListener.merge",
+      "org/hibernate/event/internal/DefaultMergeEventListener.doMerge",
+      "org/hibernate/event/internal/DefaultMergeEventListener.onMerge",
+      "org/hibernate/event/internal/DefaultMergeEventListener.onMerge"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/postgresql/core/PGStream.receiveInteger4",
+      "org/postgresql/core/v3/QueryExecutorImpl.processResults",
+      "org/postgresql/core/v3/QueryExecutorImpl.execute",
+      "org/postgresql/jdbc/PgStatement.executeInternal",
+      "org/postgresql/jdbc/PgStatement.execute"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/util/HashMap$HashIterator.nextNode",
+      "java/util/HashMap$KeyIterator.next",
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.addMatchingMappings",
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.lookupHandlerMethod",
+      "org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.getHandlerInternal"
+    ],
+    "samples": 3
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/postgresql/core/QueryExecutorBase.borrowQuery",
+      "org/postgresql/jdbc/PgConnection.borrowQuery",
+      "org/postgresql/jdbc/PgPreparedStatement.<init>",
+      "org/postgresql/jdbc/PgConnection.prepareStatement",
+      "org/postgresql/jdbc/PgConnection.prepareStatement"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/postgresql/jdbc/PgStatement.getSingleResultSet",
+      "org/postgresql/jdbc/PgPreparedStatement.executeQuery",
+      "com/zaxxer/hikari/pool/ProxyPreparedStatement.executeQuery",
+      "com/zaxxer/hikari/pool/HikariProxyPreparedStatement.executeQuery",
+      "org/hibernate/sql/results/jdbc/internal/DeferredResultSetAccess.executeQuery"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "sun/util/calendar/BaseCalendar.getGregorianYearFromFixedDate",
+      "sun/util/calendar/BaseCalendar.getCalendarDateFromFixedDate",
+      "java/util/GregorianCalendar.computeFields",
+      "java/util/GregorianCalendar.computeFields",
+      "java/util/Calendar.setTimeInMillis"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "org/springframework/data/repository/core/support/QueryExecutorMethodInterceptor.invoke",
+      "org/springframework/aop/framework/ReflectiveMethodInvocation.proceed",
+      "org/springframework/data/projection/DefaultMethodInvokingMethodInterceptor.invoke",
+      "org/springframework/aop/framework/ReflectiveMethodInvocation.proceed",
+      "org.springframework.transaction.interceptor.TransactionInterceptor$$Lambda/0x000070bdb3f408c8.proceedWithInvocation"
+    ],
+    "samples": 2
+  },
+  {
+    "event": "jdk.ExecutionSample",
+    "stack": [
+      "java/lang/Integer.rotateRight",
+      "sun/security/provider/SHA2.implCompress0",
+      "sun/security/provider/SHA2.implCompress",
+      "sun/security/provider/DigestBase.implCompressMultiBlock0",
+      "sun/security/provider/DigestBase.implCompressMultiBlock"
+    ],
+    "samples": 2
+  }
+]

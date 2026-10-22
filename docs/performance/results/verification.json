@@ -1,0 +1,10 @@
+{
+  "redis_keys_deleted": 2988,
+  "queues_purged": [
+    "notification.email",
+    "notification.email.dlq",
+    "notification.email.retry.10m",
+    "notification.email.retry.10s",
+    "notification.email.retry.1m"
+  ]
+}

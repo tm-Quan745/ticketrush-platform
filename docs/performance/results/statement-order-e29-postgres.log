@@ -1,0 +1,46 @@
+2026-10-13 04:34:52.677 UTC [2587] 0 LOG:  statement: 
+2026-10-13 04:34:52.678 UTC [2587] 0 LOG:  statement: BEGIN READ ONLY
+2026-10-13 04:34:52.678 UTC [2587] 0 LOG:  execute S_4: select e1_0.id from events e1_0 where e1_0.waiting_room_enabled=true and e1_0.status='PUBLISHED'
+2026-10-13 04:34:52.680 UTC [2587] 0 LOG:  execute S_1: COMMIT
+2026-10-13 04:34:52.710 UTC [2587] 0 LOG:  statement: BEGIN
+2026-10-13 04:34:52.710 UTC [2587] 0 LOG:  execute S_3: SELECT e.* FROM outbox_events e
+	WHERE e.status='PENDING' AND e.next_attempt_at<=$1
+	  AND NOT EXISTS (SELECT 1 FROM outbox_events earlier WHERE earlier.aggregate_type=e.aggregate_type
+	    AND earlier.aggregate_id=e.aggregate_id AND earlier.status<>'PUBLISHED'
+	    AND (earlier.created_at<e.created_at OR (earlier.created_at=e.created_at AND earlier.id<e.id)))
+	ORDER BY e.created_at,e.id LIMIT $2 FOR UPDATE SKIP LOCKED
+	
+2026-10-13 04:34:52.710 UTC [2587] 0 DETAIL:  Parameters: $1 = '2026-10-13 04:34:52.709962+00', $2 = '100'
+2026-10-13 04:34:52.711 UTC [2587] 0 LOG:  execute S_1: COMMIT
+2026-10-13 04:34:52.840 UTC [2587] 0 LOG:  statement: BEGIN READ ONLY
+2026-10-13 04:34:52.841 UTC [2587] 0 LOG:  execute <unnamed>: select tt1_0.event_id from ticket_tiers tt1_0 where tt1_0.id=$1
+2026-10-13 04:34:52.841 UTC [2587] 0 DETAIL:  Parameters: $1 = 'f283de31-4942-5d78-bedd-c90002ec24bb'
+2026-10-13 04:34:52.843 UTC [2587] 0 LOG:  execute S_1: COMMIT
+2026-10-13 04:34:52.858 UTC [2587] 0 LOG:  statement: BEGIN READ ONLY
+2026-10-13 04:34:52.859 UTC [2587] 0 LOG:  execute <unnamed>: select e1_0.id,e1_0.created_at,e1_0.created_by,e1_0.description,e1_0.end_time,e1_0.image_url,e1_0.sale_end_time,e1_0.sale_start_time,e1_0.start_time,e1_0.status,e1_0.title,e1_0.updated_at,e1_0.venue_address,e1_0.venue_name,e1_0.waiting_room_enabled,e1_0.waiting_room_mode,e1_0.waiting_room_rate from events e1_0 where e1_0.id=$1
+2026-10-13 04:34:52.859 UTC [2587] 0 DETAIL:  Parameters: $1 = '289cf7d6-2328-5da6-8a2e-6f5d30d2d4f3'
+2026-10-13 04:34:52.868 UTC [2587] 0 LOG:  execute S_1: COMMIT
+2026-10-13 04:34:52.870 UTC [2587] 0 LOG:  statement: BEGIN
+2026-10-13 04:34:52.870 UTC [2587] 0 LOG:  execute S_5: SET LOCAL lock_timeout = '3s'
+2026-10-13 04:34:52.874 UTC [2587] 0 LOG:  execute <unnamed>: select tt1_0.id,tt1_0.available_quantity,tt1_0.created_at,tt1_0.currency,tt1_0.description,tt1_0.event_id,tt1_0.max_per_order,tt1_0.name,tt1_0.price,tt1_0.total_quantity,tt1_0.updated_at,tt1_0.version from ticket_tiers tt1_0 where tt1_0.id=$1
+2026-10-13 04:34:52.874 UTC [2587] 0 DETAIL:  Parameters: $1 = 'f283de31-4942-5d78-bedd-c90002ec24bb'
+2026-10-13 04:34:52.881 UTC [2587] 0 LOG:  execute <unnamed>: select e1_0.id,e1_0.created_at,e1_0.created_by,e1_0.description,e1_0.end_time,e1_0.image_url,e1_0.sale_end_time,e1_0.sale_start_time,e1_0.start_time,e1_0.status,e1_0.title,e1_0.updated_at,e1_0.venue_address,e1_0.venue_name,e1_0.waiting_room_enabled,e1_0.waiting_room_mode,e1_0.waiting_room_rate from events e1_0 where e1_0.id=$1
+2026-10-13 04:34:52.881 UTC [2587] 0 DETAIL:  Parameters: $1 = '289cf7d6-2328-5da6-8a2e-6f5d30d2d4f3'
+2026-10-13 04:34:52.887 UTC [2587] 0 LOG:  execute <unnamed>: SELECT * FROM reservations WHERE user_id=$1 AND status='HELD' AND expires_at<$2 ORDER BY id FOR UPDATE
+2026-10-13 04:34:52.887 UTC [2587] 0 DETAIL:  Parameters: $1 = 'e02d6848-a5c2-578b-b6b4-5c3997d4c765', $2 = '2026-10-13 04:34:52.870524+00'
+2026-10-13 04:34:52.901 UTC [2587] 0 LOG:  execute <unnamed>: select r1_0.id from reservations r1_0 where r1_0.user_id=$1 and r1_0.tier_id=$2 and r1_0.status=$3 fetch first $4 rows only
+2026-10-13 04:34:52.901 UTC [2587] 0 DETAIL:  Parameters: $1 = 'e02d6848-a5c2-578b-b6b4-5c3997d4c765', $2 = 'f283de31-4942-5d78-bedd-c90002ec24bb', $3 = 'HELD', $4 = '1'
+2026-10-13 04:34:52.906 UTC [2587] 0 LOG:  execute <unnamed>: UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+1, updated_at=$2 WHERE id=$3 AND available_quantity>=$4
+2026-10-13 04:34:52.906 UTC [2587] 0 DETAIL:  Parameters: $1 = '1', $2 = '2026-10-13 04:34:52.903989+00', $3 = 'f283de31-4942-5d78-bedd-c90002ec24bb', $4 = '1'
+2026-10-13 04:34:52.915 UTC [2587] 271441 LOG:  execute <unnamed>: select r1_0.id,r1_0.created_at,r1_0.expires_at,r1_0.quantity,r1_0.status,r1_0.tier_id,r1_0.updated_at,r1_0.user_id,r1_0.version from reservations r1_0 where r1_0.id=$1
+2026-10-13 04:34:52.915 UTC [2587] 271441 DETAIL:  Parameters: $1 = '4635049a-e4b2-4a1a-bd93-e3c8633442a9'
+2026-10-13 04:34:52.964 UTC [2588] 0 LOG:  statement: 
+2026-10-13 04:34:52.969 UTC [2588] 0 LOG:  execute <unnamed>: SELECT count(*) FROM outbox_events WHERE status='PENDING'
+2026-10-13 04:34:52.972 UTC [2588] 0 LOG:  execute <unnamed>: SELECT EXTRACT(EPOCH FROM ($1 - min(created_at)))::bigint FROM outbox_events WHERE status='PENDING'
+2026-10-13 04:34:52.972 UTC [2588] 0 DETAIL:  Parameters: $1 = '2026-10-13 04:34:52.970455+00'
+2026-10-13 04:34:52.978 UTC [2587] 271441 LOG:  execute <unnamed>: insert into reservations (created_at,expires_at,quantity,status,tier_id,updated_at,user_id,version,id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+2026-10-13 04:34:52.978 UTC [2587] 271441 DETAIL:  Parameters: $1 = '2026-10-13 04:34:52.870524+00', $2 = '2026-10-13 04:35:52.870524+00', $3 = '1', $4 = 'HELD', $5 = 'f283de31-4942-5d78-bedd-c90002ec24bb', $6 = '2026-10-13 04:34:52.870524+00', $7 = 'e02d6848-a5c2-578b-b6b4-5c3997d4c765', $8 = '0', $9 = '4635049a-e4b2-4a1a-bd93-e3c8633442a9'
+2026-10-13 04:34:53.005 UTC [2587] 271441 LOG:  execute <unnamed>: INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)
+	VALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)
+2026-10-13 04:34:53.005 UTC [2587] 271441 DETAIL:  Parameters: $1 = 'cb9443c3-4787-46d4-ba17-7968a3a87c1d', $2 = 'reservation', $3 = '4635049a-e4b2-4a1a-bd93-e3c8633442a9', $4 = 'reservation.created', $5 = '1', $6 = '{"reservationId":"4635049a-e4b2-4a1a-bd93-e3c8633442a9","userId":"e02d6848-a5c2-578b-b6b4-5c3997d4c765"}', $7 = '{"correlation_id":"0a68c6b1-e2a3-4b6b-9389-ba01864f1aaa"}', $8 = 'PENDING', $9 = '0', $10 = '2026-10-13 04:34:52.987779+00', $11 = '2026-10-13 04:34:52.987779+00'
+2026-10-13 04:34:53.008 UTC [2587] 271441 LOG:  execute S_1: COMMIT

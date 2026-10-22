@@ -1,0 +1,130 @@
+{
+  "start": 1791779584.8601508,
+  "end": 1791779592.7127104,
+  "series": {
+    "hikari_pending": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "hikaricp_connections_pending",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend",
+              "pool": "HikariPool-1"
+            },
+            "values": [
+              [
+                1791779584.86,
+                "0"
+              ],
+              [
+                1791779589.86,
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "heap": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {},
+            "values": [
+              [
+                1791779584.86,
+                "86617536"
+              ],
+              [
+                1791779589.86,
+                "95006144"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "outbox_pending": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "outbox_pending_count",
+              "application": "ticketrush",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791779584.86,
+                "7"
+              ],
+              [
+                1791779589.86,
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "backend_up": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "up",
+              "instance": "backend:8080",
+              "job": "backend"
+            },
+            "values": [
+              [
+                1791779584.86,
+                "1"
+              ],
+              [
+                1791779589.86,
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "redis_memory": {
+      "status": "success",
+      "data": {
+        "resultType": "matrix",
+        "result": [
+          {
+            "metric": {
+              "__name__": "redis_memory_used_bytes",
+              "instance": "redis-exporter:9121",
+              "job": "redis"
+            },
+            "values": [
+              [
+                1791779584.86,
+                "1569152"
+              ],
+              [
+                1791779589.86,
+                "1676912"
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

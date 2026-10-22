@@ -22,6 +22,8 @@ public class RabbitTopology {
     @Bean Binding failedBinding() { return BindingBuilder.bind(emailQueue()).to(eventsExchange()).with("order.payment_failed"); }
     @Bean Binding refundedBinding() { return BindingBuilder.bind(emailQueue()).to(eventsExchange()).with("order.refunded"); }
     @Bean Binding expiredBinding() { return BindingBuilder.bind(emailQueue()).to(eventsExchange()).with("order.expired"); }
+    /** Every durable outbox event needs a route; EmailNotificationService ACKs non-email event types. */
+    @Bean Binding allEventBinding() { return BindingBuilder.bind(emailQueue()).to(eventsExchange()).with("#"); }
     @Bean Queue retry10Queue() { return retryQueue("notification.email.retry.10s",10_000); }
     @Bean Queue retry1mQueue() { return retryQueue("notification.email.retry.1m",60_000); }
     @Bean Queue retry10mQueue() { return retryQueue("notification.email.retry.10m",600_000); }

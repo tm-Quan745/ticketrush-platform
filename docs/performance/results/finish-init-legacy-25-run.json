@@ -1,0 +1,12 @@
+{
+  "run_id": "finish-init-legacy-25",
+  "mode": "init",
+  "k6_exit": 0,
+  "duration_seconds": 14.631509065628052,
+  "memory_abort": false,
+  "max_memory_percent": 38.74,
+  "pre_vus": 25,
+  "max_vus": 150,
+  "materialize": true,
+  "passed": true
+}

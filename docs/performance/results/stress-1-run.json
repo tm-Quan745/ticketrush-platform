@@ -1,0 +1,13 @@
+{
+  "scenario": "E",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791780649.8340116,
+  "end": 1791780864.7458906,
+  "parameters": [
+    "SCENARIO=E",
+    "RUN_ID=stress-1"
+  ],
+  "collection_error": null
+}

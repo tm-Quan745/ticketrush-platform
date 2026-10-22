@@ -1,0 +1,122 @@
+{
+  "command": "mvn -B -ntp -f backend/pom.xml clean verify",
+  "source_commit": "31e3d7e",
+  "build": "SUCCESS",
+  "maven_total_time": "04:04 min",
+  "tests": 98,
+  "failures": 0,
+  "errors": 0,
+  "suites": [
+    {
+      "name": "com.vibe.ticketrush.auth.AuthIntegrationTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "47.925"
+    },
+    {
+      "name": "com.vibe.ticketrush.event.EventInventoryIntegrationTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "18.761"
+    },
+    {
+      "name": "com.vibe.ticketrush.event.MigrationIntegrationTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "5.329"
+    },
+    {
+      "name": "com.vibe.ticketrush.observability.ObservabilityIntegrationTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "8.736"
+    },
+    {
+      "name": "com.vibe.ticketrush.order.MockGatewayIntegrationTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "20.139"
+    },
+    {
+      "name": "com.vibe.ticketrush.order.OrderPaymentIntegrationTest",
+      "tests": "15",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "19.996"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.ConditionalReservationIntegrationTest",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "10.248"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OptimisticReservationIntegrationTest",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "14.021"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OrderSmallPoolIntegrationTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "19.369"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OutboxIntegrationTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "6.941"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.PessimisticReservationIntegrationTest",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "9.672"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.ReservationStatusTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.001"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.Week6RedisIntegrationTest",
+      "tests": "19",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "45.967"
+    }
+  ],
+  "before_optimization": {
+    "tests": 3,
+    "failures": 1,
+    "errors": 2,
+    "cause": "Hikari acquisition timeout inside PurchaseReservationService.expireOwned; application pool=1; eight real concurrent threads"
+  },
+  "setup_failure_excluded": "Initial Flyway startup needed a separate connection source."
+}

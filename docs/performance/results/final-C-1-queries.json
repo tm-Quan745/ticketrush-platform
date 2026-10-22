@@ -1,0 +1,166 @@
+{
+  "total_exec_time": [
+    {
+      "queryid": -8101211000551547893,
+      "query": "SELECT * FROM orders WHERE id=$1",
+      "calls": 16086,
+      "total_exec_time": 16371.136539000048,
+      "mean_exec_time": 1.0177257577396515,
+      "rows": 16086
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 1024,
+      "total_exec_time": 11479.206194999992,
+      "mean_exec_time": 11.21016229980468,
+      "rows": 1024
+    },
+    {
+      "queryid": 1907361671576918022,
+      "query": "SELECT * FROM payments WHERE order_id=$1",
+      "calls": 11293,
+      "total_exec_time": 10878.573727000026,
+      "mean_exec_time": 0.9633023755423739,
+      "rows": 11293
+    },
+    {
+      "queryid": 4752457557041058143,
+      "query": "SELECT * FROM order_items WHERE order_id=$1 ORDER BY id",
+      "calls": 12099,
+      "total_exec_time": 10762.051357999999,
+      "mean_exec_time": 0.889499244400366,
+      "rows": 12099
+    },
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 1699,
+      "total_exec_time": 7785.255771999997,
+      "mean_exec_time": 4.582257664508533,
+      "rows": 806
+    },
+    {
+      "queryid": -3854080420358358271,
+      "query": "INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)\nVALUES ($1,$2,$3,$4,$5,$6,$7,$9,$8) ON CONFLICT(order_id,ticket_index) DO NOTHING",
+      "calls": 1941,
+      "total_exec_time": 5009.06568599998,
+      "mean_exec_time": 2.58066238330757,
+      "rows": 1941
+    },
+    {
+      "queryid": 7290069031147222470,
+      "query": "UPDATE outbox_events SET status=$3,published_at=$1,last_error=$4 WHERE id=$2 AND status=$5",
+      "calls": 3660,
+      "total_exec_time": 2884.3482740000036,
+      "mean_exec_time": 0.7880732989071045,
+      "rows": 3660
+    },
+    {
+      "queryid": -6563490191634940614,
+      "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)",
+      "calls": 3660,
+      "total_exec_time": 2656.2881070000053,
+      "mean_exec_time": 0.7257617778688525,
+      "rows": 3660
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 47,
+      "total_exec_time": 2518.556527000001,
+      "mean_exec_time": 53.58630908510637,
+      "rows": 799
+    },
+    {
+      "queryid": -363173014630700666,
+      "query": "INSERT INTO processed_messages(consumer_name,message_id,processed_at) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING",
+      "calls": 3660,
+      "total_exec_time": 2289.150211999995,
+      "mean_exec_time": 0.6254508775956287,
+      "rows": 3660
+    }
+  ],
+  "mean_exec_time": [
+    {
+      "queryid": 8986880392822749325,
+      "query": "INSERT INTO user_roles SELECT id,$1 FROM users",
+      "calls": 1,
+      "total_exec_time": 1904.659458,
+      "mean_exec_time": 1904.659458,
+      "rows": 20001
+    },
+    {
+      "queryid": 2529582894003489060,
+      "query": "COPY users (id,email,password_hash) FROM STDIN",
+      "calls": 1,
+      "total_exec_time": 493.499226,
+      "mean_exec_time": 493.499226,
+      "rows": 20001
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 47,
+      "total_exec_time": 2518.556527000001,
+      "mean_exec_time": 53.58630908510637,
+      "rows": 799
+    },
+    {
+      "queryid": 6218040327927382105,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\theap_blks_read,\n\t\theap_blks_hit,\n\t\tidx_blks_read,\n\t\tidx_blks_hit,\n\t\ttoast_blks_read,\n\t\ttoast_blks_hit,\n\t\ttidx_blks_read,\n\t\ttidx_blks_hit\n\tFROM pg_statio_user_tables",
+      "calls": 47,
+      "total_exec_time": 636.4833140000001,
+      "mean_exec_time": 13.542198170212767,
+      "rows": 799
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 1024,
+      "total_exec_time": 11479.206194999992,
+      "mean_exec_time": 11.21016229980468,
+      "rows": 1024
+    },
+    {
+      "queryid": -1104071183735899680,
+      "query": "SELECT e.* FROM outbox_events e\nWHERE e.status=$3 AND e.next_attempt_at<=$1\n  AND NOT EXISTS (SELECT $4 FROM outbox_events earlier WHERE earlier.aggregate_type=e.aggregate_type\n    AND earlier.aggregate_id=e.aggregate_id AND earlier.status<>$5\n    AND (earlier.created_at<e.created_at OR (earlier.created_at=e.created_at AND earlier.id<e.id)))\nORDER BY e.created_at,e.id LIMIT $2 FOR UPDATE SKIP LOCKED",
+      "calls": 141,
+      "total_exec_time": 1320.7257210000002,
+      "mean_exec_time": 9.36684908510638,
+      "rows": 3660
+    },
+    {
+      "queryid": 8746181763075132616,
+      "query": "SELECT\n\t\t\t\tpg_database.datname,\n\t\t\t\ttmp.state,\n\t\t\t\ttmp2.usename,\n\t\t\t\ttmp2.application_name,\n\t\t\t\ttmp2.backend_type,\n\t\t\t\ttmp2.wait_event_type,\n\t\t\t\ttmp2.wait_event,\n\t\t\t\tCOALESCE(count,$1) as count,\n\t\t\t\tCOALESCE(max_tx_duration,$2) as max_tx_duration\n\t\t\tFROM\n\t\t\t\t(\n\t\t\t\t  VALUES ($3),\n\t\t\t\t  \t\t ($4),\n\t\t\t\t  \t\t ($5),\n\t\t\t\t  \t\t ($6),\n\t\t\t\t  \t\t ($7),\n\t\t\t\t  \t\t ($8)\n\t\t\t\t) AS tmp(state) CROSS JOIN pg_database\n\t\t\tLEFT JOIN\n\t\t\t(\n\t\t\t\tSELECT\n\t\t\t\t\tdatname,\n\t\t\t\t\tstate,\n\t\t\t\t\tusename,\n\t\t\t\t\tapplication_name,\n\t\t\t\t\tbackend_type,\n\t\t\t\t\twait_event_type,\n\t\t\t\t\twait_event,\n\t\t\t\t\tcount(*) AS count,\n\t\t\t\t\tMAX(EXTRACT($9 FROM now() - xact_start))::float AS max_tx_duration\n\t\t\t\tFROM pg_stat_activity\n\t\t\t\tGROUP BY datname,state,usename,application_name,backend_type,wait_event_type,wait_event) AS tmp2\n\t\t\t\tON tmp.state = tmp2.state AND pg_database.datname = tmp2.datname",
+      "calls": 47,
+      "total_exec_time": 390.641766,
+      "mean_exec_time": 8.31152693617021,
+      "rows": 1166
+    },
+    {
+      "queryid": -4274481145482781420,
+      "query": "SELECT name, setting, COALESCE(unit, $1), short_desc, vartype FROM pg_settings WHERE vartype IN ($2, $3, $4) AND name != $5",
+      "calls": 47,
+      "total_exec_time": 367.29471499999994,
+      "mean_exec_time": 7.814781170212765,
+      "rows": 12878
+    },
+    {
+      "queryid": -1677136239082965199,
+      "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type=$1) AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= $2) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),$3)/$4 FROM pg_stat_statements) AS slowest_mean_seconds",
+      "calls": 47,
+      "total_exec_time": 336.027088,
+      "mean_exec_time": 7.149512510638297,
+      "rows": 47
+    },
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 1699,
+      "total_exec_time": 7785.255771999997,
+      "mean_exec_time": 4.582257664508533,
+      "rows": 806
+    }
+  ]
+}

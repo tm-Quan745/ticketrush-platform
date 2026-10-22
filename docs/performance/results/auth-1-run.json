@@ -1,0 +1,13 @@
+{
+  "scenario": "F",
+  "k6_exit": 0,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791784850.355448,
+  "end": 1791784913.145252,
+  "parameters": [
+    "SCENARIO=F",
+    "RUN_ID=auth-1"
+  ],
+  "collection_error": null
+}

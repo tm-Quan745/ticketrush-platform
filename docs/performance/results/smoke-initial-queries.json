@@ -1,0 +1,166 @@
+{
+  "total_exec_time": [
+    {
+      "queryid": -3044357311906943737,
+      "query": "UPDATE outbox_events SET status=$1,attempts=$2,next_attempt_at=$3,last_error=$4 WHERE id=$5 AND status=$6",
+      "calls": 2289,
+      "total_exec_time": 1153.146648999999,
+      "mean_exec_time": 0.5037774788117076,
+      "rows": 2289
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 31,
+      "total_exec_time": 603.6387619999998,
+      "mean_exec_time": 19.472218129032257,
+      "rows": 527
+    },
+    {
+      "queryid": -3854080420358358271,
+      "query": "INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)\nVALUES ($1,$2,$3,$4,$5,$6,$7,$9,$8) ON CONFLICT(order_id,ticket_index) DO NOTHING",
+      "calls": 452,
+      "total_exec_time": 307.62253600000014,
+      "mean_exec_time": 0.6805808318584069,
+      "rows": 452
+    },
+    {
+      "queryid": 1451592005812453505,
+      "query": "INSERT INTO idempotency_keys(id,user_id,endpoint,key,request_hash,status,created_at,expires_at,lease_until)\nVALUES ($1,$2,$3,$4,$5,$9,$6,$7,$8) ON CONFLICT(user_id,endpoint,key) DO NOTHING",
+      "calls": 234,
+      "total_exec_time": 190.31379900000005,
+      "mean_exec_time": 0.8133068333333333,
+      "rows": 182
+    },
+    {
+      "queryid": 3964072164253123238,
+      "query": "INSERT INTO payment_events(id,provider_event_id,payment_id,type,payload,received_at)\nVALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT(provider_event_id) DO NOTHING",
+      "calls": 182,
+      "total_exec_time": 181.38729300000008,
+      "mean_exec_time": 0.9966334780219781,
+      "rows": 182
+    },
+    {
+      "queryid": -6563490191634940614,
+      "query": "INSERT INTO outbox_events(id,aggregate_type,aggregate_id,event_type,schema_version,payload,headers,status,attempts,next_attempt_at,created_at)\nVALUES ($1,$2,$3,$4,$5,CAST($6 AS jsonb),CAST($7 AS jsonb),$8,$9,$10,$11)",
+      "calls": 728,
+      "total_exec_time": 171.90680299999997,
+      "mean_exec_time": 0.23613571840659342,
+      "rows": 728
+    },
+    {
+      "queryid": 5047463875356257499,
+      "query": "SELECT pg_database_size($1)",
+      "calls": 124,
+      "total_exec_time": 154.61969800000003,
+      "mean_exec_time": 1.2469330483870966,
+      "rows": 124
+    },
+    {
+      "queryid": 245626904635024902,
+      "query": "INSERT INTO orders(id,user_id,reservation_id,status,total_amount,currency,payment_deadline,created_at,updated_at)\nVALUES ($1,$2,$3,$9,$4,$5,$6,$7,$8)",
+      "calls": 182,
+      "total_exec_time": 141.127904,
+      "mean_exec_time": 0.7754280439560441,
+      "rows": 182
+    },
+    {
+      "queryid": 3220699736740390017,
+      "query": "insert into reservations (created_at,expires_at,quantity,status,tier_id,updated_at,user_id,version,id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+      "calls": 182,
+      "total_exec_time": 127.91150199999993,
+      "mean_exec_time": 0.7028104505494506,
+      "rows": 182
+    },
+    {
+      "queryid": -3683453129002048707,
+      "query": "UPDATE ticket_tiers SET available_quantity=available_quantity-$1, version=version+$5, updated_at=$2 WHERE id=$3 AND available_quantity>=$4",
+      "calls": 182,
+      "total_exec_time": 124.49536500000002,
+      "mean_exec_time": 0.684040467032967,
+      "rows": 182
+    }
+  ],
+  "mean_exec_time": [
+    {
+      "queryid": 8986880392822749325,
+      "query": "INSERT INTO user_roles SELECT id,$1 FROM users",
+      "calls": 1,
+      "total_exec_time": 105.391008,
+      "mean_exec_time": 105.391008,
+      "rows": 1201
+    },
+    {
+      "queryid": 2529582894003489060,
+      "query": "COPY users (id,email,password_hash) FROM STDIN",
+      "calls": 1,
+      "total_exec_time": 37.647775,
+      "mean_exec_time": 37.647775,
+      "rows": 1201
+    },
+    {
+      "queryid": -2907722546303260727,
+      "query": "SELECT\n\t\tcurrent_database() datname,\n\t\tschemaname,\n\t\trelname,\n\t\tseq_scan,\n\t\tseq_tup_read,\n\t\tidx_scan,\n\t\tidx_tup_fetch,\n\t\tn_tup_ins,\n\t\tn_tup_upd,\n\t\tn_tup_del,\n\t\tn_tup_hot_upd,\n\t\tn_live_tup,\n\t\tn_dead_tup,\n\t\tn_mod_since_analyze,\n\t\tCOALESCE(last_vacuum, $1) as last_vacuum,\n\t\tCOALESCE(last_autovacuum, $2) as last_autovacuum,\n\t\tCOALESCE(last_analyze, $3) as last_analyze,\n\t\tCOALESCE(last_autoanalyze, $4) as last_autoanalyze,\n\t\tvacuum_count,\n\t\tautovacuum_count,\n\t\tanalyze_count,\n\t\tautoanalyze_count,\n\t\tpg_total_relation_size(relid) as total_size\n\tFROM\n\t\tpg_stat_user_tables",
+      "calls": 31,
+      "total_exec_time": 603.6387619999998,
+      "mean_exec_time": 19.472218129032257,
+      "rows": 527
+    },
+    {
+      "queryid": 6342828237680505206,
+      "query": "SELECT * FROM (SELECT current_database() AS current_database, n.nspname,c.relname,a.attname,a.atttypid,a.attnotnull  OR (t.typtype = $1 AND t.typnotnull) AS attnotnull,a.atttypmod,a.attlen,t.typtypmod,row_number() OVER (PARTITION BY a.attrelid ORDER BY a.attnum) AS attnum, nullif(a.attidentity, $2) as attidentity,nullif(a.attgenerated, $3) as attgenerated,pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS adsrc,dsc.description,t.typbasetype,t.typtype  FROM pg_catalog.pg_namespace n  JOIN pg_catalog.pg_class c ON (c.relnamespace = n.oid)  JOIN pg_catalog.pg_attribute a ON (a.attrelid=c.oid)  JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid)  LEFT JOIN pg_catalog.pg_attrdef def ON (a.attrelid=def.adrelid AND a.attnum = def.adnum)  LEFT JOIN pg_catalog.pg_description dsc ON (c.oid=dsc.objoid AND a.attnum = dsc.objsubid)  LEFT JOIN pg_catalog.pg_class dc ON (dc.oid=dsc.classoid AND dc.relname=$4)  LEFT JOIN pg_catalog.pg_namespace dn ON (dc.relnamespace=dn.oid AND dn.nspname=$5)  WHERE c.relkind in ($6,$7,$8,$9,$10) and a.attnum > $11 AND NOT a.attisdropped  AND n.nspname LIKE $12) c WHERE $13  AND attname LIKE $14 ORDER BY nspname,c.relname,attnum",
+      "calls": 1,
+      "total_exec_time": 8.084721,
+      "mean_exec_time": 8.084721,
+      "rows": 195
+    },
+    {
+      "queryid": -2821805829036352273,
+      "query": "SELECT EXTRACT($2 FROM ($1 - min(created_at)))::bigint FROM outbox_events WHERE status=$3",
+      "calls": 28,
+      "total_exec_time": 98.96864100000003,
+      "mean_exec_time": 3.5345943214285707,
+      "rows": 28
+    },
+    {
+      "queryid": 1852087220203776907,
+      "query": "SELECT pg_stat_statements_reset()",
+      "calls": 1,
+      "total_exec_time": 2.294726,
+      "mean_exec_time": 2.294726,
+      "rows": 1
+    },
+    {
+      "queryid": -1677136239082965199,
+      "query": "SELECT (SELECT count(*) FROM pg_stat_activity WHERE wait_event_type=$1) AS lock_waits,\n  (SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time >= $2) AS slow_query_fingerprints,\n  (SELECT coalesce(max(mean_exec_time),$3)/$4 FROM pg_stat_statements) AS slowest_mean_seconds",
+      "calls": 31,
+      "total_exec_time": 66.06724700000002,
+      "mean_exec_time": 2.1312015161290327,
+      "rows": 31
+    },
+    {
+      "queryid": -4274481145482781420,
+      "query": "SELECT name, setting, COALESCE(unit, $1), short_desc, vartype FROM pg_settings WHERE vartype IN ($2, $3, $4) AND name != $5",
+      "calls": 31,
+      "total_exec_time": 56.815977,
+      "mean_exec_time": 1.832773451612903,
+      "rows": 8494
+    },
+    {
+      "queryid": 2165888253355131128,
+      "query": "INSERT INTO ticket_tiers\n                (id,event_id,name,price,currency,total_quantity,available_quantity,max_per_order)\n                VALUES ($1,$2,$3,$6,$7,$4,$5,$8)",
+      "calls": 1,
+      "total_exec_time": 1.657291,
+      "mean_exec_time": 1.657291,
+      "rows": 1
+    },
+    {
+      "queryid": 5047463875356257499,
+      "query": "SELECT pg_database_size($1)",
+      "calls": 124,
+      "total_exec_time": 154.61969800000003,
+      "mean_exec_time": 1.2469330483870966,
+      "rows": 124
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "run_id": "calibration-staircase-1",
+  "valid": false,
+  "reason": "Docker Desktop engine disappeared during reset before seed, k6, provenance, telemetry, or verifier completed.",
+  "runner_started_at_utc": "2026-10-17T14:59:13Z",
+  "docker_unavailable_observed_at_utc": "2026-10-18T05:24:34.530Z",
+  "artifacts_present": [
+    "calibration-staircase-1-calibration-lifecycle.json",
+    "calibration-staircase-1-console.log",
+    "calibration-staircase-1-console-error.log"
+  ],
+  "excluded_from_results": true,
+  "rerun_required": true
+}

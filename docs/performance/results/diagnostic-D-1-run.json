@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791874677.681273,
+  "end": 1791874744.4715667,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=diagnostic-D-1"
+  ],
+  "collection_error": null
+}

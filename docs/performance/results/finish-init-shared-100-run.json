@@ -1,0 +1,12 @@
+{
+  "run_id": "finish-init-shared-100",
+  "mode": "init",
+  "k6_exit": 0,
+  "duration_seconds": 11.45746374130249,
+  "memory_abort": false,
+  "max_memory_percent": 30.93,
+  "pre_vus": 100,
+  "max_vus": 150,
+  "materialize": false,
+  "passed": true
+}

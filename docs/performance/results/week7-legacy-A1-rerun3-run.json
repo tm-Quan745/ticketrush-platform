@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791960393.723902,
+  "end": 1791960423.4913094,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=week7-legacy-A1-rerun3"
+  ],
+  "collection_error": null
+}

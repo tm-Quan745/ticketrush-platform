@@ -1,0 +1,53 @@
+{
+  "commit_sha": "148bd04a5f898c4d11a24544e1205476ef17bcc5",
+  "backend_image_id": "sha256:6d5c62a43c9f3edef6c2c7cca7d69a5882b484e95d799073d475ce156c08ad6c",
+  "image_revision_label": "148bd04a5f898c4d11a24544e1205476ef17bcc5",
+  "run_id": "week7-legacy-A1-rerun3",
+  "utc_start": "2026-10-14T06:45:31Z",
+  "working_tree_clean": false,
+  "tracked_status": [
+    " M docs/performance/results/last-reset.json",
+    " M docs/performance/results/last-seed.json"
+  ],
+  "untracked_files": [
+    "docs/performance/results/week7-legacy-A1-console.log.err",
+    "docs/performance/results/week7-legacy-A1-pgactivity.json",
+    "docs/performance/results/week7-legacy-A1-provenance.json",
+    "docs/performance/results/week7-legacy-A1-recovery.json",
+    "docs/performance/results/week7-legacy-A1-rerun1-console.log.err",
+    "docs/performance/results/week7-legacy-A1-rerun1-preflight.json",
+    "docs/performance/results/week7-legacy-A1-rerun1.pid",
+    "docs/performance/results/week7-legacy-A1-rerun2-console.log.err",
+    "docs/performance/results/week7-legacy-A1-rerun2-preflight.json",
+    "docs/performance/results/week7-legacy-A1-rerun2.pid",
+    "docs/performance/results/week7-legacy-A1-rerun3-console.log.err",
+    "docs/performance/results/week7-legacy-A1-rerun3-preflight.json",
+    "docs/performance/results/week7-legacy-A1-rerun3.pid",
+    "docs/performance/results/week7-legacy-A1-run.json",
+    "docs/performance/results/week7-legacy-A1-verify.json",
+    "docs/performance/results/week7-legacy-A1-wal.json",
+    "docs/performance/results/week7-legacy-A1-warmup.json",
+    "docs/performance/results/week7-legacy-A1.json"
+  ],
+  "hikari_connection_timeout_ms": 30000,
+  "backend_connection_durability": {
+    "synchronous_commit": "on",
+    "fsync": "on",
+    "observed_at_utc": "2026-10-14T06:45:31.092214372Z"
+  },
+  "k6_vus": {
+    "preAllocatedVUs": 200,
+    "maxVUs": 1000
+  },
+  "observability_preflight": {
+    "valid": true,
+    "checked_at_utc": "2026-10-14T06:45:23Z",
+    "artifact": "week7-legacy-A1-rerun3-preflight.json"
+  },
+  "k6_order_poll": {
+    "PAYMENT_POLL_BASE_MS": 1000,
+    "PAYMENT_POLL_MAX_MS": 2000,
+    "PAYMENT_POLL_JITTER_MS": 250,
+    "PAYMENT_MAX_POLLS": 20
+  }
+}

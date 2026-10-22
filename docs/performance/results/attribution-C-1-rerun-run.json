@@ -1,0 +1,13 @@
+{
+  "scenario": "C",
+  "k6_exit": 99,
+  "verification_exit": 0,
+  "verification_error": null,
+  "start": 1791802688.8833418,
+  "end": 1791802726.3754432,
+  "parameters": [
+    "SCENARIO=C",
+    "RUN_ID=attribution-C-1-rerun"
+  ],
+  "collection_error": null
+}
