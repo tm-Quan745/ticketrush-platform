@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 // Fail on unsupported constructs instead of silently producing an untyped client.
 const spec = JSON.parse(await readFile('docs/api/openapi.json', 'utf8'));
 function type(s = {}) {
+  if (s.nullable) return `(${type({ ...s, nullable: false })}) | null`;
   if (s.$ref) return s.$ref.split('/').at(-1);
   if (s.enum) return s.enum.map(x => JSON.stringify(x)).join(' | ');
   if (s.oneOf || s.anyOf) return (s.oneOf || s.anyOf).map(type).join(' | ');

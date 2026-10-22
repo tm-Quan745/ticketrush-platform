@@ -28,6 +28,22 @@ export type PublicTier = { "id"?: string; "name"?: string; "description"?: strin
 export type OutboxEvent = { "id"?: string; "aggregateType"?: string; "aggregateId"?: string; "eventType"?: string; "schemaVersion"?: number; "payload"?: string; "headers"?: string; "status"?: "PENDING" | "PUBLISHED" | "FAILED"; "attempts"?: number; "nextAttemptAt"?: string; "createdAt"?: string };
 export type Row = { "id"?: string; "eventId"?: string; "type"?: string; "userId"?: string; "address"?: string; "status"?: "PENDING" | "SENT" | "FAILED"; "attempts"?: number; "error"?: string; "sentAt"?: string };
 export type InventoryViolation = { "tierId"?: string; "available"?: number; "held"?: number; "confirmed"?: number; "total"?: number; "validTickets"?: number };
+export type SeatReadSeatMap = { "eventId": string; "venue": SeatReadVenue; "sections": Array<SeatReadSectionOverview>; "tiers": Array<SeatReadPublicTier>; "observedAt": string };
+export type SeatReadVenue = { "id": string; "templateKey": string; "templateVersion": number; "name": string; "viewBox": Array<number> };
+export type SeatReadSectionOverview = { "id": string; "code": string; "name": string; "type": "GA" | "SEATED"; "tierId": string; "geometry": SeatReadGeometry; "availability": SeatReadAvailability; "counts": (SeatReadSectionCounts) | null; "price": number; "currency": string; "rowCount": number; "seatCount": number };
+export type SeatReadGeometry = { "viewBox": Array<number>; "polygon": Array<SeatReadPoint>; "color": string };
+export type SeatReadPoint = { "x": number; "y": number };
+export type SeatReadAvailability = "AVAILABLE" | "LOW" | "SOLD_OUT";
+export type SeatReadSectionCounts = { "physicalCapacity": number; "sellableCapacity": number; "available": number; "held": number; "sold": number; "blocked": number };
+export type SeatReadPublicTier = { "id": string; "name": string; "description"?: (string) | null; "price": number; "currency": string; "maxPerOrder": number; "availability": SeatReadAvailability; "inventoryMode": SeatReadInventoryMode; "sectionIds"?: Array<string> };
+export type SeatReadInventoryMode = "COUNTER" | "SEATED";
+export type SeatReadApiError = { "timestamp"?: string; "status": number; "code": string; "message": string; "path"?: string; "fieldErrors"?: Record<string, string>; "unavailableSeatIds"?: Array<string>; "retryable"?: boolean };
+export type SeatReadSectionSeats = { "eventId": string; "sectionId": string; "tierId": string; "counts": SeatReadSectionCounts; "observedAt": string; "seats": Array<SeatReadSeatState> };
+export type SeatReadSeatState = { "id": string; "rowLabel": string; "rowRank": number; "number": number; "adjacencySegment": number; "x": number; "y": number; "accessible": boolean; "status": SeatReadSeatStatus; "mine": boolean; "version": number };
+export type SeatReadSeatStatus = "AVAILABLE" | "HELD" | "SOLD" | "BLOCKED";
+export type SeatReadSuggestion = { "eventId": string; "sectionId": string; "tierId": string; "seatIds": Array<string>; "seats": Array<SeatReadSeatAssignment>; "observedAt": string };
+export type SeatReadSeatAssignment = { "id": string; "sectionId": string; "sectionCode": string; "sectionName": string; "rowLabel": string; "number": number; "accessible": boolean };
+export type SeatReadSuggestRequest = { "sectionId": string; "quantity": number; "accessible"?: boolean };
 
 export interface Operations {
   "PUT /api/v1/admin/tiers/{id}": { input: { path: { "id": string }; query?: {  }; body: WriteTier; headers?: Record<string, string>; signal?: AbortSignal }; output: InventoryView };
@@ -68,6 +84,9 @@ export interface Operations {
   "GET /api/v1/admin/events/{id}/inventory": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<InventoryView> };
   "GET /api/v1/admin/events/{id}/inventory/reconcile": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<InventoryViolation> };
   "DELETE /api/v1/events/{id}/waiting-room/leave": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: void };
+  "GET /api/v1/events/{id}/seatmap": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSeatMap };
+  "GET /api/v1/events/{id}/sections/{sectionId}/seats": { input: { path: { "id": string; "sectionId": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSectionSeats };
+  "POST /api/v1/events/{id}/seats/suggest": { input: { path: { "id": string }; query?: {  }; body: SeatReadSuggestRequest; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSuggestion };
 }
 export const endpoints = {
   "PUT /api/v1/admin/tiers/{id}": {
@@ -221,5 +240,17 @@ export const endpoints = {
   "DELETE /api/v1/events/{id}/waiting-room/leave": {
     "method": "DELETE",
     "path": "/api/v1/events/{id}/waiting-room/leave"
+  },
+  "GET /api/v1/events/{id}/seatmap": {
+    "method": "GET",
+    "path": "/api/v1/events/{id}/seatmap"
+  },
+  "GET /api/v1/events/{id}/sections/{sectionId}/seats": {
+    "method": "GET",
+    "path": "/api/v1/events/{id}/sections/{sectionId}/seats"
+  },
+  "POST /api/v1/events/{id}/seats/suggest": {
+    "method": "POST",
+    "path": "/api/v1/events/{id}/seats/suggest"
   }
 } as const;
