@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import {execFileSync,spawn} from 'node:child_process';
 import path from 'node:path';
 const root=process.cwd(),project='ticketrush-m2-read';
-const runtime=path.join(root,'.tmp','m2-measure');fs.mkdirSync(runtime,{recursive:true});
+const runtime=path.join(root,'.tmp','m2b-measure');fs.mkdirSync(runtime,{recursive:true});
 const envFile=path.join(runtime,'private.env');
 const compose=['compose','--env-file',envFile,'-p',project,'-f','docker-compose.yml','-f','infrastructure/compose.seat-read.yml'];
 const run=(args,options={})=>execFileSync('docker',args,{cwd:root,encoding:'utf8',windowsHide:true,maxBuffer:20*1024*1024,...options});
@@ -56,11 +56,11 @@ if(mode==='up'){
  console.log(JSON.stringify({event:event.id,section:section.id,users:300,seats:section.seatCount}));
 }else if(mode==='measure'){
  const provenance={commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),docker:run(['version','--format','{{.Server.Version}}']).trim(),startedAt:new Date().toISOString(),runs:[]};
- // Warm the public metadata path and section before taking counter deltas.
- const credentials=JSON.parse(fs.readFileSync(path.join(runtime,'credentials.json')));
- for(let i=0;i<20;i++)await fetch(`http://127.0.0.1:28882/api/v1/events/${credentials.event}/sections/${credentials.section}/seats`,{headers:{Authorization:'Bearer '+credentials.tokens[i]}});
+ // A separate 60s constant-arrival warm-up is excluded from all measured deltas.
+ run([...compose,'run','--rm','-e','RATE=200','-e','RUN_ID=m2b-warmup','-e','WARMUP=true','k6','run','/scripts/seat-read.js'],{stdio:'inherit'});
+ provenance.warmup={durationSeconds:60,rate:200,counted:false};
  for(let index=0;index<6;index++){
-  const rate=index%2===0?200:400,id=`m2-read-${rate}-${Math.floor(index/2)+1}`;
+  const rate=index%2===0?200:400,id=`m2b-read-${rate}-${Math.floor(index/2)+1}`;
   const beforeText=await scrape(),before=metrics(beforeText),samples=[];
   fs.writeFileSync(path.join(runtime,`${id}-before.prom`),beforeText);
   let done=false,exit;
@@ -83,7 +83,7 @@ if(mode==='up'){
  }
  const ids=run(['ps','-aq','--filter',`label=com.docker.compose.project=${project}`]).trim().split(/\r?\n/).filter(Boolean);
  const caps=JSON.parse(run(['inspect',...ids])).map(c=>({name:c.Name,image:c.Image,cpuLimit:c.HostConfig.NanoCpus/1e9,memoryLimitBytes:c.HostConfig.Memory}));
- provenance.containers=caps;provenance.k6Cap={cpus:2,memoryBytes:536870912};provenance.finishedAt=new Date().toISOString();
+ provenance.containers=caps;provenance.k6Cap={cpus:3,memoryBytes:536870912};provenance.finishedAt=new Date().toISOString();
  fs.writeFileSync(path.join(runtime,'measurement.json'),JSON.stringify(provenance,null,2));
  workResult(provenance);
 }else if(mode==='report'){workResult(JSON.parse(fs.readFileSync(path.join(runtime,'measurement.json'))));

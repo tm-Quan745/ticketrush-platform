@@ -7,7 +7,7 @@ const errors=new Counter('seat_read_5xx');
 const rate=Number(__ENV.RATE);
 export const options={
   scenarios:{read:{executor:'constant-arrival-rate',rate,timeUnit:'1s',duration:'60s',preAllocatedVUs:100,maxVUs:300}},
-  thresholds:{seat_read_success:[`count>=${rate*60*0.99}`],dropped_iterations:['count==0']},
+  thresholds:__ENV.WARMUP==='true'?{}:{seat_read_success:[`count>=${rate*60*0.99}`],dropped_iterations:['count==0']},
   summaryTrendStats:['avg','p(95)','p(99)','max'],
 };
 export default function(){
