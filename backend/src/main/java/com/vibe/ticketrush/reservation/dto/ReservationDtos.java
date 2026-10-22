@@ -13,6 +13,8 @@ public final class ReservationDtos {
         @JsonProperty("expires_at") Instant expiresAt,
         @JsonProperty("seconds_remaining") long secondsRemaining,
         UUID userId,UUID tierId,UUID eventId,String tierName,long unitPrice,String currency,String inventoryMode,
-        Instant createdAt,List<com.vibe.ticketrush.inventory.service.SeatedInventory.Assignment> seats) {}
+        Instant createdAt,List<com.vibe.ticketrush.inventory.service.SeatedInventory.Assignment> seats) {
+        @JsonProperty("seatIds") public List<UUID> seatIds() {return seats==null?List.of():seats.stream().map(com.vibe.ticketrush.inventory.service.SeatedInventory.Assignment::id).toList();}
+    }
     public record Listing(List<View> content, int page, int size, long totalElements, int totalPages) {}
 }

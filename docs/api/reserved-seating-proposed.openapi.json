@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "TicketRush hybrid inventory — PROPOSED delta contract",
-    "version": "0.2.0-m2",
+    "version": "0.3-m2b",
     "description": "Approved hybrid design; M2 read operations are implemented in Spring. Other future operations remain proposed. No payment-confirm endpoint."
   },
   "servers": [
@@ -657,8 +657,8 @@
     "/api/v1/events/{id}/sections/{sectionId}/seats": {
       "get": {
         "operationId": "get_events_id_sections_sectionId_seats",
-        "summary": "Read compact seat states and caller mine overlay",
-        "description": "Authenticated USER/STAFF/ADMIN. Identity-free Redis base TTL 1000ms from publication, at most rebuild duration + 1000ms stale; caller overlay is never shared. Distributed single-flight rebuild with bounded 2s wait; overload returns 503 Retry-After. Private no-cache, Vary Authorization; ETag hashes caller representation. Rate limited per user and trusted client IP. PostgreSQL reservation remains authoritative. GA returns 422 SECTION_NOT_SEATED.",
+        "summary": "Read shared compact section status",
+        "description": "Authenticated USER/STAFF/ADMIN. Identical for every caller; no mine overlay or identity fields. states[i] matches geometry.seats[i]: A AVAILABLE, H HELD, S SOLD, B BLOCKED. Background refresh every 750ms for sections requested in the last 30s; snapshot expires 1000ms after observation (not after Redis write). Expired data is never served. Empty/down Redis falls back through bounded PostgreSQL gate. ETag is precomputed on snapshot construction, stored with body in Redis. Client marks its own seats using reservation seatIds (also seats[].id). Reservation transaction remains authoritative; stale A may return 409. GA returns 422.",
         "security": [
           {
             "bearerAuth": []
@@ -671,7 +671,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Shared compact status.",
             "content": {
               "application/json": {
                 "schema": {
@@ -692,19 +692,11 @@
                     "private, no-cache"
                   ]
                 }
-              },
-              "Vary": {
-                "schema": {
-                  "type": "string",
-                  "enum": [
-                    "Authorization"
-                  ]
-                }
               }
             }
           },
           "304": {
-            "description": "Only if caller-specific effective representation still matches; no response body.",
+            "description": "Shared status ETag matches; no body.",
             "headers": {
               "ETag": {
                 "schema": {
@@ -716,14 +708,6 @@
                   "type": "string",
                   "enum": [
                     "private, no-cache"
-                  ]
-                }
-              },
-              "Vary": {
-                "schema": {
-                  "type": "string",
-                  "enum": [
-                    "Authorization"
                   ]
                 }
               }
@@ -4337,6 +4321,192 @@
         },
         "x-profile-expression": "(demo | loadtest) & !prod"
       }
+    },
+    "/api/v1/events/{id}/sections/{sectionId}/geometry/{version}": {
+      "get": {
+        "operationId": "get_section_geometry",
+        "summary": "Read immutable versioned section geometry",
+        "description": "Public identity-free geometry. Version is returned by the status endpoint and seatmap. Ordered by row_rank, row_label, number, event-seat UUID. Published topology is frozen; geometryVersion is SHA-256 of the immutable JSON. Cache-Control public, max-age=31536000, immutable; ETag equals geometryVersion. A mismatched version returns 404. Already cached geometry can outlive event cancellation; it contains no availability or purchase authority.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Shared compact status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionGeometry"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "public, max-age=31536000, immutable"
+                  ]
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Shared status ETag matches; no body.",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "public, max-age=31536000, immutable"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4817,6 +4987,11 @@
           },
           "seatCount": {
             "type": "integer"
+          },
+          "geometryVersion": {
+            "type": "string",
+            "nullable": true,
+            "description": "Immutable geometry URL version, null for GA."
           }
         },
         "required": [
@@ -4936,42 +5111,22 @@
       },
       "SectionSeats": {
         "type": "object",
-        "properties": {
-          "eventId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "sectionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "tierId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "counts": {
-            "$ref": "#/components/schemas/SectionCounts"
-          },
-          "observedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "seats": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SeatState"
-            }
-          }
-        },
+        "additionalProperties": false,
         "required": [
-          "eventId",
-          "sectionId",
-          "tierId",
-          "counts",
-          "observedAt",
-          "seats"
+          "geometryVersion",
+          "states"
         ],
-        "additionalProperties": false
+        "properties": {
+          "geometryVersion": {
+            "type": "string",
+            "description": "SHA-256 geometry version; use with the immutable geometry URL."
+          },
+          "states": {
+            "type": "string",
+            "pattern": "^[AHSB]+$",
+            "description": "Exactly one character per geometry seat, in the same fixed order."
+          }
+        }
       },
       "SuggestRequest": {
         "type": "object",
@@ -5199,6 +5354,14 @@
             "items": {
               "$ref": "#/components/schemas/SeatAssignment"
             }
+          },
+          "seatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Event-scoped event_seats.id values for this reservation. Client derives its own highlighting from this list; empty for COUNTER."
           }
         },
         "required": [
@@ -5215,7 +5378,8 @@
           "createdAt",
           "expires_at",
           "seconds_remaining",
-          "seats"
+          "seats",
+          "seatIds"
         ],
         "additionalProperties": false
       },
@@ -6271,6 +6435,69 @@
           "totalPages"
         ],
         "additionalProperties": false
+      },
+      "StaticSeat": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "rowLabel",
+          "number",
+          "x",
+          "y",
+          "accessible"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rowLabel": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "accessible": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SectionGeometry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "sectionId",
+          "tierId",
+          "seats"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaticSeat"
+            }
+          }
+        }
       }
     }
   },

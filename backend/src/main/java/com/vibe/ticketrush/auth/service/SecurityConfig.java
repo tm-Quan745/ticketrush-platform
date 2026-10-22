@@ -81,6 +81,7 @@ public class SecurityConfig {
                     }
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/events", "/api/v1/events/*").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/events/*/seatmap").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/v1/events/*/sections/*/geometry/*").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/events/*/sections/*/seats").hasAnyRole("USER","STAFF","ADMIN");
                     auth.requestMatchers(HttpMethod.POST, "/api/v1/events/*/seats/suggest").hasRole("USER");
                     auth.requestMatchers("/api/v1/events/*/waiting-room/**").hasRole("USER");

@@ -46,7 +46,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         } else if (user!=null && path.matches("/api/v1/events/[^/]+/waiting-room/(join|status)")) {
             boolean status=path.endsWith("status");
             if (!allow(status ? "queue-status":"queue-join",user,status ? 120:20,Duration.ofMinutes(1),status ? 30:10,request,response)) return;
-        } else if (path.matches("/api/v1/events/[^/]+/(seatmap|sections/[^/]+/seats|seats/suggest)")) {
+        } else if (path.matches("/api/v1/events/[^/]+/(seatmap|sections/[^/]+/(seats|geometry/[^/]+)|seats/suggest)")) {
             if (!allow("seat-read-ip",ip,30000,Duration.ofMinutes(1),300,request,response)) return;
             if (user!=null && !allow("seat-read-user",user,120,Duration.ofMinutes(1),10,request,response)) return;
         } else if (method.equals("GET") && path.matches("/api/v1/events(/[^/]+)?")) {

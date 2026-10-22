@@ -19,14 +19,21 @@ public class SeatReadController {
     @GetMapping("/seatmap")
     public Map<String,Object> map(@PathVariable UUID id){return service.seatmap(id);}
     @GetMapping("/sections/{sectionId}/seats")
-    public ResponseEntity<SeatReadService.SectionSeats> seats(@PathVariable UUID id,@PathVariable UUID sectionId,
-            @AuthenticationPrincipal Jwt caller,@RequestHeader(name="If-None-Match",required=false) String condition) throws com.fasterxml.jackson.core.JsonProcessingException {
-        var body=service.seats(id,sectionId,UUID.fromString(caller.getSubject()));
-        String etag='"'+TokenService.hash(json.writeValueAsString(body))+'"';
+    public ResponseEntity<String> seats(@PathVariable UUID id,@PathVariable UUID sectionId,
+            @RequestHeader(name="If-None-Match",required=false) String condition) {
+        return response(service.seats(id,sectionId,null),condition,"private, no-cache");
+    }
+    @GetMapping("/sections/{sectionId}/geometry/{version}")
+    public ResponseEntity<String> geometry(@PathVariable UUID id,@PathVariable UUID sectionId,@PathVariable String version,
+            @RequestHeader(name="If-None-Match",required=false) String condition) {
+        if(!version.matches("[a-f0-9]{64}"))throw new com.vibe.ticketrush.common.service.ApiException(HttpStatus.NOT_FOUND,"GEOMETRY_NOT_FOUND","Unknown geometry version");
+        return response(service.geometry(id,sectionId,version),condition,"public, max-age=31536000, immutable");
+    }
+    private ResponseEntity<String> response(SeatReadService.Wire data,String condition,String policy) {
         boolean unchanged=condition!=null && Arrays.stream(condition.split(",")).map(String::trim)
-            .anyMatch(value->value.equals("*")||value.equals(etag)||value.equals("W/"+etag));
-        return ResponseEntity.status(unchanged?304:200).eTag(etag).header(HttpHeaders.CACHE_CONTROL,"private, no-cache")
-            .header(HttpHeaders.VARY,"Authorization").body(unchanged?null:body);
+            .anyMatch(value->value.equals("*")||value.equals(data.etag())||value.equals("W/"+data.etag()));
+        return ResponseEntity.status(unchanged?304:200).eTag(data.etag()).contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CACHE_CONTROL,policy).body(unchanged?null:data.body());
     }
     @PostMapping("/seats/suggest")
     public SeatReadService.Suggestion suggest(@PathVariable UUID id,@AuthenticationPrincipal Jwt caller,

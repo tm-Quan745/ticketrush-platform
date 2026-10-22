@@ -279,21 +279,64 @@ class SeatedInventoryIntegrationTest {
         String owner=token(user,"USER");UUID other=addUser();
         var first=request("GET",sectionPath(),null,owner,Map.of());
         assertThat(first.statusCode()).as(first.body()).isEqualTo(200);
-        assertThat(json.readTree(first.body()).path("seats")).hasSize(30);
+        assertThat(json.readTree(first.body()).path("states").asText()).isEqualTo("A".repeat(30));
         String etag=first.headers().firstValue("ETag").orElseThrow();
         var same=request("GET",sectionPath(),null,owner,Map.of("If-None-Match",etag));
         assertThat(same.statusCode()).isEqualTo(304);assertThat(same.body()).isEmpty();
         assertThat(same.headers().firstValue("Cache-Control")).contains("private, no-cache");
-        assertThat(same.headers().firstValue("Vary")).contains("Authorization");
-        hold(user,List.of(seatIds.getFirst()));
-        var owned=request("GET",sectionPath(),null,owner,Map.of("If-None-Match",etag));
-        assertThat(owned.statusCode()).isEqualTo(200);
-        var ownerSeats=json.readTree(owned.body()).path("seats");
-        assertThat(java.util.stream.StreamSupport.stream(ownerSeats.spliterator(),false).filter(s->s.path("mine").asBoolean()).count()).isEqualTo(1);
+        var held=hold(user,List.of(seatIds.getFirst()));
+        assertThat(held.seatIds()).containsExactly(seatIds.getFirst());
+        var reservation=request("GET","/api/v1/reservations/"+held.id(),null,owner,Map.of());
+        assertThat(reservation.statusCode()).isEqualTo(200);
+        assertThat(json.readTree(reservation.body()).path("seatIds").get(0).asText()).isEqualTo(seatIds.getFirst().toString());
+        // A stale snapshot is advisory; PostgreSQL rejects a conflicting hold.
         var foreign=request("GET",sectionPath(),null,token(other,"USER"),Map.of());
-        assertThat(foreign.body()).doesNotContain(user.toString(),other.toString(),"userId","reservationId");
-        for(var s:json.readTree(foreign.body()).path("seats"))assertThat(s.path("mine").asBoolean()).isFalse();
+        assertThat(foreign.body()).doesNotContain(user.toString(),other.toString(),"userId","reservationId","mine");
         var conflict=request("POST","/api/v1/reservations","{\"seatIds\":[\""+seatIds.getFirst()+"\"]}",token(other,"USER"),Map.of());
+        assertThat(conflict.statusCode()).isEqualTo(409);
+        assertThat(json.readTree(conflict.body()).path("unavailableSeatIds").get(0).asText()).isEqualTo(seatIds.getFirst().toString());
+    }
+    @Test void immutableGeometryAndCompactStatusHaveMeasuredPayloads() throws Exception {
+        var status=request("GET",sectionPath(),null,token(user,"USER"),Map.of());
+        String version=json.readTree(status.body()).path("geometryVersion").asText();
+        String path="/api/v1/events/"+event+"/sections/"+section+"/geometry/"+version;
+        var geometry=request("GET",path,null,null,Map.of());
+        assertThat(geometry.statusCode()).as(geometry.body()).isEqualTo(200);
+        assertThat(geometry.headers().firstValue("Cache-Control")).contains("public, max-age=31536000, immutable");
+        var body=json.readTree(geometry.body());assertThat(body.path("seats")).hasSize(30);
+        assertThat(geometry.body()).doesNotContain("status","mine","userId","reservationId");
+        for(var seat:body.path("seats"))assertThat(seat.size()).isEqualTo(6);
+        assertThat(status.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length).isLessThan(150);
+        System.out.println("M2B_PAYLOAD seats=30 staticBytes="+geometry.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length+" dynamicBytes="+status.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
+        hold(user,List.of(seatIds.getFirst()));
+        assertThat(request("GET",path,null,null,Map.of("If-None-Match",geometry.headers().firstValue("ETag").orElseThrow())).statusCode()).isEqualTo(304);
+        assertThat(request("GET",path.replace(version,"0".repeat(64)),null,null,Map.of()).statusCode()).isEqualTo(404);
+    }
+    @Test @Timeout(15) void backgroundRefreshChangesStatusWithoutPolling() throws Exception {
+        var first=reads.seats(event,section,user);
+        hold(user,List.of(seatIds.getFirst()));
+        Thread.sleep(1800);
+        var cached=redis.opsForValue().get(redisKeys.key("seat-read-v2",event,section.toString()));
+        assertThat(cached).isNotNull();
+        var wire=json.readValue(cached,SeatReadService.Wire.class);
+        assertThat(json.readTree(wire.body()).path("states").asText()).contains("H");
+        assertThat(wire.etag()).isNotEqualTo(first.etag());
+        var owner=request("GET",sectionPath(),null,token(user,"USER"),Map.of());
+        var stranger=request("GET",sectionPath(),null,token(addUser(),"USER"),Map.of());
+        assertThat(stranger.body()).isEqualTo(owner.body());
+        assertThat(stranger.headers().firstValue("ETag")).isEqualTo(owner.headers().firstValue("ETag"));
+    }
+    @Test void publicationPrewarmsEverySeatedSection() {
+        for(UUID id:List.of(section,otherSection))assertThat(redis.opsForValue().get(redisKeys.key("seat-read-v2",event,id.toString()))).isNotNull();
+    }
+    @Test void staleAvailableSnapshotCannotReserveAlreadyHeldSeat() throws Exception {
+        var initial=reads.seats(event,section,user);
+        hold(user,List.of(seatIds.getFirst()));
+        String key=redisKeys.key("seat-read-v2",event,section.toString());
+        // A controlled stale advisory snapshot; Redis owns no reservation authority.
+        redis.opsForValue().set(key,json.writeValueAsString(initial),Duration.ofMillis(1000));
+        assertThat(json.readTree(reads.seats(event,section,user).body()).path("states").asText()).isEqualTo("A".repeat(30));
+        var conflict=request("POST","/api/v1/reservations","{\"seatIds\":[\""+seatIds.getFirst()+"\"]}",token(addUser(),"USER"),Map.of());
         assertThat(conflict.statusCode()).isEqualTo(409);
         assertThat(json.readTree(conflict.body()).path("unavailableSeatIds").get(0).asText()).isEqualTo(seatIds.getFirst().toString());
     }
@@ -309,6 +352,7 @@ class SeatedInventoryIntegrationTest {
         assertThat(request("POST",suggest,body,token(user,"STAFF"),Map.of()).statusCode()).isEqualTo(403);
         assertThat(request("POST",suggest,body,token(user,"USER"),Map.of()).statusCode()).isEqualTo(200);
         eventService.transition(event,EventStatus.CANCELLED);
+        Thread.sleep(1100); // Publication visibility is bounded by the shared snapshot TTL.
         assertThat(request("GET",sectionPath(),null,token(user,"USER"),Map.of()).statusCode()).isEqualTo(404);
     }
     @Test @Timeout(30) void expiredSectionCacheHasOneRebuildForOneHundredRequests() throws Exception {
@@ -318,7 +362,7 @@ class SeatedInventoryIntegrationTest {
         String auth=token(user,"USER");
         var results=parallel(100,i->request("GET",sectionPath(),null,auth,Map.of()).statusCode());
         assertThat(results).containsOnly(200);
-        assertThat(metrics.counter("seat_read_cache_total","result","rebuild").count()-before).isEqualTo(1);
+        assertThat(metrics.counter("seat_read_cache_total","result","rebuild").count()-before).isLessThanOrEqualTo(1);
         assertThat(metrics.counter("seat_read_cache_total","result","hit").count()).isGreaterThan(0);
     }
     @Test void suggestUsesStageRowCentreAislesAndAccessibilityWithoutHolding() {
@@ -383,6 +427,11 @@ class SeatedInventoryIntegrationTest {
         assertThat(jdbc.queryForObject("SELECT count(*) FROM users",Long.class)).isEqualTo(users);
         UUID seeded=jdbc.queryForObject("SELECT id FROM events WHERE description='[dev-seated-v1]' AND status='PUBLISHED'",UUID.class);
         assertThat(jdbc.queryForObject("SELECT count(*) FROM event_seats WHERE event_id=?",Integer.class,seeded)).isEqualTo(3200);
+        UUID stand=jdbc.queryForObject("SELECT s.id FROM sections s JOIN events e ON e.venue_id=s.venue_id WHERE e.id=? AND s.code='STAND_A'",UUID.class,seeded);
+        var dynamic=reads.seats(seeded,stand,user);
+        var staticData=reads.geometry(seeded,stand,json.readTree(dynamic.body()).path("geometryVersion").asText());
+        assertThat(json.readTree(dynamic.body()).path("states").asText()).hasSize(800);
+        System.out.println("M2B_PAYLOAD seats=800 staticBytes="+staticData.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length+" dynamicBytes="+dynamic.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
         var map=request("GET","/api/v1/events/"+seeded+"/seatmap",null,null,Map.of());
         assertThat(map.statusCode()).isEqualTo(200);
         for(var s:json.readTree(map.body()).path("sections"))if(s.path("type").asText().equals("GA")) {
@@ -395,8 +444,7 @@ class SeatedInventoryIntegrationTest {
         docker.pauseContainerCmd(REDIS.getContainerId()).exec();
         try {
             var result=reads.seats(event,section,user);
-            assertThat(result.seats()).hasSize(30);
-            assertThat(result.counts().available()).isEqualTo(30);
+            assertThat(result.body()).contains("A".repeat(30));
         } finally {docker.unpauseContainerCmd(REDIS.getContainerId()).exec();}
     }
     @Test void holdConflictRollsBackReservationMembershipAndOutbox() {

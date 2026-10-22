@@ -17,11 +17,12 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class EventService implements EventAccess {
     private final com.vibe.ticketrush.inventory.service.VenueOperations seating;
+    private final org.springframework.context.ApplicationEventPublisher publisher;
     private final java.time.Clock clock;
     private final EventRepository events;
     private final PublicEventCache cache;
     private final com.vibe.ticketrush.queue.service.QueueProperties queue;
-    public EventService(EventRepository events, java.time.Clock clock,PublicEventCache cache,com.vibe.ticketrush.queue.service.QueueProperties queue,com.vibe.ticketrush.inventory.service.VenueOperations seating) { this.seating=seating; this.events = events; this.clock=clock; this.cache=cache; this.queue=queue; }
+    public EventService(org.springframework.context.ApplicationEventPublisher publisher,EventRepository events, java.time.Clock clock,PublicEventCache cache,com.vibe.ticketrush.queue.service.QueueProperties queue,com.vibe.ticketrush.inventory.service.VenueOperations seating) { this.publisher=publisher; this.seating=seating; this.events = events; this.clock=clock; this.cache=cache; this.queue=queue; }
     public EventPage list(int page, int size, String keyword, Instant from, Instant to, boolean onSale) {
         if (page < 0 || size < 1 || size > 50 || (from != null && to != null && from.isAfter(to)))
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_FILTER", "page >= 0, size 1..50, and from <= to required");
@@ -78,6 +79,7 @@ public class EventService implements EventAccess {
             throw new ApiException(HttpStatus.CONFLICT, "INVALID_EVENT_TRANSITION", "Cannot transition from " + e.getStatus() + " to " + next);
         if (next==EventStatus.PUBLISHED) seating.publish(id,e.getVenueId());
         e.setStatus(next); e.setUpdatedAt(clock.instant());
+        if(next==EventStatus.PUBLISHED)publisher.publishEvent(new com.vibe.ticketrush.inventory.service.SeatReadPublication(id));
         cache.invalidate();
         return EventMapper.view(e);
     }

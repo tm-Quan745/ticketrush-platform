@@ -57,20 +57,47 @@ public class SeatReadService {
         int a=0,h=0,s=0,b=0;for(Seat seat:seats)switch(seat.status()){case "AVAILABLE"->a++;case "HELD"->h++;case "SOLD"->s++;case "BLOCKED"->b++;default->throw new IllegalStateException("Invalid seat state");}
         return new Counts(seats.size(),seats.size()-b,a,h,s,b);
     }
-    public SectionSeats seats(UUID event,UUID section,UUID user) {
-        // Validate publication even on cache hits (cancelled events must disappear).
-        events.publicDetail(event);
-        var base=cache.get(event,section,SectionSeats.class,()->{
-            var mapping=section(event,section);var rows=rows(event,section);
-            return new SectionSeats(event,section,mapping.tier(),counts(rows),clock.instant(),rows);
+    public record StaticSeat(UUID id,String rowLabel,int number,double x,double y,boolean accessible) {}
+    public record Geometry(UUID eventId,UUID sectionId,UUID tierId,List<StaticSeat> seats) {}
+    public record Wire(String body,String etag) {}
+    public record Status(String geometryVersion,String states) {}
+    private final Map<String,Wire> geometries=Collections.synchronizedMap(new LinkedHashMap<>(256,0.75f,true) {
+        @Override protected boolean removeEldestEntry(Map.Entry<String,Wire> entry){return size()>256;}
+    });
+    private Wire wire(Object body) {
+        try {String encoded=json.writeValueAsString(body);return new Wire(encoded,"\""+com.vibe.ticketrush.auth.service.TokenService.hash(encoded)+"\"");}
+        catch (com.fasterxml.jackson.core.JsonProcessingException ex) {throw new IllegalStateException(ex);}
+    }
+    private Wire geometry(UUID event,UUID section,UUID tier,List<Seat> seats) {
+        return wire(new Geometry(event,section,tier,seats.stream().map(s->new StaticSeat(s.id(),s.rowLabel(),s.number(),s.x(),s.y(),s.accessible())).toList()));
+    }
+    public Wire geometry(UUID event,UUID section,String version) {
+        String key=event+":"+section+":"+version;
+        Wire cached=geometries.get(key);if(cached!=null)return cached;
+        return cache.database(()->{
+            var mapping=section(event,section);var result=geometry(event,section,mapping.tier(),rows(event,section));
+            if(!result.etag().equals("\""+version+"\""))throw new ApiException(HttpStatus.NOT_FOUND,"GEOMETRY_NOT_FOUND","Unknown geometry version");
+            geometries.put(key,result);return result;
         });
-        var mine=cache.database(()->new HashSet<>(jdbc.queryForList("""
-            SELECT es.id FROM event_seats es JOIN reservations r ON r.id=es.reservation_id
-            WHERE es.event_id=? AND es.section_id=? AND es.status='HELD'
-              AND r.user_id=? AND r.status='HELD' AND r.expires_at>?
-            """,UUID.class,event,section,user,java.sql.Timestamp.from(clock.instant()))));
-        var overlay=base.seats().stream().map(s->s.owned(mine.contains(s.id()))).toList();
-        return new SectionSeats(event,section,base.tierId(),counts(overlay),base.observedAt(),overlay);
+    }
+    public Wire seats(UUID event,UUID section,UUID ignoredUser) {
+        return cache.get(event,section,Wire.class,()->{
+            var mapping=section(event,section);var seats=rows(event,section);
+            var geometry=geometry(event,section,mapping.tier(),seats);
+            String version=geometry.etag().substring(1,geometry.etag().length()-1);
+            StringBuilder states=new StringBuilder(seats.size());
+            for(var seat:seats)states.append(switch(seat.status()){case "AVAILABLE"->'A';case "HELD"->'H';case "SOLD"->'S';case "BLOCKED"->'B';default->throw new IllegalStateException("Unknown status");});
+            return wire(new Status(version,states.toString()));
+        });
+    }
+    @org.springframework.transaction.event.TransactionalEventListener(phase=org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
+    public void published(SeatReadPublication publication) {
+        // A new transaction sees committed publication; Redis is advisory and cannot undo it.
+        for(UUID section:jdbc.queryForList("SELECT DISTINCT section_id FROM event_seats WHERE event_id=?",UUID.class,publication.eventId())) {
+            try {seats(publication.eventId(),section,null);}catch(RuntimeException ex) {
+                org.slf4j.LoggerFactory.getLogger(getClass()).warn("Seat snapshot prewarm failed for section {}",section);
+            }
+        }
     }
     public Suggestion suggest(UUID event,UUID user,SuggestRequest request,String token) {
         return cache.database(()->{
@@ -115,6 +142,7 @@ public class SeatReadService {
                     result.put("tierId",tier.id());result.put("price",tier.price());result.put("currency",tier.currency());
                     result.put("geometry",safeGeometry(parse(r.getString(5)),viewBox));
                     result.put("availability",seated?(counts.available()==0?"SOLD_OUT":counts.available()*10<counts.sellableCapacity()?"LOW":"AVAILABLE"):tier.availability());
+                    result.put("geometryVersion",seated?geometry(event,id,tier.id(),seats).etag().replace("\"",""):null);
                     result.put("counts",seated?counts:null);result.put("seatCount",seats.size());result.put("rowCount",seats.stream().map(Seat::rowLabel).distinct().count());return result;
                 },event);
             return Map.of("eventId",event,"venue",Map.of("id",detail.venueId(),"templateKey",venue.get("template_key"),"templateVersion",venue.get("template_version"),"name",venue.get("name"),"viewBox",viewBox),"sections",sections,"tiers",tiers,"observedAt",clock.instant());
