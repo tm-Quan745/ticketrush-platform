@@ -37,7 +37,13 @@ if(mode==='up'){
  fs.writeFileSync(envFile,Object.entries(config).map(([k,v])=>`${k}=${v}`).join('\n')+'\n',{mode:0o600});
  run([...compose,'up','-d','--build','--wait','backend'],{stdio:'inherit'});
 }else if(mode==='fixture'){
- const catalog=await (await fetch('http://127.0.0.1:28882/api/v1/events')).json();const event=catalog.content.find(e=>e.description==='[dev-seated-v1]');if(!event)throw new Error('Dev event missing');
+ let event;
+ // HTTP health can turn green before ApplicationRunner finishes seeding.
+ for(let attempt=0;attempt<30&&!event;attempt++){
+  const catalog=await (await fetch('http://127.0.0.1:28882/api/v1/events')).json();
+  event=catalog.content?.find(e=>e.description==='[dev-seated-v1]');if(!event)await pause(2000);
+ }
+ if(!event)throw new Error('Dev event missing after startup deadline');
  const map=await (await fetch(`http://127.0.0.1:28882/api/v1/events/${event.id}/seatmap`)).json();const section=map.sections.find(s=>s.code==='STAND_A');
  const identities=Array.from({length:300},()=>crypto.randomUUID());
  const sql='BEGIN;'+identities.map(id=>`INSERT INTO users(id,email,password_hash) VALUES('${id}','${id}@m2-read.example','measurement-only'); INSERT INTO user_roles(user_id,role_id) SELECT '${id}',id FROM roles WHERE name='USER';`).join('\n')+'COMMIT;';
