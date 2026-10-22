@@ -250,3 +250,24 @@ loadtest tooling. Its strict SOLD -> PAID check can report REFUND_PENDING as a
 transitional violation; terminal-run verification should drain payment processing.
 The 200-thread test is correctness evidence, not throughput or latency evidence.
 Existing performance evidence continues to apply to COUNTER only.
+
+## M2 read and suggestion implementation
+
+The public map exposes sanitized numeric polygons and hex colours. COUNTER stock
+remains bucketed. Section rows require USER/STAFF/ADMIN; suggestions require USER
+and the existing admission rule. No user/reservation identity leaves the backend.
+
+Suggestions enumerate available contiguous number runs within one row and one
+adjacency segment. Lexicographic score: row_rank (stage first), absolute distance
+between run midpoint and physical row midpoint, lowest first seat number, then UUID
+for a stable final tie. Accessibility false excludes accessible seats; true requires
+at least one accessible seat and permits companions. No run returns 409
+NO_ADJACENT_SEATS, never scattered seats. Suggestions do not reserve inventory.
+
+Identity-free section snapshots use Redis single-flight and a 1s fresh TTL, with
+no stale fallback entry. The staleness bound is rebuild duration plus 1s; writes
+need not invalidate because PostgreSQL holds remain authoritative. Mine is overlaid
+from the caller's current unexpired HELD reservation, then included in the ETag.
+Private no-cache / Vary Authorization prevents shared response reuse across users.
+Redis failure falls back to gated PostgreSQL reads (8 concurrent, 1s bounded
+admission wait); exhausted gate or rebuild wait returns 503 and Retry-After.
