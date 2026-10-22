@@ -1,0 +1,384 @@
+{
+  "measurement": {
+    "commit": "b0df20d8cf15a86adc17444357287ccb5bb2d39c",
+    "dirty": "?? docs/m2b-seat-read.md",
+    "docker": "29.3.1",
+    "startedAt": "2026-10-22T12:38:43.305Z",
+    "runs": [
+      {
+        "id": "m2b-read-200-1",
+        "rate": 200,
+        "durationSeconds": 60,
+        "distinctUsers": 300,
+        "exit": 0,
+        "successful": 12000,
+        "offered": 12000,
+        "dropped": 0,
+        "workMinimum": true,
+        "k6p95Ms": 3.1351734499999986,
+        "serverHistogramP95Ms": 2.6897051015624998,
+        "serverRequests": 12000,
+        "server5xx": 0,
+        "cacheHits": 12000,
+        "cacheRebuilds": 0,
+        "cacheHitRatio": 1,
+        "resources": {
+          "ticketrush-m2-read-backend-1": {
+            "maxCpuPercent": 60.35,
+            "maxMemoryMiB": 450.9
+          },
+          "ticketrush-m2-read-rabbitmq-1": {
+            "maxCpuPercent": 96.0,
+            "maxMemoryMiB": 172.9
+          },
+          "ticketrush-m2-read-postgres-1": {
+            "maxCpuPercent": 4.17,
+            "maxMemoryMiB": 57.05
+          },
+          "ticketrush-m2-read-redis-1": {
+            "maxCpuPercent": 11.39,
+            "maxMemoryMiB": 12.98
+          },
+          "ticketrush-m2-read-mailpit-1": {
+            "maxCpuPercent": 3.37,
+            "maxMemoryMiB": 9.742
+          },
+          "ticketrush-m2-read-k6-run": {
+            "maxCpuPercent": 21.57,
+            "maxMemoryMiB": 64.61
+          }
+        }
+      },
+      {
+        "id": "m2b-read-400-1",
+        "rate": 400,
+        "durationSeconds": 60,
+        "distinctUsers": 300,
+        "exit": 99,
+        "successful": 23999,
+        "offered": 24000,
+        "dropped": 2,
+        "workMinimum": false,
+        "k6p95Ms": 3.6972813999999987,
+        "serverHistogramP95Ms": 3.180036515306121,
+        "serverRequests": 23999,
+        "server5xx": 0,
+        "cacheHits": 23999,
+        "cacheRebuilds": 0,
+        "cacheHitRatio": 1,
+        "resources": {
+          "ticketrush-m2-read-backend-1": {
+            "maxCpuPercent": 93.99,
+            "maxMemoryMiB": 464.5
+          },
+          "ticketrush-m2-read-rabbitmq-1": {
+            "maxCpuPercent": 99.48,
+            "maxMemoryMiB": 173.6
+          },
+          "ticketrush-m2-read-postgres-1": {
+            "maxCpuPercent": 4.42,
+            "maxMemoryMiB": 57.5
+          },
+          "ticketrush-m2-read-redis-1": {
+            "maxCpuPercent": 14.75,
+            "maxMemoryMiB": 13.61
+          },
+          "ticketrush-m2-read-mailpit-1": {
+            "maxCpuPercent": 4.15,
+            "maxMemoryMiB": 9.723
+          },
+          "ticketrush-m2-read-k6-run": {
+            "maxCpuPercent": 33.73,
+            "maxMemoryMiB": 67.52
+          }
+        }
+      },
+      {
+        "id": "m2b-read-200-2",
+        "rate": 200,
+        "durationSeconds": 60,
+        "distinctUsers": 300,
+        "exit": 0,
+        "successful": 12000,
+        "offered": 12000,
+        "dropped": 0,
+        "workMinimum": true,
+        "k6p95Ms": 3.846813449999997,
+        "serverHistogramP95Ms": 3.2667154230769233,
+        "serverRequests": 12000,
+        "server5xx": 0,
+        "cacheHits": 12000,
+        "cacheRebuilds": 0,
+        "cacheHitRatio": 1,
+        "resources": {
+          "ticketrush-m2-read-backend-1": {
+            "maxCpuPercent": 52.08,
+            "maxMemoryMiB": 466.9
+          },
+          "ticketrush-m2-read-rabbitmq-1": {
+            "maxCpuPercent": 97.39,
+            "maxMemoryMiB": 173.8
+          },
+          "ticketrush-m2-read-postgres-1": {
+            "maxCpuPercent": 4.51,
+            "maxMemoryMiB": 57.96
+          },
+          "ticketrush-m2-read-redis-1": {
+            "maxCpuPercent": 10.08,
+            "maxMemoryMiB": 13.53
+          },
+          "ticketrush-m2-read-mailpit-1": {
+            "maxCpuPercent": 3.1,
+            "maxMemoryMiB": 10.13
+          },
+          "ticketrush-m2-read-k6-run": {
+            "maxCpuPercent": 25.84,
+            "maxMemoryMiB": 64.35
+          }
+        }
+      },
+      {
+        "id": "m2b-read-400-2",
+        "rate": 400,
+        "durationSeconds": 60,
+        "distinctUsers": 300,
+        "exit": 0,
+        "successful": 24000,
+        "offered": 24000,
+        "dropped": 0,
+        "workMinimum": true,
+        "k6p95Ms": 7.5881253499999985,
+        "serverHistogramP95Ms": 6.839101891707316,
+        "serverRequests": 24000,
+        "server5xx": 0,
+        "cacheHits": 24000,
+        "cacheRebuilds": 0,
+        "cacheHitRatio": 1,
+        "resources": {
+          "ticketrush-m2-read-backend-1": {
+            "maxCpuPercent": 146.05,
+            "maxMemoryMiB": 471.6
+          },
+          "ticketrush-m2-read-rabbitmq-1": {
+            "maxCpuPercent": 100.97,
+            "maxMemoryMiB": 171.5
+          },
+          "ticketrush-m2-read-postgres-1": {
+            "maxCpuPercent": 5.98,
+            "maxMemoryMiB": 57.87
+          },
+          "ticketrush-m2-read-redis-1": {
+            "maxCpuPercent": 27.28,
+            "maxMemoryMiB": 13.46
+          },
+          "ticketrush-m2-read-mailpit-1": {
+            "maxCpuPercent": 5.46,
+            "maxMemoryMiB": 9.594
+          },
+          "ticketrush-m2-read-k6-run": {
+            "maxCpuPercent": 61.88,
+            "maxMemoryMiB": 66.61
+          }
+        }
+      },
+      {
+        "id": "m2b-read-200-3",
+        "rate": 200,
+        "durationSeconds": 60,
+        "distinctUsers": 300,
+        "exit": 0,
+        "successful": 12001,
+        "offered": 12000,
+        "dropped": 0,
+        "workMinimum": true,
+        "k6p95Ms": 8.779639,
+        "serverHistogramP95Ms": 7.894576534701488,
+        "serverRequests": 12001,
+        "server5xx": 0,
+        "cacheHits": 12001,
+        "cacheRebuilds": 0,
+        "cacheHitRatio": 1,
+        "resources": {
+          "ticketrush-m2-read-backend-1": {
+            "maxCpuPercent": 85.24,
+            "maxMemoryMiB": 473.5
+          },
+          "ticketrush-m2-read-rabbitmq-1": {
+            "maxCpuPercent": 98.57,
+            "maxMemoryMiB": 173.0
+          },
+          "ticketrush-m2-read-postgres-1": {
+            "maxCpuPercent": 7.74,
+            "maxMemoryMiB": 57.95
+          },
+          "ticketrush-m2-read-redis-1": {
+            "maxCpuPercent": 32.72,
+            "maxMemoryMiB": 14.06
+          },
+          "ticketrush-m2-read-mailpit-1": {
+            "maxCpuPercent": 6.3,
+            "maxMemoryMiB": 9.855
+          },
+          "ticketrush-m2-read-k6-run": {
+            "maxCpuPercent": 44.3,
+            "maxMemoryMiB": 64.05
+          }
+        }
+      },
+      {
+        "id": "m2b-read-400-3",
+        "rate": 400,
+        "durationSeconds": 60,
+        "distinctUsers": 300,
+        "exit": 0,
+        "successful": 24001,
+        "offered": 24000,
+        "dropped": 0,
+        "workMinimum": true,
+        "k6p95Ms": 9.494875,
+        "serverHistogramP95Ms": 8.589928747770156,
+        "serverRequests": 24001,
+        "server5xx": 0,
+        "cacheHits": 24001,
+        "cacheRebuilds": 0,
+        "cacheHitRatio": 1,
+        "resources": {
+          "ticketrush-m2-read-backend-1": {
+            "maxCpuPercent": 192.99,
+            "maxMemoryMiB": 477.5
+          },
+          "ticketrush-m2-read-rabbitmq-1": {
+            "maxCpuPercent": 100.81,
+            "maxMemoryMiB": 170.0
+          },
+          "ticketrush-m2-read-postgres-1": {
+            "maxCpuPercent": 7.01,
+            "maxMemoryMiB": 59.24
+          },
+          "ticketrush-m2-read-redis-1": {
+            "maxCpuPercent": 30.51,
+            "maxMemoryMiB": 13.96
+          },
+          "ticketrush-m2-read-mailpit-1": {
+            "maxCpuPercent": 6.97,
+            "maxMemoryMiB": 9.957
+          },
+          "ticketrush-m2-read-k6-run": {
+            "maxCpuPercent": 69.79,
+            "maxMemoryMiB": 66.94
+          }
+        }
+      }
+    ],
+    "warmup": {
+      "durationSeconds": 60,
+      "rate": 200,
+      "counted": false
+    },
+    "containers": [
+      {
+        "name": "/ticketrush-m2-read-backend-1",
+        "image": "sha256:4e0cc26f9d9eeda69338e8ecb35c6dd9c826ffdd202357c090f88ddc0f7b8436",
+        "cpuLimit": 6,
+        "memoryLimitBytes": 1073741824
+      },
+      {
+        "name": "/ticketrush-m2-read-rabbitmq-1",
+        "image": "sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3",
+        "cpuLimit": 1,
+        "memoryLimitBytes": 536870912
+      },
+      {
+        "name": "/ticketrush-m2-read-postgres-1",
+        "image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+        "cpuLimit": 2,
+        "memoryLimitBytes": 1073741824
+      },
+      {
+        "name": "/ticketrush-m2-read-redis-1",
+        "image": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+        "cpuLimit": 1,
+        "memoryLimitBytes": 268435456
+      },
+      {
+        "name": "/ticketrush-m2-read-mailpit-1",
+        "image": "sha256:079759020faa42e243a07aaa3e31086de70e93e78b02b844e4149e0108dd5428",
+        "cpuLimit": 0.5,
+        "memoryLimitBytes": 134217728
+      }
+    ],
+    "k6Cap": {
+      "cpus": 3,
+      "memoryBytes": 536870912
+    },
+    "finishedAt": "2026-10-22T12:46:21.850Z"
+  },
+  "resources": {
+    "ticketrush-m2-read-backend-1": {
+      "maxCpuPercent": 192.99,
+      "maxMemoryMiB": 477.5,
+      "cpuQuotaPercent": 600,
+      "memoryCapMiB": 1024.0
+    },
+    "ticketrush-m2-read-rabbitmq-1": {
+      "maxCpuPercent": 100.97,
+      "maxMemoryMiB": 173.8,
+      "cpuQuotaPercent": 100,
+      "memoryCapMiB": 512.0
+    },
+    "ticketrush-m2-read-postgres-1": {
+      "maxCpuPercent": 7.74,
+      "maxMemoryMiB": 59.24,
+      "cpuQuotaPercent": 200,
+      "memoryCapMiB": 1024.0
+    },
+    "ticketrush-m2-read-redis-1": {
+      "maxCpuPercent": 32.72,
+      "maxMemoryMiB": 14.06,
+      "cpuQuotaPercent": 100,
+      "memoryCapMiB": 256.0
+    },
+    "ticketrush-m2-read-mailpit-1": {
+      "maxCpuPercent": 6.97,
+      "maxMemoryMiB": 10.13,
+      "cpuQuotaPercent": 50.0,
+      "memoryCapMiB": 128.0
+    },
+    "ticketrush-m2-read-k6-run": {
+      "maxCpuPercent": 69.79,
+      "maxMemoryMiB": 67.52,
+      "cpuQuotaPercent": 300,
+      "memoryCapMiB": 512.0
+    }
+  },
+  "statsSamplingErrors": 4,
+  "sha256": {
+    "measurement.json": "8e795eab81f1590c0842c5b8a3c6389a23010c36d7ddf520e131344b7699a8c6",
+    "host.json": "db9bf18fa234de85897ef8d21ae067a185fdc481a8b15c052b0ea623e650b8e3",
+    "m2b-warmup-k6.json": "7e884c72c8fb12ad67dba9bb1fc31d1cf5fc695768c1af98cb3c3620b2404d1c",
+    "m2b-read-200-1-k6.json": "7ea40fa53e33443b5ad0930bb6f6313e0ca63d2fa34eb34a6f36b0063a4ef827",
+    "m2b-read-200-1-stats.json": "bc8df6d1a73ed54253db2263de9cbb1c308cc120fcba16c53065960edf8da151",
+    "m2b-read-200-1-before.prom": "096f94f41061e34308291a97e9bc033ef5e1dfcfbd47a77366da3426c701a546",
+    "m2b-read-200-1-after.prom": "b5c79a0839f2083ff67348dbd86de743cc1aef87d13fb4a661ce89cd1c8a8f11",
+    "m2b-read-400-1-k6.json": "a0fa7646edc77f68fdd6dfa62e0d5ce0ae5da3dff2f6cdb70310637c413af3d5",
+    "m2b-read-400-1-stats.json": "eb5e1e8fca47b38ed318ba43543ea2cdede6d4d5ef7b232d645e040814568bb6",
+    "m2b-read-400-1-before.prom": "9b5f75fea76d9b43848ebb8803f6d8d87a3bea1939ef7ee4d25fd20abc6b5af0",
+    "m2b-read-400-1-after.prom": "faf3f43e8589430efa0264c6e6591c371da30c542f048ecdd8a5808d4f3a8bcd",
+    "m2b-read-200-2-k6.json": "b038f6c65479cb7c2e55b68a9db9e5a062155fc7b9840706783de65fd7348ace",
+    "m2b-read-200-2-stats.json": "705bd38388347b8d3a3afa40d436779530d1ee8094c0286ab58414e40e4e6530",
+    "m2b-read-200-2-before.prom": "d8062704f2d58b0f50809f3237d982d7780bb25f55cd7d6e519c57c4ba942900",
+    "m2b-read-200-2-after.prom": "f18b4aaa31b72613e2760ef32f80662929e4a72ee3000cf9e61ea749dadfdb71",
+    "m2b-read-400-2-k6.json": "6f4191a70110cbf616bb76cbcaf2a80df7f73031c716939c1c9a5545be0351a6",
+    "m2b-read-400-2-stats.json": "38fb861934eb3aa6cdd8eb92e8a58f3940000639b7489b0c22d72625637a488a",
+    "m2b-read-400-2-before.prom": "9ec8a8ba8dc1b4c65095c273d552fadb84869f847a10adf4791e7b4cf3c6480e",
+    "m2b-read-400-2-after.prom": "9c77fcd741deaa791e610b7b04d6834a67cbf76c1aeec6545afdf251327984b0",
+    "m2b-read-200-3-k6.json": "20ab0ac8a01efcd3517701f351c4c159ce872f4290d483f1385bab0cb637edba",
+    "m2b-read-200-3-stats.json": "01cb7ab947107dd230ac198006068ec2bec0b6e9365925201fe22b67a6998c84",
+    "m2b-read-200-3-before.prom": "28379d8d4c3a9e4a853687209219edade192b1a7967c4433448b2472bac44db1",
+    "m2b-read-200-3-after.prom": "53d2ed32f6b2ee79cdd71a6f28602d444c20be67b89eb68a66f54eca167cbf30",
+    "m2b-read-400-3-k6.json": "14178d0770235ec714b2a87e13978d90287192d03e794e1f2bc2a8301a539596",
+    "m2b-read-400-3-stats.json": "9bda64ea305ec87d8699b256f690e5bf54d58052b1b2ab1777cd5f9436dee0ac",
+    "m2b-read-400-3-before.prom": "976c3f40af6a7bf63e753ae8afb971c4afb87c6acb34d4043345348df5a41b91",
+    "m2b-read-400-3-after.prom": "0183d7bb3247f1744ce20c232cf66964877d2cbd078c53f6d08a9f41b0263ee1"
+  }
+}
