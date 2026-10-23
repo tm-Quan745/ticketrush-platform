@@ -16,6 +16,7 @@ async function login(page: Page, role: string, next?: string) {
 async function spaVisit(page: Page, path: string) { await page.evaluate(path => { history.pushState({}, '', path); dispatchEvent(new PopStateEvent('popstate')); }, path); }
 test('anonymous private deep link preserves next; public catalog is accessible', async ({ page }) => {
   await page.goto('/events'); await expect(page.getByRole('heading', { name: 'Khám phá sự kiện' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Xem sự kiện', exact: true }).first()).toBeVisible();
   await page.screenshot({ path: 'docs/screenshots/public.png', fullPage: true });
   await page.goto('/account/tickets'); await expect(page).toHaveURL(/\/login\?next=%2Faccount%2Ftickets/);
   await page.goto('/admin'); await expect(page).toHaveURL(/\/login\?next=%2Fadmin/);

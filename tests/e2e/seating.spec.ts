@@ -24,7 +24,7 @@ test('seated manual purchase from catalog uses geometry, compact ETag status and
  const seatId=await page.locator('[data-seat-id][data-state="available"]').first().getAttribute('data-seat-id');const seat=page.locator(`[data-seat-id="${seatId}"]`);await seat.click();await expect(seat).toHaveAttribute('aria-pressed','true');
  const unchanged=page.waitForResponse(r=>r.url().endsWith('/seats')&&r.status()===304);await unchanged;
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:'docs/screenshots/seat-map.png',fullPage:true});await pay(page);
- await page.getByRole('link',{name:'Ví vé',exact:true}).click();await expect(page).toHaveURL(/\/account\/tickets$/);await page.screenshot({path:'docs/screenshots/wallet.png',fullPage:true});
+ const paidPath=new URL(page.url()).pathname;await page.getByRole('link',{name:'Ví vé',exact:true}).click();await expect(page).toHaveURL(/\/account\/tickets$/);await expect(page.locator(`a[href="${paidPath}"]`)).toBeVisible();await page.screenshot({path:'docs/screenshots/wallet.png',fullPage:true});
 });
 test('Auto-Pick replaces selection atomically and buys adjacent server suggestions',async({page})=>{
  await login(page);await select(page);await page.locator('[data-seat-id][data-state="available"]').first().click();
