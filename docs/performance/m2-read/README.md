@@ -1,6 +1,6 @@
 # M2 read micro-measurement: work minimum FAILED
 
-2026-10-22. Backend source 567d7ff; image built at 3aef4ee; runner a8fecf73f7ba614dd43b1ad0e0dc42d7a85dfc64.
+2026-10-22. Backend source c6ae001; image built at 95e34e2; runner e5cf897b2892a9e23b8efe422ef34c0e9c214041.
 Host: Docker Desktop/WSL, 12 logical CPUs, 4,013,408,256 bytes Docker memory.
 300 synthetic authenticated users, Stand A (800 seats), six alternating 60s runs.
 20 warm-up reads; no steady-state warm-up claim. No configuration changes between runs.
@@ -16,7 +16,7 @@ Host: Docker Desktop/WSL, 12 logical CPUs, 4,013,408,256 bytes Docker memory.
 
 Work minimum: >=99% scheduled requests return 200 and zero dropped iterations.
 Each k6 exited 99. The initial orchestration completed with exit 0 (not a workload
-PASS); runner 3b885cf now exits 2 on these same results, verified with report mode.
+PASS); runner d7f3d6d now exits 2 on these same results, verified with report mode.
 
 ## Container resources
 

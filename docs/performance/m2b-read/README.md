@@ -1,6 +1,6 @@
 # M2b seat read micro-measurement: 5/6 work minima passed
 
-One campaign on 2026-10-22. Commit b0df20d8cf15a86adc17444357287ccb5bb2d39c. 300 distinct synthetic users,
+One campaign on 2026-10-22. Commit c686108591437927ca22869d9c0fd58b0d4dc406. 300 distinct synthetic users,
 800-seat Stand A; 60s constant-arrival warm-up at 200 req/s excluded from counters,
 then six alternating 200/400 req/s runs of 60s. No tuning or repeated campaign.
 Host: Docker Desktop (containerized), 12 CPUs, 4013408256 memory bytes.
@@ -46,7 +46,7 @@ was performed, and no throughput readiness claim is supported.
 k6 and stats evidence is preserved; credentials/private env are excluded.
 
 Image SHA: `4e0cc26f9d9eeda69338e8ecb35c6dd9c826ffdd202357c090f88ddc0f7b8436`.
-Backend source e5d6bde; image revision b0df20d. At measurement start only the
+Backend source d52a05d; image revision c686108. At measurement start only the
 report draft was untracked. During the campaign only contract/report files were
 edited; neither the immutable running image nor measurement settings changed.
 Occasional +1 completed requests reflect the k6 scheduling boundary; the nominal

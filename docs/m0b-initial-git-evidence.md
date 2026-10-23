@@ -1,21 +1,21 @@
 # M0b initial Git evidence
 
 ```text
-* ea95e0c (HEAD -> main) docs(baseline): reconcile test counts and record M0 verification
-* fae5e02 fix(inventory): count used tickets during reconciliation
-* 1975dd7 test(migration): assert pending versions and preserve legacy data
-* 7f288c5 feat(gate): authorize staff and atomically check in tickets
-*   bc38c7a (origin/main) Merge pull request #7 from tm-Quan745/feature/redis
+* ec40680 (HEAD -> main) docs(baseline): reconcile test counts and record M0 verification
+* 4fdbcfc fix(inventory): count used tickets during reconciliation
+* fe3528a test(migration): assert pending versions and preserve legacy data
+* 64b4d04 feat(gate): authorize staff and atomically check in tickets
+*   3ef87e2 (origin/main) Merge pull request #7 from tm-Quan745/feature/redis
 |\  
-* \   1c5b127 Merge pull request #5 from tm-Quan745/feat/outbox-rabbitmq-notifications
+* \   d1c9079 Merge pull request #5 from tm-Quan745/feat/outbox-rabbitmq-notifications
 |\ \  
-* \ \   73afe73 Merge pull request #4 from tm-Quan745/feat/orders-payment-idempotency
+* \ \   59e99a3 Merge pull request #4 from tm-Quan745/feat/orders-payment-idempotency
 |\ \ \  
-* \ \ \   a4410ef Merge pull request #3 from tm-Quan745/reservation-overselling
+* \ \ \   2f5a6e2 Merge pull request #3 from tm-Quan745/reservation-overselling
 |\ \ \ \  
-* \ \ \ \   7886b29 Merge pull request #2 from tm-Quan745/feat/events-inventory
+* \ \ \ \   015a365 Merge pull request #2 from tm-Quan745/feat/events-inventory
 |\ \ \ \ \  
-* \ \ \ \ \   649b06b Merge pull request #1 from tm-Quan745/feat/foundation-auth
+* \ \ \ \ \   6692489 Merge pull request #1 from tm-Quan745/feat/foundation-auth
 |\ \ \ \ \ \  
 | | | | | | | * 494a33d (origin/feat/observability-load-testing, feat/observability-load-testing) fix(ci): cap backend to GitHub runner CPUs
 | | | | | | | * cc46a05 fix(ci): print compose startup diagnostics

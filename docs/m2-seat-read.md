@@ -55,22 +55,22 @@ No production fix was needed for 0c. Catalog retains its existing cache policy.
 ## 0d: merge preview and tracked-file audit
 
 Executed only in `.tmp/m2-merge-preview`, branch `codex/m2-merge-preview`, from
-main ea95e0c: `git merge --no-ff codex/m0b-integration`, then
+main ec40680: `git merge --no-ff codex/m0b-integration`, then
 `git merge --no-ff codex/m1-seated-inventory`. Both conflict-free; preview tree
 equals M1 exactly. Main was not merged and nothing was pushed. Approval required.
 
 ```text
-*   30e4f34 merge: preview M1 seated inventory after M0b
+*   59e8491 merge: preview M1 seated inventory after M0b
 |\
-| * e67efa2 docs(inventory): record M1 implementation and verified test results
-| * 831b927 feat(verifier): validate seated claims and ticket conservation
-| * 0b15c5f feat(inventory): implement atomic seated reservation lifecycle
-| * cf0c736 feat(inventory): add seated schema and immutable stadium template
-* | 9af6d8e merge: preview M0b integration into main
+| * fb90cef docs(inventory): record M1 implementation and verified test results
+| * 6225687 feat(verifier): validate seated claims and ticket conservation
+| * f2e73d3 feat(inventory): implement atomic seated reservation lifecycle
+| * da7b59e feat(inventory): add seated schema and immutable stadium template
+* | 4845bf8 merge: preview M0b integration into main
 |\|
-| * b7e3e85 test(e2e): cancel fixture events during teardown
-| * 46e2ee6 docs(baseline): record M0b lineage preservation and passing gates
-| * 9845660 fix(frontend): restore canonical auth routes and purchase flow
+| * 4dc45de test(e2e): cancel fixture events during teardown
+| * 21a5574 docs(baseline): record M0b lineage preservation and passing gates
+| * b013121 fix(frontend): restore canonical auth routes and purchase flow
 ```
 
 `git ls-files | Select-String -Pattern '\.env|secret|token'` matches .env.example,
@@ -167,7 +167,7 @@ No seating throughput or 200/400 requests/s readiness claim is supported.
 [Full six-run table, server/k6 p95, CPU/memory against caps and provenance](performance/m2-read/README.md).
 [Raw summaries, resources and SHA-256 manifest](performance/m2-read/summary.json).
 Image: sha256:10edca7ee92cddd8de598b32fe9f56a05472981c65d3b1b7e06bc2b2edaebcc6;
-image build revision 3aef4eef562b841ca9d593a4f81fcdc3040c1375, backend source 567d7ff.
+image build revision 95e34e2ba6fa1095edc364a0cdd39c685cfa7a21, backend source c6ae001.
 The runner now reports exit 2 on unmet work minimum; verified on these six results.
 
 Client generation, lint, 35/35 SPA unit tests and production build passed.

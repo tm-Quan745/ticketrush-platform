@@ -2,10 +2,10 @@
 
 ## Scope and lineage
 
-M2/M2b was merged into main with `--no-ff` at `561976d` (second parent `bbef717`).
+M2/M2b was merged into main with `--no-ff` at `742f0f4` (second parent `b78fc56`).
 M3a lives on `codex/m3a-buyer-visuals`; it is not merged into main. No push and no
 remote creation were performed. `perf-v1` remains at
-`c6c93e8245b528a48fa065e6fdb06fbab35efa33`.
+`b1260e2ffe9b7e6ba8dcf1b786517109d6b63aca`.
 The requested pre-push rule is in AGENTS.md on this branch.
 No backend, migration, endpoint or OpenAPI contract changed. The accepted 188/188
 backend result is prior evidence, not a backend suite rerun in this milestone.

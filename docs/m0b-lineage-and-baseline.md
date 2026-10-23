@@ -4,7 +4,7 @@
 
 ## Initial lineage and integration decision
 
-Initial HEAD: `ea95e0c` on `main`. Historical test subject: `fcb976f`;
+Initial HEAD: `ec40680` on `main`. Historical test subject: `fcb976f`;
 the 111-test JSON report was committed in `b19db2b`. The performance branch
 tip is `494a33d` (`feat/observability-load-testing` and its origin tracking ref).
 `git branch -a --contains fcb976f` lists only those two performance refs.
@@ -42,7 +42,7 @@ conflicts; runtime/security validation is still required.
 
 ## Production feature audit
 
-“Initial” below means `ea95e0c`, before the merge.
+“Initial” below means `ec40680`, before the merge.
 
 | Feature | Initial | Incoming performance line / merged implementation |
 | --- | --- | --- |
@@ -60,7 +60,7 @@ conflicts; runtime/security validation is still required.
 
 ## Working-tree preservation
 
-`codex/m0b-baseline-wip` at `fc80d15` preserves the previously uncommitted source,
+`codex/m0b-baseline-wip` at `679f763` preserves the previously uncommitted source,
 documentation and imported performance artifacts (1187 files). This is explicitly
 a WIP snapshot, not a passing release. No original file was discarded.
 
@@ -87,7 +87,7 @@ and every deleted source path.
 The three unit-test files import `../src/api/client` (api/transport tests) and
 `../src/access/permissions`, `../src/access/routes` (permissions tests).
 There is no deleting commit: these untracked files were removed in the explicitly
-authorized cleanup before M0. `ea95e0c` documents the failure; it did not delete
+authorized cleanup before M0. `ec40680` documents the failure; it did not delete
 tracked modules. Reconstruct equivalent behavior inside `frontend/src`, update
 only the import paths, and preserve every existing assertion.
 
@@ -102,7 +102,7 @@ serve those routes; changing selectors to ignore failed behavior is not a fix.
 
 ## Completed integration and verification
 
-- Merge commit: `b4803bf`, with both M0 and performance parents. No text conflicts.
+- Merge commit: `519ef48`, with both M0 and performance parents. No text conflicts.
 - Annotated local tag `perf-v1` points to `b19db2b7f1033729f75e3fc7e10f9708e2e0204a`.
   Nothing was pushed. The tag denotes historical COUNTER evidence, not seating.
 - `mvn -B -ntp -f backend/pom.xml clean verify`: **115 passed**, zero failures,
@@ -178,11 +178,11 @@ five-case suite does not claim exhaustive coverage of every legacy screen.
 
 ## Final group disposition
 
-- `fc80d15` on `codex/m0b-baseline-wip`: complete named WIP preservation before
+- `679f763` on `codex/m0b-baseline-wip`: complete named WIP preservation before
   integration; includes old source, local import metadata and copied performance
   artifacts that are not activated on the integration branch.
-- `b4803bf`: coherent merge of both backend lines, verified with 115 tests.
-- `9845660`: canonical frontend, import-path repairs, generated baseline client,
+- `519ef48`: coherent merge of both backend lines, verified with 115 tests.
+- `b013121`: canonical frontend, import-path repairs, generated baseline client,
   proxy/build/Compose configuration and tests; lint, 35 unit tests, build and
   five browser tests passed before commit.
 - Review/design documents and final verification are committed separately;

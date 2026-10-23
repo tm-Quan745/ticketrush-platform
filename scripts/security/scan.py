@@ -75,6 +75,8 @@ def main():
     with (run / "scanner-output.txt").open("w", encoding="utf8") as output:
         result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
     raw = reports / "findings.json"
+    if result.returncode == 0 and not raw.exists():
+        raise RuntimeError("Scanner returned success without a report; refusing to pass")
     findings = json.loads(raw.read_text(encoding="utf8")) if raw.exists() else []
     summary = {"mode": "staged" if args.staged else "all-reachable-unique-blobs", "image": IMAGE,
                "rules": "gitleaks 8.24.3 defaults; no custom allowlist; ignore allow comments",

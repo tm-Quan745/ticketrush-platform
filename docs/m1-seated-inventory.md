@@ -7,7 +7,7 @@ Branch: `codex/m1-seated-inventory`, based on the accepted M0b integration line.
 
 - E2E fixture setup journals its event immediately; teardown cancels it through the
   ADMIN API and verifies public detail returns 404. Setup also cleans a journal
-  left by an interrupted run. Housekeeping commit: `b7e3e85`.
+  left by an interrupted run. Housekeeping commit: `4dc45de`.
 - V8 only: venue/section/seat topology, COUNTER/SEATED tier mode, event mappings,
   event-scoped seat inventory, reservation history and current claims, ticket seat
   snapshots, composite foreign keys, state checks, and unique live seat tickets.
@@ -127,13 +127,13 @@ No seatmap/status/suggest endpoints (M2), SPA integration (M3), demo controls (M
 or seat-mode load/performance study (M5). The 200-thread test establishes correctness,
 not capacity or latency claims. Earlier 5,000-ticket sell-out evidence is COUNTER only.
 
-`main` remains `ea95e0ca73eea9402cd4f48e884ab573f8012d4b`.
+`main` remains `ec40680b30fbfc72d1cc6267bf8bf09e31ef7e2d`.
 `perf-v1` remains `b19db2b7f1033729f75e3fc7e10f9708e2e0204a`.
 No merge into main and no push were performed. Stop after M1 for review.
 
 ## Commits
 
-- `b7e3e85`: E2E fixture teardown (housekeeping).
-- `cf0c736`: V8 schema and immutable stadium template.
-- `0b15c5f`: seated lifecycle, admin operations and 58 integration tests.
-- `831b927`: shared verifier integration in Python tooling.
+- `4dc45de`: E2E fixture teardown (housekeeping).
+- `da7b59e`: V8 schema and immutable stadium template.
+- `f2e73d3`: seated lifecycle, admin operations and 58 integration tests.
+- `6225687`: shared verifier integration in Python tooling.

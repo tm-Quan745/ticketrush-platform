@@ -1,6 +1,6 @@
 {
   "command": "mvn -B -ntp -f backend/pom.xml clean verify",
-  "backend_commit": "0b15c5f",
+  "backend_commit": "f2e73d3",
   "build": "SUCCESS",
   "tests": null,
   "failures": null,
