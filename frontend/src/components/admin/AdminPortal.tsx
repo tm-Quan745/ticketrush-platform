@@ -191,7 +191,7 @@ export const AdminPortal: React.FC = () => {
   const handleReseed = async () => {
     if (confirm('Khôi phục toàn bộ dữ liệu mẫu (Reseed database)?')) {
       try {
-        await api.reseed();
+        throw new Error('Browser reseeding is not enabled.');
         fetchEvents();
         fetchOrders();
         if (selectedEventId) fetchInventory(selectedEventId);

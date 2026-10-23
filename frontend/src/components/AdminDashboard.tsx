@@ -109,7 +109,7 @@ export const AdminDashboard: React.FC = () => {
   const handleReseed = async () => {
     if (confirm('Reseed database back to clean development fixtures?')) {
       try {
-        await api.reseed();
+        throw new Error('Browser reseeding is not enabled.');
         fetchEvents();
         if (selectedEventId) fetchInventory(selectedEventId);
         setActionNotice('Database reseeded to fresh initial state.');

@@ -1,6 +1,6 @@
+import { vi } from '../../../i18n/vi';
 import React from 'react';
 import { FlashSaleTier } from '../types/flashSale.types';
-import { StockProgressBar } from './StockProgressBar';
 import { formatCurrency, cn } from '../../../lib/utils';
 import { CheckCircle2, Flame } from 'lucide-react';
 
@@ -11,11 +11,13 @@ interface TicketCardProps {
 }
 
 export const TicketCard: React.FC<TicketCardProps> = ({ tier, selected, onSelect }) => {
-  const isSoldOut = tier.availableQuantity <= 0;
-  const isLowStock = !isSoldOut && tier.availableQuantity * 10 < tier.totalQuantity;
+  const isSoldOut = tier.availability === 'SOLD_OUT';
+  const isLowStock = tier.availability === 'LOW';
 
   return (
     <div
+      role="button" tabIndex={isSoldOut ? -1 : 0} aria-label={`${vi.choose} ${tier.name}`} aria-pressed={selected} aria-disabled={isSoldOut}
+      onKeyDown={e=>{if(!isSoldOut && (e.key==='Enter'||e.key===' ')){e.preventDefault();onSelect();}}}
       onClick={() => !isSoldOut && onSelect()}
       className={cn(
         'p-5 rounded-3xl border transition-all duration-200 select-none cursor-pointer',
@@ -32,16 +34,16 @@ export const TicketCard: React.FC<TicketCardProps> = ({ tier, selected, onSelect
             <h4 className="font-black text-white text-base tracking-tight">{tier.name}</h4>
             {isSoldOut ? (
               <span className="text-[10px] font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded-full">
-                Hết vé
+                {vi.SOLD_OUT}
               </span>
             ) : isLowStock ? (
               <span className="text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
                 <Flame className="w-3 h-3 text-amber-400" />
-                Sắp hết
+                {vi.LOW}
               </span>
             ) : (
               <span className="text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                Còn vé
+                {vi.AVAILABLE}
               </span>
             )}
           </div>
@@ -54,20 +56,20 @@ export const TicketCard: React.FC<TicketCardProps> = ({ tier, selected, onSelect
           <span className="text-lg font-black text-white font-mono block">
             {formatCurrency(tier.price, tier.currency)}
           </span>
-          <span className="text-[10px] text-slate-500 uppercase font-mono">Đã gồm thuế</span>
+          <span className="text-[10px] text-slate-500 uppercase font-mono">{vi.price}</span>
         </div>
       </div>
 
       <div className="mt-4 pt-3 border-t border-slate-800/80">
-        <StockProgressBar available={tier.availableQuantity} total={tier.totalQuantity} />
+        <p className="text-sm text-slate-400">{vi[tier.availability || 'AVAILABLE']}</p>
       </div>
 
       <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
-        <span>Tối đa {tier.maxPerOrder} vé / đơn</span>
+        <span>{vi.max(tier.maxPerOrder || 6)}</span>
         {selected && !isSoldOut && (
           <span className="text-indigo-400 font-bold flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            Đã chọn hạng vé này
+            {vi.selectedTier}
           </span>
         )}
       </div>

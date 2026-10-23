@@ -21,4 +21,7 @@ export function useLoad<T>(key: string, loader: () => Promise<T>) {
 }
 export const ErrorMessage = ({ message }: { message?: string }) => message ? <p role="alert" className="my-4 text-rose-400">{message}</p> : null;
 export const fieldClass = 'block w-full rounded-xl border border-slate-700 bg-slate-900 p-3 my-2';
-export const money = (amount: number, currency: string) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency }).format(amount / 100);
+export const money = (amount: number, currency: string) => {
+  const format = new Intl.NumberFormat('vi-VN', { style: 'currency', currency });
+  return format.format(amount / 10 ** (format.resolvedOptions().maximumFractionDigits ?? 2));
+};

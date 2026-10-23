@@ -99,7 +99,7 @@ export const CheckoutTTLModal: React.FC<CheckoutTTLModalProps> = ({
     setIsPaying(true);
     setError(null);
     try {
-      const res = await api.simulatePayment(order.id);
+      const res = await api.checkPayment(order.id);
       onOrderPaid(res.order, res.tickets);
     } catch (err: any) {
       setError(err.message || 'Giao dịch thanh toán gặp lỗi');

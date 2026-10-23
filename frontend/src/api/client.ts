@@ -1,3 +1,4 @@
+import { vi } from '../i18n/vi';
 import { Event, TicketTier, Reservation, Order, Ticket, WaitingRoomStatus, InventoryViolation, User } from '../types';
 import type { Operations } from './generated';
 import { endpoints } from './generated';
@@ -12,7 +13,7 @@ export const pollDelay = (advice: { retryAfterMs?: number }, fallback: number) =
 export class ApiError extends Error {
   constructor(public status: number, public data: any, public retryAfterMs?: number) {
     super([429, 503].includes(status)
-      ? `Hệ thống đang bận. Vui lòng thử lại sau ${Math.ceil((retryAfterMs ?? 1000) / 1000)} giây.`
+      ? vi.busy(Math.ceil((retryAfterMs ?? 1000) / 1000))
       : data?.message || `API error ${status}`);
   }
 }
@@ -60,6 +61,7 @@ export class ApiClient {
     const canRefresh = !['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'].includes(endpoint);
     if (response.status === 401 && canRefresh && !isRetry && await this.refreshSession())
       return this.request<T>(endpoint, options, extraHeaders, true);
+    if (response.status === 304) return { notModified: true, etag: response.headers.get('ETag'), retryAfterMs: retryAfter(response.headers.get('Retry-After')) } as T;
     if (!response.ok) {
       const data = await response.json().catch(() => ({ message: response.statusText }));
       if (response.status === 401 && canRefresh) this.expire();
@@ -68,7 +70,7 @@ export class ApiClient {
     }
     if (response.status === 204) return undefined as T;
     const data = await response.json();
-    if (data && typeof data === 'object') Object.defineProperty(data, 'retryAfterMs', { value: retryAfter(response.headers.get('Retry-After')), enumerable: false });
+    if (data && typeof data === 'object') { Object.defineProperty(data, 'retryAfterMs', { value: retryAfter(response.headers.get('Retry-After')), enumerable: false }); Object.defineProperty(data, 'etag', { value: response.headers.get('ETag'), enumerable: false }); }
     return data;
   }
   call<K extends keyof Operations>(operation: K, input: Operations[K]['input']): Promise<Operations[K]['output']> {
@@ -103,22 +105,27 @@ export class ApiClient {
     const params = new URLSearchParams();
     if (keyword) params.set('keyword', keyword);
     if (onSale) params.set('onSale', 'true');
-    return this.request<{ content: Event[] }>(`/events${params.size ? '?' + params : ''}`);
+    return this.call('GET /api/v1/events', { query: {keyword, onSale} }) as Promise<{content: Event[]}>;
   }
 
   async getEventDetail(id: string): Promise<{ event: Event; tiers: TicketTier[] }> {
-    return this.request<{ event: Event; tiers: TicketTier[] }>(`/events/${id}`);
+    return this.call('GET /api/v1/events/{id}', {path:{id}}) as Promise<{event:Event;tiers:TicketTier[]}>;
   }
 
+  seatmap(id: string, signal?: AbortSignal) { return this.call('GET /api/v1/events/{id}/seatmap', {path:{id},signal}); }
+  geometry(id: string, sectionId: string, version: string, signal?: AbortSignal) { return this.call('GET /api/v1/events/{id}/sections/{sectionId}/geometry/{version}', {path:{id,sectionId,version},signal}); }
+  seatStatus(id: string, sectionId: string, etag?: string, signal?: AbortSignal) {
+    return this.call('GET /api/v1/events/{id}/sections/{sectionId}/seats', {path:{id,sectionId},headers:etag?{'If-None-Match':etag}:{},signal}) as Promise<(import('./generated').SeatReadSectionSeats & {etag?: string;retryAfterMs?:number}) | {notModified:true;etag?:string;retryAfterMs?:number}>;
+  }
+  suggest(id: string, sectionId: string, quantity: number, accessible: boolean, token?: string) { return this.call('POST /api/v1/events/{id}/seats/suggest',{path:{id},body:{sectionId,quantity,accessible},headers:token?{'X-Admission-Token':token}:{}}); }
+  holdSeats(seatIds: string[], token?: string) { return this.call('POST /api/v1/reservations',{body:{seatIds},headers:token?{'X-Admission-Token':token}:{}}) as Promise<Reservation>; }
   // --- Waiting Room ---
-  async joinWaitingRoom(eventId: string): Promise<WaitingRoomStatus> {
-    return this.request<WaitingRoomStatus>(`/events/${eventId}/waiting-room/join`, {
-      method: 'POST',
-    });
+  async joinWaitingRoom(eventId: string, signal?: AbortSignal): Promise<WaitingRoomStatus> {
+    return this.call('POST /api/v1/events/{id}/waiting-room/join', {path:{id:eventId},signal}) as Promise<WaitingRoomStatus>;
   }
 
-  async getWaitingRoomStatus(eventId: string): Promise<WaitingRoomStatus> {
-    return this.request<WaitingRoomStatus>(`/events/${eventId}/waiting-room/status`);
+  async getWaitingRoomStatus(eventId: string, signal?: AbortSignal): Promise<WaitingRoomStatus> {
+    return this.call('GET /api/v1/events/{id}/waiting-room/status',{path:{id:eventId},signal}) as Promise<WaitingRoomStatus>;
   }
 
   async leaveWaitingRoom(eventId: string): Promise<void> {
@@ -129,22 +136,11 @@ export class ApiClient {
 
   // --- Reservations ---
   async createReservation(tierId: string, quantity = 1, admissionToken?: string): Promise<Reservation> {
-    const extraHeaders: Record<string, string> = {};
-    if (admissionToken) {
-      extraHeaders['X-Admission-Token'] = admissionToken;
-    }
-    return this.request<Reservation>(
-      '/reservations',
-      {
-        method: 'POST',
-        body: JSON.stringify({ tierId, quantity }),
-      },
-      extraHeaders
-    );
+    return this.call('POST /api/v1/reservations',{body:{tierId,quantity},headers:admissionToken?{'X-Admission-Token':admissionToken}:{}}) as Promise<Reservation>;
   }
 
   async getMyReservations(): Promise<{ content: Reservation[] }> {
-    return this.request<{ content: Reservation[] }>('/reservations/me');
+    return this.call('GET /api/v1/reservations/me',{}) as Promise<{content:Reservation[]}>;
   }
 
   async cancelReservation(id: string): Promise<void> {
@@ -155,30 +151,22 @@ export class ApiClient {
 
   // --- Orders ---
   async createOrder(reservationId: string, idempotencyKey?: string): Promise<Order> {
-    const key = idempotencyKey || crypto.randomUUID();
-    return this.request<Order>(
-      '/orders',
-      {
-        method: 'POST',
-        body: JSON.stringify({ reservationId }),
-      },
-      { 'Idempotency-Key': key }
-    );
+    return this.call('POST /api/v1/orders',{body:{reservationId},headers:{'Idempotency-Key':idempotencyKey||crypto.randomUUID()}}) as Promise<Order>;
   }
 
   async getMyOrders(): Promise<{ content: Order[] }> {
-    return this.request<{ content: Order[] }>('/orders/me');
+    return this.call('GET /api/v1/orders/me',{}) as Promise<{content:Order[]}>;
   }
 
   async getOrderTickets(orderId: string): Promise<Ticket[]> {
     const [tickets, order] = await Promise.all([
-      this.request<Ticket[]>(`/orders/${orderId}/tickets`), this.getOrder(orderId),
+      this.call('GET /api/v1/orders/{id}/tickets',{path:{id:orderId}}) as Promise<Ticket[]>, this.getOrder(orderId),
     ]);
     return tickets.map(ticket => ({ ...ticket, orderId, tierName: order.items.find(item => item.tierId === ticket.tierId)?.tierName || '' }));
   }
 
-  getOrder(id: string) { return this.request<Order>(`/orders/${id}`); }
-  getReservation(id: string) { return this.request<Reservation>(`/reservations/${id}`); }
+  getOrder(id: string, signal?: AbortSignal) { return this.call('GET /api/v1/orders/{id}',{path:{id},signal}) as Promise<Order>; }
+  getReservation(id: string) { return this.call('GET /api/v1/reservations/{id}',{path:{id}}) as Promise<Reservation>; }
 
   // --- Ticket Verification & Gate Check-in ---
   async verifyTicket(code: string): Promise<{
@@ -216,10 +204,6 @@ export class ApiClient {
   }
 
   // --- Payments ---
-  async simulatePayment(orderId: string): Promise<{ status: string; order: Order; tickets: Ticket[] }> {
-    return this.checkPayment(orderId);
-  }
-
   async checkPayment(orderId: string) {
     const order = await this.getOrder(orderId);
     if (order.status !== 'PAID') throw new Error(`Payment status: ${order.status}`);
@@ -268,9 +252,6 @@ export class ApiClient {
     return res.json();
   }
 
-  async reseed(): Promise<any> {
-    throw new Error('Browser reseeding is not enabled.');
-  }
 }
 
 export const api = new ApiClient();

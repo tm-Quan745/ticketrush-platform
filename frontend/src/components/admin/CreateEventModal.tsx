@@ -1,3 +1,5 @@
+import { extraText } from '../../i18n/vi';
+import { legacyText } from '../../i18n/vi';
 import React, { useState } from 'react';
 import { api } from '../../api/client';
 import { X, Calendar, MapPin, Image, Ticket, Plus, Check } from 'lucide-react';
@@ -25,7 +27,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
   const [saleEndTime, setSaleEndTime] = useState(
     new Date(Date.now() + 29 * 24 * 3600 * 1000).toISOString().slice(0, 16)
   );
-  const [tierName, setTierName] = useState('Vé Phổ Thông (Standard)');
+  const [tierName, setTierName] = useState<string>(legacyText.text60);
   const [tierPrice, setTierPrice] = useState(250000); // 250,000 VND
   const [tierQuantity, setTierQuantity] = useState(500);
   const [submitting, setSubmitting] = useState(false);
@@ -59,7 +61,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
         },
         body: JSON.stringify({
           name: tierName,
-          description: 'Hạng vé mở bán đợt đầu',
+          description: legacyText.text61,
           price: tierPrice,
           currency: 'VND',
           totalQuantity: tierQuantity,
@@ -73,7 +75,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
       onEventCreated();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Lỗi khi tạo sự kiện');
+      setError(err.message || legacyText.text62);
     } finally {
       setSubmitting(false);
     }
@@ -85,10 +87,8 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
         {/* Header */}
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-rose-400 uppercase tracking-wider font-mono">
-              Bảng Quản Trị • Ban Tổ Chức
-            </span>
-            <h3 className="text-xl font-black text-white mt-0.5">Tạo Sự Kiện Flash-Sale Mới</h3>
+            <span className="text-xs font-bold text-rose-400 uppercase tracking-wider font-mono">{extraText.s2}</span>
+            <h3 className="text-xl font-black text-white mt-0.5">{legacyText.text49}</h3>
           </div>
           <button
             onClick={onClose}
@@ -107,54 +107,54 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
           )}
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-300">Tên Sự Kiện / Concert *</label>
+            <label className="font-bold text-slate-300">{legacyText.text50}</label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ví dụ: Anh Trai Say Hi Concert 2026..."
+              placeholder={legacyText.text65}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-indigo-500"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-300">Mô Tả Sự Kiện</label>
+            <label className="font-bold text-slate-300">{legacyText.text51}</label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Đêm nhạc quy tụ những nghệ sĩ hàng đầu cùng hiệu ứng sân khấu bùng nổ..."
+              placeholder={legacyText.text66}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-indigo-500"
             />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="font-bold text-slate-300">Tên Địa Điểm / Sân Vận Động *</label>
+              <label className="font-bold text-slate-300">{legacyText.text52}</label>
               <input
                 type="text"
                 required
                 value={venueName}
                 onChange={(e) => setVenueName(e.target.value)}
-                placeholder="SVĐ Mỹ Đình..."
+                placeholder={legacyText.text67}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div className="space-y-1">
-              <label className="font-bold text-slate-300">Địa Chỉ Chi Tiết</label>
+              <label className="font-bold text-slate-300">{legacyText.text53}</label>
               <input
                 type="text"
                 value={venueAddress}
                 onChange={(e) => setVenueAddress(e.target.value)}
-                placeholder="Đường Lê Đức Thọ, Nam Từ Liêm, Hà Nội"
+                placeholder={legacyText.text68}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-300">Link Ảnh Poster Banner</label>
+            <label className="font-bold text-slate-300">{legacyText.text54}</label>
             <input
               type="url"
               value={imageUrl}
@@ -165,7 +165,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
 
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="font-bold text-slate-300">Thời Gian Bắt Đầu Sự Kiện</label>
+              <label className="font-bold text-slate-300">{legacyText.text55}</label>
               <input
                 type="datetime-local"
                 value={startTime}
@@ -174,7 +174,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
               />
             </div>
             <div className="space-y-1">
-              <label className="font-bold text-slate-300">Thời Gian Kết Thúc Sự Kiện</label>
+              <label className="font-bold text-slate-300">{legacyText.text56}</label>
               <input
                 type="datetime-local"
                 value={endTime}
@@ -187,12 +187,10 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
           {/* Initial Ticket Tier Config */}
           <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
             <h4 className="font-bold text-white flex items-center gap-1.5 text-xs text-indigo-400">
-              <Ticket className="w-4 h-4" />
-              Thiết Lập Hạng Vé Mở Bán Đầu Tiên
-            </h4>
+              <Ticket className="w-4 h-4" />{extraText.s3}</h4>
             <div className="grid sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-[11px] text-slate-400">Tên Hạng Vé</label>
+                <label className="text-[11px] text-slate-400">{legacyText.text57}</label>
                 <input
                   type="text"
                   value={tierName}
@@ -201,7 +199,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[11px] text-slate-400">Giá Vé (VND)</label>
+                <label className="text-[11px] text-slate-400">{legacyText.text58}</label>
                 <input
                   type="number"
                   value={tierPrice}
@@ -210,7 +208,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[11px] text-slate-400">Số Lượng Vé Khởi Tạo</label>
+                <label className="text-[11px] text-slate-400">{legacyText.text59}</label>
                 <input
                   type="number"
                   value={tierQuantity}
@@ -227,16 +225,14 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onE
               type="button"
               onClick={onClose}
               className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition"
-            >
-              Hủy
-            </button>
+            >{extraText.s4}</button>
             <button
               type="submit"
               disabled={submitting}
               className="flex items-center gap-1.5 px-6 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-black shadow-lg shadow-rose-600/20 disabled:opacity-50 transition"
             >
               <Check className="w-4 h-4" />
-              {submitting ? 'Đang Tạo & Xuất Bản...' : 'Tạo & Mở Bán Sự Kiện'}
+              {submitting ? legacyText.text63 : legacyText.text64}
             </button>
           </div>
         </form>

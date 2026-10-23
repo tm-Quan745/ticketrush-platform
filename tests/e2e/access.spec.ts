@@ -36,10 +36,10 @@ test('STAFF lands at gate and cannot open buyer or admin pages', async ({ page }
 test('ADMIN lands at admin, uses operations/results and view as customer without role switching', async ({ page }) => {
   await login(page, 'ADMIN', '/events'); await expect(page).toHaveURL(/\/admin$/); await expect(page.getByRole('heading', { name: 'Quản trị TicketRush' })).toBeVisible();
   await page.screenshot({ path: 'docs/screenshots/admin.png', fullPage: true });
-  await page.getByRole('link', { name: 'Operations', exact: true }).click(); await expect(page.getByRole('heading', { name: 'System Health' })).toBeVisible();
-  await page.getByRole('link', { name: 'Results', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Results · Performance evidence' })).toBeVisible();
-  const href = await page.getByRole('link', { name: /k6 metrics/ }).getAttribute('href'); expect((await page.request.get(href!)).ok()).toBeTruthy();
-  await page.getByRole('link', { name: 'View as customer' }).click(); await expect(page).toHaveURL(/\/events$/);
+  await page.getByRole('link', { name: 'Vận hành', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Tình trạng hệ thống' })).toBeVisible();
+  await page.getByRole('link', { name: 'Kết quả', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Kết quả · Bằng chứng hiệu năng' })).toBeVisible();
+  const href = await page.getByRole('link', { name: /Số liệu k6/ }).getAttribute('href'); expect((await page.request.get(href!)).ok()).toBeTruthy();
+  await page.getByRole('link', { name: 'Xem như khách hàng' }).click(); await expect(page).toHaveURL(/\/events$/);
   await spaVisit(page, '/gate'); await expect(page.getByRole('heading', { name: '403', exact: true })).toBeVisible();
 });
 test('real purchase: login, queue polling, zone, reserve, pay, ticket QR', async ({ page }) => {
@@ -49,7 +49,7 @@ test('real purchase: login, queue polling, zone, reserve, pay, ticket QR', async
   await page.getByRole('button', { name: 'Giữ vé', exact: true }).click(); await expect(page).toHaveURL(/\/checkout\//); await expect(page.getByRole('timer')).toContainText('Thời gian giữ vé');
   const orderRequest = page.waitForRequest(r => r.method() === 'POST' && r.url().endsWith('/api/v1/orders'));
   await page.getByRole('button', { name: 'Tạo đơn và thanh toán' }).click(); expect((await orderRequest).headers()['idempotency-key']).toMatch(/^[0-9a-f-]{36}$/);
-  await expect(page).toHaveURL(/\/orders\//); await expect(page.getByRole('status')).toHaveText('PAID', { timeout: 30000 });
+  await expect(page).toHaveURL(/\/orders\//); await expect(page.getByRole('status')).toHaveText('Đã thanh toán', { timeout: 30000 });
   await expect(page.getByRole('img', { name: /^QR vé/ })).toHaveCount(2);
   expect(calls).toContain(`POST /api/v1/events/${eventId}/waiting-room/join`); expect(calls).toContain(`GET /api/v1/events/${eventId}/waiting-room/status`);
   await page.screenshot({ path: 'docs/screenshots/purchase.png', fullPage: true });

@@ -5,153 +5,84 @@ import { useAuth } from '../context/AuthContext';
 import { navigate } from '../access/navigation';
 import { landing } from '../access/permissions';
 import type { Order, Reservation, Ticket, WaitingRoomStatus } from '../types';
+import type { SeatReadSeatMap, SeatReadSectionOverview } from '../api/generated';
 import { Button, Card, ErrorMessage, fieldClass, Link, money, useLoad } from './shared';
+import { Modal } from '../components/ui/Modal';
+import { EventCard } from '../components/EventCard';
+import { EventHeader } from '../features/flash-sale/components/EventHeader';
+import { TicketCard } from '../features/flash-sale/components/TicketCard';
+import { StadiumMap, SeatGrid } from '../features/seating/SeatPicker';
+import { startPolling } from '../features/seating/polling';
+import { remainingSeconds } from '../features/seating/model';
+import { vi, stateLabel } from '../i18n/vi';
+import { Ticket as TicketIcon, Users, Clock, ShieldCheck, Search } from 'lucide-react';
 
-const admissions = new Map<string, string>();
-window.addEventListener('auth:expired', () => admissions.clear());
-
-export function AuthPage({ register = false }: { register?: boolean }) {
-  const { login } = useAuth();
-  const [email, setEmail] = useState(''); const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
-  async function submit(event: React.FormEvent) {
-    event.preventDefault(); setBusy(true); setError('');
-    try {
-      if (register) await api.register(email, password);
-      const user = await login(email, password);
-      navigate(landing(user.role, new URLSearchParams(location.search).get('next')), true);
-    } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
-  }
-  return <Card className="max-w-md mx-auto"><h1 className="text-3xl font-bold">{register ? 'Đăng ký' : 'Đăng nhập'}</h1>
-    <form onSubmit={submit} className="space-y-4 mt-6">
-      <label className="block">Email<input className={fieldClass} type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required /></label>
-      <label className="block">Mật khẩu<input className={fieldClass} type="password" autoComplete={register ? 'new-password' : 'current-password'} minLength={register ? 12 : undefined} value={password} onChange={e => setPassword(e.target.value)} required /></label>
-      <ErrorMessage message={error} /><Button type="submit" isLoading={busy}>{register ? 'Đăng ký' : 'Đăng nhập'}</Button>
-    </form><p className="mt-4"><Link href={register ? '/login' : '/register'}>{register ? 'Đã có tài khoản' : 'Tạo tài khoản'}</Link></p>
-  </Card>;
+const admissions = new Map<string,string>();
+window.addEventListener('auth:expired',()=>admissions.clear());
+const message=(e:unknown)=>(e as ApiError).status===429||(e as ApiError).status===503?(e as Error).message:vi.failure;
+export function AuthPage({register=false}:{register?:boolean}) {
+ const {login}=useAuth();const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ async function submit(e:React.FormEvent){e.preventDefault();setBusy(true);setError('');try{if(register)await api.register(email,password);const user=await login(email,password);navigate(landing(user.role,new URLSearchParams(location.search).get('next')),true);}catch(e){setError(message(e));}finally{setBusy(false);}}
+ return <Card className="max-w-md mx-auto"><h1 className="text-3xl font-bold">{register?vi.register:vi.login}</h1><form onSubmit={submit} className="space-y-4 mt-6">
+ <label className="block">{vi.email}<input className={fieldClass} type="email" autoComplete="username" value={email} onChange={e=>setEmail(e.target.value)} required/></label>
+ <label className="block">{vi.password}<input className={fieldClass} type="password" autoComplete={register?'new-password':'current-password'} value={password} minLength={register?12:undefined} onChange={e=>setPassword(e.target.value)} required/></label>
+ <ErrorMessage message={error}/><Button type="submit" isLoading={busy}>{register?vi.register:vi.login}</Button></form><p className="mt-4"><Link href={register?'/login':'/register'}>{register?vi.hasAccount:vi.createAccount}</Link></p></Card>;
 }
-export function EventsPage() {
-  const { value, error } = useLoad('events', () => api.getEvents());
-  return <><h1 className="text-3xl font-bold mb-6">Khám phá sự kiện</h1><ErrorMessage message={error} />
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{value?.content.map(event => <Card key={event.id} hoverEffect>
-      <p className="text-indigo-400">{event.venueName}</p><h2 className="text-xl font-bold my-3">{event.title}</h2>
-      <p className="text-slate-400 mb-4">{new Date(event.startTime).toLocaleString('vi-VN')}</p><Link href={`/events/${event.id}`}>Xem sự kiện</Link>
-    </Card>)}</div></>;
+export function EventsPage(){
+ const [keyword,setKeyword]=useState(''),[query,setQuery]=useState('');const {value,error}=useLoad(query,()=>api.getEvents(query));
+ return <><section className="relative mb-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-rose-950 border border-slate-800 p-8 sm:p-12 overflow-hidden">
+ <TicketIcon className="absolute right-8 top-8 w-36 h-36 text-indigo-400/10 rotate-12"/><p className="text-indigo-300 font-bold mb-3">{vi.explore}</p><h1 className="text-4xl sm:text-5xl font-black tracking-tight">{vi.discover}</h1><p className="text-slate-400 mt-5 max-w-xl">{vi.intro}</p>
+ <form className="flex gap-3 max-w-lg mt-6" onSubmit={e=>{e.preventDefault();setQuery(keyword);}}><input aria-label={vi.search} className={fieldClass} value={keyword} onChange={e=>setKeyword(e.target.value)}/><Button type="submit" aria-label={vi.search}><Search/></Button></form></section>
+ <ErrorMessage message={error?vi.failure:''}/><div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{value?.content.map(event=><EventCard key={event.id} event={event} onSelect={()=>navigate(`/events/${event.id}`)} onJoinQueue={()=>navigate(`/events/${event.id}`)}/>)}</div></>;
 }
-export function EventPage({ id, select = false }: { id: string; select?: boolean }) {
-  const { value, error } = useLoad(id, () => api.getEventDetail(id));
-  const [tierId, setTierId] = useState(''); const [quantity, setQuantity] = useState(1);
-  const [failure, setFailure] = useState(''); const [busy, setBusy] = useState(false);
-  const tier = value?.tiers.find(item => item.id === tierId);
-  async function reserve() {
-    if (!tier) return; setBusy(true); setFailure('');
-    try {
-      const hold = await api.createReservation(tier.id, quantity, admissions.get(id));
-      navigate(`/checkout/${hold.id}`);
-    } catch (e) {
-      const error = e as ApiError;
-      if (error.data?.code === 'WAITING_ROOM_REQUIRED' || error.data?.code === 'ADMISSION_REQUIRED') navigate(`/events/${id}/queue`);
-      else setFailure(error.message);
-    } finally { setBusy(false); }
-  }
-  return <><h1 className="text-3xl font-bold mb-4">{value?.event.title || 'Sự kiện'}</h1><ErrorMessage message={error || failure} />
-    {value && <><p className="text-slate-400 mb-6">{value.event.venueName} · {value.event.description}</p>
-      <div className="grid md:grid-cols-3 gap-4">{value.tiers.map(item => <Card key={item.id}>
-        <h2 className="text-xl font-bold">{item.name}</h2><p className="my-3">{money(item.price, item.currency)}</p>
-        <p className="text-slate-400 mb-4">{item.availability} · Tối đa {item.maxPerOrder} vé</p>
-        {select ? <Button variant={tierId === item.id ? 'success' : 'primary'} disabled={item.availability === 'SOLD_OUT'} onClick={() => { setTierId(item.id); setQuantity(1); }}>Chọn {item.name}</Button>
-          : <Link href={`/events/${id}/queue`}>Đặt vé</Link>}
-      </Card>)}</div>
-      {select && <Card className="mt-6"><label>Số lượng<input className={fieldClass} type="number" min={1} max={tier?.maxPerOrder || 1} value={quantity} onChange={e => setQuantity(Number(e.target.value))} /></label>
-        <Button onClick={reserve} disabled={!tier || quantity < 1 || !Number.isInteger(quantity) || quantity > tier.maxPerOrder} isLoading={busy}>Giữ vé</Button>
-      </Card>}
-    </>}
-  </>;
+export function EventPage({id,select=false}:{id:string;select?:boolean}) {
+ const {value,error}=useLoad(id,()=>api.getEventDetail(id)); const [map,setMap]=useState<SeatReadSeatMap>();const [section,setSection]=useState<SeatReadSectionOverview>();
+ const [tierId,setTierId]=useState(''),[quantity,setQuantity]=useState(1),[failure,setFailure]=useState(''),[busy,setBusy]=useState(false);const [own,setOwn]=useState<Reservation[]>([]);
+ const {user}=useAuth();const tier=value?.tiers.find(t=>t.id===(section?.tierId||tierId));
+ useEffect(()=>{if(!value?.event.venueId)return;const controller=new AbortController();api.seatmap(id,controller.signal).then(data=>{if(!controller.signal.aborted)setMap(data);}).catch(e=>{if(!controller.signal.aborted)setFailure(message(e));});return()=>controller.abort();},[id,value?.event.venueId]);
+ useEffect(()=>{if(!select||!user)return;let alive=true;api.getMyReservations().then(data=>{if(alive)setOwn(data.content.filter(r=>r.eventId===id));}).catch(()=>{});return()=>{alive=false;};},[id,select,user?.id]);
+ function admission(){navigate(`/events/${id}/queue`);}
+ function open(s:SeatReadSectionOverview){if(!select){admission();return;}setSection(s);setTierId(s.tierId);setQuantity(1);setFailure('');}
+ async function reserve(){if(!tier)return;setBusy(true);setFailure('');try{navigate(`/checkout/${(await api.createReservation(tier.id,quantity,admissions.get(id))).id}`);}catch(e){if(['WAITING_ROOM_REQUIRED','ADMISSION_REQUIRED'].includes((e as ApiError).data?.code))admission();else setFailure(message(e));}finally{setBusy(false);}}
+ return <><ErrorMessage message={error?vi.failure:failure}/>{value&&<><EventHeader event={value.event}/><p className="my-6 text-slate-400">{value.event.description}</p>
+ {!select&&<div className="my-6"><Link href={`/events/${id}/queue`}>{vi.book} →</Link></div>}
+ {own.filter(r=>r.status==='HELD'&&remainingSeconds(r.expires_at)>0).map(r=><p key={r.id} className="my-4"><Link href={`/checkout/${r.id}`}>{vi.continueHold}</Link></p>)}
+ <div className="grid md:grid-cols-3 gap-4 my-6">{value.tiers.map(item=><TicketCard key={item.id} tier={item} selected={tier?.id===item.id} onSelect={()=>{if(!select){admission();return;}const mapped=map?.sections.find(s=>s.tierId===item.id);if(mapped)open(mapped);else{setSection(undefined);setTierId(item.id);setQuantity(1);}}}/>)}</div>
+ {map&&<StadiumMap map={map} open={section?.id} onOpen={open}/>}
+ {select&&section?.type==='SEATED'&&tier?<SeatGrid key={section.id} eventId={id} section={section} tier={tier} token={admissions.get(id)} own={own} onAdmission={admission} onHeld={hold=>navigate(`/checkout/${hold.id}`)}/>:
+ select&&<Card className="mt-6"><label>{vi.quantity}<input className={fieldClass} type="number" min={1} max={tier?.maxPerOrder||1} value={quantity} onChange={e=>setQuantity(Number(e.target.value))}/></label>
+ {tier&&<p className="my-4 font-bold">{vi.total}: {money(quantity*tier.price,tier.currency)}</p>}<Button onClick={reserve} disabled={!tier||quantity<1||!Number.isInteger(quantity)||quantity>tier.maxPerOrder} isLoading={busy}>{vi.hold}</Button></Card>}
+ </>}</>;
 }
-export function QueuePage({ id }: { id: string }) {
-  const [status, setStatus] = useState<WaitingRoomStatus>(); const [error, setError] = useState('');
-  useEffect(() => {
-    let stopped = false; let timer: ReturnType<typeof setTimeout>;
-    let joined = false;
-    async function poll() {
-      try {
-        const result = joined ? await api.getWaitingRoomStatus(id) : await api.joinWaitingRoom(id);
-        if (stopped) return;
-        setStatus(result); setError('');
-        if (result.soldOut) return;
-        // Always read status after joining; it is the current admission authority.
-        if (joined && result.state === 'ADMITTED') {
-          if (result.token) admissions.set(id, result.token);
-          navigate(`/events/${id}/select`, true); return;
-        }
-        joined = true;
-        timer = setTimeout(poll, pollDelay(result as WaitingRoomStatus & { retryAfterMs?: number }, (result.pollIntervalSeconds || 1) * 1000));
-      } catch (e) {
-        if (stopped) return;
-        const failure = e as ApiError; setError(failure.message);
-        if (failure.status === 429 || failure.status === 503) timer = setTimeout(poll, pollDelay(failure, 1000));
-      }
-    }
-    void poll(); return () => { stopped = true; clearTimeout(timer); };
-  }, [id]);
-  return <Card><h1 className="text-3xl font-bold">Phòng chờ</h1><ErrorMessage message={error} />
-    <p className="my-5">{status?.soldOut ? 'Sự kiện đã hết vé.' : `Đang chờ · Vị trí ${status?.position ?? '…'}`}</p><Link href={`/events/${id}`}>Về sự kiện</Link></Card>;
+export function QueuePage({id}:{id:string}) {
+ const [status,setStatus]=useState<WaitingRoomStatus>(),[error,setError]=useState('');
+ useEffect(()=>{let joined=false;return startPolling(async signal=>{
+ try{const result=joined?await api.getWaitingRoomStatus(id,signal):await api.joinWaitingRoom(id,signal);if(signal.aborted)return;setStatus(result);setError('');
+ if(result.soldOut)return {stop:true};if(joined&&result.state==='ADMITTED'){if(result.token)admissions.set(id,result.token);navigate(`/events/${id}/select`,true);return {stop:true};}joined=true;
+ return {retryAfterMs:Math.max((result as WaitingRoomStatus&{retryAfterMs?:number}).retryAfterMs||0,(result.pollIntervalSeconds||1)*1000)};
+ }catch(e){if(!signal.aborted)setError(message(e));throw e;}
+ },undefined,1000);},[id]);
+ return <section className="max-w-lg mx-auto rounded-3xl bg-slate-900 border border-slate-800 p-8 shadow-2xl text-center"><div className="w-20 h-20 mx-auto rounded-3xl bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center mb-6"><Users className="w-10 h-10 text-rose-400"/></div><h1 className="text-3xl font-black">{vi.queue}</h1><p className="mt-4 text-slate-400">{vi.queueIntro}</p><ErrorMessage message={error}/><div className="rounded-2xl bg-slate-950 border border-slate-800 p-6 my-6"><p>{status?.soldOut?vi.soldOut:vi.position}</p>{!status?.soldOut&&<p className="text-5xl font-black text-indigo-400 mt-3">{status?.position??'…'}</p>}</div><Link href={`/events/${id}`}>{vi.back}</Link></section>;
 }
-export function CheckoutPage({ id }: { id: string }) {
-  const { value: hold, error } = useLoad(id, () => api.getReservation(id));
-  const { user } = useAuth();
-  const [now, setNow] = useState(Date.now()); const [failure, setFailure] = useState(''); const [busy, setBusy] = useState(false);
-  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
-  const remaining = hold ? Math.max(0, Math.ceil((Date.parse(hold.expires_at) - now) / 1000)) : 0;
-  async function pay() {
-    setBusy(true); setFailure('');
-    try {
-      const storageKey = `order-key:${user?.id}:${id}`;
-      let key = sessionStorage.getItem(storageKey); if (!key) { key = crypto.randomUUID(); sessionStorage.setItem(storageKey, key); }
-      const order = await api.createOrder(id, key); navigate(`/orders/${order.id}`);
-    } catch (e) { setFailure((e as Error).message); } finally { setBusy(false); }
-  }
-  return <Card><h1 className="text-3xl font-bold">Thanh toán</h1><ErrorMessage message={error || failure} />
-    <p role="timer" className="my-6 text-xl">Thời gian giữ vé: {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}</p>
-    <p className="mb-4">Số lượng: {hold?.quantity} · {hold?.status}</p>
-    <p className="mb-4 text-slate-400">Thanh toán thử nghiệm qua mock gateway; không thu tiền thật. Trạng thái thanh toán được cập nhật từ backend.</p>
-    <Button onClick={pay} isLoading={busy} disabled={!hold || remaining === 0 || hold.status !== 'HELD'}>Tạo đơn và thanh toán</Button>
-  </Card>;
+export function CheckoutPage({id}:{id:string}) {
+ const {value:hold,error}=useLoad(id,()=>api.getReservation(id));const {user}=useAuth();const [now,setNow]=useState(Date.now()),[failure,setFailure]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[]);const remaining=hold?remainingSeconds(hold.expires_at,now):0;
+ async function pay(){setBusy(true);setFailure('');try{const storageKey=`order-key:${user?.id}:${id}`;let key=sessionStorage.getItem(storageKey);if(!key){key=crypto.randomUUID();sessionStorage.setItem(storageKey,key);}navigate(`/orders/${(await api.createOrder(id,key)).id}`);}catch(e){setFailure(message(e));}finally{setBusy(false);}}
+ return <Modal isOpen title={vi.checkout} maxWidth="xl" onClose={()=>navigate(hold?`/events/${hold.eventId}/select`:'/events')}><div className="space-y-5"><ErrorMessage message={error?vi.failure:failure}/>
+ <div className={`p-5 rounded-2xl border ${remaining?'bg-indigo-950/40 border-indigo-800 text-indigo-300':'bg-rose-950/40 border-rose-800 text-rose-300'}`}><p className="flex gap-2"><Clock/>{remaining?vi.exclusive:vi.expired}</p><p role="timer" className="my-3 text-xl font-mono">{vi.ttl}: {Math.floor(remaining/60)}:{String(remaining%60).padStart(2,'0')}</p></div>
+ <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5"><h2 className="font-bold">{hold?.tierName}</h2><p>{vi.quantity}: {hold?.quantity} · {stateLabel(hold?.status)}</p>{hold?.seats?.map(seat=><p key={seat.id}>{seat.sectionName} · {vi.seatLabel(seat.rowLabel,seat.number)}</p>)}{hold?.unitPrice!==undefined&&<p className="text-2xl font-black my-3">{money(hold.quantity*hold.unitPrice,hold.currency||'VND')}</p>}</div>
+ <p className="text-sm text-slate-400">{vi.gateway}</p><Button onClick={pay} isLoading={busy} disabled={!hold||!remaining||hold.status!=='HELD'} className="w-full">{vi.pay}</Button>{hold&&!remaining&&<Link href={`/events/${hold.eventId}/queue`}>{vi.book}</Link>}</div></Modal>;
 }
-function TicketQR({ ticket }: { ticket: Ticket }) {
-  const [image, setImage] = useState('');
-  useEffect(() => {
-    let active = true; QRCode.toDataURL(ticket.ticketCode, { width: 220 }).then(data => { if (active) setImage(data); });
-    return () => { active = false; };
-  }, [ticket.ticketCode]);
-  return <Card><h2 className="font-bold">{ticket.tierName}</h2><p>{ticket.status}</p>{image && <img src={image} alt={`QR vé ${ticket.ticketCode}`} />}<p className="break-all text-xs">{ticket.ticketCode}</p></Card>;
+function TicketQR({ticket}:{ticket:Ticket}) {
+ const [image,setImage]=useState('');useEffect(()=>{let active=true;QRCode.toDataURL(ticket.ticketCode,{width:220}).then(data=>{if(active)setImage(data);});return()=>{active=false;};},[ticket.ticketCode]);
+ return <article className="rounded-3xl bg-gradient-to-br from-indigo-950 to-slate-900 border border-indigo-500/30 overflow-hidden"><div className="p-6 border-b-2 border-dashed border-slate-600"><TicketIcon className="text-indigo-400 mb-3"/><h2 className="text-xl font-black">{ticket.tierName}</h2><p>{stateLabel(ticket.status)}</p>{ticket.seat&&<p className="mt-3" data-testid="ticket-seat">{ticket.seat.sectionName} · {vi.seatLabel(ticket.seat.rowLabel,ticket.seat.number)}</p>}</div><div className="p-6">{image&&<img className="rounded-xl mx-auto" src={image} alt={`${vi.qr} ${ticket.ticketCode}`}/>}<p className="break-all text-xs mt-4 text-slate-400">{ticket.ticketCode}</p></div></article>;
 }
-export function OrderPage({ id }: { id: string }) {
-  const [order, setOrder] = useState<Order>(); const [tickets, setTickets] = useState<Ticket[]>([]); const [error, setError] = useState('');
-  useEffect(() => {
-    let stopped = false; let timer: ReturnType<typeof setTimeout>; let attempt = 0;
-    async function poll() {
-      try {
-        const data = await api.getOrder(id); if (stopped) return; setOrder(data); setError('');
-        if (data.status === 'PAID') { const issued = await api.getOrderTickets(id); if (!stopped) setTickets(issued); return; }
-        if (data.status !== 'PENDING_PAYMENT') return;
-        timer = setTimeout(poll, pollDelay(data as Order & { retryAfterMs?: number }, Math.min(10000, 1000 * 2 ** attempt++)));
-      } catch (e) {
-        if (stopped) return; const failure = e as ApiError; setError(failure.message);
-        if ([429, 503].includes(failure.status)) timer = setTimeout(poll, pollDelay(failure, Math.min(10000, 1000 * 2 ** attempt++)));
-      }
-    }
-    void poll(); return () => { stopped = true; clearTimeout(timer); };
-  }, [id]);
-  return <><h1 className="text-3xl font-bold">Đơn hàng</h1><p role="status" className="my-6 text-emerald-400">{order?.status || 'Đang tải'}</p>
-    <ErrorMessage message={error} />{order && <p className="mb-5">{money(order.totalAmount, order.currency)}</p>}
-    <div className="grid md:grid-cols-3 gap-4">{tickets.map(ticket => <TicketQR key={ticket.id} ticket={ticket} />)}</div></>;
+export function OrderPage({id}:{id:string}) {
+ const [order,setOrder]=useState<Order>(),[tickets,setTickets]=useState<Ticket[]>([]),[error,setError]=useState('');
+ useEffect(()=>{let attempt=0;return startPolling(async signal=>{try{const data=await api.getOrder(id,signal);if(signal.aborted)return;setOrder(data);setError('');if(data.status==='PAID'){const issued=await api.getOrderTickets(id);if(!signal.aborted)setTickets(issued);return{stop:true};}if(data.status!=='PENDING_PAYMENT')return{stop:true};return{retryAfterMs:Math.max((data as Order & {retryAfterMs?:number}).retryAfterMs||0,Math.min(10000,1000*2**attempt++))};}catch(e){if(!signal.aborted)setError(message(e));throw e;}},undefined,1000);},[id]);
+ return <><h1 className="text-3xl font-black">{vi.order}</h1><p role="status" className="my-6 text-emerald-400">{stateLabel(order?.status)}</p><ErrorMessage message={error}/>{order&&<p className="mb-5 text-xl">{money(order.totalAmount,order.currency)}</p>}<div className="grid md:grid-cols-3 gap-5">{tickets.map(ticket=><TicketQR key={ticket.id} ticket={ticket}/>)}</div><p className="mt-6"><Link href="/account/tickets">{vi.wallet}</Link></p></>;
 }
-export function AccountPage({ kind }: { kind: string }) {
-  const { user } = useAuth();
-  const { value, error } = useLoad(kind, async () => kind === 'profile' ? [] : (await api.getMyOrders()).content);
-  return <><h1 className="text-3xl font-bold">{kind === 'profile' ? 'Hồ sơ' : kind === 'tickets' ? 'Vé của tôi' : 'Đơn hàng của tôi'}</h1>
-    <ErrorMessage message={error} />{kind === 'profile' ? <Card className="mt-5">{user?.email}</Card> : <div className="grid gap-4 mt-6">
-      {value?.filter(order => kind !== 'tickets' || order.status === 'PAID').map(order => <Card key={order.id}><Link href={`/orders/${order.id}`}>{order.id}</Link><p>{order.status} · {money(order.totalAmount, order.currency)}</p></Card>)}
-    </div>}</>;
+export function AccountPage({kind}:{kind:string}) {
+ const {user}=useAuth();const {value,error}=useLoad(kind,async()=>kind==='profile'?[]:(await api.getMyOrders()).content);
+ return <><h1 className="text-3xl font-bold">{kind==='profile'?vi.profile:kind==='tickets'?vi.tickets:vi.orders}</h1><ErrorMessage message={error?vi.failure:''}/>{kind==='profile'?<Card className="mt-5">{user?.email}</Card>:<div className="grid gap-4 mt-6">{value?.filter(o=>kind!=='tickets'||o.status==='PAID').map(order=><Card key={order.id}><Link href={`/orders/${order.id}`}>{order.id}</Link><p>{stateLabel(order.status)} · {money(order.totalAmount,order.currency)}</p></Card>)}</div>}</>;
 }

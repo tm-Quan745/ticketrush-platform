@@ -1,3 +1,4 @@
+import { vi } from '../../i18n/vi';
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -49,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div
+      <div role="dialog" aria-modal="true" aria-label={typeof title === 'string' ? title : undefined}
         className={cn(
           'relative w-full bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh]',
           maxWidths[maxWidth],
@@ -65,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
             <button
               onClick={onClose}
               className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition"
-              title="Đóng"
+              title={vi.close} aria-label={vi.close}
             >
               <X className="w-5 h-5" />
             </button>
