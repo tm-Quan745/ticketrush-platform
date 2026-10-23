@@ -40,8 +40,8 @@ import static org.assertj.core.api.Assertions.*;
     "ticketrush.reservation.expiry-enabled=false","spring.datasource.hikari.maximum-pool-size=32",
     "ticketrush.payment.webhook-url=http://127.0.0.1:0/api/v1/payments/webhook",
     "ticketrush.payment.delay=24h","ticketrush.payment.test-scenarios-enabled=true",
-    "ticketrush.payment.dispatch-interval=24h"})
-@ActiveProfiles("test")
+    "ticketrush.payment.dispatch-interval=24h","ticketrush.rate-limit.enabled=true"})
+@ActiveProfiles({"test","loadtest"})
 @Import(SeatedInventoryIntegrationTest.TimeConfiguration.class)
 @Testcontainers
 @org.springframework.test.annotation.DirtiesContext(classMode=org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
@@ -86,6 +86,14 @@ class SeatedInventoryIntegrationTest {
     @Autowired EventService eventService;
     @Autowired PlatformTransactionManager manager;
     @Autowired VenueTemplateLoader loader;
+    @Autowired com.vibe.ticketrush.queue.service.WaitingRoomService queue;
+    @Autowired com.vibe.ticketrush.event.service.WaitingRoomEvents roomEvents;
+    @Autowired com.vibe.ticketrush.event.service.PublicEventCache publicCache;
+    @Autowired SeatReadService reads;
+    @Autowired SeatReadCache readCache;
+    @Autowired io.micrometer.core.instrument.MeterRegistry metrics;
+    @Autowired org.springframework.context.ApplicationContext context;
+    @Autowired com.vibe.ticketrush.common.redis.RedisProperties redisKeys;
     UUID user,event,tier,venue,section,otherTier,otherSection;
     List<UUID> seatIds;
     @BeforeEach void setup() {
@@ -175,6 +183,7 @@ class SeatedInventoryIntegrationTest {
     }
     @Test @Timeout(90) void twoHundredOverlappingHoldsAreAtomicAndNeverDuplicate() throws Exception {
         List<UUID> users=new ArrayList<>();for(int i=0;i<200;i++) users.add(addUser());
+        long started=System.nanoTime();
         var outcomes=parallel(200,i->{
             int size=2+i%5,start=i%25;
             try { return hold(users.get(i),seatIds.subList(start,start+size)); }
@@ -201,6 +210,242 @@ class SeatedInventoryIntegrationTest {
         assertThat(seats.counts(tier).held()).isZero();assertThat(seats.counts(tier).sold()).isEqualTo(held);
         assertThat(jdbc.queryForObject("SELECT count(*) FROM tickets WHERE status='VALID'",Integer.class)).isEqualTo(held);
         invariant();
+        System.out.println("SEATING_CONCURRENCY_EVIDENCE " + json.writeValueAsString(Map.of(
+            "threads",200,"seatBlockSize",30,"requestMin",2,"requestMax",6,
+            "accepted",accepted.size(),"seatsUnavailable409",200-accepted.size(),
+            "finalTargetTier",seats.counts(tier),"elapsedMillis",TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-started),
+            "timeoutsSeconds",Map.of("test",90,"barrier",15,"future",60,"poolTermination",10))));
+    }
+    @Test @Timeout(15) void lockedSeatIsSkippedImmediatelyWithConflict() throws Exception {
+        var locked=new CountDownLatch(1);var release=new CountDownLatch(1);
+        var pool=Executors.newSingleThreadExecutor();
+        var owner=pool.submit(()->tx(()->{
+            jdbc.queryForObject("SELECT id FROM event_seats WHERE id=? FOR UPDATE",UUID.class,seatIds.getFirst());
+            locked.countDown();
+            try { assertThat(release.await(10,TimeUnit.SECONDS)).isTrue(); }
+            catch (InterruptedException ex) { Thread.currentThread().interrupt();throw new IllegalStateException(ex); }
+        }));
+        try {
+            assertThat(locked.await(5,TimeUnit.SECONDS)).isTrue();
+            assertCode(()->hold(user,List.of(seatIds.getFirst())),"SEATS_UNAVAILABLE");
+        } finally {release.countDown();owner.get(5,TimeUnit.SECONDS);pool.shutdownNow();}
+        assertThat(seats.counts(tier).held()).isZero();
+    }
+    @Test void seatedPublicBucketsNeverExposeExactStock() throws Exception {
+        for (String expected:List.of("AVAILABLE","LOW","SOLD_OUT")) {
+            if (expected.equals("LOW")) {
+                for (int offset=0;offset<24;offset+=6) hold(addUser(),seatIds.subList(offset,offset+6));
+                hold(addUser(),seatIds.subList(24,28));
+            }
+            if (expected.equals("SOLD_OUT")) hold(addUser(),seatIds.subList(28,30));
+            publicCache.invalidate();
+            var response=request("GET","/api/v1/events/"+event,null,null,Map.of());
+            assertThat(response.statusCode()).isEqualTo(200);
+            var tiers=json.readTree(response.body()).path("tiers");
+            var match=java.util.stream.StreamSupport.stream(tiers.spliterator(),false).filter(t->t.path("id").asText().equals(tier.toString())).findFirst().orElseThrow();
+            assertThat(match.path("availability").asText()).isEqualTo(expected);
+            assertThat(response.body()).doesNotContain("availableQuantity","totalQuantity","heldQuantity","soldQuantity","reservationId","userId");
+        }
+    }
+    @Test void seatedSoldOutStopsAdmissionAndLoadtestFeed() throws Exception {
+        roomEvents.configure(event,true,20,"fifo");
+        jdbc.update("UPDATE events SET sale_start_time=? WHERE id=?",ts(60),event);
+        queue.refresh(event);
+        UUID waiting=addUser();
+        String base="/internal/loadtest/events/"+event+"/waiting-room/";
+        var seeded=request("POST",base+"seed","{\"users\":[\""+waiting+"\"]}",token(user,"ADMIN"),Map.of());
+        assertThat(seeded.statusCode()).as(seeded.body()).isEqualTo(200);
+        jdbc.update("UPDATE event_seats SET status='BLOCKED' WHERE event_id=?",event);
+        clock.advance(61);queue.refresh(event);
+        assertThat(queue.admit(event)).isZero();
+        assertThat(queue.status(event,waiting,false).soldOut()).isTrue();
+        assertThat(request("GET",base+"admissions",null,token(user,"ADMIN"),Map.of()).body()).isEqualTo("[]");
+        jdbc.update("UPDATE event_seats SET status='AVAILABLE' WHERE id=?",seatIds.getFirst());
+        queue.refresh(event);
+        assertThat(queue.admit(event)).isEqualTo(1);
+        var feed=request("GET",base+"admissions",null,token(user,"ADMIN"),Map.of());
+        assertThat(feed.statusCode()).isEqualTo(200);
+        var entry=json.readTree(feed.body()).get(0);
+        assertThat(entry.path("user").asText()).isEqualTo(waiting.toString());
+        var held=reservations.create(waiting,new Create(null,null,List.of(seatIds.getFirst())),entry.path("token").asText());
+        queue.refresh(event);assertThat(queue.admit(event)).isZero();
+        assertThat(queue.status(event,waiting,false).soldOut()).isTrue();
+        assertThat(queue.newlyAdmitted(event,20)).isEmpty();
+        expiry.cancel(waiting,held.id());queue.refresh(event);
+        assertThat(queue.status(event,waiting,false).soldOut()).isFalse();
+    }
+    String sectionPath(){return "/api/v1/events/"+event+"/sections/"+section+"/seats";}
+    @Test void seatReadShapeOwnerOverlayEtagAndStaleConflict() throws Exception {
+        String owner=token(user,"USER");UUID other=addUser();
+        var first=request("GET",sectionPath(),null,owner,Map.of());
+        assertThat(first.statusCode()).as(first.body()).isEqualTo(200);
+        assertThat(json.readTree(first.body()).path("states").asText()).isEqualTo("A".repeat(30));
+        String etag=first.headers().firstValue("ETag").orElseThrow();
+        var same=request("GET",sectionPath(),null,owner,Map.of("If-None-Match",etag));
+        assertThat(same.statusCode()).isEqualTo(304);assertThat(same.body()).isEmpty();
+        assertThat(same.headers().firstValue("Cache-Control")).contains("private, no-cache");
+        var held=hold(user,List.of(seatIds.getFirst()));
+        assertThat(held.seatIds()).containsExactly(seatIds.getFirst());
+        var reservation=request("GET","/api/v1/reservations/"+held.id(),null,owner,Map.of());
+        assertThat(reservation.statusCode()).isEqualTo(200);
+        assertThat(json.readTree(reservation.body()).path("seatIds").get(0).asText()).isEqualTo(seatIds.getFirst().toString());
+        // A stale snapshot is advisory; PostgreSQL rejects a conflicting hold.
+        var foreign=request("GET",sectionPath(),null,token(other,"USER"),Map.of());
+        assertThat(foreign.body()).doesNotContain(user.toString(),other.toString(),"userId","reservationId","mine");
+        var conflict=request("POST","/api/v1/reservations","{\"seatIds\":[\""+seatIds.getFirst()+"\"]}",token(other,"USER"),Map.of());
+        assertThat(conflict.statusCode()).isEqualTo(409);
+        assertThat(json.readTree(conflict.body()).path("unavailableSeatIds").get(0).asText()).isEqualTo(seatIds.getFirst().toString());
+    }
+    @Test void immutableGeometryAndCompactStatusHaveMeasuredPayloads() throws Exception {
+        var status=request("GET",sectionPath(),null,token(user,"USER"),Map.of());
+        String version=json.readTree(status.body()).path("geometryVersion").asText();
+        String path="/api/v1/events/"+event+"/sections/"+section+"/geometry/"+version;
+        var geometry=request("GET",path,null,null,Map.of());
+        assertThat(geometry.statusCode()).as(geometry.body()).isEqualTo(200);
+        assertThat(geometry.headers().firstValue("Cache-Control")).contains("public, max-age=31536000, immutable");
+        var body=json.readTree(geometry.body());assertThat(body.path("seats")).hasSize(30);
+        assertThat(geometry.body()).doesNotContain("status","mine","userId","reservationId");
+        for(var seat:body.path("seats"))assertThat(seat.size()).isEqualTo(6);
+        assertThat(status.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length).isLessThan(150);
+        System.out.println("M2B_PAYLOAD seats=30 staticBytes="+geometry.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length+" dynamicBytes="+status.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
+        hold(user,List.of(seatIds.getFirst()));
+        assertThat(request("GET",path,null,null,Map.of("If-None-Match",geometry.headers().firstValue("ETag").orElseThrow())).statusCode()).isEqualTo(304);
+        assertThat(request("GET",path.replace(version,"0".repeat(64)),null,null,Map.of()).statusCode()).isEqualTo(404);
+    }
+    @Test @Timeout(15) void backgroundRefreshChangesStatusWithoutPolling() throws Exception {
+        var first=reads.seats(event,section,user);
+        hold(user,List.of(seatIds.getFirst()));
+        Thread.sleep(1800);
+        var cached=redis.opsForValue().get(redisKeys.key("seat-read-v2",event,section.toString()));
+        assertThat(cached).isNotNull();
+        var wire=json.readValue(cached,SeatReadService.Wire.class);
+        assertThat(json.readTree(wire.body()).path("states").asText()).contains("H");
+        assertThat(wire.etag()).isNotEqualTo(first.etag());
+        var owner=request("GET",sectionPath(),null,token(user,"USER"),Map.of());
+        var stranger=request("GET",sectionPath(),null,token(addUser(),"USER"),Map.of());
+        assertThat(stranger.body()).isEqualTo(owner.body());
+        assertThat(stranger.headers().firstValue("ETag")).isEqualTo(owner.headers().firstValue("ETag"));
+    }
+    @Test void publicationPrewarmsEverySeatedSection() {
+        for(UUID id:List.of(section,otherSection))assertThat(redis.opsForValue().get(redisKeys.key("seat-read-v2",event,id.toString()))).isNotNull();
+    }
+    @Test void staleAvailableSnapshotCannotReserveAlreadyHeldSeat() throws Exception {
+        var initial=reads.seats(event,section,user);
+        hold(user,List.of(seatIds.getFirst()));
+        String key=redisKeys.key("seat-read-v2",event,section.toString());
+        // A controlled stale advisory snapshot; Redis owns no reservation authority.
+        redis.opsForValue().set(key,json.writeValueAsString(initial),Duration.ofMillis(1000));
+        assertThat(json.readTree(reads.seats(event,section,user).body()).path("states").asText()).isEqualTo("A".repeat(30));
+        var conflict=request("POST","/api/v1/reservations","{\"seatIds\":[\""+seatIds.getFirst()+"\"]}",token(addUser(),"USER"),Map.of());
+        assertThat(conflict.statusCode()).isEqualTo(409);
+        assertThat(json.readTree(conflict.body()).path("unavailableSeatIds").get(0).asText()).isEqualTo(seatIds.getFirst().toString());
+    }
+    @Test void seatReadAuthorizationAndSafeMap() throws Exception {
+        assertThat(request("GET",sectionPath(),null,null,Map.of()).statusCode()).isEqualTo(401);
+        for(String role:List.of("USER","STAFF","ADMIN"))assertThat(request("GET",sectionPath(),null,token(user,role),Map.of()).statusCode()).isEqualTo(200);
+        var map=request("GET","/api/v1/events/"+event+"/seatmap",null,null,Map.of());
+        assertThat(map.statusCode()).isEqualTo(200);
+        assertThat(map.body()).doesNotContain("userId","reservationId","password","shapePath");
+        assertThat(json.readTree(map.body()).path("sections").get(0).path("seatCount").asInt()).isEqualTo(30);
+        String suggest="/api/v1/events/"+event+"/seats/suggest",body="{\"sectionId\":\""+section+"\",\"quantity\":2}";
+        assertThat(request("POST",suggest,body,null,Map.of()).statusCode()).isEqualTo(401);
+        assertThat(request("POST",suggest,body,token(user,"STAFF"),Map.of()).statusCode()).isEqualTo(403);
+        assertThat(request("POST",suggest,body,token(user,"USER"),Map.of()).statusCode()).isEqualTo(200);
+        eventService.transition(event,EventStatus.CANCELLED);
+        Thread.sleep(1100); // Publication visibility is bounded by the shared snapshot TTL.
+        assertThat(request("GET",sectionPath(),null,token(user,"USER"),Map.of()).statusCode()).isEqualTo(404);
+    }
+    @Test @Timeout(30) void expiredSectionCacheHasOneRebuildForOneHundredRequests() throws Exception {
+        reads.seats(event,section,user);
+        Thread.sleep(1100);
+        double before=metrics.counter("seat_read_cache_total","result","rebuild").count();
+        String auth=token(user,"USER");
+        var results=parallel(100,i->request("GET",sectionPath(),null,auth,Map.of()).statusCode());
+        assertThat(results).containsOnly(200);
+        assertThat(metrics.counter("seat_read_cache_total","result","rebuild").count()-before).isLessThanOrEqualTo(1);
+        assertThat(metrics.counter("seat_read_cache_total","result","hit").count()).isGreaterThan(0);
+    }
+    @Test void suggestUsesStageRowCentreAislesAndAccessibilityWithoutHolding() {
+        // Fixture-only topology edit before testing the published read contract.
+        tx(()->{
+            jdbc.update("UPDATE events SET status='DRAFT' WHERE id=?",event);
+            jdbc.update("UPDATE seats SET adjacency_segment=CASE WHEN number<=15 THEN 0 ELSE 1 END,accessible=(number=14) WHERE section_id=?",section);
+            jdbc.update("UPDATE events SET status='PUBLISHED' WHERE id=?",event);
+        });
+        var normal=reads.suggest(event,user,new SeatReadService.SuggestRequest(section,2,false),null);
+        assertThat(normal.seats()).extracting(SeatedInventory.Assignment::number).containsExactly(16,17);
+        assertThat(reads.suggest(event,user,new SeatReadService.SuggestRequest(section,2,false),null).seatIds()).isEqualTo(normal.seatIds());
+        var accessible=reads.suggest(event,user,new SeatReadService.SuggestRequest(section,2,true),null);
+        assertThat(accessible.seats()).extracting(SeatedInventory.Assignment::number).containsExactly(14,15);
+        assertThat(seats.counts(tier).held()).isZero();
+        jdbc.update("UPDATE event_seats SET status='BLOCKED' WHERE tier_id=? AND seat_id IN (SELECT id FROM seats WHERE number NOT IN (15,16))",tier);
+        assertCode(()->reads.suggest(event,user,new SeatReadService.SuggestRequest(section,2,false),null),"NO_ADJACENT_SEATS");
+        assertCode(()->reads.suggest(event,user,new SeatReadService.SuggestRequest(section,7,false),null),"INVALID_QUANTITY");
+        roomEvents.configure(event,true,20,"fifo");queue.refresh(event);
+        assertCode(()->reads.suggest(event,user,new SeatReadService.SuggestRequest(section,1,false),null),"WAITING_ROOM_REQUIRED");
+    }
+    @Test @Timeout(20) void seatReadDatabaseBulkheadRejectsExcessWork() throws Exception {
+        var entered=new CountDownLatch(8);var release=new CountDownLatch(1);var pool=Executors.newFixedThreadPool(8);
+        try {
+            List<Future<?>> workers=new ArrayList<>();for(int i=0;i<8;i++) workers.add(pool.submit(()->readCache.database(()->{
+                entered.countDown();try{release.await(10,TimeUnit.SECONDS);}catch(InterruptedException ex){Thread.currentThread().interrupt();}return true;
+            })));
+            assertThat(entered.await(5,TimeUnit.SECONDS)).isTrue();
+            assertCode(()->readCache.database(()->true),"SEAT_READ_BUSY");
+            release.countDown();for(var worker:workers)worker.get(5,TimeUnit.SECONDS);
+        }finally{release.countDown();pool.shutdownNow();}
+    }
+    @Test void seatReadRateLimitsUserAndIp() throws Exception {
+        String auth=token(user,"USER");boolean rejected=false;
+        for(int i=0;i<140;i++) {
+            var response=request("GET",sectionPath(),null,auth,Map.of());
+            if(response.statusCode()==429){assertThat(response.headers().firstValue("Retry-After")).isPresent();rejected=true;break;}
+            assertThat(response.statusCode()).isEqualTo(200);
+        }
+        assertThat(rejected).isTrue();
+        String ipKey=redisKeys.key("rate-limit",com.vibe.ticketrush.auth.service.TokenService.hash("ip:127.0.0.1"),"seat-read-ip");
+        // Exhaust the real shared IP bucket without sending 30,000 requests.
+        redis.opsForHash().putAll(ipKey,Map.of("tokens","0","at",Long.toString(System.currentTimeMillis()+60000)));
+        try {assertThat(request("GET","/api/v1/events/"+event+"/seatmap",null,null,Map.of()).statusCode()).isEqualTo(429);}
+        finally {redis.delete(ipKey);}
+    }
+    @Test void devSeederIsTaggedIdempotentAccountFreeAndAbsentOutsideDev() throws Exception {
+        for(String[] profiles:List.of(new String[]{"prod"},new String[]{"dev","prod"},new String[]{"loadtest"},new String[]{"demo"})) {
+            try(var child=new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+                child.setParent(context);child.getEnvironment().setActiveProfiles(profiles);
+                child.register(com.vibe.ticketrush.event.service.DevSeatedEventSeeder.class);child.refresh();
+                assertThat(child.getBeansOfType(com.vibe.ticketrush.event.service.DevSeatedEventSeeder.class)).isEmpty();
+            }
+        }
+        loader.run(null);long users=jdbc.queryForObject("SELECT count(*) FROM users",Long.class);
+        try(var child=new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+            child.setParent(context);child.getEnvironment().setActiveProfiles("dev");
+            child.register(com.vibe.ticketrush.event.service.DevSeatedEventSeeder.class);child.refresh();
+            var seeder=child.getBean(com.vibe.ticketrush.event.service.DevSeatedEventSeeder.class);
+            tx(()->seeder.run(null));tx(()->seeder.run(null));
+        }
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM users",Long.class)).isEqualTo(users);
+        UUID seeded=jdbc.queryForObject("SELECT id FROM events WHERE description='[dev-seated-v1]' AND status='PUBLISHED'",UUID.class);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM event_seats WHERE event_id=?",Integer.class,seeded)).isEqualTo(3200);
+        UUID stand=jdbc.queryForObject("SELECT s.id FROM sections s JOIN events e ON e.venue_id=s.venue_id WHERE e.id=? AND s.code='STAND_A'",UUID.class,seeded);
+        var dynamic=reads.seats(seeded,stand,user);
+        var staticData=reads.geometry(seeded,stand,json.readTree(dynamic.body()).path("geometryVersion").asText());
+        assertThat(json.readTree(dynamic.body()).path("states").asText()).hasSize(800);
+        System.out.println("M2B_PAYLOAD seats=800 staticBytes="+staticData.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length+" dynamicBytes="+dynamic.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
+        var map=request("GET","/api/v1/events/"+seeded+"/seatmap",null,null,Map.of());
+        assertThat(map.statusCode()).isEqualTo(200);
+        for(var s:json.readTree(map.body()).path("sections"))if(s.path("type").asText().equals("GA")) {
+            assertThat(s.path("counts").isNull()).isTrue();assertThat(s.path("seatCount").asInt()).isZero();
+            assertThat(request("GET","/api/v1/events/"+seeded+"/sections/"+s.path("id").asText()+"/seats",null,token(user,"USER"),Map.of()).statusCode()).isEqualTo(422);
+        }
+    }
+    @Test @Timeout(40) void redisFailureFallsBackToPostgresForSeatReads() {
+        var docker=REDIS.getDockerClient();
+        docker.pauseContainerCmd(REDIS.getContainerId()).exec();
+        try {
+            var result=reads.seats(event,section,user);
+            assertThat(result.body()).contains("A".repeat(30));
+        } finally {docker.unpauseContainerCmd(REDIS.getContainerId()).exec();}
     }
     @Test void holdConflictRollsBackReservationMembershipAndOutbox() {
         hold(user,seatIds.subList(0,2));

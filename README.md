@@ -260,3 +260,16 @@ M1 changes Spring and verification tooling only. Seatmap/status/suggest APIs (M2
 SPA integration (M3), demo mode (M4), and seat-mode performance evidence (M5) are
 not implemented by this milestone. The earlier 5,000-ticket sell-out evidence is
 for COUNTER inventory. No seat-mode performance claim is made.
+
+### M2: seat read APIs
+
+Spring exposes a public seatmap, authenticated section statuses with private ETags,
+and deterministic adjacent-seat suggestions. A short Redis cache is advisory;
+PostgreSQL remains authoritative for holds. The dev profile seeds one tagged
+stadium event without accounts. No SPA components are changed; M3 integrates them.
+See [M2 evidence, policy, merge preview and verification](docs/m2-seat-read.md).
+The bounded 200/400 requests/s read experiment is not checkout or sell-out evidence.
+
+M2b follow-up: [shared seat read contract, verification and repository audit](docs/m2b-seat-read.md).
+The [single read campaign](docs/performance/m2b-read/README.md) failed its work minimum
+(5/6 runs passed; one run dropped 2 iterations). No throughput readiness claim.

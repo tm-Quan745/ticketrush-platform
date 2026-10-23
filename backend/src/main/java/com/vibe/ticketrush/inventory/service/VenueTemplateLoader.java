@@ -13,6 +13,7 @@ import java.util.*;
 
 /** Versioned, server-owned geometry. Loading a new version never edits an old template. */
 @Component
+@org.springframework.core.annotation.Order(0)
 public class VenueTemplateLoader implements ApplicationRunner {
     private final JdbcTemplate jdbc;
     private final ObjectMapper json;

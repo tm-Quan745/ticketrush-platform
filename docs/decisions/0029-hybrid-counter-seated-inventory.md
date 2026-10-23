@@ -250,3 +250,77 @@ loadtest tooling. Its strict SOLD -> PAID check can report REFUND_PENDING as a
 transitional violation; terminal-run verification should drain payment processing.
 The 200-thread test is correctness evidence, not throughput or latency evidence.
 Existing performance evidence continues to apply to COUNTER only.
+
+## M2 read and suggestion implementation
+
+The public map exposes sanitized numeric polygons and hex colours. COUNTER stock
+remains bucketed. Section rows require USER/STAFF/ADMIN; suggestions require USER
+and the existing admission rule. No user/reservation identity leaves the backend.
+
+Suggestions enumerate available contiguous number runs within one row and one
+adjacency segment. Lexicographic score: row_rank (stage first), absolute distance
+between run midpoint and physical row midpoint, lowest first seat number, then UUID
+for a stable final tie. Accessibility false excludes accessible seats; true requires
+at least one accessible seat and permits companions. No run returns 409
+NO_ADJACENT_SEATS, never scattered seats. Suggestions do not reserve inventory.
+
+Identity-free section snapshots use Redis single-flight and a 1s fresh TTL, with
+no stale fallback entry. The staleness bound is rebuild duration plus 1s; writes
+need not invalidate because PostgreSQL holds remain authoritative. Mine is overlaid
+from the caller's current unexpired HELD reservation, then included in the ETag.
+Private no-cache / Vary Authorization prevents shared response reuse across users.
+Redis failure falls back to gated PostgreSQL reads (8 concurrent, 1s bounded
+admission wait); exhausted gate or rebuild wait returns 503 and Retry-After.
+
+## M2b static geometry and shared status (supersedes M2 overlay/cache policy)
+
+Context: the M2 measurement missed its work minimum in every run. A hit still
+queried PostgreSQL for publication and caller ownership, serialized full geometry,
+and hashed that representation. This made cache-hit ratio a misleading proxy for
+read cost. The new contract is finalized before M3 client generation.
+
+Decision:
+- Geometry is a public immutable JSON resource at
+  `/events/{id}/sections/{sectionId}/geometry/{version}`. Version/ETag is the
+  SHA-256 of the geometry JSON, scoped by event and section in the URL. Topology
+  is frozen after publication. Seats are ordered by row_rank, row_label, number,
+  then event-seat UUID. Each item contains id, rowLabel, number, x, y, accessible.
+  Cache-Control is `public, max-age=31536000, immutable`. No inventory states or
+  identities are included. Already cached geometry may outlive event cancellation.
+- `/sections/{sectionId}/seats` remains authenticated but returns only
+  `geometryVersion` and `states`: one A/H/S/B character per geometry seat. All
+  callers receive identical bytes and ETags. The ETag and serialized body are
+  stored together in Redis; request handling never hashes the response JSON.
+  Dynamic responses use private, no-cache to retain authorization at the API.
+- POST/GET reservations expose `seatIds`, also available as `seats[].id`. These
+  are event_seats IDs. The client overlays its own active reservation locally;
+  the shared status API has no `mine` or per-request ownership query. Owned
+  reservation access remains authenticated and owner-authorized.
+- A background task refreshes recently requested sections (last 30 seconds),
+  aiming for 750ms between refreshes, with a 250ms scheduler tick. Publish prewarms
+  every seated section after transaction commit. Redis snapshot TTL is at most
+  1000ms **from the start of the database observation**, subtracting rebuild and
+  gate-wait time before writing. There is no stale fallback. Scheduler delays
+  can lower cache hit ratio, not extend data age. Network delivery time is outside
+  this bound. Cancelled events disappear within the same snapshot TTL.
+- Cache keys use a v2 namespace so older full-row snapshots cannot be decoded as
+  compact responses during rollout. A Redis lease prevents simultaneous writes;
+  an expired owner cannot publish late data. Cold/down Redis falls back through
+  the existing 8-reader PostgreSQL gate; overload returns 503/Retry-After.
+  Empty-cache fallback retains single-flight protection against a cold burst.
+- Static response caching is bounded to 256 entries per JVM. Dynamic activity is
+  removed after 30 seconds without requests. Redis is advisory: stale A yields
+  409 at the authoritative PostgreSQL hold transaction.
+
+Alternatives: retain caller overlays (rejected: cost grows per request), push
+updates via WebSocket (unneeded architecture change), or extend TTL without bounds
+(rejected: hides staleness). A background reader spends work on recently idle
+sections and requires a warm-up; this is the tradeoff for a cheap shared hot path.
+
+Validation includes equivalent replacement assertions for the removed `mine`
+contract, immutable geometry/304, shared status/304, background changes without
+polling, prewarm, stale-hold 409, Redis outage, rate limits and byte-size evidence.
+The old 100-request single-flight test allows zero cold rebuilds when background
+refresh has already populated the snapshot, and still allows at most one rebuild.
+No performance claim follows from correctness tests. M2b gets one six-run campaign
+at Week 7 CPU caps, after a separate 60-second warm-up; no tuning after its result.
