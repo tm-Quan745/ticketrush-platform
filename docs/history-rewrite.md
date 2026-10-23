@@ -139,7 +139,8 @@ The first complete Maven run executed 188 tests with one setup error: PostgreSQL
 deadlock in SeatedInventoryIntegrationTest.expiryAndCancellationReleaseExactlyOnce
 while TRUNCATE users,events,ticket_tiers CASCADE overlapped background activity.
 No application/test code or assertion was changed; the unchanged full suite was
-rerun. The earlier local Compose stack was stopped to free Docker memory; volumes
+**rerun: 188 tests passed, zero failures/errors/skips, BUILD SUCCESS in 04:08**.
+The first run took 04:44. The earlier local Compose stack was stopped to free Docker memory; volumes
 were retained. npm tests: 49/49, lint and production build passed after rewrite.
 Benchmark-tagged tests are excluded by the existing default Maven profile and are
 not represented as executed by this command.
