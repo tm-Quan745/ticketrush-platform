@@ -1,0 +1,16 @@
+
+Running 9 tests using 1 worker
+
+(node:13464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\e2e\access.spec.ts:17:1 › anonymous private deep link preserves next; public catalog is accessible (654ms)
+  ok 2 tests\e2e\access.spec.ts:25:1 › USER sees account pages and 403 on admin and gate; reload loses credentials (702ms)
+  ok 3 tests\e2e\access.spec.ts:32:1 › STAFF lands at gate and cannot open buyer or admin pages (639ms)
+  ok 4 tests\e2e\access.spec.ts:37:1 › ADMIN lands at admin, uses operations/results and view as customer without role switching (734ms)
+  ok 5 tests\e2e\access.spec.ts:46:1 › real purchase: login, queue polling, zone, reserve, pay, ticket QR (3.7s)
+  ok 6 tests\e2e\seating.spec.ts:21:1 › seated manual purchase from catalog uses geometry, compact ETag status and ticket snapshot (7.4s)
+  ok 7 tests\e2e\seating.spec.ts:29:1 › Auto-Pick replaces selection atomically and buys adjacent server suggestions (4.1s)
+  ok 8 tests\e2e\seating.spec.ts:37:1 › two browser contexts compete for the same seat; loser sees 409 and recovery (8.8s)
+  ok 9 tests\e2e\seating.spec.ts:48:1 › expired real hold uses server expiry and disables checkout without a fake reset (5.7s)
+
+  9 passed (36.2s)

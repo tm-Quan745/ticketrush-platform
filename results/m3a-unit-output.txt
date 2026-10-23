@@ -1,0 +1,61 @@
+
+> ticketrush-platform@1.0.0 test
+> tsx --test tests/*.test.ts
+
+✔ login loads roles from /me rather than assuming embedded demo user (31.9151ms)
+✔ 401 retry rotates tokens and preserves order body and idempotency key (1.3123ms)
+✔ failed refresh clears session and never logs into a demo account (0.9269ms)
+✔ logout revokes refresh token even though access tokens remain independently valid (0.5139ms)
+✔ reservation forwards admission token and propagates backend errors (3.3736ms)
+✔ payment check reads backend state and cannot simulate a charge (1.2123ms)
+✔ ticket adapter gets order context absent from backend ticket DTO (1.2694ms)
+✔ capacity update sends complete WriteTier payload (0.6464ms)
+✔ PUBLIC: catalog (7.3171ms)
+✔ PUBLIC: buy (0.4022ms)
+✔ PUBLIC: account (0.2319ms)
+✔ PUBLIC: gate (0.159ms)
+✔ PUBLIC: admin (0.7711ms)
+✔ USER: catalog (0.1885ms)
+✔ USER: buy (0.1382ms)
+✔ USER: account (1.4616ms)
+✔ USER: gate (0.3613ms)
+✔ USER: admin (0.2723ms)
+✔ STAFF: catalog (0.1776ms)
+✔ STAFF: buy (0.1403ms)
+✔ STAFF: account (0.085ms)
+✔ STAFF: gate (0.126ms)
+✔ STAFF: admin (2.2879ms)
+✔ ADMIN: catalog (0.2616ms)
+✔ ADMIN: buy (0.1418ms)
+✔ ADMIN: account (0.1271ms)
+✔ ADMIN: gate (0.1068ms)
+✔ ADMIN: admin (0.1084ms)
+✔ next rejects off-origin, backslash, control and authentication loops (0.6598ms)
+✔ every mapped private route has the intended permission; unknown paths are 404 (1.7576ms)
+✔ real HTTP proxy preserves request, status, response headers and fails closed on outage (1084.0854ms)
+✔ seat selection enforces limit, toggles off and refuses unavailable seats (1.5788ms)
+✔ 409 recovery removes only conflicting ids (0.1635ms)
+✔ mine comes only from own reservation ids; blocked and sold have distinct states (0.1947ms)
+✔ TTL never resets and expired holds remain at zero (0.1441ms)
+✔ fixed-order status length and alphabet must match geometry (0.2342ms)
+✔ jitter keeps default polls between 2.5 and 2.875 seconds and respects Retry-After (0.1886ms)
+✔ unmount aborts in-flight polling and prevents reschedule (5.9735ms)
+✔ hidden tab pauses timer, aborts request and resumes respecting deadline (27.5336ms)
+✔ late reply after visibility abort never schedules another poll (0.9536ms)
+✔ sold-out terminal response stops polling (1.0234ms)
+✔ Retry-After on overload controls retry timer (13.7127ms)
+✔ transport sends If-None-Match and treats 304 as reuse, not auth error (27.3933ms)
+✔ stadium component uses server polygons, accessible section controls and no exact availability (11.1752ms)
+✔ server minor-unit amounts use currency scale: VND 1250 and USD 12.50 (94.6753ms)
+✔ refresh is single flight and each original request retries only once (50.7925ms)
+✔ Retry-After supports seconds and dates; jitter never polls earlier (3.6839ms)
+✔ 429 and 503 preserve retry metadata and friendly messages (3.2371ms)
+✔ tokens are never written to browser storage (1.0282ms)
+ℹ tests 49
+ℹ suites 0
+ℹ pass 49
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1486.2634

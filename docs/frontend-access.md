@@ -83,8 +83,12 @@ requires explicit Spring CORS configuration; the default Compose topology avoids
 
 ## Real data and limitations
 
-The active COUNTER selector shows public ticket tiers. Stadium/seat components
-await the seating milestone. Quantity respects maxPerOrder; SOLD_OUT cannot be selected.
+The active selector supports COUNTER quantity and SEATED stadium sections. Static
+geometry is immutable and long-cached; only the open section polls compact A/H/S/B
+status with ETag/304 every 2.5–2.875 seconds, respecting Retry-After and visibility.
+Mine uses only owned active reservation seatIds. Suggestions are advisory; 409
+removes conflicting selections and refreshes the open section. Quantity respects
+maxPerOrder; SOLD_OUT tiers cannot be selected.
 LOW is not an exact stock count. Spring is authoritative at reservation time.
 Payments use the backend's existing mock gateway (clearly labeled, no real charge).
 QR images encode the issued ticketCode locally and never call an external QR service.
@@ -103,7 +107,10 @@ Inactive legacy screens remain inside frontend/src. The canonical App imports on
    E2E_BASE_URL defaults to http://127.0.0.1:3100; E2E_DB_CONTAINER defaults to
    ticketrush-frontend-postgres-1. Override E2E_DB_USER/E2E_DB_NAME if necessary.
    E2E setup registers random accounts, assigns roles directly in the local test
-   database, creates an event/tier/queue via Spring, and leaves test rows for audit.
+   database, creates GA and SEATED events via Spring, and cancels both through the
+   admin API at teardown (asserting public 404). Cancelled rows remain for audit.
+   The expiry test compresses both reservation and auxiliary seat expiry in one
+   local database transaction; application code and clocks are unchanged.
    Credentials are generated into ignored .tmp/e2e-accounts.json. No production
    endpoint or UI exists to change roles. Only run this setup against a test stack.
 7. mvn -B -ntp -f backend/pom.xml verify runs real-service backend tests.
@@ -111,7 +118,8 @@ Inactive legacy screens remain inside frontend/src. The canonical App imports on
 The pre-existing isolated stack uses .env.frontend.local and project name
 ticketrush-frontend with infrastructure/frontend-compose.yml; use both compose
 files and that env file to preserve its ports and volumes. See frontend-verification.md
-for the older stack context; current test results are in m0b-lineage-and-baseline.md.
+for the older stack context; M3a results and screenshot comparison are in
+[m3a-buyer-visuals.md](m3a-buyer-visuals.md).
 
 ## Screenshots from real Playwright sessions
 
@@ -119,4 +127,7 @@ for the older stack context; current test results are in m0b-lineage-and-baselin
 ![USER](screenshots/user.png)
 ![STAFF](screenshots/staff.png)
 ![ADMIN](screenshots/admin.png)
+![Seat map](screenshots/seat-map.png)
+![Checkout modal](screenshots/checkout.png)
+![Wallet navigation (visual migration deferred to M3b)](screenshots/wallet.png)
 ![Purchase and issued QR tickets](screenshots/purchase.png)
