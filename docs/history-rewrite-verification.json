@@ -256,5 +256,21 @@
   "countObjectsBefore": "count: 4892\nsize: 65.28 MiB\nin-pack: 113\npacks: 1\nsize-pack: 197.74 KiB\nprune-packable: 0\ngarbage: 6\nsize-garbage: 2.00 MiB\n",
   "countObjectsAfterRewrite": "count: 48\nsize: 89.96 KiB\nin-pack: 3885\npacks: 1\nsize-pack: 4.46 MiB\nprune-packable: 0\ngarbage: 0\nsize-garbage: 0 bytes\n",
   "remoteAdded": false,
-  "pushPerformed": false
+  "pushPerformed": false,
+  "scanIncludingSecurityCommits": {
+    "mode": "all-reachable-unique-blobs",
+    "image": "zricethezav/gitleaks@sha256:e1b35e12a8c6fa8901f060459cfb6b2fc4c484d3afbe3b029733a3bbfab07055",
+    "rules": "gitleaks 8.24.3 defaults; no custom allowlist; ignore allow comments",
+    "head": "e143669861a960cee50e503619d6884d710ef032",
+    "reachableCommits": 140,
+    "uniqueBlobs": 2465,
+    "exportedBytes": 59240009,
+    "exitCode": 0,
+    "findings": 0,
+    "byRule": {},
+    "findingPaths": [],
+    "durationSeconds": 70.23,
+    "reportSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "finalReportNote": "This committed snapshot precedes its own evidence commit. The post-evidence full scan is retained in ignored .tmp/security-gate/final-history-summary.json; reporting commits also pass the staged hook."
 }

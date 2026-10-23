@@ -111,7 +111,11 @@ external deployment credentials; zero detector findings is not proof of every
 possible secret's absence.
 
 Initial post-rewrite full scan: 137 commits, 2,433 unique blobs, 58,943,959 exported
-bytes, exit 0, **zero findings**. Final verification evidence is in
+bytes, exit 0, **zero findings**. The scan including the security commits through
+`e143669` covered 140 commits / 2,465 blobs / 59,240,009 exported bytes, again
+**zero findings** (70.23 s). The final post-evidence scan summary is retained
+locally at `.tmp/security-gate/final-history-summary.json`, avoiding a self-referential
+commit hash in its own report. Final verification evidence is in
 [history-rewrite-verification.json](history-rewrite-verification.json).
 
 `python scripts/security/scan.py` performs the full scan. `--staged` exports entire
