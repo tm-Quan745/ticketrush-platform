@@ -1,0 +1,25 @@
+name: Secret security gate
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Scan every unique blob reachable from all fetched refs
+        run: python scripts/security/scan.py
+      - name: Retain redacted scan summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secret-scan-summary
+          path: .tmp/security-scans/*/summary.json
