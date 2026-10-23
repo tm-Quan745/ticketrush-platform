@@ -27,6 +27,8 @@ module's repository.
 5. Message consumers are idempotent.
 
 ## Working rules
+No remote and no push until the pre-push security gate is completed.
+
 1. Do ONE task at a time as instructed; do not implement later milestones.
 2. First state your plan and the files you will create or change.
 3. Write tests with the feature. Concurrency behavior must be tested with
