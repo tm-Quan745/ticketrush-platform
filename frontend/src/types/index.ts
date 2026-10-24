@@ -3,6 +3,7 @@ export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'ENDED';
 export type AvailabilityStatus = 'AVAILABLE' | 'LOW' | 'SOLD_OUT';
 
 export interface TicketTier {
+  inventoryMode?: 'COUNTER' | 'SEATED';
   id: string;
   eventId: string;
   name: string;
@@ -19,6 +20,7 @@ export interface TicketTier {
 }
 
 export interface Event {
+  venueId?: string;
   id: string;
   title: string;
   description: string;
@@ -40,6 +42,8 @@ export interface Event {
 export type ReservationStatus = 'HELD' | 'CONFIRMED' | 'EXPIRED' | 'CANCELLED';
 
 export interface Reservation {
+  seatIds?: string[];
+  seats?: import('../api/generated').SeatReadSeatAssignment[];
   id: string;
   userId: string;
   tierId: string;
@@ -79,6 +83,7 @@ export interface Order {
 }
 
 export interface Ticket {
+  seat?: import('../api/generated').SeatReadSeatAssignment | null;
   id: string;
   orderId: string;
   eventId: string;

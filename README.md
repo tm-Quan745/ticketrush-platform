@@ -209,7 +209,7 @@ Validation: `npm run lint`, `npm test`, `npm run build`, and
 tests pass against the real Compose stack. The historical **111-test execution
 tested `fcb976f`**; its report was committed in **`b19db2b`**. Local annotated tag
 **`perf-v1` points to `b19db2b`**, which contains the performance work and evidence.
-`codex/m0b-integration` joins that line (tip `494a33d`) with M0 in merge `b4803bf`;
+`codex/m0b-integration` joins that line (tip `494a33d`) with M0 in merge `519ef48`;
 both `fcb976f` and M0 are now ancestors. The initial merge base was `13c36d9`.
 The additional four tests are three STAFF/gate tests and one inventory audit test.
 No benchmark profile was part of 111 or 115.
@@ -273,3 +273,11 @@ The bounded 200/400 requests/s read experiment is not checkout or sell-out evide
 M2b follow-up: [shared seat read contract, verification and repository audit](docs/m2b-seat-read.md).
 The [single read campaign](docs/performance/m2b-read/README.md) failed its work minimum
 (5/6 runs passed; one run dropped 2 iterations). No throughput readiness claim.
+
+## Pre-push security gate
+
+See [history rewrite and credential rotation](docs/history-rewrite.md). Historical
+commit labels in documentation refer to rewritten equivalents; image SHA256 values
+and measured evidence are unchanged. Install the local hook with
+`git config core.hooksPath .githooks`; run `python scripts/security/scan.py` before
+publishing. The mirror backup contains the original sensitive history and stays private.

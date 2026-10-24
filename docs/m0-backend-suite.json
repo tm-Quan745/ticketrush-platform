@@ -1,6 +1,6 @@
 {
   "command": "mvn -B -ntp -f backend/pom.xml verify",
-  "commit": "fae5e023d279946dbfac04475d995f47b95014d1",
+  "commit": "4fdbcfceacb8ba69ad423137935f7c2b7f06b1bf",
   "profile": "default",
   "exit_code": 0,
   "build": "SUCCESS",

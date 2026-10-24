@@ -68,15 +68,15 @@ M0; they are not counted as passed or skipped in the default suite.
 
 ## Changes and commits
 
-- `1975dd7`: migration test asserts pending versions `3,4,5,6,7`, verifies the
+- `fe3528a`: migration test asserts pending versions `3,4,5,6,7`, verifies the
   executed version list and no remaining pending migration, then runs all
   unchanged legacy-data assertions. Targeted migration + order/payment run:
   **19 passed**, zero failures/errors/skips.
-- Existing `7f288c5`: V7 STAFF/check-in already committed before M0. Revalidated:
+- Existing `64b4d04`: V7 STAFF/check-in already committed before M0. Revalidated:
   anonymous 401; USER 403 on both gate endpoints and representative admin
   endpoints; STAFF 403 on admin; 16 real HTTP check-in threads with exactly one
   200 and fifteen 409, unchanged `used_at` on retries and recorded `used_by`.
-- `fae5e02`: inventory audit diff, reported before committing: `validTicketCounts` changes
+- `4fdbcfc`: inventory audit diff, reported before committing: `validTicketCounts` changes
   its predicate from `status='VALID'` to `status IN ('VALID','USED')`. Checked-in
   tickets still consume sold inventory. Added a real PostgreSQL regression that
   pays for two tickets, checks one in, requires clean reconciliation, deletes

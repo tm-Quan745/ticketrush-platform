@@ -1,8 +1,8 @@
 {
   "claim": "Read-path micro-measurement only. All six runs FAIL work minimum; no throughput claim.",
-  "backendSourceCommit": "567d7ff",
-  "imageBuildCommit": "3aef4ee",
-  "runnerCommit": "a8fecf73f7ba614dd43b1ad0e0dc42d7a85dfc64",
+  "backendSourceCommit": "c6ae001",
+  "imageBuildCommit": "95e34e2",
+  "runnerCommit": "e5cf897b2892a9e23b8efe422ef34c0e9c214041",
   "host": {
     "logicalCPUs": 12,
     "memoryBytes": 4013408256

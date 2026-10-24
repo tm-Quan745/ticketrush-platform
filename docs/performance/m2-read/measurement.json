@@ -1,5 +1,5 @@
 {
-  "commit": "a8fecf73f7ba614dd43b1ad0e0dc42d7a85dfc64",
+  "commit": "e5cf897b2892a9e23b8efe422ef34c0e9c214041",
   "dirty": "M README.md\n?? docs/m2-backend-suite.json\n?? docs/m2-preflight-evidence.json\n?? docs/m2-seat-read.md",
   "docker": "29.3.1",
   "startedAt": "2026-10-22T06:55:50.643Z",

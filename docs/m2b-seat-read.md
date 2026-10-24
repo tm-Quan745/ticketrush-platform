@@ -3,8 +3,8 @@
 ## Scope and Git
 
 Main now contains the explicitly approved `--no-ff` merges:
-1. `2046caa`: codex/m0b-integration.
-2. `6d532dc`: codex/m1-seated-inventory.
+1. `6a5264a`: codex/m0b-integration.
+2. `a3e8882`: codex/m1-seated-inventory.
 
 No push. M2/M2b remain on codex/m2-seat-read-apis, unmerged.
 perf-v1 remains b19db2b7f1033729f75e3fc7e10f9708e2e0204a.
@@ -35,7 +35,11 @@ production build passed. No frontend components changed.
 
 ## Repository size and secrets
 
-`git count-objects -vH` after evidence commit 577f9e0:
+Historical pre-rewrite findings below are retained as evidence. See
+[the current rewrite report](history-rewrite.md) for the superseding scan and
+commit-map; commit labels below denote rewritten equivalents.
+
+`git count-objects -vH` after evidence commit 92dc76b:
 
 ```text
 count: 4797
@@ -71,7 +75,7 @@ loadtest/.data/admissions.json and loadtest/.data/admin.json: JWT and generic AP
 key detections. These files are absent from HEAD, but the history is **not clean**.
 Before a first push: assess/revoke relevant credentials and explicitly authorize
 history cleanup if desired; a private repository does not erase this exposure.
-Final incremental scan covered all 39 new blob versions through 577f9e0: no
+Final incremental scan covered all 39 new blob versions through 92dc76b: no
 additional findings (gitleaks exit 0). Combined coverage: 2,397 unique historical
 blobs across 131 reachable commits. The 10,083 original historical findings remain;
 this incremental result does not make the history clean.
@@ -99,8 +103,8 @@ RabbitMQ had one sample maximum 100.97% against a 100% quota; do not claim every
 instantaneous CPU sample was under quota. Four sampling errors are retained.
 
 Image: sha256:4e0cc26f9d9eeda69338e8ecb35c6dd9c826ffdd202357c090f88ddc0f7b8436.
-Image/runner revision: b0df20d8cf15a86adc17444357287ccb5bb2d39c.
-Backend implementation: e5d6bde; it did not change during or after measurement.
+Image/runner revision: c686108591437927ca22869d9c0fd58b0d4dc406.
+Backend implementation: d52a05d; it did not change during or after measurement.
 A final contract-only repair copied the existing COUNTER/SEATED reservation shapes
 into the main OpenAPI before final client regeneration; it did not change runtime
 Java or the measured path. Frontend production JS content hash stayed unchanged.

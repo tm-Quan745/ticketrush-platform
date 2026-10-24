@@ -1,7 +1,7 @@
 import { readFile, unlink } from 'node:fs/promises';
 
 export default async function teardown() {
-  let fixture: { accounts: { ADMIN: { email: string; password: string } }; eventId: string };
+  let fixture: { accounts: { ADMIN: { email: string; password: string } }; eventId: string; eventIds?: string[] };
   try { fixture = JSON.parse(await readFile('.tmp/e2e-accounts.json', 'utf8')); }
   catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return; throw error; }
   const base = process.env.E2E_BASE_URL || 'http://127.0.0.1:3100';
@@ -20,11 +20,13 @@ export default async function teardown() {
   if (!login.ok) throw new Error(`Cleanup login failed: ${login.status}`);
   const auth = await login.json();
   try {
-    const cancel = await request(`/admin/events/${fixture.eventId}/cancel`, undefined, auth.accessToken);
+    for (const eventId of fixture.eventIds || [fixture.eventId]) {
+    const cancel = await request(`/admin/events/${eventId}/cancel`, undefined, auth.accessToken);
     // A partially failed setup can leave a DRAFT, or a previous cleanup a CANCELLED event.
     if (!cancel.ok && cancel.status !== 409) throw new Error(`Event cleanup failed: ${cancel.status}`);
-    const visible = await request(`/events/${fixture.eventId}`, undefined, undefined, 'GET');
-    if (visible.status !== 404) throw new Error(`E2E event remains public: ${fixture.eventId} (${visible.status})`);
+    const visible = await request(`/events/${eventId}`, undefined, undefined, 'GET');
+    if (visible.status !== 404) throw new Error(`E2E event remains public: ${eventId} (${visible.status})`);
+    }
     await unlink('.tmp/e2e-accounts.json');
   } finally {
     const logout = await request('/auth/logout', { refreshToken: auth.refreshToken });

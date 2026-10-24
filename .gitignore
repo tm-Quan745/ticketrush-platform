@@ -2,6 +2,9 @@
 node_modules/
 dist/
 .env.frontend.local
+.env.*
+!.env.example
+*.jfr
 .tmp/
 test-results/
 playwright-report/

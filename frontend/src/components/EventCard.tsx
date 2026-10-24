@@ -1,3 +1,4 @@
+import { vi } from '../i18n/vi';
 import React from 'react';
 import { Event } from '../types';
 import { Calendar, MapPin, Users, Flame, Clock, ArrowRight, Zap } from 'lucide-react';
@@ -28,12 +29,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
     <div className="group bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between">
       {/* Event Image Banner */}
       <div className="relative h-52 overflow-hidden bg-slate-950">
+        {event.imageUrl ? (
         <img
-          src={event.imageUrl}
+          src={event.imageUrl || undefined}
           alt={event.title}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-90"
           loading="lazy"
         />
+        ) : <div aria-hidden="true" className="h-full w-full bg-gradient-to-br from-indigo-900 via-slate-900 to-rose-900 flex items-center justify-center"><Calendar className="w-20 h-20 text-indigo-300/30"/></div>}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
 
         {/* Live Badges */}
@@ -41,19 +44,19 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
           {isOnSale ? (
             <span className="flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
               <Flame className="w-3.5 h-3.5 fill-white animate-pulse" />
-              ĐANG MỞ BÁN
+              {vi.sale}
             </span>
           ) : (
             <span className="flex items-center gap-1.5 bg-amber-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-lg">
               <Clock className="w-3.5 h-3.5" />
-              SẮP MỞ BÁN
+              {vi.soon}
             </span>
           )}
 
           {event.waitingRoomEnabled && (
             <span className="flex items-center gap-1.5 bg-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
               <Users className="w-3.5 h-3.5" />
-              PHÒNG CHỜ ẢO
+              {vi.queueBadge}
             </span>
           )}
         </div>
@@ -91,7 +94,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition shadow-lg shadow-rose-600/20 active:scale-[0.98]"
             >
               <Users className="w-4 h-4" />
-              Vào Phòng Chờ Ảo Ngay
+              {vi.details}
             </button>
           ) : (
             <button
@@ -99,7 +102,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
               className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition shadow-lg shadow-indigo-600/20 active:scale-[0.98]"
             >
               <Zap className="w-4 h-4" />
-              Chọn Hạng Vé & Giữ Chỗ
+              {vi.details}
             </button>
           )}
         </div>

@@ -1,0 +1,157 @@
+* 1b13f94 (HEAD -> codex/pre-push-security-gate) ci(security): scan reachable history and staged blobs with gitleaks
+* 67000fd (codex/m3a-buyer-visuals) docs(frontend): record M3a verification and visual comparison
+* 4eb2429 test(frontend): wait for real data before capturing screenshots
+* e02be3e feat(frontend): bind buyer visuals to real seated inventory
+* 3e08595 docs: require pre-push security gate
+*   742f0f4 (main) merge: integrate M2 seat read APIs and M2b contract
+|\  
+| * b78fc56 (codex/m2-seat-read-apis) docs(security): record final incremental history scan coverage
+| * 92dc76b docs(evidence): report M2b gates load shortfall and history scan
+| * b3676a9 fix(api): expose seated reservation request and response types
+| * c686108 test(loadtest): measure M2b reads with platform caps and warmup
+| * d52a05d feat(inventory): split immutable geometry from shared seat status
+| * cfe1d6e docs(evidence): correct aggregate M2 test counts
+| * cd6e678 docs(inventory): report M2 gates mutations and merge preview
+| * 6344877 chore(evidence): preserve captured metric bytes across platforms
+| * ec4b8c7 docs(performance): record failed M2 read work-minimum runs
+| * d7f3d6d fix(loadtest): fail runner when read work minimum is missed
+| * e5cf897 fix(loadtest): wait for dev event seed completion
+| * 95e34e2 test(loadtest): add bounded seat read micro-measurement
+| * c6ae001 feat(inventory): add cached seat reads and adjacent suggestions
+| * 0c91634 feat(api): define seat read contract and regenerate typed client
+* | a3e8882 merge: integrate M1 seated inventory
+|\| 
+* |   6a5264a merge: integrate M0b baseline repair
+|\ \  
+| | | *   59e8491 (codex/m2-merge-preview) merge: preview M1 seated inventory after M0b
+| | | |\  
+| | | |/  
+| | |/|   
+| | * | fb90cef (codex/m1-seated-inventory) docs(inventory): record M1 implementation and verified test results
+| | * | 6225687 feat(verifier): validate seated claims and ticket conservation
+| | * | f2e73d3 feat(inventory): implement atomic seated reservation lifecycle
+| | * | da7b59e feat(inventory): add seated schema and immutable stadium template
+| |/ /  
+| | * 4845bf8 merge: preview M0b integration into main
+| |/| 
+|/|/  
+| * 4dc45de (codex/m0b-integration) test(e2e): cancel fixture events during teardown
+| * 21a5574 docs(baseline): record M0b lineage preservation and passing gates
+| * b013121 fix(frontend): restore canonical auth routes and purchase flow
+| * 519ef48 merge: integrate performance baseline with staff and inventory fixes
+|/| 
+| * 494a33d (feat/observability-load-testing) fix(ci): cap backend to GitHub runner CPUs
+| * cc46a05 fix(ci): print compose startup diagnostics
+| * b19db2b (tag: perf-v1) docs(performance): close bounded sellout evidence
+| * 3090fcd fix(loadtest): account for terminal sellout cohort
+| * fcb976f feat(loadtest): add bounded sellout verification
+| * 3f9a2de docs(performance): exclude calibration setup failures
+| * f2963cc fix(loadtest): align calibration rates with k6 start
+| * d46ffe0 fix(loadtest): size paced join duration to cohort
+| * d9fb04e docs(performance): exclude interrupted calibration
+| * db3cb11 feat(loadtest): add finite queue calibration staircase
+| * 381d26d docs(performance): record health latency control
+| * edd1d20 test(load): add health latency control
+| * 0b2c097 docs(performance): record Redis fault injection
+| * 452ceb6 test(reservation): allow concurrent invariant cohort to drain
+| * d82476c test(redis): cover half-open recovery probes
+| * 9374383 feat(redis): add legacy breaker diagnostic mode
+| * c99044d docs(performance): record paced checkout pass
+| * ce5d56f docs(performance): record redis join resilience
+| * 9903a63 feat(loadtest): pace and validate queue joins
+| * 256be50 feat(queue): tolerate transient redis delays
+| * d7c9a21 docs(performance): qualify failed join provenance
+| * 00c9654 docs(performance): record cpu-capped checkout failure
+| * b7e03ca test(performance): retain cpu-capped checkout setup summaries
+| * 6d7eb5b fix(loadtest): inspect cpu limits per container
+| * d84b20c feat(loadtest): orchestrate fresh checkout tokens
+| * ebd65b5 fix(loadtest): reject empty checkout success
+| * 32700f8 feat(loadtest): record cpu-capped platform
+| * 7150e17 docs(performance): qualify burst resource evidence
+| * f20da1e feat(loadtest): diagnose checkout rejections
+| * bbe3dbe docs(performance): record front-door negative checkout results
+| * ee5997f test(load): identify checkout terminal responses
+| * a274d4c test(load): classify checkout capacity rejections
+| * 59db266 feat(queue): control overload retries and pace checkout
+| * c45cb3f fix(loadtest): pass the selected queue cohort
+| * 0365f36 docs(performance): record front-door status measurements
+| * d719dd9 test(reservation): use fail-fast pool timeout
+| * 2c8d7b5 docs(performance): add front-door summary artifacts
+| * a224f5a fix(loadtest): hold the status burst plateau
+| * 901614b feat(loadtest): separate burst latency windows
+| * 043594e feat(loadtest): retry transient queue joins
+| * c38478e fix(loadtest): record requested k6 capacity
+| * b396a9b feat(loadtest): add random status front-door scenarios
+| * 7da9045 fix(queue): avoid database fanout on joins
+| * 9a875e6 feat(queue): jitter waiting room polling
+| * 02ddc5c docs(performance): record status latency diagnosis
+| * 644fa8e fix(loadtest): align status telemetry with k6 window
+| * 8dcd2fb feat(loadtest): sample container stats directly
+| * 3f7d66b feat(loadtest): record steady polling latency
+| * ed889ab fix(reservation): serialize pessimistic tier waiters
+| * 23cc38f feat(loadtest): summarize steady status latency
+| * 3702dda feat(observability): break down waiting room status latency
+| * 117037c test(queue): retain sampled loadtest entries
+| * 8e565b6 fix(loadtest): audit queue before verification
+| * 73e828b test(loadtest): tag queue response statuses
+| * 5d6117b feat(loadtest): separate queue join poll and checkout
+| * 361f645 feat(queue): expose loadtest admission feed
+| * 097ca5d docs(performance): record valid legacy A1 control
+| * 148bd04 fix(loadtest): retain remote write probe metric
+| * 89e7686 fix(loadtest): verify telemetry delivery
+| * ac97df6 fix(loadtest): parse compose json lines
+| * a13b28b fix(loadtest): label backend builds with revision
+| * 03f3c31 test: align durable and queue integration fixtures
+| * 221c66c feat(loadtest): fail closed without telemetry
+| * 7a242d0 feat(loadtest): select admission control flags
+| * fba6db6 docs(performance): record durability recovery and artifacts
+| * a801f60 feat(api): reject saturated write requests early
+| * 12881c9 perf(order): join status read and back off polling
+| * 5a39882 feat(queue): serve waiting status from redis
+| * 8bb0b56 feat(loadtest): verify durability through backend pool
+| * c18ba94 feat(loadtest): record wal sync timing
+| * 71c33da docs(performance): record interleaved attribution
+| * 5bda52c feat(loadtest): sample database activity during runs
+| * a35a1e4 feat(loadtest): align run provenance telemetry
+| * 174aac3 feat(loadtest): record selected backend provenance
+| * 9a6b76c docs(performance): record fsync measurement
+| * ce869ad docs(performance): record final write spike iteration
+| * 7eef8a6 perf(reservation): shorten hot tier lock scope
+| * e29ce4f (codex/week7-observability) docs(performance): record soak load evidence
+| * 537407f docs(performance): record authentication load evidence
+| * 2020f74 docs(performance): record stress recovery evidence
+| * 1b6427e docs(performance): record baseline and correctness evidence
+| * 8b5719f chore(loadtest): preserve failed verification evidence
+| * 7fd2818 fix(outbox): route non-email events past aggregate ordering
+| * 31e3d7e perf(order): prepare lazy expiry before borrowing business connection
+| * eaf4898 test(load): add isolated datasets open-model scenarios and invariant verifier
+| * 0d19539 feat(observability): add secured metrics and provisioned dashboards
+| | * 679f763 (codex/m0b-baseline-wip) chore(wip): preserve imported frontend and review workspace before integration
+| |/  
+|/|   
+* | ec40680 docs(baseline): reconcile test counts and record M0 verification
+* | 4fdbcfc fix(inventory): count used tickets during reconciliation
+* | fe3528a test(migration): assert pending versions and preserve legacy data
+* | 64b4d04 feat(gate): authorize staff and atomically check in tickets
+* | 3ef87e2 Merge pull request #7 from tm-Quan745/feature/redis
+|\| 
+| * 13c36d9 (feature/redis) feat(inventory): add atomic Redis inventory gate
+| * 2b64cc6 (feat/outbox-rabbitmq-notifications) fix(outbox):fix cli2
+| * 317c766 fix(outbox):fix cli
+* | d1c9079 Merge pull request #5 from tm-Quan745/feat/outbox-rabbitmq-notifications
+|\| 
+| * 63f8f49 feat(outbox): add transactional outbox persistence
+* | 59e99a3 Merge pull request #4 from tm-Quan745/feat/orders-payment-idempotency
+|\| 
+| * 04dd32c (feat/orders-payment-idempotency) feat(order): implement order creation and price snapshots
+* | 2f5a6e2 Merge pull request #3 from tm-Quan745/reservation-overselling
+|\| 
+| * 08ec95c (reservation-overselling) feat(reservation): implement PostgreSQL overselling protection
+* | 015a365 Merge pull request #2 from tm-Quan745/feat/events-inventory
+|\| 
+| * d303080 (feat/events-inventory) feat: add event lifecycle and ticket inventory
+* | 6692489 Merge pull request #1 from tm-Quan745/feat/foundation-auth
+|\| 
+| * f3c7627 (feat/foundation-auth) feat: implement foundation and authentication
+|/  
+* 6638fbd init
