@@ -13,6 +13,8 @@ public class AdminSeatingController {
     public AdminSeatingController(VenueOperations seating) { this.seating=seating; }
     @GetMapping("/venues") public List<Venue> venues() { return seating.venues(); }
     @GetMapping("/venues/{id}") public VenueDetail venue(@PathVariable UUID id) { return seating.venue(id); }
+    @GetMapping("/events/{id}/sections") public List<Map<String,Object>> sections(@PathVariable UUID id) { return seating.sections(id); }
+    @GetMapping("/events/{id}/sections/{sectionId}/seats") public List<AdminSeat> seats(@PathVariable UUID id,@PathVariable UUID sectionId) { return seating.adminSeats(id,sectionId); }
     @PutMapping("/events/{id}/section-tiers") public void map(@PathVariable UUID id,@Valid @RequestBody SectionMapping body) { seating.map(id,body); }
     @PostMapping("/events/{id}/seats/block") public Map<String,Object> block(@PathVariable UUID id,@Valid @RequestBody Block body) { return seating.block(id,body); }
 }

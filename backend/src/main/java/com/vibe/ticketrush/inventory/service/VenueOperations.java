@@ -12,4 +12,6 @@ public interface VenueOperations {
     void map(UUID event,SectionMapping request);
     void publish(UUID event,UUID venue);
     Map<String,Object> block(UUID event,Block request);
+    List<Map<String,Object>> sections(UUID event);
+    List<AdminSeat> adminSeats(UUID event,UUID section);
 }

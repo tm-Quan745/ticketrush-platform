@@ -46,6 +46,12 @@ public class EventService implements EventAccess {
         if (e.getStatus() != EventStatus.PUBLISHED) throw missing();
         return EventMapper.view(e);
     }
+    public EventView adminDetail(UUID id) { return EventMapper.view(find(id)); }
+    public EventPage adminList(int page,int size) {
+        if(page<0 || size<1 || size>50)throw new ApiException(HttpStatus.BAD_REQUEST,"INVALID_FILTER","page >= 0 and size 1..50 required");
+        var result=events.findAll(PageRequest.of(page,size,Sort.by(Sort.Direction.DESC,"createdAt","id")));
+        return new EventPage(result.map(EventMapper::view).getContent(),page,size,result.getTotalElements(),result.getTotalPages());
+    }
     @Transactional
     public EventView create(WriteEvent r, UUID creator) {
         validate(r);

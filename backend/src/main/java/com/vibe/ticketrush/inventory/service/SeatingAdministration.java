@@ -24,6 +24,29 @@ public class SeatingAdministration implements VenueOperations {
     public record Venue(UUID id,String templateKey,int templateVersion,String name) {}
     public record Section(UUID id,String code,String name,String type,JsonNode geometry) {}
     public record VenueDetail(UUID id,String templateKey,int templateVersion,String name,JsonNode geometry,List<Section> sections) {}
+    public record AdminSeat(UUID id,String rowLabel,int number,int adjacencySegment,double x,double y,boolean accessible,String status,long version) {}
+    public List<AdminSeat> adminSeats(UUID event,UUID section) {
+        if(!Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM event_tier_sections WHERE event_id=? AND section_id=?)",Boolean.class,event,section)))
+            throw new ApiException(HttpStatus.NOT_FOUND,"SECTION_NOT_FOUND","Section not mapped to event");
+        return jdbc.query("""
+            SELECT es.id,s.row_label,s.number,s.adjacency_segment,s.x,s.y,s.accessible,es.status,es.version
+            FROM event_seats es JOIN seats s ON s.id=es.seat_id
+            WHERE es.event_id=? AND es.section_id=? ORDER BY s.row_rank,s.number,es.id
+            """,(rs,n)->new AdminSeat(rs.getObject(1,UUID.class),rs.getString(2),rs.getInt(3),rs.getInt(4),rs.getDouble(5),rs.getDouble(6),rs.getBoolean(7),rs.getString(8),rs.getLong(9)),event,section);
+    }
+    public List<Map<String,Object>> sections(UUID event) {
+        if(!Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM events WHERE id=?)",Boolean.class,event)))
+            throw new ApiException(HttpStatus.NOT_FOUND,"EVENT_NOT_FOUND","Event not found");
+        var counts=sectionCounts(event);
+        return jdbc.query("""
+            SELECT s.id,s.code,s.name,s.type,m.tier_id FROM events e JOIN sections s ON s.venue_id=e.venue_id
+            LEFT JOIN event_tier_sections m ON m.event_id=e.id AND m.section_id=s.id WHERE e.id=? ORDER BY s.code
+            """,(rs,n)->{
+                Map<String,Object> row=new LinkedHashMap<>();UUID id=rs.getObject(1,UUID.class);
+                row.put("id",id);row.put("code",rs.getString(2));row.put("name",rs.getString(3));row.put("type",rs.getString(4));row.put("tierId",rs.getObject(5,UUID.class));
+                row.put("counts",counts.stream().filter(c->id.equals(c.get("sectionId"))).map(c->c.get("counts")).findFirst().orElse(null));return row;
+            },event);
+    }
     public List<Venue> venues() {
         return jdbc.query("SELECT * FROM venues ORDER BY template_key,template_version",(rs,n)->new Venue(rs.getObject("id",UUID.class),rs.getString("template_key"),rs.getInt("template_version"),rs.getString("name")));
     }

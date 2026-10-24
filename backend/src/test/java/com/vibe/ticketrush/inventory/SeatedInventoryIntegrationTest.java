@@ -699,6 +699,52 @@ class SeatedInventoryIntegrationTest {
             """)).hasMessageContaining("fk_ticket_event_seat");
         assertThatThrownBy(()->jdbc.update("UPDATE tickets SET seat_snapshot=jsonb_set(seat_snapshot,'{row}','\"wrong\"') WHERE order_id=?",order)).hasMessageContaining("Issued seat snapshot is immutable");
     }
+    @Test void adminReadEndpointsRequireAdminAndDoNotPublishDrafts() throws Exception {
+        var paths=List.of("/api/v1/admin/events","/api/v1/admin/events/"+event,
+            "/api/v1/admin/events/"+event+"/sections","/api/v1/admin/events/"+event+"/sections/"+section+"/seats","/api/v1/admin/events/"+event+"/waiting-room");
+        for(String path:paths) {
+            assertThat(request("GET",path,null,null,Map.of()).statusCode()).isEqualTo(401);
+            for(String role:List.of("USER","STAFF"))assertThat(request("GET",path,null,token(user,role),Map.of()).statusCode()).isEqualTo(403);
+            assertThat(request("GET",path,null,token(user,"ADMIN"),Map.of()).statusCode()).isEqualTo(200);
+        }
+        jdbc.update("UPDATE events SET status='DRAFT' WHERE id=?",event);publicCache.invalidate();
+        assertThat(request("GET","/api/v1/events/"+event,null,null,Map.of()).statusCode()).isEqualTo(404);
+        var detail=request("GET",paths.get(1),null,token(user,"ADMIN"),Map.of());
+        assertThat(json.readTree(detail.body()).path("status").asText()).isEqualTo("DRAFT");
+        var list=request("GET",paths.getFirst()+"?size=1",null,token(user,"ADMIN"),Map.of());
+        assertThat(json.readTree(list.body()).path("totalElements").asInt()).isEqualTo(1);
+        assertThat(request("GET",paths.getFirst()+"?size=51",null,token(user,"ADMIN"),Map.of()).statusCode()).isEqualTo(400);
+        jdbc.update("UPDATE events SET status='PUBLISHED' WHERE id=?",event);eventService.transition(event,EventStatus.CANCELLED);
+        assertThat(json.readTree(request("GET",paths.get(1),null,token(user,"ADMIN"),Map.of()).body()).path("status").asText()).isEqualTo("CANCELLED");
+    }
+    @Test void adminSeatReadProvidesCurrentVersionAndSectionCounts() throws Exception {
+        var path="/api/v1/admin/events/"+event+"/sections/"+section+"/seats";
+        var before=json.readTree(request("GET",path,null,token(user,"ADMIN"),Map.of()).body());assertThat(before).hasSize(30);
+        var id=UUID.fromString(before.get(0).path("id").asText());long version=before.get(0).path("version").asLong();
+        administration.block(event,new SeatingAdministration.Block(List.of(new SeatingAdministration.SeatVersion(id,version)),true,"Review"));
+        var after=json.readTree(request("GET",path,null,token(user,"ADMIN"),Map.of()).body());
+        assertThat(after.get(0).path("status").asText()).isEqualTo("BLOCKED");assertThat(after.get(0).path("version").asLong()).isEqualTo(version+1);
+        assertCode(()->administration.block(event,new SeatingAdministration.Block(List.of(new SeatingAdministration.SeatVersion(id,version)),false,"Stale")),"SEAT_STATE_CONFLICT");
+        var sections=json.readTree(request("GET","/api/v1/admin/events/"+event+"/sections",null,token(user,"ADMIN"),Map.of()).body());
+        for(var row:sections)if(row.path("id").asText().equals(section.toString()))assertThat(row.path("counts").path("blocked").asLong()).isEqualTo(1);
+        assertThat(after.toString()).doesNotContain("userId","reservationId","ticketCode");
+        assertThat(request("GET",path.replace(section.toString(),UUID.randomUUID().toString()),null,token(user,"ADMIN"),Map.of()).statusCode()).isEqualTo(404);
+    }
+    @Test void gateReadIncludesStoredSeatAndUsedTimeWithoutBuyerIdentity() throws Exception {
+        UUID order=order(user,1);assertThat(webhook(event(order,Type.SUCCEEDED,"gate-read")).statusCode()).isEqualTo(200);
+        var ticket=orders.tickets(user,order).getFirst();String body=json.writeValueAsString(Map.of("ticketCode",ticket.ticketCode()));
+        for(String role:List.of("STAFF","ADMIN")) {
+            var response=request("POST","/api/v1/gate/tickets/verify",body,token(user,role),Map.of());
+            assertThat(response.statusCode()).isEqualTo(200);var value=json.readTree(response.body());
+            assertThat(value.path("seat").path("rowLabel").asText()).isEqualTo(ticket.seat().rowLabel());
+            assertThat(value.path("seat").path("number").asInt()).isEqualTo(ticket.seat().number());
+            assertThat(value.path("eventTitle").asText()).isEqualTo("Seated concert");
+            assertThat(response.body()).doesNotContain("userId","email","reservationId");
+        }
+        assertThat(request("POST","/api/v1/gate/tickets/check-in",body,token(user,"STAFF"),Map.of()).statusCode()).isEqualTo(200);
+        var used=json.readTree(request("POST","/api/v1/gate/tickets/verify",body,token(user,"STAFF"),Map.of()).body());
+        assertThat(used.path("status").asText()).isEqualTo("USED");assertThat(used.path("usedAt").asText()).isEqualTo(clock.instant().toString());
+    }
     @Test void usedTicketAlwaysRefusesRefundAndRemainsSold() throws Exception {
         UUID order=order(user,2);assertThat(webhook(event(order,Type.SUCCEEDED,"paid")).statusCode()).isEqualTo(200);
         String code=orders.tickets(user,order).getFirst().ticketCode();UUID staff=addUser();

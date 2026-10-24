@@ -12,7 +12,7 @@ export type OrderItem = { "tierId"?: string; "tierName"?: string; "unitPrice"?: 
 export type OrderView = { "id"?: string; "userId"?: string; "reservationId"?: string; "status"?: "PENDING_PAYMENT" | "PAID" | "PAYMENT_FAILED" | "CANCELLED" | "EXPIRED" | "REFUND_PENDING" | "REFUNDED"; "totalAmount"?: number; "currency"?: string; "paymentDeadline"?: string; "paymentReference"?: string; "manualReview"?: boolean; "items"?: Array<OrderItem> };
 export type OrderCreate = { "reservationId": string };
 export type Scan = { "ticketCode": string };
-export type Ticket = { "id"?: string; "eventId"?: string; "tierId"?: string; "ticketCode"?: string; "status"?: string; "usedAt"?: string };
+export type Ticket = { "id"?: string; "eventId"?: string; "tierId"?: string; "ticketCode"?: string; "status"?: string; "usedAt"?: string; "eventTitle"?: string; "venue"?: string; "tierName"?: string; "seat"?: (SeatReadSeatAssignment) | null };
 export type Status = { "state"?: string; "position"?: number; "estimatedWaitSeconds"?: number; "pollIntervalSeconds"?: number; "soldOut"?: boolean; "token"?: string; "expiresAt"?: string };
 export type Credentials = { "email": string; "password": string };
 export type UserResponse = { "id"?: string; "email"?: string; "roles"?: Array<string> };
@@ -46,11 +46,17 @@ export type SeatReadSeatAssignment = { "id": string; "sectionId": string; "secti
 export type SeatReadSuggestRequest = { "sectionId": string; "quantity": number; "accessible"?: boolean };
 export type SeatReadSectionGeometry = { "eventId": string; "sectionId": string; "tierId": string; "seats": Array<SeatReadStaticSeat> };
 export type SeatReadStaticSeat = { "id": string; "rowLabel": string; "number": number; "x": number; "y": number; "accessible": boolean; "adjacencySegment": number };
+export type AdminSeat = { "id": string; "rowLabel": string; "number": number; "adjacencySegment": number; "x": number; "y": number; "accessible": boolean; "status": "AVAILABLE" | "HELD" | "SOLD" | "BLOCKED"; "version": number };
+export type AdminSectionCounts = { "physical": number; "available": number; "held": number; "sold": number; "blocked": number; "sellable": number };
+export type AdminSection = { "id": string; "code": string; "name": string; "type": "GA" | "SEATED"; "tierId": (string) | null; "counts": (AdminSectionCounts) | null };
+export type AdminQueueSettings = { "id": string; "enabled": boolean; "rate": number; "mode": "fifo" | "lottery"; "saleStart": string; "saleEnd": string; "published": boolean };
 
 export interface Operations {
   "PUT /api/v1/admin/tiers/{id}": { input: { path: { "id": string }; query?: {  }; body: WriteTier; headers?: Record<string, string>; signal?: AbortSignal }; output: InventoryView };
   "PUT /api/v1/admin/events/{id}": { input: { path: { "id": string }; query?: {  }; body: WriteEvent; headers?: Record<string, string>; signal?: AbortSignal }; output: EventView };
+  "GET /api/v1/admin/events/{id}": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: EventView };
   "PUT /api/v1/admin/events/{id}/waiting-room": { input: { path: { "id": string }; query?: {  }; body: Configure; headers?: Record<string, string>; signal?: AbortSignal }; output: Settings };
+  "GET /api/v1/admin/events/{id}/waiting-room": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: AdminQueueSettings };
   "POST /api/v1/reservations": { input: { path?: {  }; query?: {  }; body: Create; headers?: Record<string, string>; signal?: AbortSignal }; output: View };
   "POST /api/v1/payments/webhook": { input: { path?: {  }; query?: {  }; body: string; headers?: Record<string, string>; signal?: AbortSignal }; output: void };
   "POST /api/v1/orders": { input: { path?: {  }; query?: {  }; body: OrderCreate; headers?: Record<string, string>; signal?: AbortSignal }; output: OrderView };
@@ -66,6 +72,7 @@ export interface Operations {
   "POST /api/v1/admin/orders/{id}/refund": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: OrderView };
   "POST /api/v1/admin/notifications/{id}/resend": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: void };
   "POST /api/v1/admin/events": { input: { path?: {  }; query?: {  }; body: WriteEvent; headers?: Record<string, string>; signal?: AbortSignal }; output: EventView };
+  "GET /api/v1/admin/events": { input: { path?: {  }; query?: { "page"?: number; "size"?: number }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: EventPage };
   "POST /api/v1/admin/events/{id}/tiers": { input: { path: { "id": string }; query?: {  }; body: WriteTier; headers?: Record<string, string>; signal?: AbortSignal }; output: InventoryView };
   "POST /api/v1/admin/events/{id}/publish": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: EventView };
   "POST /api/v1/admin/events/{id}/inventory/redis-reconcile": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<Drift> };
@@ -90,6 +97,8 @@ export interface Operations {
   "GET /api/v1/events/{id}/sections/{sectionId}/seats": { input: { path: { "id": string; "sectionId": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSectionSeats };
   "POST /api/v1/events/{id}/seats/suggest": { input: { path: { "id": string }; query?: {  }; body: SeatReadSuggestRequest; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSuggestion };
   "GET /api/v1/events/{id}/sections/{sectionId}/geometry/{version}": { input: { path: { "id": string; "sectionId": string; "version": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSectionGeometry };
+  "GET /api/v1/admin/events/{id}/sections": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<AdminSection> };
+  "GET /api/v1/admin/events/{id}/sections/{sectionId}/seats": { input: { path: { "id": string; "sectionId": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<AdminSeat> };
 }
 export const endpoints = {
   "PUT /api/v1/admin/tiers/{id}": {
@@ -100,8 +109,16 @@ export const endpoints = {
     "method": "PUT",
     "path": "/api/v1/admin/events/{id}"
   },
+  "GET /api/v1/admin/events/{id}": {
+    "method": "GET",
+    "path": "/api/v1/admin/events/{id}"
+  },
   "PUT /api/v1/admin/events/{id}/waiting-room": {
     "method": "PUT",
+    "path": "/api/v1/admin/events/{id}/waiting-room"
+  },
+  "GET /api/v1/admin/events/{id}/waiting-room": {
+    "method": "GET",
     "path": "/api/v1/admin/events/{id}/waiting-room"
   },
   "POST /api/v1/reservations": {
@@ -162,6 +179,10 @@ export const endpoints = {
   },
   "POST /api/v1/admin/events": {
     "method": "POST",
+    "path": "/api/v1/admin/events"
+  },
+  "GET /api/v1/admin/events": {
+    "method": "GET",
     "path": "/api/v1/admin/events"
   },
   "POST /api/v1/admin/events/{id}/tiers": {
@@ -259,5 +280,13 @@ export const endpoints = {
   "GET /api/v1/events/{id}/sections/{sectionId}/geometry/{version}": {
     "method": "GET",
     "path": "/api/v1/events/{id}/sections/{sectionId}/geometry/{version}"
+  },
+  "GET /api/v1/admin/events/{id}/sections": {
+    "method": "GET",
+    "path": "/api/v1/admin/events/{id}/sections"
+  },
+  "GET /api/v1/admin/events/{id}/sections/{sectionId}/seats": {
+    "method": "GET",
+    "path": "/api/v1/admin/events/{id}/sections/{sectionId}/seats"
   }
 } as const;

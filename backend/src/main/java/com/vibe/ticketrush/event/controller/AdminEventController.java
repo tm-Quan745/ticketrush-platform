@@ -26,6 +26,10 @@ import java.util.UUID;
 public class AdminEventController {
     private final EventService events;
     public AdminEventController(EventService events) { this.events = events; }
+    @GetMapping
+    public EventPage list(@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size) { return events.adminList(page,size); }
+    @GetMapping("/{id}")
+    public EventView detail(@PathVariable UUID id) { return events.adminDetail(id); }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponse(responseCode = "201", description = "Success", useReturnTypeSchema = true)

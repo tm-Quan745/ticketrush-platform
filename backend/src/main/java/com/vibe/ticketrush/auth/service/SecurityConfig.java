@@ -88,7 +88,7 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.POST, "/api/v1/payments/webhook").permitAll();
                     auth.requestMatchers("/api/v1/orders", "/api/v1/orders/**").hasRole("USER");
                     auth.requestMatchers("/actuator/**", "/api/v1/admin/**").hasRole("ADMIN");
-                    auth.requestMatchers("/api/v1/gate/**").hasRole("STAFF");
+                    auth.requestMatchers("/api/v1/gate/**").hasAnyRole("STAFF","ADMIN");
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/me").hasAnyRole("USER", "STAFF", "ADMIN");
                     auth.requestMatchers("/api/v1/reservations", "/api/v1/reservations/**").hasRole("USER");
                     auth.anyRequest().denyAll();

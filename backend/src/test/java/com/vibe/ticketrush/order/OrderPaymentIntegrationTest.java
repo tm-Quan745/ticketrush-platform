@@ -354,7 +354,7 @@ class OrderPaymentIntegrationTest {
         for (String path : List.of("/api/v1/gate/tickets/verify", "/api/v1/gate/tickets/check-in")) {
             assertThat(request("POST", path, body, null, Map.of()).statusCode()).isEqualTo(401);
             assertThat(request("POST", path, body, token(user, "USER"), Map.of()).statusCode()).isEqualTo(403);
-            assertThat(request("POST", path, body, token(user, "ADMIN"), Map.of()).statusCode()).isEqualTo(403);
+            assertThat(request("POST", path, body, token(user, "ADMIN"), Map.of()).statusCode()).isEqualTo(404);
             assertThat(request("POST", path, body, token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(404);
             assertThat(request("POST", path, "{\"ticketCode\":\"\"}", token(user, "STAFF"), Map.of()).statusCode()).isEqualTo(400);
         }
