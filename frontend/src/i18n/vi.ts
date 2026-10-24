@@ -7,6 +7,7 @@ export const vi = {
   navigation: 'Điều hướng chính', adminNavigation: 'Điều hướng quản trị', overview: 'Tổng quan', operations: 'Vận hành', results: 'Kết quả', customer: 'Xem như khách hàng', footer: 'TicketRush · Đặt vé sự kiện',
   sale: 'ĐANG MỞ BÁN', soon: 'SẮP MỞ BÁN', queueBadge: 'PHÒNG CHỜ', book: 'Đặt vé', choose: 'Chọn', quantity: 'Số lượng', hold: 'Giữ vé',
   AVAILABLE: 'Còn vé', LOW: 'Sắp hết vé', SOLD_OUT: 'Hết vé', max: (n: number) => `Tối đa ${n} vé / đơn`, selectedTier: 'Đã chọn hạng vé này',
+  aisleRule: 'Ghế liền nhau phải cùng hàng và không qua lối đi.', gridScroll: 'Cuộn ngang để xem các ghế còn lại; tất cả hàng được hiển thị bên dưới.',
   stadium: 'Sơ đồ sân vận động', stage: 'SÂN KHẤU', chooseSection: 'Chọn khu vực và ghế ngồi', section: 'Khu vực', row: 'Hàng', seat: 'Ghế',
   available: 'Còn trống', selected: 'Đang chọn', unavailable: 'Đã có người giữ hoặc mua', mine: 'Ghế đang giữ của bạn', accessible: 'Ghế hỗ trợ tiếp cận', blocked: 'Không mở bán',
   legend: 'Chú giải ghế', autoPick: 'Tự chọn ghế liền nhau', advisory: 'Gợi ý chưa giữ chỗ. Ghế chỉ được giữ khi bạn xác nhận.',

@@ -1,5 +1,11 @@
 import type { SeatReadSectionGeometry, SeatReadSectionSeats } from '../../api/generated';
 export type Geometry = SeatReadSectionGeometry;
+export function sortedSeats<T extends {rowLabel: string; number: number}>(seats: T[]): T[] {
+  return [...seats].sort((a,b)=>a.rowLabel.localeCompare(b.rowLabel, 'en', {numeric:true}) || a.number-b.number);
+}
+export function aisleBefore(seats: Geometry['seats'], index: number): boolean {
+  return index > 0 && seats[index].rowLabel === seats[index-1].rowLabel && seats[index].adjacencySegment !== seats[index-1].adjacencySegment;
+}
 export function validStatus(geometry: Geometry, status: SeatReadSectionSeats) {
   return status.states.length === geometry.seats.length && /^[AHSB]+$/.test(status.states);
 }

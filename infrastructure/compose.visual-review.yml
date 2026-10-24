@@ -1,0 +1,20 @@
+# Separate named projects/volumes for E2E and clean screenshot data.
+# Supply private credentials with --env-file; never use the measurement project.
+services:
+  postgres:
+    ports: !override []
+  redis:
+    ports: !override []
+  rabbitmq:
+    ports: !override []
+  mailpit:
+    ports: !override []
+  backend:
+    ports: !override []
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DEV_SEED_ENABLED: "false"
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m
+    deploy:
+      resources:
+        limits: {cpus: "2.0", memory: 768M}
