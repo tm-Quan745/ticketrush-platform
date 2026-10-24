@@ -305,7 +305,12 @@ class SeatedInventoryIntegrationTest {
         assertThat(geometry.headers().firstValue("Cache-Control")).contains("public, max-age=31536000, immutable");
         var body=json.readTree(geometry.body());assertThat(body.path("seats")).hasSize(30);
         assertThat(geometry.body()).doesNotContain("status","mine","userId","reservationId");
-        for(var seat:body.path("seats"))assertThat(seat.size()).isEqualTo(6);
+        for(var seat:body.path("seats")) {
+            assertThat(seat.size()).isEqualTo(7);
+            assertThat(seat.path("adjacencySegment").asInt()).isEqualTo(jdbc.queryForObject(
+                "SELECT s.adjacency_segment FROM event_seats es JOIN seats s ON s.id=es.seat_id WHERE es.id=?",
+                Integer.class,UUID.fromString(seat.path("id").asText())));
+        }
         assertThat(status.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length).isLessThan(150);
         System.out.println("M2B_PAYLOAD seats=30 staticBytes="+geometry.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length+" dynamicBytes="+status.body().getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
         hold(user,List.of(seatIds.getFirst()));

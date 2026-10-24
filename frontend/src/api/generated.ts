@@ -45,7 +45,7 @@ export type SeatReadSuggestion = { "eventId": string; "sectionId": string; "tier
 export type SeatReadSeatAssignment = { "id": string; "sectionId": string; "sectionCode": string; "sectionName": string; "rowLabel": string; "number": number; "accessible": boolean };
 export type SeatReadSuggestRequest = { "sectionId": string; "quantity": number; "accessible"?: boolean };
 export type SeatReadSectionGeometry = { "eventId": string; "sectionId": string; "tierId": string; "seats": Array<SeatReadStaticSeat> };
-export type SeatReadStaticSeat = { "id": string; "rowLabel": string; "number": number; "x": number; "y": number; "accessible": boolean };
+export type SeatReadStaticSeat = { "id": string; "rowLabel": string; "number": number; "x": number; "y": number; "accessible": boolean; "adjacencySegment": number };
 
 export interface Operations {
   "PUT /api/v1/admin/tiers/{id}": { input: { path: { "id": string }; query?: {  }; body: WriteTier; headers?: Record<string, string>; signal?: AbortSignal }; output: InventoryView };

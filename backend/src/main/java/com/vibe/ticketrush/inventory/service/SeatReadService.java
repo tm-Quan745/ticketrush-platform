@@ -57,7 +57,7 @@ public class SeatReadService {
         int a=0,h=0,s=0,b=0;for(Seat seat:seats)switch(seat.status()){case "AVAILABLE"->a++;case "HELD"->h++;case "SOLD"->s++;case "BLOCKED"->b++;default->throw new IllegalStateException("Invalid seat state");}
         return new Counts(seats.size(),seats.size()-b,a,h,s,b);
     }
-    public record StaticSeat(UUID id,String rowLabel,int number,double x,double y,boolean accessible) {}
+    public record StaticSeat(UUID id,String rowLabel,int number,double x,double y,boolean accessible,int adjacencySegment) {}
     public record Geometry(UUID eventId,UUID sectionId,UUID tierId,List<StaticSeat> seats) {}
     public record Wire(String body,String etag) {}
     public record Status(String geometryVersion,String states) {}
@@ -69,7 +69,7 @@ public class SeatReadService {
         catch (com.fasterxml.jackson.core.JsonProcessingException ex) {throw new IllegalStateException(ex);}
     }
     private Wire geometry(UUID event,UUID section,UUID tier,List<Seat> seats) {
-        return wire(new Geometry(event,section,tier,seats.stream().map(s->new StaticSeat(s.id(),s.rowLabel(),s.number(),s.x(),s.y(),s.accessible())).toList()));
+        return wire(new Geometry(event,section,tier,seats.stream().map(s->new StaticSeat(s.id(),s.rowLabel(),s.number(),s.x(),s.y(),s.accessible(),s.adjacencySegment())).toList()));
     }
     public Wire geometry(UUID event,UUID section,String version) {
         String key=event+":"+section+":"+version;

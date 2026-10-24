@@ -6445,7 +6445,8 @@
           "number",
           "x",
           "y",
-          "accessible"
+          "accessible",
+          "adjacencySegment"
         ],
         "properties": {
           "id": {
@@ -6466,6 +6467,10 @@
           },
           "accessible": {
             "type": "boolean"
+          },
+          "adjacencySegment": {
+            "type": "integer",
+            "description": "Seats are adjacent only within the same row and segment; render an aisle at segment boundaries."
           }
         }
       },
