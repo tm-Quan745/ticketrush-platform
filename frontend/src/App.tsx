@@ -49,9 +49,9 @@ function Router() {
   const adminLayout = can(role, 'admin') && route.layout === 'admin';
   return <div className="min-h-screen bg-slate-950 text-slate-100">
     <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center gap-6 flex-wrap">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex items-center gap-3 sm:gap-6 flex-wrap">
         <Link href="/events" className="text-2xl font-black">TicketRush</Link>
-        <nav className="flex items-center gap-5 flex-1" aria-label={vi.navigation}>
+        <nav className="order-last basis-full sm:order-none sm:basis-auto flex items-center gap-3 sm:flex-1 flex-wrap min-w-0" aria-label={vi.navigation}>
           {role !== 'STAFF' && can(role, 'catalog') && <Link href="/events">{vi.events}</Link>}
           {can(role, 'account') && <><Link href="/account/tickets">{vi.tickets}</Link><Link href="/account/orders">{vi.orders}</Link><Link href="/account/profile">{vi.account}</Link></>}
           {can(role, 'gate') && <Link href="/gate">{vi.gate}</Link>}
@@ -66,7 +66,7 @@ function Router() {
         <Link href="/admin">{vi.overview}</Link><Link href="/admin/events">{vi.events}</Link><Link href="/admin/orders">{vi.orders}</Link>
         <Link href="/admin/operations">{vi.operations}</Link><Link href="/admin/results">{vi.results}</Link><Link href="/events">{vi.customer}</Link>
       </nav></aside>}
-      <main className="flex-1 min-w-0 px-6 py-10" key={pathname}>{page}</main>
+      <main className="flex-1 min-w-0 px-3 sm:px-6 py-6 sm:py-10" key={pathname}>{page}</main>
     </div>
     <footer className="max-w-7xl mx-auto p-6 mt-10 border-t border-slate-800 text-sm text-slate-500">{vi.footer}</footer>
   </div>;

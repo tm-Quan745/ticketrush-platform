@@ -44,4 +44,13 @@ test('stadium component uses server polygons, accessible section controls and no
 });
 
 import {money} from '../frontend/src/pages/shared';
+import {aisleBefore, sortedSeats} from '../frontend/src/features/seating/model';
+test('aisle boundaries use server segments and never insert a gap between rows',()=>{
+ const seats=[{rowLabel:'A',number:1,adjacencySegment:0},{rowLabel:'A',number:2,adjacencySegment:0},{rowLabel:'A',number:3,adjacencySegment:1},{rowLabel:'B',number:1,adjacencySegment:0}] as any;
+ assert.deepEqual(seats.map((_:unknown,i:number)=>aisleBefore(seats,i)),[false,false,true,false]);
+});
+test('checkout sorts a copy by row and numeric seat number',()=>{
+ const seats=[{rowLabel:'B',number:1},{rowLabel:'A',number:10},{rowLabel:'A',number:2}];
+ assert.deepEqual(sortedSeats(seats),[seats[2],seats[1],seats[0]]);assert.equal(seats[0].rowLabel,'B');
+});
 test('server minor-unit amounts use currency scale: VND 1250 and USD 12.50',()=>{assert.match(money(1250,'VND'),/1[.,]250/);assert.match(money(1250,'USD'),/12[.,]50/);});

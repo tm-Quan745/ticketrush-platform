@@ -29,7 +29,7 @@ export default async function setup() {
   const auth = await request('/auth/login', accounts.ADMIN);
   const now = Date.now(); const iso = (offset: number) => new Date(now + offset).toISOString();
   const event = await request('/admin/events', { title: `E2E live purchase ${randomUUID()}`, description: 'Browser test fixture', venueName: 'Test hall', venueAddress: 'Test city', startTime: iso(86400000), endTime: iso(90000000), saleStartTime: iso(-60000), saleEndTime: iso(3600000) }, auth.accessToken);
-  await mkdir('.tmp', { recursive: true }); await mkdir('docs/screenshots', { recursive: true });
+  await mkdir('.tmp', { recursive: true }); await mkdir('.tmp/e2e-screenshots', { recursive: true });
   await writeFile('.tmp/e2e-accounts.json', JSON.stringify({ accounts, eventId: event.id }));
   try {
   await request(`/admin/events/${event.id}/tiers`, { name: 'E2E Standard', price: 10000, currency: 'VND', totalQuantity: 100, maxPerOrder: 2 }, auth.accessToken);

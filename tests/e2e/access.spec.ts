@@ -17,26 +17,26 @@ async function spaVisit(page: Page, path: string) { await page.evaluate(path => 
 test('anonymous private deep link preserves next; public catalog is accessible', async ({ page }) => {
   await page.goto('/events'); await expect(page.getByRole('heading', { name: 'Khám phá sự kiện' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Xem sự kiện', exact: true }).first()).toBeVisible();
-  await page.screenshot({ path: 'docs/screenshots/public.png', fullPage: true });
+  await page.screenshot({ path: '.tmp/e2e-screenshots/public.png', fullPage: true });
   await page.goto('/account/tickets'); await expect(page).toHaveURL(/\/login\?next=%2Faccount%2Ftickets/);
   await page.goto('/admin'); await expect(page).toHaveURL(/\/login\?next=%2Fadmin/);
   await page.goto('/gate'); await expect(page).toHaveURL(/\/login\?next=%2Fgate/);
 });
 test('USER sees account pages and 403 on admin and gate; reload loses credentials', async ({ page }) => {
   await login(page, 'USER', '/account/profile'); await expect(page).toHaveURL(/\/account\/profile$/);
-  await page.screenshot({ path: 'docs/screenshots/user.png', fullPage: true });
+  await page.screenshot({ path: '.tmp/e2e-screenshots/user.png', fullPage: true });
   for (const route of ['/admin', '/admin/events/new', '/gate']) { await spaVisit(page, route); await expect(page.getByRole('heading', { name: '403', exact: true })).toBeVisible(); await expect(page).toHaveURL(new RegExp(route + '$')); }
   expect(await page.evaluate(() => [localStorage.getItem('tr_access_token'), sessionStorage.getItem('tr_refresh_token')])).toEqual([null, null]);
   await page.reload(); await expect(page).toHaveURL(/\/login\?next=/);
 });
 test('STAFF lands at gate and cannot open buyer or admin pages', async ({ page }) => {
   await login(page, 'STAFF', '/account/orders'); await expect(page).toHaveURL(/\/gate$/); await expect(page.getByRole('heading', { name: 'Soát vé tại cổng' })).toBeVisible();
-  await page.screenshot({ path: 'docs/screenshots/staff.png', fullPage: true });
+  await page.screenshot({ path: '.tmp/e2e-screenshots/staff.png', fullPage: true });
   for (const route of ['/admin', '/admin/operations', '/account/tickets']) { await spaVisit(page, route); await expect(page.getByRole('heading', { name: '403', exact: true })).toBeVisible(); }
 });
 test('ADMIN lands at admin, uses operations/results and view as customer without role switching', async ({ page }) => {
   await login(page, 'ADMIN', '/events'); await expect(page).toHaveURL(/\/admin$/); await expect(page.getByRole('heading', { name: 'Quản trị TicketRush' })).toBeVisible();
-  await page.screenshot({ path: 'docs/screenshots/admin.png', fullPage: true });
+  await page.screenshot({ path: '.tmp/e2e-screenshots/admin.png', fullPage: true });
   await page.getByRole('link', { name: 'Vận hành', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Tình trạng hệ thống' })).toBeVisible();
   await page.getByRole('link', { name: 'Kết quả', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Kết quả · Bằng chứng hiệu năng' })).toBeVisible();
   const href = await page.getByRole('link', { name: /Số liệu k6/ }).getAttribute('href'); expect((await page.request.get(href!)).ok()).toBeTruthy();
@@ -53,5 +53,5 @@ test('real purchase: login, queue polling, zone, reserve, pay, ticket QR', async
   await expect(page).toHaveURL(/\/orders\//); await expect(page.getByRole('status')).toHaveText('Đã thanh toán', { timeout: 30000 });
   await expect(page.getByRole('img', { name: /^QR vé/ })).toHaveCount(2);
   expect(calls).toContain(`POST /api/v1/events/${eventId}/waiting-room/join`); expect(calls).toContain(`GET /api/v1/events/${eventId}/waiting-room/status`);
-  await page.screenshot({ path: 'docs/screenshots/purchase.png', fullPage: true });
+  await page.screenshot({ path: '.tmp/e2e-screenshots/purchase.png', fullPage: true });
 });
