@@ -83,6 +83,9 @@ export interface Order {
 }
 
 export interface Ticket {
+  eventTitle?: string;
+  venue?: string;
+  usedAt?: string | null;
   seat?: import('../api/generated').SeatReadSeatAssignment | null;
   id: string;
   orderId: string;

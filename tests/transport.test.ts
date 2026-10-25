@@ -28,3 +28,12 @@ test('tokens are never written to browser storage', async () => {
   assert.deepEqual(writes, []); assert.equal(new ApiClient().getToken(), null);
 });
 
+
+test('Spring void endpoints accept empty 200 and 204 while malformed JSON still fails', async () => {
+  for (const status of [200, 204]) {
+    globalThis.fetch = async () => new Response(null, { status });
+    assert.equal(await new ApiClient().request('/admin/events/event/section-tiers', {method: 'PUT'}), undefined);
+  }
+  globalThis.fetch = async () => new Response('{broken', {status: 200});
+  await assert.rejects(new ApiClient().request('/admin/events'), SyntaxError);
+});

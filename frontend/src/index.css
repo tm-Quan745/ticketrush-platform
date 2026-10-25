@@ -8,6 +8,11 @@
 .seat-row-label { position:sticky; left:0; width:48px; flex-shrink:0; z-index:2; background:#020617; color:#f8fafc; padding:8px; }
 .seat-cell { width:36px; height:36px; flex-shrink:0; }
 .seat-cell[data-aisle=true] { margin-left:24px; }
+@media print {
+  body * { visibility:hidden; }
+  .print-ticket, .print-ticket * { visibility:visible; }
+  .print-ticket { position:fixed; inset:0; padding:16px; background:white; color:black; overflow:visible; }
+}
 @media(pointer:coarse) { .seat-cell { width:44px; height:44px; } }
 .selection-summary { position:sticky; bottom:0; z-index:20; padding:12px; border:1px solid #6366f1; border-radius:16px; background:#0f172a; color:#f8fafc; box-shadow:0 -4px 20px #02061766; }
 html .checkout-primary { background:#4338ca !important; color:#fff !important; opacity:1; transition:none; }

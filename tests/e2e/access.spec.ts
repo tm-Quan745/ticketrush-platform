@@ -37,11 +37,11 @@ test('STAFF lands at gate and cannot open buyer or admin pages', async ({ page }
 test('ADMIN lands at admin, uses operations/results and view as customer without role switching', async ({ page }) => {
   await login(page, 'ADMIN', '/events'); await expect(page).toHaveURL(/\/admin$/); await expect(page.getByRole('heading', { name: 'Quản trị TicketRush' })).toBeVisible();
   await page.screenshot({ path: '.tmp/e2e-screenshots/admin.png', fullPage: true });
-  await page.getByRole('link', { name: 'Vận hành', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Tình trạng hệ thống' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Điều hướng quản trị' }).getByRole('link', { name: 'Vận hành', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Tình trạng hệ thống' })).toBeVisible();
   await page.getByRole('link', { name: 'Kết quả', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Kết quả · Bằng chứng hiệu năng' })).toBeVisible();
   const href = await page.getByRole('link', { name: /Số liệu k6/ }).getAttribute('href'); expect((await page.request.get(href!)).ok()).toBeTruthy();
   await page.getByRole('link', { name: 'Xem như khách hàng' }).click(); await expect(page).toHaveURL(/\/events$/);
-  await spaVisit(page, '/gate'); await expect(page.getByRole('heading', { name: '403', exact: true })).toBeVisible();
+  await spaVisit(page, '/gate'); await expect(page.getByRole('heading', { name: 'Soát vé tại cổng', exact: true })).toBeVisible();
 });
 test('real purchase: login, queue polling, zone, reserve, pay, ticket QR', async ({ page }) => {
   const { eventId } = fixture(); const calls: string[] = []; page.on('request', r => { if (r.url().includes('/api/')) calls.push(r.method() + ' ' + new URL(r.url()).pathname); });

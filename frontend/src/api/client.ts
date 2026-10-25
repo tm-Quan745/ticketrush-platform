@@ -2,6 +2,7 @@ import { vi } from '../i18n/vi';
 import { Event, TicketTier, Reservation, Order, Ticket, WaitingRoomStatus, InventoryViolation, User } from '../types';
 import type { Operations } from './generated';
 import { endpoints } from './generated';
+import {allPages,type Page} from './pagination';
 
 export function retryAfter(value: string | null): number | undefined {
   if (!value) return undefined;
@@ -69,7 +70,9 @@ export class ApiClient {
       throw new ApiError(response.status, data, retryAfter(response.headers.get('Retry-After')));
     }
     if (response.status === 204) return undefined as T;
-    const data = await response.json();
+    const body = await response.text();
+    if (!body.trim()) return undefined as T;
+    const data = JSON.parse(body);
     if (data && typeof data === 'object') { Object.defineProperty(data, 'retryAfterMs', { value: retryAfter(response.headers.get('Retry-After')), enumerable: false }); Object.defineProperty(data, 'etag', { value: response.headers.get('ETag'), enumerable: false }); }
     return data;
   }
@@ -139,8 +142,8 @@ export class ApiClient {
     return this.call('POST /api/v1/reservations',{body:{tierId,quantity},headers:admissionToken?{'X-Admission-Token':admissionToken}:{}}) as Promise<Reservation>;
   }
 
-  async getMyReservations(): Promise<{ content: Reservation[] }> {
-    return this.call('GET /api/v1/reservations/me',{}) as Promise<{content:Reservation[]}>;
+  async getMyReservations(page=0): Promise<Page<Reservation>> {
+    return this.call('GET /api/v1/reservations/me',{query:{page,size:50}}) as Promise<Page<Reservation>>;
   }
 
   async cancelReservation(id: string): Promise<void> {
@@ -154,9 +157,16 @@ export class ApiClient {
     return this.call('POST /api/v1/orders',{body:{reservationId},headers:{'Idempotency-Key':idempotencyKey||crypto.randomUUID()}}) as Promise<Order>;
   }
 
-  async getMyOrders(): Promise<{ content: Order[] }> {
-    return this.call('GET /api/v1/orders/me',{}) as Promise<{content:Order[]}>;
+  async getMyOrders(page=0): Promise<Page<Order>> {
+    return this.call('GET /api/v1/orders/me',{query:{page,size:50}}) as Promise<Page<Order>>;
   }
+  allMyOrders(){return allPages(page=>this.getMyOrders(page));}
+  allMyReservations(){return allPages(page=>this.getMyReservations(page));}
+  allAdminEvents(){return allPages(page=>this.call('GET /api/v1/admin/events',{query:{page,size:50}}) as Promise<Page<Event>>);}
+  adminEvent(id:string){return this.call('GET /api/v1/admin/events/{id}',{path:{id}}) as Promise<Event>;}
+  adminSections(id:string){return this.call('GET /api/v1/admin/events/{id}/sections',{path:{id}});}
+  adminSeats(id:string,sectionId:string){return this.call('GET /api/v1/admin/events/{id}/sections/{sectionId}/seats',{path:{id,sectionId}});}
+  allAdminOrders(){return allPages(page=>this.request<Page<Order>>(`/admin/orders?page=${page}&size=50`));}
 
   async getOrderTickets(orderId: string): Promise<Ticket[]> {
     const [tickets, order] = await Promise.all([
@@ -249,6 +259,7 @@ export class ApiClient {
 
   async getHealth(): Promise<any> {
     const res = await fetch('/actuator/health');
+    if(!res.ok)throw new Error(vi.failure);
     return res.json();
   }
 

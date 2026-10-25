@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import QRCode from 'qrcode';
+import {TicketPass} from '../features/tickets/components/TicketPass';
+import {TicketWallet} from '../components/TicketWallet';
 import { api, ApiError, pollDelay } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { navigate } from '../access/navigation';
@@ -40,7 +41,7 @@ export function EventPage({id,select=false}:{id:string;select?:boolean}) {
  const [tierId,setTierId]=useState(''),[quantity,setQuantity]=useState(1),[failure,setFailure]=useState(''),[busy,setBusy]=useState(false);const [own,setOwn]=useState<Reservation[]>([]);
  const {user}=useAuth();const tier=value?.tiers.find(t=>t.id===(section?.tierId||tierId));
  useEffect(()=>{if(!value?.event.venueId)return;const controller=new AbortController();api.seatmap(id,controller.signal).then(data=>{if(!controller.signal.aborted)setMap(data);}).catch(e=>{if(!controller.signal.aborted)setFailure(message(e));});return()=>controller.abort();},[id,value?.event.venueId]);
- useEffect(()=>{if(!select||!user)return;let alive=true;api.getMyReservations().then(data=>{if(alive)setOwn(data.content.filter(r=>r.eventId===id));}).catch(()=>{});return()=>{alive=false;};},[id,select,user?.id]);
+ useEffect(()=>{if(!select||!user)return;let alive=true;api.allMyReservations().then(data=>{if(alive)setOwn(data.filter(r=>r.eventId===id));}).catch(e=>{if(alive)setFailure(message(e));});return()=>{alive=false;};},[id,select,user?.id]);
  function admission(){navigate(`/events/${id}/queue`);}
  function open(s:SeatReadSectionOverview){if(!select){admission();return;}setSection(s);setTierId(s.tierId);setQuantity(1);setFailure('');}
  async function reserve(){if(!tier)return;setBusy(true);setFailure('');try{navigate(`/checkout/${(await api.createReservation(tier.id,quantity,admissions.get(id))).id}`);}catch(e){if(['WAITING_ROOM_REQUIRED','ADMISSION_REQUIRED'].includes((e as ApiError).data?.code))admission();else setFailure(message(e));}finally{setBusy(false);}}
@@ -74,16 +75,11 @@ export function CheckoutPage({id}:{id:string}) {
  <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5"><h2 className="font-bold">{detail?.event.title}</h2><p>{hold?.tierName}</p><p>{vi.quantity}: {hold?.quantity} · {stateLabel(hold?.status)}</p>{sortedSeats(hold?.seats||[]).map(seat=><p key={seat.id}>{seat.sectionName} · {vi.seatLabel(seat.rowLabel,seat.number)}</p>)}{hold?.unitPrice!==undefined&&<p className="text-2xl font-black my-3">{money(hold.quantity*hold.unitPrice,hold.currency||'VND')}</p>}</div>
  <p className="text-sm text-slate-400">{vi.gateway}</p><Button onClick={pay} isLoading={busy} disabled={!hold||!remaining||hold.status!=='HELD'} className="checkout-primary w-full min-h-11">{vi.pay}</Button>{hold&&!remaining&&<Link href={`/events/${hold.eventId}/queue`}>{vi.book}</Link>}</div></Modal>;
 }
-function TicketQR({ticket}:{ticket:Ticket}) {
- const [image,setImage]=useState('');useEffect(()=>{let active=true;QRCode.toDataURL(ticket.ticketCode,{width:220}).then(data=>{if(active)setImage(data);});return()=>{active=false;};},[ticket.ticketCode]);
- return <article className="rounded-3xl bg-gradient-to-br from-indigo-950 to-slate-900 border border-indigo-500/30 overflow-hidden"><div className="p-6 border-b-2 border-dashed border-slate-600"><TicketIcon className="text-indigo-400 mb-3"/><h2 className="text-xl font-black">{ticket.tierName}</h2><p>{stateLabel(ticket.status)}</p>{ticket.seat&&<p className="mt-3" data-testid="ticket-seat">{ticket.seat.sectionName} · {vi.seatLabel(ticket.seat.rowLabel,ticket.seat.number)}</p>}</div><div className="p-6">{image&&<img className="rounded-xl mx-auto" src={image} alt={`${vi.qr} ${ticket.ticketCode}`}/>}<p className="break-all text-xs mt-4 text-slate-400">{ticket.ticketCode}</p></div></article>;
-}
 export function OrderPage({id}:{id:string}) {
  const [order,setOrder]=useState<Order>(),[tickets,setTickets]=useState<Ticket[]>([]),[error,setError]=useState('');
  useEffect(()=>{let attempt=0;return startPolling(async signal=>{try{const data=await api.getOrder(id,signal);if(signal.aborted)return;setOrder(data);setError('');if(data.status==='PAID'){const issued=await api.getOrderTickets(id);if(!signal.aborted)setTickets(issued);return{stop:true};}if(data.status!=='PENDING_PAYMENT')return{stop:true};return{retryAfterMs:Math.max((data as Order & {retryAfterMs?:number}).retryAfterMs||0,Math.min(10000,1000*2**attempt++))};}catch(e){if(!signal.aborted)setError(message(e));throw e;}},undefined,1000);},[id]);
- return <><h1 className="text-3xl font-black">{vi.order}</h1><p role="status" className="my-6 text-emerald-400">{stateLabel(order?.status)}</p><ErrorMessage message={error}/>{order&&<p className="mb-5 text-xl">{money(order.totalAmount,order.currency)}</p>}<div className="grid md:grid-cols-3 gap-5">{tickets.map(ticket=><TicketQR key={ticket.id} ticket={ticket}/>)}</div><p className="mt-6"><Link href="/account/tickets">{vi.wallet}</Link></p></>;
+ return <><h1 className="text-3xl font-black">{vi.order}</h1><p role="status" className="my-6 text-emerald-400">{stateLabel(order?.status)}</p><ErrorMessage message={error}/>{order&&<p className="mb-5 text-xl">{money(order.totalAmount,order.currency)}</p>}<div className="grid md:grid-cols-3 gap-5">{tickets.map(ticket=><TicketPass key={ticket.id} ticket={ticket}/>)}</div><p className="mt-6"><Link href="/account/tickets">{vi.wallet}</Link></p></>;
 }
 export function AccountPage({kind}:{kind:string}) {
- const {user}=useAuth();const {value,error}=useLoad(kind,async()=>kind==='profile'?[]:(await api.getMyOrders()).content);
- return <><h1 className="text-3xl font-bold">{kind==='profile'?vi.profile:kind==='tickets'?vi.tickets:vi.orders}</h1><ErrorMessage message={error?vi.failure:''}/>{kind==='profile'?<Card className="mt-5">{user?.email}</Card>:<div className="grid gap-4 mt-6">{value?.filter(o=>kind!=='tickets'||o.status==='PAID').map(order=><Card key={order.id}><Link href={`/orders/${order.id}`}>{order.id}</Link><p>{stateLabel(order.status)} · {money(order.totalAmount,order.currency)}</p></Card>)}</div>}</>;
+ const {user}=useAuth();return kind==='profile'?<><h1 className="text-3xl font-bold">{vi.profile}</h1><Card className="mt-5">{user?.email}</Card></>:<TicketWallet initialTab={kind==='orders'?'orders':'tickets'}/>;
 }

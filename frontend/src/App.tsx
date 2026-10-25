@@ -63,7 +63,7 @@ function Router() {
     </header>
     <div className="max-w-7xl mx-auto flex flex-col md:flex-row">
       {adminLayout && <aside className="w-full md:w-56 p-6 border-r border-slate-800"><nav className="flex flex-col gap-5" aria-label={vi.adminNavigation}>
-        <Link href="/admin">{vi.overview}</Link><Link href="/admin/events">{vi.events}</Link><Link href="/admin/orders">{vi.orders}</Link>
+        <Link href="/admin">{vi.overview}</Link><Link href="/admin/events">{vi.events}</Link><Link href="/admin/orders">{vi.allOrders}</Link>
         <Link href="/admin/operations">{vi.operations}</Link><Link href="/admin/results">{vi.results}</Link><Link href="/events">{vi.customer}</Link>
       </nav></aside>}
       <main className="flex-1 min-w-0 px-3 sm:px-6 py-6 sm:py-10" key={pathname}>{page}</main>

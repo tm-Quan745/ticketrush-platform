@@ -4,7 +4,7 @@ export const permissions = ['catalog', 'buy', 'account', 'gate', 'admin'] as con
 export type Permission = typeof permissions[number];
 const grants: Record<Role, readonly Permission[]> = {
   PUBLIC: ['catalog'], USER: ['catalog', 'buy', 'account'],
-  STAFF: ['catalog', 'gate'], ADMIN: ['catalog', 'admin'],
+  STAFF: ['catalog', 'gate'], ADMIN: ['catalog', 'gate', 'admin'],
 };
 export const can = (role: Role, permission: Permission) => grants[role]?.includes(permission) ?? false;
 export function safeNext(value: string | null | undefined): string | null {
