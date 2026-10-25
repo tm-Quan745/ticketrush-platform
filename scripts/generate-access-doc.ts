@@ -98,16 +98,20 @@ files and that env file to preserve its ports and volumes. See frontend-verifica
 for the older stack context; M3a results and screenshot comparison are in
 [m3a-buyer-visuals.md](m3a-buyer-visuals.md).
 
-## Screenshots from real Playwright sessions
+## Screenshots from the isolated clean dev-seated review stack
 
-![PUBLIC](screenshots/public.png)
-![USER](screenshots/user.png)
-![STAFF](screenshots/staff.png)
-![ADMIN](screenshots/admin.png)
-![Seat map](screenshots/seat-map.png)
-![Checkout modal](screenshots/checkout.png)
-![Wallet navigation (visual migration deferred to M3b)](screenshots/wallet.png)
-![Purchase and issued QR tickets](screenshots/purchase.png)
+See [M3b verification](m3b-role-visuals.md) and screenshots/m3b/provenance.json.
+These images do not use the E2E or measurement database.
+
+![PUBLIC](screenshots/m3b/public.png)
+![USER](screenshots/m3b/user.png)
+![STAFF](screenshots/m3b/staff-gate.png)
+![ADMIN](screenshots/m3b/admin-dashboard.png)
+![Seat map](screenshots/m3b/seat-map.png)
+![Checkout](screenshots/m3b/checkout.png)
+![Wallet](screenshots/m3b/wallet.png)
+![Admin seat management](screenshots/m3b/admin-seat-management.png)
+![Operations](screenshots/m3b/operations.png)
 `);
 
 
