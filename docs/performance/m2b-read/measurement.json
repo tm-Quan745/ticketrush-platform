@@ -1,0 +1,158 @@
+{
+  "commit": "c686108591437927ca22869d9c0fd58b0d4dc406",
+  "dirty": "?? docs/m2b-seat-read.md",
+  "docker": "29.3.1",
+  "startedAt": "2026-10-22T12:38:43.305Z",
+  "runs": [
+    {
+      "id": "m2b-read-200-1",
+      "rate": 200,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 0,
+      "successful": 12000,
+      "offered": 12000,
+      "dropped": 0,
+      "workMinimum": true,
+      "k6p95Ms": 3.1351734499999986,
+      "serverHistogramP95Ms": 2.6897051015624998,
+      "serverRequests": 12000,
+      "server5xx": 0,
+      "cacheHits": 12000,
+      "cacheRebuilds": 0,
+      "cacheHitRatio": 1
+    },
+    {
+      "id": "m2b-read-400-1",
+      "rate": 400,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 23999,
+      "offered": 24000,
+      "dropped": 2,
+      "workMinimum": false,
+      "k6p95Ms": 3.6972813999999987,
+      "serverHistogramP95Ms": 3.180036515306121,
+      "serverRequests": 23999,
+      "server5xx": 0,
+      "cacheHits": 23999,
+      "cacheRebuilds": 0,
+      "cacheHitRatio": 1
+    },
+    {
+      "id": "m2b-read-200-2",
+      "rate": 200,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 0,
+      "successful": 12000,
+      "offered": 12000,
+      "dropped": 0,
+      "workMinimum": true,
+      "k6p95Ms": 3.846813449999997,
+      "serverHistogramP95Ms": 3.2667154230769233,
+      "serverRequests": 12000,
+      "server5xx": 0,
+      "cacheHits": 12000,
+      "cacheRebuilds": 0,
+      "cacheHitRatio": 1
+    },
+    {
+      "id": "m2b-read-400-2",
+      "rate": 400,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 0,
+      "successful": 24000,
+      "offered": 24000,
+      "dropped": 0,
+      "workMinimum": true,
+      "k6p95Ms": 7.5881253499999985,
+      "serverHistogramP95Ms": 6.839101891707316,
+      "serverRequests": 24000,
+      "server5xx": 0,
+      "cacheHits": 24000,
+      "cacheRebuilds": 0,
+      "cacheHitRatio": 1
+    },
+    {
+      "id": "m2b-read-200-3",
+      "rate": 200,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 0,
+      "successful": 12001,
+      "offered": 12000,
+      "dropped": 0,
+      "workMinimum": true,
+      "k6p95Ms": 8.779639,
+      "serverHistogramP95Ms": 7.894576534701488,
+      "serverRequests": 12001,
+      "server5xx": 0,
+      "cacheHits": 12001,
+      "cacheRebuilds": 0,
+      "cacheHitRatio": 1
+    },
+    {
+      "id": "m2b-read-400-3",
+      "rate": 400,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 0,
+      "successful": 24001,
+      "offered": 24000,
+      "dropped": 0,
+      "workMinimum": true,
+      "k6p95Ms": 9.494875,
+      "serverHistogramP95Ms": 8.589928747770156,
+      "serverRequests": 24001,
+      "server5xx": 0,
+      "cacheHits": 24001,
+      "cacheRebuilds": 0,
+      "cacheHitRatio": 1
+    }
+  ],
+  "warmup": {
+    "durationSeconds": 60,
+    "rate": 200,
+    "counted": false
+  },
+  "containers": [
+    {
+      "name": "/ticketrush-m2-read-backend-1",
+      "image": "sha256:4e0cc26f9d9eeda69338e8ecb35c6dd9c826ffdd202357c090f88ddc0f7b8436",
+      "cpuLimit": 6,
+      "memoryLimitBytes": 1073741824
+    },
+    {
+      "name": "/ticketrush-m2-read-rabbitmq-1",
+      "image": "sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3",
+      "cpuLimit": 1,
+      "memoryLimitBytes": 536870912
+    },
+    {
+      "name": "/ticketrush-m2-read-postgres-1",
+      "image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "cpuLimit": 2,
+      "memoryLimitBytes": 1073741824
+    },
+    {
+      "name": "/ticketrush-m2-read-redis-1",
+      "image": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "cpuLimit": 1,
+      "memoryLimitBytes": 268435456
+    },
+    {
+      "name": "/ticketrush-m2-read-mailpit-1",
+      "image": "sha256:079759020faa42e243a07aaa3e31086de70e93e78b02b844e4149e0108dd5428",
+      "cpuLimit": 0.5,
+      "memoryLimitBytes": 134217728
+    }
+  ],
+  "k6Cap": {
+    "cpus": 3,
+    "memoryBytes": 536870912
+  },
+  "finishedAt": "2026-10-22T12:46:21.850Z"
+}

@@ -1,0 +1,16 @@
+**
+!package.json
+!package-lock.json
+!tsconfig.json
+!vite.config.ts
+!index.html
+!server.ts
+!frontend
+!frontend/src
+!frontend/src/**
+!docs
+!docs/performance
+!docs/performance/results
+!docs/performance/results/finish-sellout-20-2.json
+!docs/performance/results/finish-sellout-20-2-verify.json
+

@@ -1,0 +1,108 @@
+import { extraText } from '../../../i18n/vi';
+import { vi } from '../../../i18n/vi';
+import React, { useState, useEffect } from 'react';
+import { Clock, Zap } from 'lucide-react';
+
+interface CountdownTimerProps {
+  targetDate: string;
+  label?: string;
+  onExpire?: () => void;
+  showMilliseconds?: boolean;
+}
+
+export const CountdownTimer: React.FC<CountdownTimerProps> = ({
+  targetDate,
+  label = vi.saleCountdown,
+  onExpire,
+  showMilliseconds = true,
+}) => {
+  const calculateTimeLeft = () => {
+    const diff = new Date(targetDate).getTime() - Date.now();
+    if (diff <= 0) {
+      return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0, ms: 0 };
+    }
+    return {
+      total: diff,
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / 1000 / 60) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+      ms: Math.floor((diff % 1000) / 10),
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = calculateTimeLeft();
+      setTimeLeft(remaining);
+      if (remaining.total <= 0) {
+        clearInterval(interval);
+        onExpire?.();
+      }
+    }, showMilliseconds ? 33 : 1000);
+
+    return () => clearInterval(interval);
+  }, [targetDate, showMilliseconds]);
+
+  if (timeLeft.total <= 0) {
+    return (
+      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono text-xs font-bold animate-pulse">
+        <Zap className="w-3.5 h-3.5" />
+        <span>{vi.sale}</span>
+      </div>
+    );
+  }
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  return (
+    <div className="flex flex-col items-center sm:items-start text-slate-200">
+      {label && (
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1 font-mono">
+          <Clock className="w-3 h-3 text-indigo-400" />
+          {label}
+        </span>
+      )}
+      <div className="flex items-center gap-1.5 font-mono">
+        {timeLeft.days > 0 && (
+          <>
+            <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
+              <span className="text-lg font-black text-white">{pad(timeLeft.days)}</span>
+              <span className="text-[9px] text-slate-500 uppercase">{vi.days}</span>
+            </div>
+            <span className="text-slate-600 font-bold">:</span>
+          </>
+        )}
+
+        <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
+          <span className="text-lg font-black text-white">{pad(timeLeft.hours)}</span>
+          <span className="text-[9px] text-slate-500 uppercase">{vi.hours}</span>
+        </div>
+        <span className="text-slate-600 font-bold">:</span>
+
+        <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
+          <span className="text-lg font-black text-white">{pad(timeLeft.minutes)}</span>
+          <span className="text-[9px] text-slate-500 uppercase">{vi.minutes}</span>
+        </div>
+        <span className="text-slate-600 font-bold">:</span>
+
+        <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
+          <span className="text-lg font-black text-amber-400">{pad(timeLeft.seconds)}</span>
+          <span className="text-[9px] text-slate-500 uppercase">{vi.seconds}</span>
+        </div>
+
+        {showMilliseconds && (
+          <>
+            <span className="text-slate-600 font-bold">:</span>
+            <div className="flex flex-col items-center bg-rose-950/60 border border-rose-800/80 px-2 py-1.5 rounded-xl shadow-inner min-w-[36px]">
+              <span className="text-base font-black text-rose-400">{pad(timeLeft.ms)}</span>
+              <span className="text-[9px] text-rose-500/80 uppercase font-mono">{extraText.s7}</span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};

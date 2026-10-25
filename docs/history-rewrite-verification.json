@@ -1,0 +1,276 @@
+{
+  "date": "2026-10-23",
+  "branch": "codex/pre-push-security-gate",
+  "backup": {
+    "path": "D:/My pro/ticketrush-platform-pre-rewrite-20261023.git",
+    "independentMirror": true,
+    "fsckExit": 0
+  },
+  "filterRepo": "2.47.0",
+  "topology": {
+    "originalCommits": 137,
+    "mergeCommits": 12,
+    "parentEdgeMismatches": []
+  },
+  "commitMapSha256": "5481d9fba258c5f0c23b632e429a58d141c86b5f51b49e7c11d328d06c2ce8df",
+  "sourceTreesUnchanged": {
+    "backend": "4a5cc8720a7e60011fa3b46b2ba45ae17d5b062c",
+    "frontend": "1984f3d9d037e01c26f2fe8340d9e528f4d2cf7d"
+  },
+  "credentials": {
+    "runtimePaths": [
+      "loadtest/.data/admin.json",
+      "loadtest/.data/admissions.json",
+      "loadtest/.data/calibration-staircase-3-queue-config-10.json",
+      "loadtest/.data/calibration-staircase-3-queue-config-20.json",
+      "loadtest/.data/calibration-staircase-4-queue-config-10.json",
+      "loadtest/.data/dataset.json",
+      "loadtest/.data/finish-sellout-20-1-queue-config-20.json",
+      "loadtest/.data/finish-sellout-20-2-queue-config-20.json",
+      "loadtest/.data/users.json"
+    ],
+    "jfrPaths": [
+      "docs/performance/results/baseline-C-1.jfr",
+      "docs/performance/results/final-C-1.jfr",
+      "docs/performance/results/iteration1-C-1.jfr",
+      "docs/performance/results/stress-1.jfr"
+    ],
+    "uniqueJwtCount": 5001,
+    "uniqueFixturePasswordCount": 1,
+    "jwtRoles": [
+      "ADMIN",
+      "USER"
+    ],
+    "matchingJwtConfigurations": {
+      ".tools\\week7.env": 5001
+    },
+    "matchingPasswordKeys": {
+      ".env": [],
+      ".env.frontend.local": [],
+      ".tools\\week7.env": [
+        "LOADTEST_PASSWORD"
+      ],
+      ".tmp\\m2-measure\\private.env": [],
+      ".tmp\\m2b-measure\\private.env": []
+    },
+    "latestJwtExpiryUtc": "2026-10-19T10:52:49+00:00",
+    "checkedConfigurationPaths": [
+      ".env",
+      ".env.frontend.local",
+      ".tools\\week7.env",
+      ".tmp\\m2-measure\\private.env",
+      ".tmp\\m2b-measure\\private.env"
+    ],
+    "secretsPrinted": false
+  },
+  "rotationPerformed": false,
+  "requiredRotationKeys": [
+    "JWT_SECRET",
+    "LOADTEST_PASSWORD"
+  ],
+  "scanAfterRewrite": {
+    "mode": "all-reachable-unique-blobs",
+    "image": "zricethezav/gitleaks@sha256:e1b35e12a8c6fa8901f060459cfb6b2fc4c484d3afbe3b029733a3bbfab07055",
+    "rules": "gitleaks 8.24.3 defaults; no custom allowlist; ignore allow comments",
+    "head": "67000fd48c28a9eba35bb3ff977e978605c3e4df",
+    "reachableCommits": 137,
+    "uniqueBlobs": 2433,
+    "exportedBytes": 58943959,
+    "exitCode": 0,
+    "findings": 0,
+    "byRule": {},
+    "findingPaths": [],
+    "durationSeconds": 78.43,
+    "reportSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "hook": {
+    "installed": true,
+    "syntheticJwtRejected": true,
+    "positiveProbeExit": 1,
+    "cleanCommitExit": 0
+  },
+  "ciWorkflowRunRemotely": false,
+  "backend": {
+    "command": "mvn -B -ntp -f backend/pom.xml clean verify",
+    "defaultExcludedTag": "benchmark",
+    "firstAttempt": {
+      "tests": 188,
+      "failures": 0,
+      "errors": 1,
+      "error": "SeatedInventoryIntegrationTest.expiryAndCancellationReleaseExactlyOnce: setup TRUNCATE deadlock",
+      "elapsed": "04:44 min"
+    },
+    "finalAttempt": {
+      "exitCode": 0,
+      "elapsed": "04:08 min",
+      "tests": 188,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "classes": [
+        {
+          "class": "com.vibe.ticketrush.auth.AuthIntegrationTest",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 36.32
+        },
+        {
+          "class": "com.vibe.ticketrush.common.controller.GlobalExceptionHandlerTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 0.03
+        },
+        {
+          "class": "com.vibe.ticketrush.common.redis.RedisGuardTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 0.079
+        },
+        {
+          "class": "com.vibe.ticketrush.event.EventInventoryIntegrationTest",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 10.007
+        },
+        {
+          "class": "com.vibe.ticketrush.event.MigrationIntegrationTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 3.523
+        },
+        {
+          "class": "com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+          "tests": 73,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 32.363
+        },
+        {
+          "class": "com.vibe.ticketrush.observability.ObservabilityIntegrationTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 7.111
+        },
+        {
+          "class": "com.vibe.ticketrush.order.MockGatewayIntegrationTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 18.043
+        },
+        {
+          "class": "com.vibe.ticketrush.order.OrderPaymentIntegrationTest",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 17.735
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.ConditionalReservationIntegrationTest",
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 9.652
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.OptimisticReservationIntegrationTest",
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 11.81
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.OrderSmallPoolIntegrationTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 6.505
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.OutboxDeliveryIntegrationTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 22.76
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.OutboxIntegrationTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 5.394
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.PessimisticReservationIntegrationTest",
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 12.468
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.ReservationStatusTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 0.001
+        },
+        {
+          "class": "com.vibe.ticketrush.reservation.Week6RedisIntegrationTest",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": 39.502
+        }
+      ]
+    }
+  },
+  "frontend": {
+    "lintExit": 0,
+    "unitPassed": 49,
+    "unitFailed": 0,
+    "buildExit": 0
+  },
+  "countObjectsBefore": "count: 4892\nsize: 65.28 MiB\nin-pack: 113\npacks: 1\nsize-pack: 197.74 KiB\nprune-packable: 0\ngarbage: 6\nsize-garbage: 2.00 MiB\n",
+  "countObjectsAfterRewrite": "count: 48\nsize: 89.96 KiB\nin-pack: 3885\npacks: 1\nsize-pack: 4.46 MiB\nprune-packable: 0\ngarbage: 0\nsize-garbage: 0 bytes\n",
+  "remoteAdded": false,
+  "pushPerformed": false,
+  "scanIncludingSecurityCommits": {
+    "mode": "all-reachable-unique-blobs",
+    "image": "zricethezav/gitleaks@sha256:e1b35e12a8c6fa8901f060459cfb6b2fc4c484d3afbe3b029733a3bbfab07055",
+    "rules": "gitleaks 8.24.3 defaults; no custom allowlist; ignore allow comments",
+    "head": "e143669861a960cee50e503619d6884d710ef032",
+    "reachableCommits": 140,
+    "uniqueBlobs": 2465,
+    "exportedBytes": 59240009,
+    "exitCode": 0,
+    "findings": 0,
+    "byRule": {},
+    "findingPaths": [],
+    "durationSeconds": 70.23,
+    "reportSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "finalReportNote": "This committed snapshot precedes its own evidence commit. The post-evidence full scan is retained in ignored .tmp/security-gate/final-history-summary.json; reporting commits also pass the staged hook."
+}

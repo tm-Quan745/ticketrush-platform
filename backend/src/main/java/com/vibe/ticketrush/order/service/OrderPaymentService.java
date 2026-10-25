@@ -18,13 +18,15 @@ import java.util.UUID;
 @Service
 @Transactional(propagation=Propagation.MANDATORY)
 public class OrderPaymentService implements PaymentOrderOperations {
+    private final com.vibe.ticketrush.inventory.service.SeatingOperations seats;
     private final OrderRepository orders;
     private final PurchaseReservation reservations;
     private final PaymentOperations payments;
     private final PaymentProperties properties;
     private final Clock clock;
     private final OutboxPublisher outbox;
-    public OrderPaymentService(OrderRepository orders,PurchaseReservation reservations,PaymentOperations payments,PaymentProperties properties,Clock clock,OutboxPublisher outbox) {
+    public OrderPaymentService(OrderRepository orders,PurchaseReservation reservations,PaymentOperations payments,PaymentProperties properties,Clock clock,OutboxPublisher outbox,com.vibe.ticketrush.inventory.service.SeatingOperations seats) {
+        this.seats=seats;
         this.orders=orders; this.reservations=reservations; this.payments=payments; this.properties=properties; this.clock=clock; this.outbox=outbox;
     }
     public void lock(UUID id) { reservations.lock(orders.get(id).reservationId()); orders.lock(id); }
@@ -42,7 +44,7 @@ public class OrderPaymentService implements PaymentOrderOperations {
             // Lazy expiry may have transitioned the order synchronously.
             order=orders.get(id);
             orders.transition(id,order.status(),OrderStatus.PAID,clock.instant());
-            orders.issue(id,clock.instant());
+            orders.issue(id,clock.instant(),seats.ticketSeats(hold.id()));
             outbox.publish("order.paid","order",id,new EventPayloads.Order(id,order.userId()));
             outbox.publish("ticket.issued","order",id,new EventPayloads.TicketIssued(id,order.userId()));
         } else {
@@ -64,6 +66,7 @@ public class OrderPaymentService implements PaymentOrderOperations {
     public void refunded(UUID id) {
         var order=orders.get(id);
         if (order.status()!=OrderStatus.REFUND_PENDING) throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY,"UNEXPECTED_REFUND","Refund was not requested");
+        if (orders.hasUsedTickets(id)) { orders.review(id); return; }
         var hold=reservations.lock(order.reservationId());
         orders.transition(id,OrderStatus.REFUND_PENDING,OrderStatus.REFUNDED,clock.instant());
         if (hold.status()==ReservationStatus.CONFIRMED) {

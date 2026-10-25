@@ -183,3 +183,101 @@ Compose project, exercises gate/queue/outage/login behavior, then removes only
 that project's containers and volumes. `week6-mutations.ps1` temporarily mutates
 sources and restores their original bytes in `finally`; run it without other builds
 or edits in progress. k6, dashboards and frontend remain outside Week 6.
+
+## Imported frontend integration
+
+The active frontend is `frontend/src/` (React 19/Vite/TypeScript SPA). The duplicate
+root `src/` was removed at the user's request. Build output is `frontend/dist/`.
+The root Express server only proxies `/api/*` and `/actuator/health` to Spring
+Boot. M0b restores normal login, URL routes, role guards and the COUNTER purchase
+flow in this canonical app. Legacy map/seat components remain in source awaiting
+the seating milestone; they are not connected to a new seating backend. See
+[M0b lineage and verification](docs/m0b-lineage-and-baseline.md) and
+[generated role matrix/page map](docs/frontend-access.md).
+
+1. Fill required secrets in `.env`, including `PAYMENT_WEBHOOK_SECRET` (32+ random
+   characters); start the backend with `docker compose up --build -d --wait`.
+2. Set `BACKEND_URL=http://127.0.0.1:8080` and `PORT=3000` as needed in `.env`.
+3. Run `npm ci`, then `npm run dev`; open http://localhost:3000.
+4. Register/login normally. USER buys tickets, STAFF uses `/gate`, and ADMIN uses
+   `/admin`. ADMIN/STAFF provisioning is not exposed by the frontend.
+   The mock gateway sends a signed webhook; the browser only polls order status.
+
+Validation: `npm run lint`, `npm test`, `npm run build`, and
+`mvn -B -ntp -f backend/pom.xml clean verify`. M0b results: 115 backend tests,
+35 frontend unit tests, lint/build and all 5 authored Playwright access/purchase
+tests pass against the real Compose stack. The historical **111-test execution
+tested `fcb976f`**; its report was committed in **`b19db2b`**. Local annotated tag
+**`perf-v1` points to `b19db2b`**, which contains the performance work and evidence.
+`codex/m0b-integration` joins that line (tip `494a33d`) with M0 in merge `519ef48`;
+both `fcb976f` and M0 are now ancestors. The initial merge base was `13c36d9`.
+The additional four tests are three STAFF/gate tests and one inventory audit test.
+No benchmark profile was part of 111 or 115.
+For production static hosting, build first, set `NODE_ENV=production`, then
+`npm start`. Do not use `vite preview` as the API proxy.
+
+Current limits: no real payment provider, seat assignment, ticket
+transfer, browser reseeding or profile-update API. Illustrative notification and
+profile widgets are not persisted to the backend. Public inventory intentionally
+returns availability buckets, not exact quantities. Spring STAFF gate endpoints
+exist and the active staff page uses them. Access and refresh tokens stay in
+memory because the backend returns the refresh token in JSON, not an httpOnly
+cookie; reloading requires login. There is no active demo login or role-switch UI.
+Backend APIs remain authoritative. Public admin event listing currently excludes
+drafts because a dedicated admin listing endpoint is absent.
+
+### Existing-machine isolated dev stack
+
+If the existing PostgreSQL volume credentials differ from `.env`, preserve that
+volume. This workspace has an ignored `.env.frontend.local` with independent
+random secrets and an isolated `ticketrush-frontend` Compose project:
+
+```powershell
+docker compose --env-file .env.frontend.local -p ticketrush-frontend -f docker-compose.yml -f infrastructure/frontend-compose.yml up -d --wait
+npm run dev:isolated
+npm run test:smoke
+```
+
+Compose frontend: http://localhost:3100; local dev server: http://localhost:3000;
+isolated backend: http://localhost:18080. This machine's local PostgreSQL host
+port is now 25433: Windows reserved 15433 after a Docker restart. The internal
+database port and existing volume are unchanged. The smoke test creates a USER and purchases one dev
+ticket; it never uses a real payment provider. Stop this stack using the same
+Compose arguments followed by `stop`; do not remove volumes to repair credentials.
+The ignored env file is local-only, not included in a fresh checkout. Fresh
+checkouts should follow the normal setup above with independently generated secrets.
+
+### M1: seated inventory backend
+
+The Spring backend now supports hybrid inventory: existing COUNTER tiers plus
+SEATED holds using event-scoped `event_seats.id`. V8 introduces immutable stadium
+templates, event/section mapping, atomic publication, block/unblock, seat claims,
+seat ticket snapshots and live-sale uniqueness. The stadium has 3,200 reserved
+seats; VIP Pit remains GA. See [M1 implementation and verification](docs/m1-seated-inventory.md),
+[the data model](docs/seating-data-model.md), and [ADR 0029](docs/decisions/0029-hybrid-counter-seated-inventory.md).
+
+M1 changes Spring and verification tooling only. Seatmap/status/suggest APIs (M2),
+SPA integration (M3), demo mode (M4), and seat-mode performance evidence (M5) are
+not implemented by this milestone. The earlier 5,000-ticket sell-out evidence is
+for COUNTER inventory. No seat-mode performance claim is made.
+
+### M2: seat read APIs
+
+Spring exposes a public seatmap, authenticated section statuses with private ETags,
+and deterministic adjacent-seat suggestions. A short Redis cache is advisory;
+PostgreSQL remains authoritative for holds. The dev profile seeds one tagged
+stadium event without accounts. No SPA components are changed; M3 integrates them.
+See [M2 evidence, policy, merge preview and verification](docs/m2-seat-read.md).
+The bounded 200/400 requests/s read experiment is not checkout or sell-out evidence.
+
+M2b follow-up: [shared seat read contract, verification and repository audit](docs/m2b-seat-read.md).
+The [single read campaign](docs/performance/m2b-read/README.md) failed its work minimum
+(5/6 runs passed; one run dropped 2 iterations). No throughput readiness claim.
+
+## Pre-push security gate
+
+See [history rewrite and credential rotation](docs/history-rewrite.md). Historical
+commit labels in documentation refer to rewritten equivalents; image SHA256 values
+and measured evidence are unchanged. Install the local hook with
+`git config core.hooksPath .githooks`; run `python scripts/security/scan.py` before
+publishing. The mirror backup contains the original sensitive history and stays private.

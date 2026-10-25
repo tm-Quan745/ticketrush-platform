@@ -89,27 +89,44 @@ public class OrderRepository {
         return jdbc.queryForObject("SELECT count(*) FROM orders WHERE (?::uuid IS NULL OR user_id=?) AND (?::varchar IS NULL OR status=?)",
             Long.class,user,user,status==null?null:status.name(),status==null?null:status.name());
     }
-    public void issue(UUID order,Instant now) {
+    public boolean hasUsedTickets(UUID order) {
+        return Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM tickets WHERE order_id=? AND status='USED')",Boolean.class,order));
+    }
+    public void issue(UUID order,Instant now,java.util.List<com.vibe.ticketrush.inventory.service.SeatedInventory.TicketSeat> seats) {
         jdbc.query("SELECT o.user_id,i.* FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.id=?",rs -> {
             for(int index=0;index<rs.getInt("quantity");index++) {
                 // UUID v4 provides 122 random bits; two UUIDs provide >128 random bits.
                 String code=UUID.randomUUID().toString().replace("-","")+UUID.randomUUID().toString().replace("-","");
                 jdbc.update("""
-                    INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at)
-                    VALUES (?,?,?,?,?,?,?,'VALID',?) ON CONFLICT(order_id,ticket_index) DO NOTHING
-                    """,UUID.randomUUID(),order,rs.getObject("user_id"),rs.getObject("event_id"),rs.getObject("tier_id"),index,code,Timestamp.from(now));
+                    INSERT INTO tickets(id,order_id,user_id,event_id,tier_id,ticket_index,ticket_code,status,issued_at,seat_id,seat_snapshot)
+                    VALUES (?,?,?,?,?,?,?,'VALID',?,?,?::jsonb) ON CONFLICT(order_id,ticket_index) DO NOTHING
+                    """,UUID.randomUUID(),order,rs.getObject("user_id"),rs.getObject("event_id"),rs.getObject("tier_id"),index,code,Timestamp.from(now),seats.isEmpty()?null:seats.get(index).physicalSeatId(),seats.isEmpty()?null:seats.get(index).snapshot());
             }
         },order);
     }
     public List<Ticket> tickets(UUID order) {
-        return jdbc.query("SELECT * FROM tickets WHERE order_id=? ORDER BY ticket_index",(rs,n) ->
-            new Ticket(rs.getObject("id",UUID.class),rs.getObject("event_id",UUID.class),rs.getObject("tier_id",UUID.class),
-                rs.getString("ticket_code"),rs.getString("status"),rs.getTimestamp("issued_at").toInstant()),order);
+        return jdbc.query("""
+            SELECT t.*,es.id AS event_seat_id,e.title,e.venue_name,i.tier_name,
+                t.seat_snapshot->>'section' AS section_label,t.seat_snapshot->>'row' AS row_label,
+                t.seat_snapshot->>'number' AS seat_number,t.seat_snapshot->>'sectionId' AS section_id,
+                t.seat_snapshot->>'sectionCode' AS section_code,t.seat_snapshot->>'accessible' AS accessible
+            FROM tickets t JOIN events e ON e.id=t.event_id JOIN order_items i ON i.order_id=t.order_id AND i.tier_id=t.tier_id
+            LEFT JOIN event_seats es ON es.event_id=t.event_id AND es.seat_id=t.seat_id
+            WHERE t.order_id=? ORDER BY t.ticket_index
+            """,(rs,n) -> {
+                var assignment=rs.getObject("seat_id")==null ? null : new com.vibe.ticketrush.inventory.service.SeatedInventory.Assignment(
+                    rs.getObject("event_seat_id",UUID.class),UUID.fromString(rs.getString("section_id")),rs.getString("section_code"),rs.getString("section_label"),rs.getString("row_label"),rs.getInt("seat_number"),rs.getBoolean("accessible"));
+                Timestamp used=rs.getTimestamp("used_at");
+                return new Ticket(rs.getObject("id",UUID.class),rs.getObject("event_id",UUID.class),rs.getObject("tier_id",UUID.class),
+                    rs.getString("ticket_code"),rs.getString("status"),rs.getTimestamp("issued_at").toInstant(),rs.getObject("order_id",UUID.class),
+                    rs.getString("title"),rs.getString("venue_name"),rs.getString("tier_name"),assignment,used==null?null:used.toInstant());
+            },order);
     }
+
     public void cancelTickets(UUID order) { jdbc.update("UPDATE tickets SET status='CANCELLED' WHERE order_id=? AND status='VALID'",order); }
     public Map<UUID,Long> validTicketCounts(UUID event) {
         Map<UUID,Long> result=new HashMap<>();
-        jdbc.query("SELECT tier_id,count(*) AS quantity FROM tickets WHERE event_id=? AND status='VALID' GROUP BY tier_id",
+        jdbc.query("SELECT tier_id,count(*) AS quantity FROM tickets WHERE event_id=? AND status IN ('VALID','USED') GROUP BY tier_id",
             (org.springframework.jdbc.core.RowCallbackHandler)rs -> result.put(rs.getObject("tier_id",UUID.class),rs.getLong("quantity")),event);
         return result;
     }

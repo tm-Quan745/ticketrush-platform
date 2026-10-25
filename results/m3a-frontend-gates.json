@@ -1,0 +1,72 @@
+{
+  "milestone": "M3a",
+  "date": "2026-10-23",
+  "branch": "codex/m3a-buyer-visuals",
+  "sourceCommit": "4eb2429042d6f47fb30fb3e3fccdcc0195290da6",
+  "mainMerge": "742f0f4",
+  "backendChanged": false,
+  "backendSuiteRerun": false,
+  "acceptedBackendBaseline": 188,
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0
+  },
+  "unit": {
+    "command": "npm test",
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0,
+    "byFile": {
+      "api.test.ts": 8,
+      "permissions.test.ts": 22,
+      "transport.test.ts": 4,
+      "proxy.test.ts": 1,
+      "seating.test.ts": 14
+    }
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0
+  },
+  "playwright": {
+    "command": "npx playwright test",
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "elapsedSeconds": 36.2,
+    "byFile": {
+      "access.spec.ts": 5,
+      "seating.spec.ts": 4
+    },
+    "baseUrl": "http://127.0.0.1:31882",
+    "fixtureMode": "real Spring APIs; local role provisioning and transactional expiry compression"
+  },
+  "images": {
+    "backend": "sha256:4e0cc26f9d9eeda69338e8ecb35c6dd9c826ffdd202357c090f88ddc0f7b8436",
+    "frontend": "sha256:b97036eeda31ebd382cd0c0a1653e7785eb1f874761f42ec578f920da79f9225"
+  },
+  "productionBundle": {
+    "patterns": [
+      "simulatePayment",
+      "ConcurrencySimulator",
+      "Speed Buy",
+      "DEMO_MODE",
+      "demo/orders",
+      "/reseed",
+      "axios",
+      "CCCD",
+      "broadcast"
+    ],
+    "matches": [],
+    "sha256": {
+      "frontend\\dist\\assets\\index-CqTziFIu.js": "a68ed1034730e67c5faeefa53005c4cf4bef751ba47dbf43fedabffe51779204"
+    }
+  },
+  "cleanup": {
+    "publishedE2EEvents": 0,
+    "credentialJournalRemoved": true
+  },
+  "pushPerformed": false,
+  "remoteAdded": false,
+  "frontendFilesDeleted": 0
+}

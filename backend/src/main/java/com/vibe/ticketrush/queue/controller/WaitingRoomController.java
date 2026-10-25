@@ -32,6 +32,8 @@ public class WaitingRoomController {
         this.statusResponse=Timer.builder("waiting_room_status_response_seconds").publishPercentileHistogram().register(metrics);
     }
     public record Configure(boolean enabled,@Min(1) @Max(1000) int rate,@NotNull @Pattern(regexp="fifo|lottery") String mode) {}
+    @GetMapping("/admin/events/{id}/waiting-room")
+    public WaitingRoomEvents.Settings settings(@PathVariable UUID id) { return events.settings(id); }
     @PutMapping("/admin/events/{id}/waiting-room")
     @Operation(summary="Configure waiting room (ADMIN)")
     public WaitingRoomEvents.Settings configure(@PathVariable UUID id,@Valid @RequestBody Configure request) {

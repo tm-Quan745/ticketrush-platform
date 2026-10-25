@@ -8,7 +8,9 @@ matter more than feature count.
 ## Stack (do not change without asking)
 Java 21, Spring Boot, Maven, Spring Security (JWT), Spring Data JPA, Flyway,
 PostgreSQL, Redis, RabbitMQ, Testcontainers, JUnit 5, k6, Docker Compose,
-GitHub Actions, Prometheus + Grafana. Frontend (later): Next.js + TypeScript.
+GitHub Actions, Prometheus + Grafana. Current frontend: React 19 + Vite +
+TypeScript SPA in frontend/src/. Root server.ts is a same-origin Spring proxy.
+Do not migrate frameworks as part of baseline or reserved-seating work.
 
 ## Architecture
 Modular monolith, base package com.vibe.ticketrush with modules:
@@ -25,6 +27,8 @@ module's repository.
 5. Message consumers are idempotent.
 
 ## Working rules
+No remote and no push until the pre-push security gate is completed.
+
 1. Do ONE task at a time as instructed; do not implement later milestones.
 2. First state your plan and the files you will create or change.
 3. Write tests with the feature. Concurrency behavior must be tested with

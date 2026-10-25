@@ -1,0 +1,153 @@
+{
+  "commit": "e5cf897b2892a9e23b8efe422ef34c0e9c214041",
+  "dirty": "M README.md\n?? docs/m2-backend-suite.json\n?? docs/m2-preflight-evidence.json\n?? docs/m2-seat-read.md",
+  "docker": "29.3.1",
+  "startedAt": "2026-10-22T06:55:50.643Z",
+  "runs": [
+    {
+      "id": "m2-read-200-1",
+      "rate": 200,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 3070,
+      "offered": 12000,
+      "dropped": 5540,
+      "workMinimum": false,
+      "k6p95Ms": 5000.338857,
+      "serverHistogramP95Ms": 4637.319761543478,
+      "serverRequests": 6420,
+      "server5xx": 260,
+      "cacheHits": 2735,
+      "cacheRebuilds": 29,
+      "cacheHitRatio": 0.9895079594790159
+    },
+    {
+      "id": "m2-read-400-1",
+      "rate": 400,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 6823,
+      "offered": 24000,
+      "dropped": 16838,
+      "workMinimum": false,
+      "k6p95Ms": 3581.2925096999998,
+      "serverHistogramP95Ms": 2716.1850383195997,
+      "serverRequests": 7163,
+      "server5xx": 66,
+      "cacheHits": 6425,
+      "cacheRebuilds": 43,
+      "cacheHitRatio": 0.993351886209029
+    },
+    {
+      "id": "m2-read-200-2",
+      "rate": 200,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 7554,
+      "offered": 12000,
+      "dropped": 4446,
+      "workMinimum": false,
+      "k6p95Ms": 3285.52114785,
+      "serverHistogramP95Ms": 2451.9110088617645,
+      "serverRequests": 7554,
+      "server5xx": 0,
+      "cacheHits": 7473,
+      "cacheRebuilds": 44,
+      "cacheHitRatio": 0.994146601037648
+    },
+    {
+      "id": "m2-read-400-2",
+      "rate": 400,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 8428,
+      "offered": 24000,
+      "dropped": 15572,
+      "workMinimum": false,
+      "k6p95Ms": 3000.7195103,
+      "serverHistogramP95Ms": 2269.8343700936166,
+      "serverRequests": 8428,
+      "server5xx": 0,
+      "cacheHits": 8369,
+      "cacheRebuilds": 46,
+      "cacheHitRatio": 0.9945335710041593
+    },
+    {
+      "id": "m2-read-200-3",
+      "rate": 200,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 9850,
+      "offered": 12000,
+      "dropped": 2150,
+      "workMinimum": false,
+      "k6p95Ms": 2501.5904109,
+      "serverHistogramP95Ms": 1969.9160939728263,
+      "serverRequests": 9850,
+      "server5xx": 0,
+      "cacheHits": 9762,
+      "cacheRebuilds": 50,
+      "cacheHitRatio": 0.9949041989400734
+    },
+    {
+      "id": "m2-read-400-3",
+      "rate": 400,
+      "durationSeconds": 60,
+      "distinctUsers": 300,
+      "exit": 99,
+      "successful": 10726,
+      "offered": 24000,
+      "dropped": 13274,
+      "workMinimum": false,
+      "k6p95Ms": 2383.517845,
+      "serverHistogramP95Ms": 1806.564744336323,
+      "serverRequests": 10726,
+      "server5xx": 0,
+      "cacheHits": 10675,
+      "cacheRebuilds": 51,
+      "cacheHitRatio": 0.9952451985828827
+    }
+  ],
+  "containers": [
+    {
+      "name": "/ticketrush-m2-read-backend-1",
+      "image": "sha256:10edca7ee92cddd8de598b32fe9f56a05472981c65d3b1b7e06bc2b2edaebcc6",
+      "cpuLimit": 2,
+      "memoryLimitBytes": 1073741824
+    },
+    {
+      "name": "/ticketrush-m2-read-rabbitmq-1",
+      "image": "sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3",
+      "cpuLimit": 1,
+      "memoryLimitBytes": 536870912
+    },
+    {
+      "name": "/ticketrush-m2-read-redis-1",
+      "image": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "cpuLimit": 1,
+      "memoryLimitBytes": 268435456
+    },
+    {
+      "name": "/ticketrush-m2-read-postgres-1",
+      "image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "cpuLimit": 2,
+      "memoryLimitBytes": 1073741824
+    },
+    {
+      "name": "/ticketrush-m2-read-mailpit-1",
+      "image": "sha256:079759020faa42e243a07aaa3e31086de70e93e78b02b844e4149e0108dd5428",
+      "cpuLimit": 0.5,
+      "memoryLimitBytes": 134217728
+    }
+  ],
+  "k6Cap": {
+    "cpus": 2,
+    "memoryBytes": 536870912
+  },
+  "finishedAt": "2026-10-22T07:02:50.603Z"
+}

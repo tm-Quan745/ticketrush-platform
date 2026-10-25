@@ -1,0 +1,55 @@
+{
+  "project": "ticketrush-visual-review-m3b-final",
+  "seed": "[dev-seated-v1]",
+  "eventId": "f9b7691d-6c5d-4c3e-b617-a89ab5cbfcb9",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "accounts": "Random local review accounts; no credentials retained",
+  "payment": "Existing mock gateway signed webhook",
+  "sourceCommit": "93264052bd36ca402e35d96aabb53921b4a2ae29",
+  "backendRevision": "71424edfc29fdcb28218f883f99bd665d326f4d5",
+  "images": [
+    {
+      "file": "admin-dashboard.png",
+      "sha256": "e5f10bf01057f8feaaa75f3563719f59754223dcab14e96c6b57a2a3b492eaf0"
+    },
+    {
+      "file": "admin-event.png",
+      "sha256": "0449e7bf337ef63435bcca7243e1ffc309392d2d6f9b8e4bfa4b806143c29366"
+    },
+    {
+      "file": "admin-seat-management.png",
+      "sha256": "51d3676c5b3b8f4004fba29d829527559b8e54cf04f01d569d8b7a16b4abb698"
+    },
+    {
+      "file": "checkout.png",
+      "sha256": "a62193d5b4b1f424ca3ca8177c113d992fd3271af07ee667fb67297a87cc969b"
+    },
+    {
+      "file": "operations.png",
+      "sha256": "52b74a454ddd39e0285edde4ea9b399e7039b2864e2d643164a2d508f7d14e2a"
+    },
+    {
+      "file": "public.png",
+      "sha256": "733732b94ecb79c9663e78440630026981be8864300a1fd735dca2a862fee9ac"
+    },
+    {
+      "file": "seat-map.png",
+      "sha256": "4ad46ba395545f5e642624a2edf2a6f56f2cbf376e18be1b59255eda5061f027"
+    },
+    {
+      "file": "staff-gate.png",
+      "sha256": "12b2ba6e0522c05e913a6b2015b5470d12776f0814ce280c8c95531f33768c78"
+    },
+    {
+      "file": "user.png",
+      "sha256": "b486cf0030f426656ce2ffed1b150616ee27de48c81c2bc65fae5d913da37a9d"
+    },
+    {
+      "file": "wallet.png",
+      "sha256": "4cf50f10309d02d2d4ab3ae837069f5aa6f141eef00ae3889cd5f4ec512fdb3d"
+    }
+  ]
+}

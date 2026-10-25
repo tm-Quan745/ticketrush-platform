@@ -211,14 +211,14 @@ SQL_CHECKS = {
     "inventory": """SELECT t.id AS tier_id,t.total_quantity AS total,t.available_quantity AS available,
         coalesce(sum(r.quantity) FILTER (WHERE r.status='HELD'),0)::bigint AS held,
         coalesce(sum(r.quantity) FILTER (WHERE r.status='CONFIRMED'),0)::bigint AS confirmed,
-        (SELECT count(*) FROM tickets k WHERE k.tier_id=t.id AND k.status='VALID') AS tickets
-        FROM ticket_tiers t LEFT JOIN reservations r ON r.tier_id=t.id GROUP BY t.id ORDER BY t.id""",
+        (SELECT count(*) FROM tickets k WHERE k.tier_id=t.id AND k.status IN ('VALID','USED')) AS tickets
+        FROM ticket_tiers t LEFT JOIN reservations r ON r.tier_id=t.id WHERE t.inventory_mode='COUNTER' GROUP BY t.id ORDER BY t.id""",
     "payment_duplicates": """SELECT count(*) AS violations FROM
         (SELECT order_id FROM payments WHERE status='SUCCEEDED' GROUP BY order_id HAVING count(*)>1) x""",
     "ticket_duplicates": """SELECT count(*) AS violations FROM
         (SELECT order_id,ticket_index FROM tickets GROUP BY order_id,ticket_index HAVING count(*)>1) x""",
     "ticket_quantity": """SELECT count(*) AS violations FROM orders o JOIN reservations r ON r.id=o.reservation_id
-        WHERE o.status='PAID' AND r.quantity<>(SELECT count(*) FROM tickets t WHERE t.order_id=o.id AND t.status='VALID')""",
+        WHERE o.status='PAID' AND r.quantity<>(SELECT count(*) FROM tickets t WHERE t.order_id=o.id AND t.status IN ('VALID','USED'))""",
     "idempotency": """WITH keys AS (SELECT user_id,key,response_body::jsonb->>'id' AS order_id
         FROM idempotency_keys WHERE endpoint='POST /api/v1/orders' AND status='COMPLETED' AND response_status=201),
         invalid AS (SELECT k.* FROM keys k LEFT JOIN orders o ON o.id::text=k.order_id AND o.user_id=k.user_id WHERE o.id IS NULL),
@@ -228,7 +228,7 @@ SQL_CHECKS = {
         (SELECT count(DISTINCT order_id) FROM keys) AS distinct_effects,
         (SELECT count(*) FROM invalid)+(SELECT count(*) FROM missing) AS violations""",
     "paid_without_tickets": """SELECT count(*) AS violations FROM orders o WHERE status='PAID'
-        AND NOT EXISTS(SELECT 1 FROM tickets t WHERE t.order_id=o.id AND t.status='VALID')""",
+        AND NOT EXISTS(SELECT 1 FROM tickets t WHERE t.order_id=o.id AND t.status IN ('VALID','USED'))""",
     "confirmed_without_paid": """SELECT count(*) AS violations FROM reservations r WHERE status='CONFIRMED'
         AND NOT EXISTS(SELECT 1 FROM orders o WHERE o.reservation_id=r.id AND o.status='PAID')""",
     "outbox": """SELECT count(*) FILTER (WHERE status='PENDING') AS pending,
@@ -248,7 +248,7 @@ SQL_CHECKS = {
         (SELECT count(*) FROM orders WHERE status='PAID') AS paid,
         (SELECT count(*) FROM orders WHERE status='PENDING_PAYMENT') AS pending_payment,
         (SELECT count(*) FROM reservations WHERE status='HELD') AS held,
-        (SELECT count(*) FROM tickets WHERE status='VALID') AS valid_tickets"""
+        (SELECT count(*) FROM tickets WHERE status IN ('VALID','USED')) AS valid_tickets"""
 }
 
 
@@ -257,6 +257,15 @@ def snapshot(db, grace=5):
     for name, query in SQL_CHECKS.items():
         rows = db.execute(query, (grace,) if name in ("overdue_orders", "expired_holds") else ()).fetchall()
         result[name] = rows if name == "inventory" else rows[0]
+    query_path = Path("/verify-seating.sql")
+    if not query_path.exists():
+        query_path = Path(__file__).resolve().parents[2] / "backend/src/main/resources/sql/verify-seating.sql"
+    seating_query = query_path.read_text().replace(":event", "%(event)s")
+    violations = []
+    for event in db.execute("SELECT id FROM events").fetchall():
+        violations.extend(db.execute(seating_query, {"event": event["id"]}).fetchall())
+    physical = db.execute("SELECT count(*) AS physical FROM event_seats").fetchone()["physical"]
+    result["seating"] = {"physical": physical, "violations": len(violations), "details": violations}
     return result
 
 
@@ -264,7 +273,8 @@ def evaluate(data):
     inventory = data["inventory"]
     keys = data["idempotency"]
     checks = {
-        "1_inventory_conservation": {"violations": int(not inventory) + sum(t["available"] < 0 or t["available"] + t["held"] + t["confirmed"] != t["total"] for t in inventory),
+        "9_seated_inventory": data.get("seating", {"physical": 0, "violations": 0, "details": []}),
+        "1_inventory_conservation": {"violations": int(not inventory and not data.get("seating", {}).get("physical", 0)) + sum(t["available"] < 0 or t["available"] + t["held"] + t["confirmed"] != t["total"] for t in inventory),
                                      "tiers_checked": len(inventory)},
         "2_ticket_conservation": {"violations": sum(t["tickets"] != t["confirmed"] or t["confirmed"] > t["total"] for t in inventory),
                                   "sold": sum(t["confirmed"] for t in inventory),
@@ -321,7 +331,8 @@ def verify(db, drain=180, grace=5, reconcile=True):
                 after.extend(http("POST", path + "redis-reconcile", token))
             except Exception as error:
                 api_errors.append({"event": str(event["id"]), "error": str(error)})
-        checks["7_redis_drift"] = drift_check(before, after)
+        checks["7_redis_drift"] = drift_check(before, after) if data["inventory"] else {
+            "passed": not before and not after, "reason": "SEATED inventory does not use Redis counters"}
         checks["7_redis_drift"]["passed"] &= not api_errors and len(after) == len(data["inventory"])
         checks["admin_inventory_audit"] = {"violations": len(api_violations), "errors": api_errors,
                                             "passed": not api_violations and not api_errors}

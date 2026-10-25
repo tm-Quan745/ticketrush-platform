@@ -1,0 +1,94 @@
+{
+  "command": "mvn -B -ntp -f backend/pom.xml verify",
+  "commit": "4fdbcfceacb8ba69ad423137935f7c2b7f06b1bf",
+  "profile": "default",
+  "exit_code": 0,
+  "build": "SUCCESS",
+  "tests": 97,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "benchmark_profiles_included": false,
+  "finished_at": "2026-10-20T11:57:41+07:00",
+  "log": "backend/m0-verify.log",
+  "counts_source": "Current run log only; old Surefire XML files excluded",
+  "classes": [
+    {
+      "class": "com.vibe.ticketrush.auth.AuthIntegrationTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.event.EventInventoryIntegrationTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.event.MigrationIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.order.MockGatewayIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.order.OrderPaymentIntegrationTest",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.ConditionalReservationIntegrationTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.OptimisticReservationIntegrationTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.OutboxIntegrationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.PessimisticReservationIntegrationTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.ReservationStatusTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.Week6RedisIntegrationTest",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

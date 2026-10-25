@@ -9,6 +9,9 @@ import java.util.UUID;
 public class TicketTier {
     @Id
     private UUID id;
+    private String inventoryMode="COUNTER";
+    public String getInventoryMode() { return inventoryMode; }
+    public void setInventoryMode(String value) { inventoryMode=value; }
     private UUID eventId;
     private String name;
     private String description;

@@ -12,11 +12,16 @@ public final class EventDtos {
             @Size(max = 10000) String description, @Size(max = 200) String venueName,
             @Size(max = 500) String venueAddress, @Size(max = 2048) String imageUrl,
             @NotNull Instant startTime, @NotNull Instant endTime,
-            @NotNull Instant saleStartTime, @NotNull Instant saleEndTime) {}
+            @NotNull Instant saleStartTime, @NotNull Instant saleEndTime, UUID venueId) {
+        public WriteEvent(String title,String description,String venueName,String venueAddress,String imageUrl,
+                Instant startTime,Instant endTime,Instant saleStartTime,Instant saleEndTime) {
+            this(title,description,venueName,venueAddress,imageUrl,startTime,endTime,saleStartTime,saleEndTime,null);
+        }
+    }
     public record EventView(UUID id, String title, String description, String venueName,
             String venueAddress, String imageUrl, Instant startTime, Instant endTime,
             Instant saleStartTime, Instant saleEndTime, EventStatus status,
-            Instant createdAt, Instant updatedAt) {}
+            Instant createdAt, Instant updatedAt, UUID venueId) {}
     public record Detail(EventView event, List<PublicTier> tiers) {}
     public record EventPage(List<EventView> content, int page, int size, long totalElements, int totalPages) {}
 }

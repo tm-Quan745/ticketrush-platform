@@ -1,0 +1,135 @@
+{
+  "command": "mvn -B -ntp -f backend/pom.xml clean verify",
+  "backend_commit": "f2e73d3",
+  "build": "SUCCESS",
+  "tests": null,
+  "failures": null,
+  "errors": null,
+  "skipped": null,
+  "baseline_tests_preserved": 115,
+  "new_seating_tests": 58,
+  "benchmark_profiles_included": false,
+  "finished_at": "2026-10-21T19:44:38+07:00",
+  "log_sha256": "46E2C4F7A3FE1AD03F6B9A0DA23D2808BA7BE0942EF03D8E40F49CDEAD012B19",
+  "classes": [
+    {
+      "class": "com.vibe.ticketrush.auth.AuthIntegrationTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.common.controller.GlobalExceptionHandlerTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.common.redis.RedisGuardTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.event.EventInventoryIntegrationTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.event.MigrationIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+      "tests": 58,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.observability.ObservabilityIntegrationTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.order.MockGatewayIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.order.OrderPaymentIntegrationTest",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.ConditionalReservationIntegrationTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.OptimisticReservationIntegrationTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.OrderSmallPoolIntegrationTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.OutboxDeliveryIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.OutboxIntegrationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.PessimisticReservationIntegrationTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.ReservationStatusTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "com.vibe.ticketrush.reservation.Week6RedisIntegrationTest",
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

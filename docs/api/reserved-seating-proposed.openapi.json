@@ -1,0 +1,6518 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TicketRush hybrid inventory — PROPOSED delta contract",
+    "version": "0.3-m2b",
+    "description": "Approved hybrid design; M2 read operations are implemented in Spring. Other future operations remain proposed. No payment-confirm endpoint."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "post_auth_login",
+        "summary": "Normal login, including explicitly chosen demo accounts",
+        "description": "No silent login. Rate limits/password rules unchanged. Embedded user is additive; no role can be chosen in request.",
+        "security": [],
+        "x-required-roles": [
+          "PUBLIC"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "post_auth_refresh",
+        "summary": "Rotate refresh token and return current identity",
+        "description": "",
+        "security": [],
+        "x-required-roles": [
+          "PUBLIC"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "get_auth_me",
+        "summary": "Current authenticated identity",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER",
+          "STAFF",
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}": {
+      "get": {
+        "operationId": "get_events_id",
+        "summary": "Public event details with tier modes and section links",
+        "description": "Only published events; retains coarse COUNTER availability.",
+        "security": [],
+        "x-required-roles": [
+          "PUBLIC"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/seatmap": {
+      "get": {
+        "operationId": "get_events_id_seatmap",
+        "summary": "Published event stadium geometry and tier mapping",
+        "description": "No personal data. COUNTER-only event with no venue -> 404 SEATMAP_NOT_CONFIGURED; UI renders tier cards.",
+        "security": [],
+        "x-required-roles": [
+          "PUBLIC"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeatMap"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/sections/{sectionId}/seats": {
+      "get": {
+        "operationId": "get_events_id_sections_sectionId_seats",
+        "summary": "Read shared compact section status",
+        "description": "Authenticated USER/STAFF/ADMIN. Identical for every caller; no mine overlay or identity fields. states[i] matches geometry.seats[i]: A AVAILABLE, H HELD, S SOLD, B BLOCKED. Background refresh every 750ms for sections requested in the last 30s; snapshot expires 1000ms after observation (not after Redis write). Expired data is never served. Empty/down Redis falls back through bounded PostgreSQL gate. ETag is precomputed on snapshot construction, stored with body in Redis. Client marks its own seats using reservation seatIds (also seats[].id). Reservation transaction remains authoritative; stale A may return 409. GA returns 422.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER",
+          "STAFF",
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Shared compact status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionSeats"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "private, no-cache"
+                  ]
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Shared status ETag matches; no body.",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "private, no-cache"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/seats/suggest": {
+      "post": {
+        "operationId": "post_events_id_seats_suggest",
+        "summary": "Suggest deterministic adjacent seats without holding",
+        "description": "USER; existing admission rule applies. Advisory only, never holds. Rank by rowRank, distance of run midpoint from physical row centre, first seat number, UUID; one row and adjacency segment. accessible=false excludes accessible seats; true requires at least one accessible seat with companions allowed. No contiguous run returns 409 NO_ADJACENT_SEATS.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Suggestion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Admission-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Required when event waiting room is enabled; bound to user/event; enforce existing rule for both modes."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuggestRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reservations": {
+      "post": {
+        "operationId": "post_reservations",
+        "summary": "Hold COUNTER quantity or atomic SEATED selection",
+        "description": "Existing COUNTER transaction path unchanged. SEATED: resolve event-seat UUIDs, one event/tier, enforce maxPerOrder; ordered FOR UPDATE SKIP LOCKED of AVAILABLE rows; any count mismatch rolls back entire hold. 409 SEATS_UNAVAILABLE returns not-acquired IDs (includes locks); repeated active hold -> 409. Default TTL 10m from injected Clock. Body cannot override price, owner, expiry or status.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "status": 409,
+                  "code": "SEATS_UNAVAILABLE",
+                  "message": "One or more requested seats could not be acquired. No seats were held.",
+                  "unavailableSeatIds": [
+                    "20000000-0000-4000-8000-000000000002"
+                  ],
+                  "retryable": true
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Admission-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Required when event waiting room is enabled; bound to user/event; enforce existing rule for both modes."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReservation"
+              },
+              "examples": {
+                "counter": {
+                  "value": {
+                    "tierId": "10000000-0000-4000-8000-000000000001",
+                    "quantity": 2
+                  }
+                },
+                "seated": {
+                  "value": {
+                    "seatIds": [
+                      "20000000-0000-4000-8000-000000000001",
+                      "20000000-0000-4000-8000-000000000002"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reservations/{id}": {
+      "get": {
+        "operationId": "get_reservations_id",
+        "summary": "Read owned reservation with server seat and price context",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "delete_reservations_id",
+        "summary": "Cancel owned hold, release exactly once",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reservations/me": {
+      "get": {
+        "operationId": "get_reservations_me",
+        "summary": "List owned reservations with seat context",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "operationId": "post_orders",
+        "summary": "Create owned order; no client payment outcome",
+        "description": "Unchanged public flow. Uses configured provider; no automatic mock SUCCESS in production. Existing privileged loadtest headers are not exposed to browser. Same key replays response, not another gateway initiation.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Key is scoped to caller and endpoint; replay preserves response; different payload/scenario -> 422."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}": {
+      "get": {
+        "operationId": "get_orders_id",
+        "summary": "Poll owned order status",
+        "description": "UI uses backoff and Retry-After when provided; only backend webhook processing changes payment state.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/me": {
+      "get": {
+        "operationId": "get_orders_me",
+        "summary": "List owned orders",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/{id}/tickets": {
+      "get": {
+        "operationId": "get_orders_id_tickets",
+        "summary": "Issued tickets including immutable assigned seat",
+        "description": "Ownership enforced; requires PAID. COUNTER seat=null; one ticket per SEATED seat.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ticket"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/gate/tickets/verify": {
+      "post": {
+        "operationId": "post_gate_tickets_verify",
+        "summary": "Verify ticket eligibility, no admission mutation",
+        "description": "Extend current flat DTO with labels/seat/eligible; UI adapter provides old wrapper booleans. Do not expose buyer identity. Verification is a snapshot, not a guarantee.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "STAFF"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GateScan"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gate/tickets/check-in": {
+      "post": {
+        "operationId": "post_gate_tickets_check_in",
+        "summary": "Atomically admit a valid ticket once",
+        "description": "Lock parent order, require PAID, conditional VALID -> USED. Second/concurrent check-in -> 409 TICKET_NOT_USABLE. USED still consumes a sold seat; store used_at/used_by. No batch/list endpoint.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "STAFF"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GateScan"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/venues": {
+      "get": {
+        "operationId": "get_admin_venues",
+        "summary": "List versioned stadium templates",
+        "description": "Template JSON shipped/validated server-side; no arbitrary SVG or file upload endpoint.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Venue"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/venues/{id}": {
+      "get": {
+        "operationId": "get_admin_venues_id",
+        "summary": "Template sections and geometry",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenueDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/events": {
+      "post": {
+        "operationId": "post_admin_events",
+        "summary": "Create event with optional venue template",
+        "description": "Existing COUNTER event creation remains valid without venueId; template version selected by immutable venue UUID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WriteEvent"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/events/{id}/tiers": {
+      "post": {
+        "operationId": "post_admin_events_id_tiers",
+        "summary": "Create COUNTER or SEATED tier",
+        "description": "New SEATED maxPerOrder default 6. Existing COUNTER required fields/behavior unchanged; no client SEATED totalQuantity.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryTier"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTier"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/events/{id}/section-tiers": {
+      "put": {
+        "operationId": "put_admin_events_id_section_tiers",
+        "summary": "Replace complete draft section-to-tier mapping",
+        "description": "No published topology changes. Validate venue, event, types, complete coverage, no duplicate section. Multiple sections can share a tier.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionMapping"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionMapping"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/events/{id}/publish": {
+      "post": {
+        "operationId": "post_admin_events_id_publish",
+        "summary": "Publish and bulk-materialize event seats atomically",
+        "description": "Lock event; validate complete mapping; create all event_seats and mark PUBLISHED in one transaction. No partially published seating. Unique(event,physical seat). Existing COUNTER-only publish preserved.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/events/{id}/inventory": {
+      "get": {
+        "operationId": "get_admin_events_id_inventory",
+        "summary": "Read exact per-mode tier and section inventory",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryTier"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/tiers/{id}/capacity": {
+      "patch": {
+        "operationId": "patch_admin_tiers_id_capacity",
+        "summary": "Change COUNTER capacity with optimistic version",
+        "description": "Existing full PUT remains unchanged. Numeric capacity changes forbidden for SEATED. Below held+sold ->409 CAPACITY_BELOW_COMMITTED; stale version ->409 CAPACITY_VERSION_CONFLICT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryTier"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapacityChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/events/{id}/seats/block": {
+      "post": {
+        "operationId": "post_admin_events_id_seats_block",
+        "summary": "Block or unblock seats atomically",
+        "description": "Only AVAILABLE -> BLOCKED or BLOCKED -> AVAILABLE; check each expectedVersion under ordered SKIP LOCKED. HELD/SOLD/locked/stale/foreign-event seat rejects entire operation. No refund or release as side effect; write audit/outbox in same transaction.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeatBlockResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatBlock"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/events/{id}/inventory/reconcile": {
+      "get": {
+        "operationId": "get_admin_events_id_inventory_reconcile",
+        "summary": "Extend existing violation audit to SEATED sections",
+        "description": "Read-only repeatable-read audit. Existing COUNTER fields preserved; section/mode/check codes additive. Checks sums, HELD reservation membership, duplicate claim and SOLD live ticket/PAID order consistency; report unsettled refund state explicitly. Empty array means no violations.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReconciliationViolation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/orders/{id}/refund": {
+      "post": {
+        "operationId": "post_admin_orders_id_refund",
+        "summary": "Request refund; never release an already-used seat",
+        "description": "Serialize against check-in on parent order. Any USED ticket ->409 ORDER_NOT_REFUNDABLE. On accepted request, existing gateway/provider refund path; seat release only after valid signed refund webhook. External refund of used ticket ->manual review, not resale.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/demo/capabilities": {
+      "get": {
+        "operationId": "get_demo_capabilities",
+        "summary": "Non-secret demo deployment capabilities",
+        "description": "",
+        "security": [],
+        "x-required-roles": [
+          "PUBLIC"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoCapabilities"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "x-profile-expression": "(demo | loadtest) & !prod"
+      }
+    },
+    "/api/v1/demo/orders": {
+      "post": {
+        "operationId": "post_demo_orders",
+        "summary": "Create owned order using selected mock gateway scenario",
+        "description": "Demo/loadtest only, absent if prod active. Internally invokes existing order+gateway service, never marks PAID. Scenario selected before order exists; no re-dispatch endpoint for paid/pending orders. Normal ownership/admission-derived reservation rules and idempotency apply; same key changed scenario ->422. Mock secret stays server-side. Production tests must inspect route/bean absence, including prod+demo.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "USER"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Key is scoped to caller and endpoint; replay preserves response; different payload/scenario -> 422."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoOrder"
+              }
+            }
+          }
+        },
+        "x-profile-expression": "(demo | loadtest) & !prod"
+      }
+    },
+    "/api/v1/dev/seed": {
+      "post": {
+        "operationId": "post_dev_seed",
+        "summary": "Reset only the tagged demo stadium event and seed a new published one",
+        "description": "Demo/loadtest only, absent if prod active. Idempotent with same key; refuse replacement with active holds/unsettled payments (409 DEMO_EVENT_BUSY). Deactivate old tagged event, preserve historic records, create replacement with new UUID. Does not create users (demo-profile account seeder only), wipe other data or reset arbitrary event IDs. Use script with normal admin login, never bypass auth.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "ADMIN"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Key is scoped to caller and endpoint; replay preserves response; different payload/scenario -> 422."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeedRequest"
+              }
+            }
+          }
+        },
+        "x-profile-expression": "(demo | loadtest) & !prod"
+      }
+    },
+    "/api/v1/events/{id}/sections/{sectionId}/geometry/{version}": {
+      "get": {
+        "operationId": "get_section_geometry",
+        "summary": "Read immutable versioned section geometry",
+        "description": "Public identity-free geometry. Version is returned by the status endpoint and seatmap. Ordered by row_rank, row_label, number, event-seat UUID. Published topology is frozen; geometryVersion is SHA-256 of the immutable JSON. Cache-Control public, max-age=31536000, immutable; ETag equals geometryVersion. A mismatched version returns 404. Already cached geometry can outlive event cancellation; it contains no availability or purchase authority.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Shared compact status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionGeometry"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "public, max-age=31536000, immutable"
+                  ]
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Shared status ETag matches; no body.",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "public, max-age=31536000, immutable"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid syntax, unknown field, or malformed identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong role, foreign owned resource, or missing/invalid required admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State or concurrency conflict; inspect code and unavailableSeatIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON but incompatible mode/topology/request or idempotency payload mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; production payment provider may be unconfigured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Minimum wait in seconds or HTTP date; positive jitter may be added, never subtract from this wait.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Role": {
+        "type": "string",
+        "enum": [
+          "USER",
+          "STAFF",
+          "ADMIN"
+        ]
+      },
+      "InventoryMode": {
+        "type": "string",
+        "enum": [
+          "COUNTER",
+          "SEATED"
+        ],
+        "default": "COUNTER"
+      },
+      "SeatStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "HELD",
+          "SOLD",
+          "BLOCKED"
+        ]
+      },
+      "Availability": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "LOW",
+          "SOLD_OUT"
+        ]
+      },
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "unavailableSeatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "Credentials": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 72
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "roles"
+        ],
+        "additionalProperties": false
+      },
+      "Tokens": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string",
+            "enum": [
+              "Bearer"
+            ]
+          },
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "tokenType",
+          "expiresIn",
+          "user"
+        ],
+        "additionalProperties": false,
+        "description": "Additive user identity for the old UI; roles remain canonical. Tokens remain in memory until a separately designed httpOnly cookie flow exists."
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ],
+        "additionalProperties": false
+      },
+      "Point": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      "Geometry": {
+        "type": "object",
+        "properties": {
+          "viewBox": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "polygon": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "maxItems": 32
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          }
+        },
+        "required": [
+          "viewBox",
+          "polygon",
+          "color"
+        ],
+        "additionalProperties": false
+      },
+      "Venue": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateKey": {
+            "type": "string"
+          },
+          "templateVersion": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string"
+          },
+          "viewBox": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "required": [
+          "id",
+          "templateKey",
+          "templateVersion",
+          "name",
+          "viewBox"
+        ],
+        "additionalProperties": false
+      },
+      "TemplateSection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GA",
+              "SEATED"
+            ]
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/Geometry"
+          },
+          "physicalCapacity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "rowCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "seatsPerRow": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "type",
+          "geometry",
+          "physicalCapacity"
+        ],
+        "additionalProperties": false
+      },
+      "VenueDetail": {
+        "type": "object",
+        "properties": {
+          "venue": {
+            "$ref": "#/components/schemas/Venue"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TemplateSection"
+            }
+          }
+        },
+        "required": [
+          "venue",
+          "sections"
+        ],
+        "additionalProperties": false
+      },
+      "SectionCounts": {
+        "type": "object",
+        "properties": {
+          "physicalCapacity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "sellableCapacity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "available": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "held": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "sold": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "blocked": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "physicalCapacity",
+          "sellableCapacity",
+          "available",
+          "held",
+          "sold",
+          "blocked"
+        ],
+        "additionalProperties": false,
+        "description": "physical = available+held+sold+blocked; sellable=physical-blocked. Snapshot only, not a promise of hold success."
+      },
+      "PublicTier": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "maxPerOrder": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "availability": {
+            "$ref": "#/components/schemas/Availability"
+          },
+          "inventoryMode": {
+            "$ref": "#/components/schemas/InventoryMode"
+          },
+          "sectionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency",
+          "maxPerOrder",
+          "availability",
+          "inventoryMode"
+        ],
+        "additionalProperties": false
+      },
+      "SectionOverview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GA",
+              "SEATED"
+            ]
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/Geometry"
+          },
+          "availability": {
+            "$ref": "#/components/schemas/Availability"
+          },
+          "counts": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SectionCounts"
+              }
+            ],
+            "nullable": true,
+            "description": "Present for SEATED. Null for GA: do not invent precise COUNTER public availability."
+          },
+          "price": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "rowCount": {
+            "type": "integer"
+          },
+          "seatCount": {
+            "type": "integer"
+          },
+          "geometryVersion": {
+            "type": "string",
+            "nullable": true,
+            "description": "Immutable geometry URL version, null for GA."
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "type",
+          "tierId",
+          "geometry",
+          "availability",
+          "counts",
+          "price",
+          "currency",
+          "rowCount",
+          "seatCount"
+        ],
+        "additionalProperties": false
+      },
+      "SeatMap": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "venue": {
+            "$ref": "#/components/schemas/Venue"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SectionOverview"
+            }
+          },
+          "tiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTier"
+            }
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "eventId",
+          "venue",
+          "sections",
+          "tiers",
+          "observedAt"
+        ],
+        "additionalProperties": false
+      },
+      "SeatState": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "event_seats.id; pass this opaque event-scoped ID in seatIds. NOT physical seats.id."
+          },
+          "rowLabel": {
+            "type": "string"
+          },
+          "rowRank": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "adjacencySegment": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "accessible": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SeatStatus"
+          },
+          "mine": {
+            "type": "boolean",
+            "description": "True only for caller-owned current HELD reservation. No user or reservation identity is exposed."
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "rowLabel",
+          "rowRank",
+          "number",
+          "adjacencySegment",
+          "x",
+          "y",
+          "accessible",
+          "status",
+          "mine",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "SectionSeats": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "geometryVersion",
+          "states"
+        ],
+        "properties": {
+          "geometryVersion": {
+            "type": "string",
+            "description": "SHA-256 geometry version; use with the immutable geometry URL."
+          },
+          "states": {
+            "type": "string",
+            "pattern": "^[AHSB]+$",
+            "description": "Exactly one character per geometry seat, in the same fixed order."
+          }
+        }
+      },
+      "SuggestRequest": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "accessible": {
+            "type": "boolean",
+            "default": false,
+            "description": "False excludes accessible seats. True requires >=1 accessible seat in the adjacent run; companion seats allowed."
+          }
+        },
+        "required": [
+          "sectionId",
+          "quantity"
+        ],
+        "additionalProperties": false
+      },
+      "SeatAssignment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "event_seats.id"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sectionCode": {
+            "type": "string"
+          },
+          "sectionName": {
+            "type": "string"
+          },
+          "rowLabel": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "accessible": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "sectionId",
+          "sectionCode",
+          "sectionName",
+          "rowLabel",
+          "number",
+          "accessible"
+        ],
+        "additionalProperties": false
+      },
+      "Suggestion": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "seats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeatAssignment"
+            }
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "eventId",
+          "sectionId",
+          "tierId",
+          "seatIds",
+          "seats",
+          "observedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Read-only advisory result. Ranking: rowRank, centre distance, first seat number, UUID. Hold may still conflict; no available contiguous run -> 409 NO_ADJACENT_SEATS."
+      },
+      "CounterHold": {
+        "type": "object",
+        "properties": {
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "tierId",
+          "quantity"
+        ],
+        "additionalProperties": false
+      },
+      "SeatedHold": {
+        "type": "object",
+        "properties": {
+          "seatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "event_seats.id values, one event and one SEATED tier; count <= tier.maxPerOrder."
+          }
+        },
+        "required": [
+          "seatIds"
+        ],
+        "additionalProperties": false
+      },
+      "CreateReservation": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CounterHold"
+          },
+          {
+            "$ref": "#/components/schemas/SeatedHold"
+          }
+        ],
+        "description": "Mutually exclusive shapes. Existing COUNTER requests preserve their existing code path. Seated request derives event/tier/quantity on server."
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierName": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "inventoryMode": {
+            "$ref": "#/components/schemas/InventoryMode"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "HELD",
+              "CONFIRMED",
+              "EXPIRED",
+              "CANCELLED"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "seconds_remaining": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "seats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeatAssignment"
+            }
+          },
+          "seatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Event-scoped event_seats.id values for this reservation. Client derives its own highlighting from this list; empty for COUNTER."
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "tierId",
+          "eventId",
+          "tierName",
+          "unitPrice",
+          "currency",
+          "quantity",
+          "inventoryMode",
+          "status",
+          "createdAt",
+          "expires_at",
+          "seconds_remaining",
+          "seats",
+          "seatIds"
+        ],
+        "additionalProperties": false
+      },
+      "OrderCreate": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "reservationId"
+        ],
+        "additionalProperties": false
+      },
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierName": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "inventoryMode": {
+            "$ref": "#/components/schemas/InventoryMode"
+          },
+          "seats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeatAssignment"
+            }
+          }
+        },
+        "required": [
+          "tierId",
+          "tierName",
+          "unitPrice",
+          "quantity",
+          "inventoryMode",
+          "seats"
+        ],
+        "additionalProperties": false
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_PAYMENT",
+              "PAID",
+              "PAYMENT_FAILED",
+              "CANCELLED",
+              "EXPIRED",
+              "REFUND_PENDING",
+              "REFUNDED"
+            ]
+          },
+          "totalAmount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "paymentDeadline": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "paymentReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "manualReview": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItem"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "reservationId",
+          "status",
+          "totalAmount",
+          "currency",
+          "paymentDeadline",
+          "manualReview",
+          "items",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false
+      },
+      "Ticket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventTitle": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierName": {
+            "type": "string"
+          },
+          "ticketCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "USED",
+              "CANCELLED"
+            ]
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "seat": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SeatAssignment"
+              }
+            ],
+            "nullable": true
+          },
+          "usedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "orderId",
+          "eventId",
+          "eventTitle",
+          "venue",
+          "tierId",
+          "tierName",
+          "ticketCode",
+          "status",
+          "issuedAt",
+          "seat",
+          "usedAt"
+        ],
+        "additionalProperties": false
+      },
+      "GateScan": {
+        "type": "object",
+        "properties": {
+          "ticketCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "ticketCode"
+        ],
+        "additionalProperties": false
+      },
+      "GateResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ticketCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "USED",
+              "CANCELLED"
+            ]
+          },
+          "usedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "eventTitle": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "tierName": {
+            "type": "string"
+          },
+          "seat": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SeatAssignment"
+              }
+            ],
+            "nullable": true
+          },
+          "eligible": {
+            "type": "boolean",
+            "description": "Ticket VALID and parent order PAID at verification snapshot; check-in rechecks under lock."
+          }
+        },
+        "required": [
+          "id",
+          "eventId",
+          "tierId",
+          "ticketCode",
+          "status",
+          "usedAt",
+          "eventTitle",
+          "venue",
+          "tierName",
+          "seat",
+          "eligible"
+        ],
+        "additionalProperties": false
+      },
+      "WriteEvent": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "venueName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "venueAddress": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "imageUrl": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "saleStartTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "saleEndTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "venueId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [
+          "title",
+          "startTime",
+          "endTime",
+          "saleStartTime",
+          "saleEndTime"
+        ],
+        "additionalProperties": false
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "venueName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "venueAddress": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "imageUrl": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "saleStartTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "saleEndTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "venueId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CANCELLED",
+              "ENDED"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "startTime",
+          "endTime",
+          "saleStartTime",
+          "saleEndTime",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false
+      },
+      "EventDetail": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/Event"
+          },
+          "tiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTier"
+            }
+          }
+        },
+        "required": [
+          "event",
+          "tiers"
+        ],
+        "additionalProperties": false
+      },
+      "CounterTierCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "price": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "totalQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "maxPerOrder": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "inventoryMode": {
+            "type": "string",
+            "enum": [
+              "COUNTER"
+            ],
+            "default": "COUNTER"
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "currency",
+          "totalQuantity",
+          "maxPerOrder"
+        ],
+        "additionalProperties": false
+      },
+      "SeatedTierCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "price": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "maxPerOrder": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "default": 6
+          },
+          "inventoryMode": {
+            "type": "string",
+            "enum": [
+              "SEATED"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "currency",
+          "inventoryMode"
+        ],
+        "additionalProperties": false,
+        "description": "Total quantity is derived at publish from mapped seats; no client numeric capacity."
+      },
+      "CreateTier": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CounterTierCreate"
+          },
+          {
+            "$ref": "#/components/schemas/SeatedTierCreate"
+          }
+        ]
+      },
+      "Mapping": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "sectionId",
+          "tierId"
+        ],
+        "additionalProperties": false
+      },
+      "SectionMapping": {
+        "type": "object",
+        "properties": {
+          "mappings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Mapping"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "mappings"
+        ],
+        "additionalProperties": false,
+        "description": "Complete mapping for this event venue, one tier per section; GA -> COUNTER, SEATED -> SEATED. Draft only. Duplicate/missing section mappings rejected."
+      },
+      "CapacityChange": {
+        "type": "object",
+        "properties": {
+          "totalQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "totalQuantity",
+          "expectedVersion"
+        ],
+        "additionalProperties": false,
+        "description": "COUNTER only. Never shrink below held+sold; version conflict -> 409. SEATED -> 422 CAPACITY_DERIVED_FROM_SEATS."
+      },
+      "InventoryTier": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string"
+          },
+          "inventoryMode": {
+            "$ref": "#/components/schemas/InventoryMode"
+          },
+          "totalQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "description": "Sellable capacity for SEATED"
+          },
+          "availableQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "heldQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "soldQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "maxPerOrder": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "sectionCounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sectionId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "counts": {
+                  "$ref": "#/components/schemas/SectionCounts"
+                }
+              },
+              "required": [
+                "sectionId",
+                "counts"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "eventId",
+          "name",
+          "price",
+          "currency",
+          "inventoryMode",
+          "totalQuantity",
+          "availableQuantity",
+          "heldQuantity",
+          "soldQuantity",
+          "maxPerOrder",
+          "version",
+          "sectionCounts"
+        ],
+        "additionalProperties": false
+      },
+      "SeatBlock": {
+        "type": "object",
+        "properties": {
+          "seats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "expectedVersion": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "id",
+                "expectedVersion"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "blocked": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "seats",
+          "blocked",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "description": "Atomic block AVAILABLE or unblock BLOCKED seats within this event; locked, HELD, SOLD or stale version -> 409 SEAT_STATE_CONFLICT, no partial changes. Duplicate IDs rejected."
+      },
+      "SeatBlockResult": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "updatedSeatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sectionId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "counts": {
+                  "$ref": "#/components/schemas/SectionCounts"
+                }
+              },
+              "required": [
+                "sectionId",
+                "counts"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "eventId",
+          "updatedSeatIds",
+          "sections"
+        ],
+        "additionalProperties": false
+      },
+      "ReconciliationViolation": {
+        "type": "object",
+        "properties": {
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "available": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "held": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "validTickets": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "inventoryMode": {
+            "$ref": "#/components/schemas/InventoryMode"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "COUNTER_CONSERVATION",
+              "TICKET_CONSERVATION",
+              "SECTION_CONSERVATION",
+              "HELD_WITHOUT_ACTIVE_RESERVATION",
+              "SOLD_WITHOUT_PAID_ORDER",
+              "DUPLICATE_ACTIVE_CLAIM",
+              "REFUND_PENDING",
+              "SEAT_MEMBERSHIP_MISMATCH"
+            ]
+          },
+          "seatIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blocked": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "physicalCapacity": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "tierId",
+          "available",
+          "held",
+          "confirmed",
+          "total",
+          "validTickets",
+          "inventoryMode",
+          "sectionId",
+          "code",
+          "seatIds"
+        ],
+        "additionalProperties": false,
+        "description": "Extends existing violations-only array. Empty array means no observed violations, NOT zero inventory. validTickets counts VALID and USED."
+      },
+      "Scenario": {
+        "type": "string",
+        "enum": [
+          "SUCCESS",
+          "FAILURE",
+          "DELAYED_SUCCESS",
+          "DUPLICATE_WEBHOOK",
+          "OUT_OF_ORDER",
+          "INVALID_SIGNATURE",
+          "AMOUNT_MISMATCH"
+        ]
+      },
+      "DemoOrder": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          }
+        },
+        "required": [
+          "reservationId",
+          "scenario"
+        ],
+        "additionalProperties": false
+      },
+      "DemoCapabilities": {
+        "type": "object",
+        "properties": {
+          "quickLoginEnabled": {
+            "type": "boolean"
+          },
+          "scenarioSelectionEnabled": {
+            "type": "boolean"
+          },
+          "reseedEnabled": {
+            "type": "boolean"
+          },
+          "scenarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scenario"
+            }
+          }
+        },
+        "required": [
+          "quickLoginEnabled",
+          "scenarioSelectionEnabled",
+          "reseedEnabled",
+          "scenarios"
+        ],
+        "additionalProperties": false,
+        "description": "No credentials or secrets returned. Route absent outside demo/loadtest and always absent if prod active. Quick login true only in demo, not loadtest."
+      },
+      "SeedRequest": {
+        "type": "object",
+        "properties": {
+          "templateKey": {
+            "type": "string",
+            "enum": [
+              "stadium-spa-v1"
+            ]
+          },
+          "replacePreviousDemoEvent": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "templateKey",
+          "replacePreviousDemoEvent"
+        ],
+        "additionalProperties": false
+      },
+      "SeedResult": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "venueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservedSeatCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 2000,
+            "maximum": 5000
+          },
+          "previousDemoEventId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [
+          "eventId",
+          "venueId",
+          "reservedSeatCount",
+          "previousDemoEventId"
+        ],
+        "additionalProperties": false,
+        "description": "ADMIN only; touches only tagged demo fixture, preserves unrelated and historical records. Active holds or unsettled payments -> 409 DEMO_EVENT_BUSY. Seeds event data, not accounts."
+      },
+      "ReservationPage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reservation"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "content",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ],
+        "additionalProperties": false
+      },
+      "OrderPage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Order"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "content",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ],
+        "additionalProperties": false
+      },
+      "StaticSeat": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "rowLabel",
+          "number",
+          "x",
+          "y",
+          "accessible",
+          "adjacencySegment"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rowLabel": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "accessible": {
+            "type": "boolean"
+          },
+          "adjacencySegment": {
+            "type": "integer",
+            "description": "Seats are adjacent only within the same row and segment; render an aisle at segment boundaries."
+          }
+        }
+      },
+      "SectionGeometry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "sectionId",
+          "tierId",
+          "seats"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tierId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaticSeat"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-review-decisions": {
+    "singleTierReservation": true,
+    "apiSeatId": "event_seats.id",
+    "physicalSeatId": "seats.id (tickets.seat_id FK)",
+    "counterExistingPath": "unchanged",
+    "seatedMaxPerOrderDefault": 6,
+    "demoTemplateReservedSeats": 3200,
+    "productionDemoAbsence": "Test bean/RequestMapping absence, not only rejected HTTP calls."
+  }
+}

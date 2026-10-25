@@ -1,0 +1,181 @@
+{
+  "backend": [
+    {
+      "name": "com.vibe.ticketrush.auth.AuthIntegrationTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "44.832"
+    },
+    {
+      "name": "com.vibe.ticketrush.common.controller.GlobalExceptionHandlerTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.036"
+    },
+    {
+      "name": "com.vibe.ticketrush.common.redis.RedisGuardTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.062"
+    },
+    {
+      "name": "com.vibe.ticketrush.event.EventInventoryIntegrationTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "9.755"
+    },
+    {
+      "name": "com.vibe.ticketrush.event.MigrationIntegrationTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "5.158"
+    },
+    {
+      "name": "com.vibe.ticketrush.inventory.SeatedInventoryIntegrationTest",
+      "tests": "73",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "38.918"
+    },
+    {
+      "name": "com.vibe.ticketrush.observability.ObservabilityIntegrationTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "7.266"
+    },
+    {
+      "name": "com.vibe.ticketrush.order.MockGatewayIntegrationTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "19.681"
+    },
+    {
+      "name": "com.vibe.ticketrush.order.OrderPaymentIntegrationTest",
+      "tests": "20",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "14.587"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.ConditionalReservationIntegrationTest",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "8.322"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OptimisticReservationIntegrationTest",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "10.786"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OrderSmallPoolIntegrationTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "8.202"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OutboxDeliveryIntegrationTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "16.384"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.OutboxIntegrationTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "4.778"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.PessimisticReservationIntegrationTest",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "13.154"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.ReservationStatusTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.001"
+    },
+    {
+      "name": "com.vibe.ticketrush.reservation.Week6RedisIntegrationTest",
+      "tests": "25",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "56.594"
+    }
+  ],
+  "frontend": {
+    "lint": "PASS",
+    "unitTests": 51,
+    "unitFailures": 0,
+    "build": "PASS"
+  },
+  "screenshots": {
+    "stack": "ticketrush-visual-review",
+    "seed": "[dev-seated-v1]",
+    "eventId": "8905363f-7ca9-49e8-8226-51645315dae0",
+    "evidence": [
+      {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "checkout": {
+          "disabled": false,
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(67, 56, 202)"
+        },
+        "overflow": 0
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "checkout": {
+          "disabled": false,
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(67, 56, 202)"
+        },
+        "overflow": 0
+      }
+    ]
+  },
+  "playwrightLog": "\nRunning 10 tests using 1 worker\n\n(node:16024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ok  1 tests\\e2e\\access.spec.ts:17:1 › anonymous private deep link preserves next; public catalog is accessible (1.6s)\n  ok  2 tests\\e2e\\access.spec.ts:25:1 › USER sees account pages and 403 on admin and gate; reload loses credentials (770ms)\n  ok  3 tests\\e2e\\access.spec.ts:32:1 › STAFF lands at gate and cannot open buyer or admin pages (625ms)\n  ok  4 tests\\e2e\\access.spec.ts:37:1 › ADMIN lands at admin, uses operations/results and view as customer without role switching (723ms)\n  ok  5 tests\\e2e\\access.spec.ts:46:1 › real purchase: login, queue polling, zone, reserve, pay, ticket QR (3.7s)\n  ok  6 tests\\e2e\\seating.spec.ts:21:1 › seated manual purchase from catalog uses geometry, compact ETag status and ticket snapshot (7.3s)\n  ok  7 tests\\e2e\\seating.spec.ts:29:1 › Auto-Pick replaces selection atomically and buys adjacent server suggestions (4.0s)\n  ok  8 tests\\e2e\\seating.spec.ts:37:1 › mobile 375px selects two adjacent seats and holds without page overflow (2.9s)\n  ok  9 tests\\e2e\\seating.spec.ts:55:1 › two browser contexts compete for the same seat; loser sees 409 and recovery (8.9s)\n  ok 10 tests\\e2e\\seating.spec.ts:66:1 › expired real hold uses server expiry and disables checkout without a fake reset (2.9s)\n\n  10 passed (38.0s)\n",
+  "credentialsRotated": false,
+  "remoteAdded": false,
+  "pushed": false
+}

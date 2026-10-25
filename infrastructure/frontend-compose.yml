@@ -1,0 +1,13 @@
+# Optional isolated local stack; preserves existing project volumes.
+services:
+  redis:
+    ports: !override
+      - "127.0.0.1:16380:6379"
+  rabbitmq:
+    ports: !override
+      - "127.0.0.1:15673:5672"
+      - "127.0.0.1:15674:15672"
+  mailpit:
+    ports: !override
+      - "127.0.0.1:11025:1025"
+      - "127.0.0.1:18025:8025"

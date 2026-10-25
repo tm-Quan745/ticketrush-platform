@@ -1,0 +1,31 @@
+{
+  "stack": "ticketrush-visual-review",
+  "seed": "[dev-seated-v1]",
+  "eventId": "8905363f-7ca9-49e8-8226-51645315dae0",
+  "evidence": [
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "checkout": {
+        "disabled": false,
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(67, 56, 202)"
+      },
+      "overflow": 0
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "checkout": {
+        "disabled": false,
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(67, 56, 202)"
+      },
+      "overflow": 0
+    }
+  ]
+}
