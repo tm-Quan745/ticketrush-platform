@@ -16,7 +16,11 @@ import java.util.*;
 public class SeatingAdministration implements VenueOperations {
     private final JdbcTemplate jdbc;
     private final ObjectMapper json;
-    public SeatingAdministration(JdbcTemplate jdbc,ObjectMapper json) { this.jdbc=jdbc; this.json=json; }
+    private final VenueTemplateCreator templates;
+    public SeatingAdministration(JdbcTemplate jdbc,ObjectMapper json,VenueTemplateCreator templates) { this.jdbc=jdbc; this.json=json; this.templates=templates; }
+    public VenueDetail createVenue(com.vibe.ticketrush.inventory.dto.VenueTemplateDtos.CreateVenue request) {
+        return venue(templates.create(request));
+    }
     public record Mapping(@NotNull UUID sectionId,@NotNull UUID tierId) {}
     public record SectionMapping(@NotEmpty @Size(max=100) List<@Valid Mapping> mappings) {}
     public record SeatVersion(@NotNull UUID id,@NotNull @PositiveOrZero Long expectedVersion) {}

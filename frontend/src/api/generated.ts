@@ -29,7 +29,7 @@ export type OutboxEvent = { "id"?: string; "aggregateType"?: string; "aggregateI
 export type Row = { "id"?: string; "eventId"?: string; "type"?: string; "userId"?: string; "address"?: string; "status"?: "PENDING" | "SENT" | "FAILED"; "attempts"?: number; "error"?: string; "sentAt"?: string };
 export type InventoryViolation = { "tierId"?: string; "available"?: number; "held"?: number; "confirmed"?: number; "total"?: number; "validTickets"?: number };
 export type SeatReadSeatMap = { "eventId": string; "venue": SeatReadVenue; "sections": Array<SeatReadSectionOverview>; "tiers": Array<SeatReadPublicTier>; "observedAt": string };
-export type SeatReadVenue = { "id": string; "templateKey": string; "templateVersion": number; "name": string; "viewBox": Array<number> };
+export type SeatReadVenue = { "id": string; "templateKey": string; "templateVersion": number; "name": string; "viewBox": Array<number>; "stage"?: Array<number> };
 export type SeatReadSectionOverview = { "id": string; "code": string; "name": string; "type": "GA" | "SEATED"; "tierId": string; "geometry": SeatReadGeometry; "availability": SeatReadAvailability; "counts": (SeatReadSectionCounts) | null; "price": number; "currency": string; "rowCount": number; "seatCount": number; "geometryVersion"?: (string) | null };
 export type SeatReadGeometry = { "viewBox": Array<number>; "polygon": Array<SeatReadPoint>; "color": string };
 export type SeatReadPoint = { "x": number; "y": number };
@@ -50,6 +50,13 @@ export type AdminSeat = { "id": string; "rowLabel": string; "number": number; "a
 export type AdminSectionCounts = { "physical": number; "available": number; "held": number; "sold": number; "blocked": number; "sellable": number };
 export type AdminSection = { "id": string; "code": string; "name": string; "type": "GA" | "SEATED"; "tierId": (string) | null; "counts": (AdminSectionCounts) | null };
 export type AdminQueueSettings = { "id": string; "enabled": boolean; "rate": number; "mode": "fifo" | "lottery"; "saleStart": string; "saleEnd": string; "published": boolean };
+export type GoogleLoginRequest = { "credential": string };
+export type GoogleConfig = { "clientId"?: string };
+export type AdminVenueStage = { "x": number; "y": number; "width": number; "height": number };
+export type AdminVenueSectionInput = { "x": number; "y": number; "width": number; "height": number; "code": string; "name": string; "type": "GA" | "SEATED"; "color": string; "rows": number; "columns": number; "aisleEvery": number };
+export type AdminVenueCreate = { "templateKey": string; "name": string; "width": number; "height": number; "stage"?: AdminVenueStage; "sections": Array<AdminVenueSectionInput> };
+export type AdminVenueSummary = { "id": string; "templateKey": string; "templateVersion": number; "name": string };
+export type AdminVenueDetail = { "id": string; "templateKey": string; "templateVersion": number; "name": string; "geometry": { "width": number; "height": number; "stage": Array<number> }; "sections": Array<{ "id": string; "code": string; "name": string; "type": string; "geometry": { "color": string; "polygon": Array<Array<number>> } }> };
 
 export interface Operations {
   "PUT /api/v1/admin/tiers/{id}": { input: { path: { "id": string }; query?: {  }; body: WriteTier; headers?: Record<string, string>; signal?: AbortSignal }; output: InventoryView };
@@ -99,6 +106,11 @@ export interface Operations {
   "GET /api/v1/events/{id}/sections/{sectionId}/geometry/{version}": { input: { path: { "id": string; "sectionId": string; "version": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: SeatReadSectionGeometry };
   "GET /api/v1/admin/events/{id}/sections": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<AdminSection> };
   "GET /api/v1/admin/events/{id}/sections/{sectionId}/seats": { input: { path: { "id": string; "sectionId": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<AdminSeat> };
+  "POST /api/v1/auth/google": { input: { path?: {  }; query?: {  }; body: GoogleLoginRequest; headers?: Record<string, string>; signal?: AbortSignal }; output: TokenResponse };
+  "GET /api/v1/auth/google/config": { input: { path?: {  }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: GoogleConfig };
+  "GET /api/v1/admin/venues": { input: { path?: {  }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: Array<AdminVenueSummary> };
+  "POST /api/v1/admin/venues": { input: { path?: {  }; query?: {  }; body: AdminVenueCreate; headers?: Record<string, string>; signal?: AbortSignal }; output: AdminVenueDetail };
+  "GET /api/v1/admin/venues/{id}": { input: { path: { "id": string }; query?: {  }; body?: never; headers?: Record<string, string>; signal?: AbortSignal }; output: AdminVenueDetail };
 }
 export const endpoints = {
   "PUT /api/v1/admin/tiers/{id}": {
@@ -288,5 +300,25 @@ export const endpoints = {
   "GET /api/v1/admin/events/{id}/sections/{sectionId}/seats": {
     "method": "GET",
     "path": "/api/v1/admin/events/{id}/sections/{sectionId}/seats"
+  },
+  "POST /api/v1/auth/google": {
+    "method": "POST",
+    "path": "/api/v1/auth/google"
+  },
+  "GET /api/v1/auth/google/config": {
+    "method": "GET",
+    "path": "/api/v1/auth/google/config"
+  },
+  "GET /api/v1/admin/venues": {
+    "method": "GET",
+    "path": "/api/v1/admin/venues"
+  },
+  "POST /api/v1/admin/venues": {
+    "method": "POST",
+    "path": "/api/v1/admin/venues"
+  },
+  "GET /api/v1/admin/venues/{id}": {
+    "method": "GET",
+    "path": "/api/v1/admin/venues/{id}"
   }
 } as const;

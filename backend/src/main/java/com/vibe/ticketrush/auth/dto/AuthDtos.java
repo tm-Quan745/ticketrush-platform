@@ -17,5 +17,8 @@ public final class AuthDtos {
     public record TokenResponse(String accessToken, String refreshToken, String tokenType,
                                 long expiresIn) {}
 
+    public record GoogleLoginRequest(@NotBlank @Size(max = 8192) String credential) {}
+    public record GoogleConfig(String clientId) {}
+
     public record UserResponse(UUID id, String email, Set<String> roles) {}
 }

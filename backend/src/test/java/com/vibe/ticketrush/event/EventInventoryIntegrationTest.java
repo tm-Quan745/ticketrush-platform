@@ -96,6 +96,114 @@ class EventInventoryIntegrationTest {
         assertThat(json(r).path("status").asInt()).isEqualTo(status);
         for (String f : List.of("timestamp", "code", "message", "path", "fieldErrors")) assertThat(json(r).has(f)).isTrue();
     }
+    Map<String,Object> venueTemplate() {
+        var section=new LinkedHashMap<String,Object>();
+        section.putAll(Map.of("code","A","name","Stand A","type","SEATED","color","#818cf8","x",20,"y",120,"width",200,"height",150,"rows",3,"columns",12));
+        section.put("aisleEvery",10);
+        return new HashMap<>(Map.of("templateKey","test-"+UUID.randomUUID(),"name","Test stadium","width",640,"height",520,"sections",List.of(section)));
+    }
+    @Test void createsVenueWithGeneratedSeatsAndEnforcesAccess() throws Exception {
+        var body=venueTemplate();
+        for (String role:List.of("anonymous","USER","STAFF"))
+            assertThat(call(HttpMethod.POST,"/admin/venues",body,role.equals("anonymous")?null:token(role)).getStatusCode().value()).isEqualTo(role.equals("anonymous")?401:403);
+        var response=call(HttpMethod.POST,"/admin/venues",body,admin);
+        assertThat(response.getStatusCode().value()).as(response.getBody()).isEqualTo(201);
+        UUID section=UUID.fromString(json(response).path("sections").get(0).path("id").asText());
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM seats WHERE section_id=?",Integer.class,section)).isEqualTo(36);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM seats WHERE section_id=? AND adjacency_segment=1",Integer.class,section)).isEqualTo(6);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM seats WHERE section_id=? AND (x<=20 OR x>=220 OR y<=120 OR y>=270)",Integer.class,section)).isZero();
+        assertThat(call(HttpMethod.GET,"/admin/venues/"+json(response).path("id").asText(),null,admin).getStatusCode().value()).isEqualTo(200);
+        assertThat(call(HttpMethod.POST,"/admin/venues",body,admin).getStatusCode().value()).isEqualTo(409);
+    }
+    @Test void invalidVenueDoesNotPersistPartialTemplate() {
+        var body=venueTemplate();
+        body.put("width",200);
+        assertThat(call(HttpMethod.POST,"/admin/venues",body,admin).getStatusCode().value()).isEqualTo(422);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM venues WHERE template_key=?",Integer.class,body.get("templateKey"))).isZero();
+        body.put("width",640); body.put("sections",Arrays.asList((Object)null));
+        assertThat(call(HttpMethod.POST,"/admin/venues",body,admin).getStatusCode().value()).isEqualTo(400);
+    }
+    @Test void customStageIsPreservedThroughEventPublicationAndPublicSeatmap() throws Exception {
+        var body=venueTemplate();
+        body.put("stage",Map.of("x",350,"y",300,"width",180,"height",80));
+        var response=call(HttpMethod.POST,"/admin/venues",body,admin);
+        assertThat(response.getStatusCode().value()).as(response.getBody()).isEqualTo(201);
+        var venue=json(response);
+        assertThat(venue.path("geometry").path("stage")).isEqualTo(mapper.valueToTree(List.of(350.0,300.0,530.0,380.0)));
+        var eventBody=event("Custom venue stage",3);
+        eventBody.put("venueId",venue.path("id").asText());
+        var eventResponse=call(HttpMethod.POST,"/admin/events",eventBody,admin);
+        assertThat(eventResponse.getStatusCode().value()).as(eventResponse.getBody()).isEqualTo(201);
+        UUID eventId=UUID.fromString(json(eventResponse).path("id").asText());
+        var tierBody=tier(0);tierBody.put("inventoryMode","SEATED");
+        var tierResponse=call(HttpMethod.POST,"/admin/events/"+eventId+"/tiers",tierBody,admin);
+        assertThat(tierResponse.getStatusCode().value()).as(tierResponse.getBody()).isEqualTo(201);
+        var mapping=Map.of("mappings",List.of(Map.of("sectionId",venue.path("sections").get(0).path("id").asText(),"tierId",json(tierResponse).path("id").asText())));
+        assertThat(call(HttpMethod.PUT,"/admin/events/"+eventId+"/section-tiers",mapping,admin).getStatusCode().is2xxSuccessful()).isTrue();
+        publish(eventId);
+        var publicMap=call(HttpMethod.GET,"/events/"+eventId+"/seatmap",null,null);
+        assertThat(publicMap.getStatusCode().value()).as(publicMap.getBody()).isEqualTo(200);
+        assertThat(json(publicMap).path("venue").path("stage")).isEqualTo(venue.path("geometry").path("stage"));
+        assertThat(json(publicMap).path("sections").get(0).path("seatCount").asInt()).isEqualTo(36);
+    }
+    @Test void invalidStageAndStageOverlapLeaveNoTemplate() {
+        var body=venueTemplate();
+        for(var stage:List.of(Map.of("x",600,"y",20,"width",100,"height",80),Map.of("x",40,"y",150,"width",100,"height",80))) {
+            body.put("stage",stage);
+            assertThat(call(HttpMethod.POST,"/admin/venues",body,admin).getStatusCode().value()).isEqualTo(422);
+            assertThat(jdbc.queryForObject("SELECT count(*) FROM venues WHERE template_key=?",Integer.class,body.get("templateKey"))).isZero();
+        }
+        body.put("stage",Map.of("x",0,"y",0,"width",0,"height",80));
+        assertThat(call(HttpMethod.POST,"/admin/venues",body,admin).getStatusCode().value()).isEqualTo(400);
+    }
+    @SuppressWarnings("unchecked")
+    @Test void overlappingVenueSectionsAreRejectedAndStandingSectionsHaveNoSeats() throws Exception {
+        var body=venueTemplate();
+        var a=new HashMap<>((Map<String,Object>)((List<?>)body.get("sections")).getFirst());
+        var b=new HashMap<>(a);b.put("code","B");
+        body.put("sections",List.of(a,b));
+        assertThat(call(HttpMethod.POST,"/admin/venues",body,admin).getStatusCode().value()).isEqualTo(422);
+        b.put("x",300);b.put("type","GA");b.put("rows",0);b.put("columns",0);
+        var result=call(HttpMethod.POST,"/admin/venues",body,admin);
+        assertThat(result.getStatusCode().value()).as(result.getBody()).isEqualTo(201);
+        var id=UUID.fromString(json(result).path("id").asText());
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM seats s JOIN sections c ON c.id=s.section_id WHERE c.venue_id=? AND c.type='GA'",Integer.class,id)).isZero();
+    }
+    @Test void imageUploadRequiresAdminAndValidFile() throws Exception {
+        var body = new org.springframework.util.LinkedMultiValueMap<String, Object>();
+        body.add("file", new org.springframework.core.io.ByteArrayResource("not an image".getBytes()) {
+            @Override public String getFilename() { return "fake.png"; }
+        });
+        for (String role : List.of("anonymous", "USER", "STAFF", "ADMIN")) {
+            var headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            if (!role.equals("anonymous")) headers.setBearerAuth(token(role));
+            var response = http.postForEntity("/api/v1/admin/events/images", new HttpEntity<>(body, headers), String.class);
+            int expected = role.equals("anonymous") ? 401 : role.equals("ADMIN") ? 400 : 403;
+            assertThat(response.getStatusCode().value()).as(role).isEqualTo(expected);
+            if (role.equals("ADMIN")) assertThat(json(response).path("code").asText()).isEqualTo("INVALID_IMAGE");
+        }
+    }
+    @Test void cloudinaryImageIsStoredUpdatedPublishedAndRemoved() throws Exception {
+        var body = event("Image", 2);
+        String url = "https://res.cloudinary.com/demo/image/upload/events/banner.jpg";
+        body.put("imageUrl", url);
+        var created = call(HttpMethod.POST, "/admin/events", body, admin);
+        assertThat(created.getStatusCode().value()).isEqualTo(201);
+        UUID id = UUID.fromString(json(created).path("id").asText());
+        assertThat(jdbc.queryForObject("SELECT image_url FROM events WHERE id = ?", String.class, id)).isEqualTo(url);
+        publish(id);
+        assertThat(json(call(HttpMethod.GET, "/events/" + id, null, null)).path("event").path("imageUrl").asText()).isEqualTo(url);
+        body.put("imageUrl", "https://res.cloudinary.com/demo/image/upload/events/new.jpg");
+        assertThat(call(HttpMethod.PUT, "/admin/events/" + id, body, admin).getStatusCode().value()).isEqualTo(200);
+        assertThat(json(call(HttpMethod.GET, "/events/" + id, null, null)).path("event").path("imageUrl").asText()).isEqualTo(body.get("imageUrl"));
+        body.put("imageUrl", "https://evil.test/banner.jpg");
+        error(call(HttpMethod.POST, "/admin/events", body, admin), 400);
+        error(call(HttpMethod.PUT, "/admin/events/" + id, body, admin), 400);
+        body.put("imageUrl", null);
+        assertThat(call(HttpMethod.PUT, "/admin/events/" + id, body, admin).getStatusCode().value()).isEqualTo(200);
+        assertThat(jdbc.queryForObject("SELECT image_url FROM events WHERE id = ?", String.class, id)).isNull();
+    }
     @Test void lifecycleAndInvalidTransitions() throws Exception {
         UUID id = createEvent("Launch", 2);
         error(call(HttpMethod.POST, "/admin/events/" + id + "/cancel", null, admin), 409);

@@ -14,20 +14,20 @@ export const EventHeader: React.FC<EventHeaderProps> = ({ event }) => {
   const isOnSale = event.saleStartTime <= now && now <= event.saleEndTime;
 
   return (
-    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl">
+    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
       {/* Banner Backdrop */}
       <div className="relative h-64 sm:h-80 bg-slate-950 overflow-hidden">
         {event.imageUrl ? (
-        <img
-          src={event.imageUrl || undefined}
-          alt={event.title}
-          className="w-full h-full object-cover opacity-60"
-        />
-        ) : <div aria-hidden="true" className="h-full w-full bg-gradient-to-br from-indigo-900 via-slate-900 to-rose-900 flex items-center justify-center"><Calendar className="w-20 h-20 text-indigo-300/30"/></div>}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+          <img
+            src={event.imageUrl || undefined}
+            alt={event.title}
+            className="w-full h-full object-cover opacity-75"
+          />
+        ) : <div aria-hidden="true" className="h-full w-full bg-gradient-to-br from-indigo-900 via-slate-900 to-rose-900 flex items-center justify-center"><Calendar className="w-20 h-20 text-indigo-300/30" /></div>}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/20" />
 
         {/* Top badges */}
-        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+        <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
           {isOnSale ? (
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-black shadow-lg">
               <Flame className="w-3.5 h-3.5 fill-white animate-pulse" />
@@ -49,25 +49,25 @@ export const EventHeader: React.FC<EventHeaderProps> = ({ event }) => {
         </div>
 
         {/* Bottom Details */}
-        <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="space-y-2 max-w-2xl">
+        <div className="event-hero-details absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 z-10">
+          <div className="space-y-2 max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
               {event.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-indigo-400" />
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-200 font-medium drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+              <span className="flex items-center gap-1.5 text-slate-200">
+                <Calendar className="w-4 h-4 text-indigo-300" />
                 {formatDateTime(event.startTime)}
               </span>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-rose-400" />
+              <span className="flex items-center gap-1.5 text-slate-200">
+                <MapPin className="w-4 h-4 text-rose-300" />
                 {event.venueName} • {event.venueAddress}
               </span>
             </div>
           </div>
 
           {!isOnSale && (
-            <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
+            <div className="bg-slate-950/85 backdrop-blur-md p-3 rounded-2xl border border-slate-700/80 shadow-2xl">
               <CountdownTimer targetDate={event.saleStartTime} label={vi.saleCountdown} />
             </div>
           )}

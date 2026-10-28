@@ -10,7 +10,10 @@ public final class EventDtos {
     private EventDtos() {}
     public record WriteEvent(@NotBlank @Size(max = 200) String title,
             @Size(max = 10000) String description, @Size(max = 200) String venueName,
-            @Size(max = 500) String venueAddress, @Size(max = 2048) String imageUrl,
+            @Size(max = 500) String venueAddress,
+            @Size(max = 2048)
+            @Pattern(regexp = "^$|https://res\\.cloudinary\\.com/[A-Za-z0-9_-]+/image/upload/[^\\s?#]+(?:\\?[^\\s#]*)?",
+                    message = "must be an HTTPS Cloudinary image upload URL") String imageUrl,
             @NotNull Instant startTime, @NotNull Instant endTime,
             @NotNull Instant saleStartTime, @NotNull Instant saleEndTime, UUID venueId) {
         public WriteEvent(String title,String description,String venueName,String venueAddress,String imageUrl,

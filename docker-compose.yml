@@ -143,6 +143,8 @@ services:
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
     depends_on:

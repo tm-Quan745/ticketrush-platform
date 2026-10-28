@@ -15,7 +15,19 @@ import java.util.UUID;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService auth;
-    public AuthController(AuthService auth) { this.auth = auth; }
+    private final com.vibe.ticketrush.auth.service.GoogleTokenVerifier google;
+    public AuthController(AuthService auth, com.vibe.ticketrush.auth.service.GoogleTokenVerifier google) {
+        this.auth = auth; this.google = google;
+    }
+
+    @GetMapping("/google/config")
+    public GoogleConfig googleConfig() { return new GoogleConfig(google.clientId()); }
+
+    @PostMapping("/google")
+    public ResponseEntity<TokenResponse> googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .body(auth.googleLogin(google.verify(request.credential())));
+    }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)

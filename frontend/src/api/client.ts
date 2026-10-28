@@ -56,10 +56,10 @@ export class ApiClient {
     return this.refreshPromise;
   }
   async request<T>(endpoint: string, options: RequestInit = {}, extraHeaders: Record<string, string> = {}, isRetry = false): Promise<T> {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json', ...extraHeaders, ...(options.headers as Record<string, string>) };
+    const headers: Record<string, string> = { ...(options.body instanceof FormData ? {} : {'Content-Type': 'application/json'}), ...extraHeaders, ...(options.headers as Record<string, string>) };
     if (this.token) headers.Authorization = `Bearer ${this.token}`;
     const response = await fetch(base + endpoint, { ...options, credentials: 'include', headers });
-    const canRefresh = !['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'].includes(endpoint);
+    const canRefresh = !['/auth/login', '/auth/google', '/auth/google/config', '/auth/register', '/auth/refresh', '/auth/logout'].includes(endpoint);
     if (response.status === 401 && canRefresh && !isRetry && await this.refreshSession())
       return this.request<T>(endpoint, options, extraHeaders, true);
     if (response.status === 304) return { notModified: true, etag: response.headers.get('ETag'), retryAfterMs: retryAfter(response.headers.get('Retry-After')) } as T;
@@ -86,8 +86,22 @@ export class ApiClient {
     return this.request(path.replace(/^\/api\/v1/, ''), { method: endpoint.method,
       body: input.body === undefined ? undefined : JSON.stringify(input.body), headers: input.headers, signal: input.signal });
   }
+  async uploadEventImage(file: File, signal?: AbortSignal): Promise<string> {
+    const body = new FormData(); body.append('file', file);
+    const result = await this.request<{imageUrl:string}>('/admin/events/images', {method:'POST',body,signal});
+    return result.imageUrl;
+  }
   async login(email: string, password: string) {
     const tokens = await this.request<{ accessToken: string; refreshToken: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+    this.setAuth(tokens.accessToken, null, tokens.refreshToken);
+    try { const user = await this.getMe(); this.setAuth(tokens.accessToken, user, tokens.refreshToken); return { ...tokens, user }; }
+    catch (error) { this.expire(); throw error; }
+  }
+  googleConfig() { return this.request<{clientId: string}>('/auth/google/config'); }
+  async loginWithGoogle(credential: string) {
+    const tokens = await this.request<{ accessToken: string; refreshToken: string }>('/auth/google', {
+      method: 'POST', body: JSON.stringify({ credential }),
+    });
     this.setAuth(tokens.accessToken, null, tokens.refreshToken);
     try { const user = await this.getMe(); this.setAuth(tokens.accessToken, user, tokens.refreshToken); return { ...tokens, user }; }
     catch (error) { this.expire(); throw error; }
@@ -104,11 +118,8 @@ export class ApiClient {
     finally { this.expire(); }
   }
   // --- Events ---
-  async getEvents(keyword = '', onSale = false): Promise<{ content: Event[] }> {
-    const params = new URLSearchParams();
-    if (keyword) params.set('keyword', keyword);
-    if (onSale) params.set('onSale', 'true');
-    return this.call('GET /api/v1/events', { query: {keyword, onSale} }) as Promise<{content: Event[]}>;
+  async getEvents(keyword = '', onSale = false, page = 0, size = 12): Promise<Page<Event>> {
+    return this.call('GET /api/v1/events', { query: {keyword, onSale, page, size} }) as Promise<Page<Event>>;
   }
 
   async getEventDetail(id: string): Promise<{ event: Event; tiers: TicketTier[] }> {
@@ -162,7 +173,10 @@ export class ApiClient {
   }
   allMyOrders(){return allPages(page=>this.getMyOrders(page));}
   allMyReservations(){return allPages(page=>this.getMyReservations(page));}
-  allAdminEvents(){return allPages(page=>this.call('GET /api/v1/admin/events',{query:{page,size:50}}) as Promise<Page<Event>>);}
+  getAdminEvents(page = 0, size = 12) {
+    return this.call('GET /api/v1/admin/events', {query:{page,size}}) as Promise<Page<Event>>;
+  }
+  allAdminEvents(){return allPages(page=>this.getAdminEvents(page,50));}
   adminEvent(id:string){return this.call('GET /api/v1/admin/events/{id}',{path:{id}}) as Promise<Event>;}
   adminSections(id:string){return this.call('GET /api/v1/admin/events/{id}/sections',{path:{id}});}
   adminSeats(id:string,sectionId:string){return this.call('GET /api/v1/admin/events/{id}/sections/{sectionId}/seats',{path:{id,sectionId}});}

@@ -1,23 +1,172 @@
 @import "tailwindcss";
 
-.stadium-frame { width:100%; aspect-ratio:16/10; background:#020617 radial-gradient(#334155 1px,transparent 1px) 0 0/16px 16px; border-radius:1.5rem; }
-@media(min-width:640px) { .stadium-frame { aspect-ratio:16/9; } }
-.stadium-section:hover polygon, .stadium-section:focus polygon { fill-opacity:.65; stroke-width:3; }
-.stadium-section[aria-pressed=true] polygon { fill-opacity:.85; }
-.seat-scroll { overflow-x:auto; max-width:100%; }
-.seat-row-label { position:sticky; left:0; width:48px; flex-shrink:0; z-index:2; background:#020617; color:#f8fafc; padding:8px; }
-.seat-cell { width:36px; height:36px; flex-shrink:0; }
-.seat-cell[data-aisle=true] { margin-left:24px; }
-@media print {
-  body * { visibility:hidden; }
-  .print-ticket, .print-ticket * { visibility:visible; }
-  .print-ticket { position:fixed; inset:0; padding:16px; background:white; color:black; overflow:visible; }
+@media (min-width: 768px) {
+  .admin-sidebar {
+    position: sticky;
+    top: calc(var(--app-header-height, 85px) + 16px);
+    align-self: flex-start;
+    max-height: calc(100dvh - var(--app-header-height, 85px) - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
 }
-@media(pointer:coarse) { .seat-cell { width:44px; height:44px; } }
-.selection-summary { position:sticky; bottom:0; z-index:20; padding:12px; border:1px solid #6366f1; border-radius:16px; background:#0f172a; color:#f8fafc; box-shadow:0 -4px 20px #02061766; }
-html .checkout-primary { background:#4338ca !important; color:#fff !important; opacity:1; transition:none; }
-html .checkout-primary:hover:not(:disabled) { background:#3730a3 !important; }
-html .checkout-primary:disabled { background:#334155 !important; color:#cbd5e1 !important; border:2px dashed #94a3b8; opacity:1; cursor:not-allowed; }
+
+.notification-dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: min(44rem, calc(100dvh - 2rem));
+  margin: auto;
+}
+.notification-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.notification-dialog::backdrop {
+  background: rgb(2 6 23 / 55%);
+  backdrop-filter: blur(4px);
+}
+
+.stadium-frame {
+  width: 100%;
+  aspect-ratio: 16/10;
+  background: #020617 radial-gradient(#334155 1px, transparent 1px) 0 0/16px 16px;
+  border-radius: 1.5rem;
+}
+
+@media(min-width:640px) {
+  .stadium-frame {
+    aspect-ratio: 16/9;
+  }
+}
+
+.stadium-section:hover polygon,
+.stadium-section:focus polygon {
+  fill-opacity: .65;
+  stroke-width: 3;
+}
+
+.stadium-section[aria-pressed=true] polygon {
+  fill-opacity: .85;
+}
+
+.seat-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.seat-row-label {
+  position: sticky;
+  left: 0;
+  width: 48px;
+  flex-shrink: 0;
+  z-index: 2;
+  padding: 8px;
+  text-align: center;
+}
+
+html.light .seat-row-label {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-right: 1px solid #cbd5e1 !important;
+  box-shadow: 2px 0 4px rgba(15, 23, 42, 0.06);
+}
+
+html.dark .seat-row-label {
+  background: #020617 !important;
+  color: #f8fafc !important;
+}
+
+.seat-cell {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.seat-cell[data-aisle=true] {
+  margin-left: 24px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-ticket,
+  .print-ticket * {
+    visibility: visible;
+  }
+
+  .print-ticket {
+    position: fixed;
+    inset: 0;
+    padding: 16px;
+    background: white;
+    color: black;
+    overflow: visible;
+  }
+}
+
+@media(pointer:coarse) {
+  .seat-cell {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.selection-summary {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  padding: 16px;
+  border: 1.5px solid #6366f1;
+  border-radius: 16px;
+}
+
+html.light .selection-summary {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 -8px 25px -4px rgba(15, 23, 42, 0.12), 0 -2px 8px -1px rgba(15, 23, 42, 0.06) !important;
+}
+
+html.light .selection-summary h3,
+html.light .selection-summary p {
+  color: #0f172a !important;
+}
+
+html.light .selection-summary .summary-price {
+  color: #4338ca !important;
+}
+
+html.light .selection-summary .text-slate-400,
+html.light .selection-summary .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.dark .selection-summary {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  box-shadow: 0 -4px 20px #02061766 !important;
+}
+
+html .checkout-primary {
+  background: #4338ca !important;
+  color: #fff !important;
+  opacity: 1;
+  transition: none;
+}
+
+html .checkout-primary:hover:not(:disabled) {
+  background: #3730a3 !important;
+}
+
+html .checkout-primary:disabled {
+  background: #334155 !important;
+  color: #cbd5e1 !important;
+  border: 2px dashed #94a3b8;
+  opacity: 1;
+  cursor: not-allowed;
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -35,8 +184,8 @@ html .checkout-primary:disabled { background:#334155 !important; color:#cbd5e1 !
 /* Root & Document Defaults */
 html {
   transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Dark theme base (Default) */
@@ -135,32 +284,79 @@ html.light .border-slate-900 {
    Light Mode: High-Legibility Typography
    ======================================================== */
 html.light .text-slate-100 {
-  color: #0f172a; /* Slate 900 */
+  color: #0f172a;
+  /* Slate 900 */
 }
 
 html.light .text-slate-200 {
-  color: #1e293b; /* Slate 800 */
+  color: #1e293b;
+  /* Slate 800 */
 }
 
 html.light .text-slate-300 {
-  color: #334155; /* Slate 700 */
+  color: #334155;
+  /* Slate 700 */
 }
 
 html.light .text-slate-400 {
-  color: #475569; /* Slate 600 - High contrast WCAG AA */
+  color: #475569;
+  /* Slate 600 - High contrast WCAG AA */
 }
 
 html.light .text-slate-500 {
-  color: #64748b; /* Slate 500 */
+  color: #64748b;
+  /* Slate 500 */
 }
 
 html.light .text-slate-600 {
-  color: #94a3b8; /* Slate 400 */
+  color: #94a3b8;
+  /* Slate 400 */
 }
 
-/* Headings with text-white become crisp text-slate-900 unless on solid colored button */
-html.light .text-white:not([class*="bg-indigo-"]):not([class*="bg-rose-"]):not([class*="bg-emerald-"]):not([class*="bg-amber-"]):not([class*="bg-blue-"]):not(button):not(.btn-colored) {
+/* Headings with text-white become crisp text-slate-900 unless on solid colored button or image hero overlay */
+html.light .text-white:not([class*="bg-indigo-"]):not([class*="bg-rose-"]):not([class*="bg-emerald-"]):not([class*="bg-amber-"]):not([class*="bg-blue-"]):not(button):not(.btn-colored):not(.event-hero-details):not(.event-hero-details *):not(.countdown-digit) {
   color: #0f172a;
+}
+
+/* Event Hero Banner details overlay - text must ALWAYS be crisp white over dark photo scrim */
+.event-hero-details h1,
+html.light .event-hero-details h1,
+html.dark .event-hero-details h1 {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.event-hero-details,
+.event-hero-details span,
+html.light .event-hero-details span,
+html.light .event-hero-details div {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+html.light .event-hero-details span.text-slate-200,
+html.light .event-hero-details div.text-slate-200 {
+  color: #f1f5f9 !important;
+}
+
+html.light .event-hero-details svg.text-indigo-300 {
+  color: #a5b4fc !important;
+}
+
+html.light .event-hero-details svg.text-rose-300 {
+  color: #fda4af !important;
+}
+
+/* CountdownTimer digits inside dark pill boxes */
+html.light .countdown-digit {
+  color: #ffffff !important;
+}
+
+html.light .countdown-digit.text-amber-400 {
+  color: #fbbf24 !important;
+}
+
+html.light .countdown-digit.text-rose-400 {
+  color: #fb7185 !important;
 }
 
 /* Ensure colorful buttons retain white text */
@@ -196,12 +392,42 @@ html.light .bg-gradient-to-r.from-white.via-slate-100.to-slate-400 {
 /* ========================================================
    Light Mode: Adaptive Gradients on Cards
    ======================================================== */
-/* Convert dark slate card gradients to crisp white/porcelain surfaces */
+/* Convert dark slate and indigo card gradients to crisp surfaces in light mode */
 html.light .rounded-3xl[class*="from-slate-9"],
 html.light .rounded-2xl[class*="from-slate-9"],
-html.light div[class*="from-slate-900"][class*="to-slate-950"] {
+html.light div[class*="from-slate-900"][class*="to-slate-950"],
+html.light div[class*="from-indigo-950"][class*="to-slate-900"],
+html.light div[class*="from-indigo-900"][class*="to-slate-900"],
+html.light div[class*="from-indigo-950/60"][class*="to-slate-900"] {
   background-image: none !important;
   background-color: #ffffff !important;
+}
+
+/* Specific styling for wallet ticket pass in Light Mode */
+html.light [data-testid="wallet-ticket"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light [data-testid="wallet-ticket"]>div:first-child {
+  background-image: none !important;
+  background-color: #eef2ff !important;
+  border-bottom-color: #cbd5e1 !important;
+}
+
+html.light [data-testid="wallet-ticket"] h2,
+html.light [data-testid="wallet-ticket"] p {
+  color: #0f172a !important;
+}
+
+html.light [data-testid="wallet-ticket"] .text-slate-400,
+html.light [data-testid="wallet-ticket"] .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.light [data-testid="wallet-ticket"] .text-indigo-300 {
+  color: #4f46e5 !important;
 }
 
 /* Header highlight bar & banners */
@@ -215,14 +441,62 @@ html.light .absolute.bottom-0[class*="from-slate-9"][class*="to-transparent"] {
   background-image: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.25) 50%, transparent 100%) !important;
 }
 
+/* Hero section container fallback for light mode (Khám phá sự kiện, etc.) */
+html.light section[class*="from-indigo-950"][class*="to-rose-950"],
+html.light div[class*="from-indigo-950"][class*="to-rose-950"] {
+  background-image: linear-gradient(135deg, #eef2ff 0%, #ffffff 50%, #fff1f2 100%) !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light section[class*="from-indigo-950"][class*="to-rose-950"] h1,
+html.light section[class*="from-indigo-950"][class*="to-rose-950"] p,
+html.light div[class*="from-indigo-950"][class*="to-rose-950"] h1,
+html.light div[class*="from-indigo-950"][class*="to-rose-950"] p {
+  color: #0f172a;
+}
+
+/* Seat cells contrast in light mode */
+html.light .seat-cell[data-state="available"] {
+  background-color: #ecfdf5 !important;
+  border-color: #10b981 !important;
+  color: #065f46 !important;
+}
+
+html.light .seat-cell[data-state="available"]:hover {
+  border-color: #6366f1 !important;
+}
+
+html.light .seat-cell[data-state="selected"] {
+  background-color: #4f46e5 !important;
+  border-color: #818cf8 !important;
+  color: #ffffff !important;
+}
+
+html.light .seat-cell[data-state="mine"] {
+  background-color: #d1fae5 !important;
+  border-color: #059669 !important;
+  color: #064e3b !important;
+}
+
+html.light .seat-cell[data-state="unavailable"],
+html.light .seat-cell[data-state="blocked"] {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+}
+
 /* ========================================================
    Light Mode: Status Badges & Chips
    ======================================================== */
 html.light .bg-indigo-500\/10,
 html.light .bg-indigo-500\/20,
 html.light .bg-indigo-950,
+html.light .bg-indigo-950\/30,
+html.light .bg-indigo-950\/40,
+html.light .bg-indigo-950\/50,
 html.light .bg-indigo-950\/60,
-html.light .bg-indigo-950\/70 {
+html.light .bg-indigo-950\/70,
+html.light .bg-indigo-950\/80 {
   background-color: #ede9fe !important;
   color: #4338ca !important;
   border-color: #c7d2fe !important;
@@ -231,6 +505,9 @@ html.light .bg-indigo-950\/70 {
 html.light .bg-emerald-500\/10,
 html.light .bg-emerald-500\/20,
 html.light .bg-emerald-950,
+html.light .bg-emerald-950\/30,
+html.light .bg-emerald-950\/40,
+html.light .bg-emerald-950\/50,
 html.light .bg-emerald-950\/60 {
   background-color: #ecfdf5 !important;
   color: #047857 !important;
@@ -240,6 +517,9 @@ html.light .bg-emerald-950\/60 {
 html.light .bg-amber-500\/10,
 html.light .bg-amber-500\/20,
 html.light .bg-amber-950,
+html.light .bg-amber-950\/30,
+html.light .bg-amber-950\/40,
+html.light .bg-amber-950\/50,
 html.light .bg-amber-950\/60 {
   background-color: #fffbeb !important;
   color: #b45309 !important;
@@ -249,6 +529,9 @@ html.light .bg-amber-950\/60 {
 html.light .bg-rose-500\/10,
 html.light .bg-rose-500\/20,
 html.light .bg-rose-950,
+html.light .bg-rose-950\/30,
+html.light .bg-rose-950\/40,
+html.light .bg-rose-950\/50,
 html.light .bg-rose-950\/60 {
   background-color: #fff1f2 !important;
   color: #be123c !important;
@@ -287,7 +570,8 @@ html.light kbd {
 /* ========================================================
    Light Mode: Hovers & Tables
    ======================================================== */
-html.light .hover\:bg-slate-900:hover {
+html.light .hover\:bg-slate-900:hover,
+html.light .hover\:bg-slate-900\/80:hover {
   background-color: #f1f5f9;
 }
 
@@ -348,6 +632,19 @@ html.light .rounded-3xl.border:hover {
 }
 
 /* Ticket notch cutouts in Light Mode */
+.venue-canvas { background: #0f172a; border-radius: 14px; }
+.venue-grid-dot { fill: #334155; }
+.venue-zone-label { fill: #e2e8f0; }
+.venue-stage { fill: #475569; }
+.venue-stage-label { fill: #fff; }
+.venue-object:focus { outline: none; }
+.venue-object:focus-visible > rect:first-child { stroke: #a5b4fc; stroke-width: 4px; }
+html.light .venue-canvas { background: #f8fafc; }
+html.light .venue-grid-dot { fill: #cbd5e1; }
+html.light .venue-zone-label { fill: #1e293b; }
+html.light .venue-stage { fill: #64748b; }
+html.light .venue-object:focus-visible > rect:first-child { stroke: #4338ca; }
+
 html.light .rounded-full[class*="bg-slate-950"] {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;

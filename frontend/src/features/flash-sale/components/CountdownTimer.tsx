@@ -60,7 +60,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   return (
     <div className="flex flex-col items-center sm:items-start text-slate-200">
       {label && (
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1 font-mono">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1 font-mono">
           <Clock className="w-3 h-3 text-indigo-400" />
           {label}
         </span>
@@ -69,36 +69,36 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
         {timeLeft.days > 0 && (
           <>
             <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
-              <span className="text-lg font-black text-white">{pad(timeLeft.days)}</span>
-              <span className="text-[9px] text-slate-500 uppercase">{vi.days}</span>
+              <span className="countdown-digit text-lg font-black text-white">{pad(timeLeft.days)}</span>
+              <span className="text-[9px] text-slate-400 uppercase">{vi.days}</span>
             </div>
-            <span className="text-slate-600 font-bold">:</span>
+            <span className="text-slate-400 font-bold">:</span>
           </>
         )}
 
         <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
-          <span className="text-lg font-black text-white">{pad(timeLeft.hours)}</span>
-          <span className="text-[9px] text-slate-500 uppercase">{vi.hours}</span>
+          <span className="countdown-digit text-lg font-black text-white">{pad(timeLeft.hours)}</span>
+          <span className="text-[9px] text-slate-400 uppercase">{vi.hours}</span>
         </div>
-        <span className="text-slate-600 font-bold">:</span>
+        <span className="text-slate-400 font-bold">:</span>
 
         <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
-          <span className="text-lg font-black text-white">{pad(timeLeft.minutes)}</span>
-          <span className="text-[9px] text-slate-500 uppercase">{vi.minutes}</span>
+          <span className="countdown-digit text-lg font-black text-white">{pad(timeLeft.minutes)}</span>
+          <span className="text-[9px] text-slate-400 uppercase">{vi.minutes}</span>
         </div>
-        <span className="text-slate-600 font-bold">:</span>
+        <span className="text-slate-400 font-bold">:</span>
 
         <div className="flex flex-col items-center bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl shadow-inner min-w-[42px]">
-          <span className="text-lg font-black text-amber-400">{pad(timeLeft.seconds)}</span>
-          <span className="text-[9px] text-slate-500 uppercase">{vi.seconds}</span>
+          <span className="countdown-digit text-lg font-black text-amber-400">{pad(timeLeft.seconds)}</span>
+          <span className="text-[9px] text-slate-400 uppercase">{vi.seconds}</span>
         </div>
 
         {showMilliseconds && (
           <>
-            <span className="text-slate-600 font-bold">:</span>
+            <span className="text-slate-400 font-bold">:</span>
             <div className="flex flex-col items-center bg-rose-950/60 border border-rose-800/80 px-2 py-1.5 rounded-xl shadow-inner min-w-[36px]">
-              <span className="text-base font-black text-rose-400">{pad(timeLeft.ms)}</span>
-              <span className="text-[9px] text-rose-500/80 uppercase font-mono">{extraText.s7}</span>
+              <span className="countdown-digit text-base font-black text-rose-400">{pad(timeLeft.ms)}</span>
+              <span className="text-[9px] text-rose-400 uppercase font-mono">{extraText.s7}</span>
             </div>
           </>
         )}

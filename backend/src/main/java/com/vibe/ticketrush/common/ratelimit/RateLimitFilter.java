@@ -29,7 +29,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String path=request.getRequestURI(),method=request.getMethod(),ip="ip:"+addresses.resolve(request);
         var authentication=SecurityContextHolder.getContext().getAuthentication();
         String user=authentication!=null && authentication.getPrincipal() instanceof Jwt jwt ? "user:"+jwt.getSubject():null;
-        if (method.equals("POST") && path.equals("/api/v1/auth/login")) {
+        if (method.equals("POST") && path.equals("/api/v1/auth/google")) {
+            if (!allow("google-login-ip",ip,auth.loginLimit(),auth.loginWindow(),Math.min(3,auth.loginLimit()),request,response)) return;
+            byte[] body=request.getInputStream().readNBytes(16385);
+            if (body.length>16384) { errors.write(request,response,413,"REQUEST_TOO_LARGE","Request body too large"); return; }
+            request=new BodyRequest(request,body);
+        } else if (method.equals("POST") && path.equals("/api/v1/auth/login")) {
             if (!allow("login-ip",ip,auth.loginLimit(),auth.loginWindow(),Math.min(3,auth.loginLimit()),request,response)) return;
             byte[] body=request.getInputStream().readNBytes(16385);
             if (body.length>16384) { errors.write(request,response,413,"REQUEST_TOO_LARGE","Request body too large"); return; }

@@ -10,6 +10,21 @@ Object.defineProperty(globalThis, 'sessionStorage', { value: storage() });
 const { ApiClient } = await import('../frontend/src/api/client');
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
 beforeEach(() => { localStorage.clear(); sessionStorage.clear(); });
+
+test('image upload sends multipart bytes and bearer auth without a JSON content type', async () => {
+  const api = new ApiClient(); api.setAuth('admin-token', {id:'a',email:'a@test',role:'ADMIN'});
+  const file = new File(['image bytes'], 'event.png', {type:'image/png'});
+  globalThis.fetch = async (url, options) => {
+    assert.equal(String(url), '/api/v1/admin/events/images');
+    assert.equal(options?.method, 'POST');
+    assert.equal((options?.headers as Record<string,string>).Authorization, 'Bearer admin-token');
+    assert.equal((options?.headers as Record<string,string>)['Content-Type'], undefined);
+    assert.ok(options?.body instanceof FormData);
+    assert.equal(await (options.body.get('file') as File).text(), 'image bytes');
+    return json({imageUrl:'https://res.cloudinary.com/demo/image/upload/event.png'});
+  };
+  assert.equal(await api.uploadEventImage(file), 'https://res.cloudinary.com/demo/image/upload/event.png');
+});
 test('login loads roles from /me rather than assuming embedded demo user', async () => {
   const calls: string[] = [];
   globalThis.fetch = async (url, options) => {
@@ -81,3 +96,42 @@ test('capacity update sends complete WriteTier payload', async () => {
   await new ApiClient().updateTierCapacity('tier', 20, { name: 'Standard', price: 100, currency: 'VND', maxPerOrder: 2 } as any);
 });
 
+
+for (const admin of [false, true]) {
+  test(`${admin ? 'admin' : 'public'} event listing fetches only the requested page and retains metadata`, async () => {
+    const api = new ApiClient();
+    if (admin) api.setAuth('admin-token', {id:'a',email:'admin@test',role:'ADMIN'});
+    let requests = 0;
+    const result = {content:[{id:'event-25',title:'Concert'}],page:2,totalPages:3,totalElements:25};
+    globalThis.fetch = async (input, options) => {
+      requests++;
+      const url = new URL(String(input), 'http://localhost');
+      assert.equal(url.pathname, admin ? '/api/v1/admin/events' : '/api/v1/events');
+      assert.equal(url.searchParams.get('page'), '2');
+      assert.equal(url.searchParams.get('size'), '12');
+      if (admin) assert.equal((options?.headers as Record<string,string>).Authorization, 'Bearer admin-token');
+      else {
+        assert.equal(url.searchParams.get('keyword'), 'nhạc & vé');
+        assert.equal(url.searchParams.get('onSale'), 'true');
+      }
+      return json(result);
+    };
+    assert.deepEqual(await (admin ? api.getAdminEvents(2) : api.getEvents('nhạc & vé', true, 2)), result);
+    assert.equal(requests, 1);
+  });
+}
+
+test('event listing defaults to first page and supports an explicit page size', async () => {
+  const api = new ApiClient();
+  const requests: URL[] = [];
+  globalThis.fetch = async input => {
+    requests.push(new URL(String(input), 'http://localhost'));
+    return json({content:[],page:0,totalPages:0,totalElements:0});
+  };
+  await api.getEvents();
+  await api.getAdminEvents(0, 24);
+  assert.equal(requests[0].searchParams.get('page'), '0');
+  assert.equal(requests[0].searchParams.get('size'), '12');
+  assert.equal(requests[1].searchParams.get('page'), '0');
+  assert.equal(requests[1].searchParams.get('size'), '24');
+});

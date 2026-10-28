@@ -5,6 +5,7 @@ import com.vibe.ticketrush.inventory.service.SeatingAdministration.*;
 
 /** Publication and administration boundary for the inventory-owned venue topology. */
 public interface VenueOperations {
+    VenueDetail createVenue(com.vibe.ticketrush.inventory.dto.VenueTemplateDtos.CreateVenue request);
     List<Venue> venues();
     VenueDetail venue(UUID id);
     void requireVenue(UUID id);
