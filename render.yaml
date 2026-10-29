@@ -84,7 +84,7 @@ services:
   - type: keyvalue
     name: ticketrush-redis
     region: singapore
-    plan: 256mb
+    plan: free
     ipAllowList: []
     maxmemoryPolicy: noeviction
     persistenceMode: off

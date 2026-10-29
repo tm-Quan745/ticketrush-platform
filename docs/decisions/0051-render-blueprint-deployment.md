@@ -25,6 +25,7 @@ into the existing Spring variables.
 No credentials are committed. The frontend retains same-origin cookies and
 WebSocket origin validation while its server-side proxy calls the backend's
 public URL. The demo uses Valkey rather than Redis 7.4 and intentionally omits
-asynchronous delivery. Free services can sleep, Key Value data is volatile, and
-the free Postgres database expires after 30 days. The paid deployment is still
-required to demonstrate RabbitMQ outbox delivery and email notifications.
+asynchronous delivery. Free services can sleep, Key Value has only 25 MB RAM
+and volatile data, and the free Postgres database expires after 30 days. The
+paid deployment is still required to demonstrate RabbitMQ outbox delivery and
+email notifications.

@@ -39,9 +39,10 @@ and database credentials. They are never stored in this repository.
 ## Operational notes
 
 Render Key Value is free but currently runs Valkey, a Redis-protocol-compatible
-store. Its state is lost on restart because free instances have no persistence.
-Redis is configured with `noeviction` because the waiting room uses it as an
-admission gate; silent eviction would weaken overload control.
+store. The free plan has 25 MB RAM and 50 connections, and its state is lost on
+restart because free instances have no persistence. Redis is configured with
+`noeviction` because the waiting room uses it as an admission gate; silent
+eviction would weaken overload control.
 
 The managed Postgres plan is free for a portfolio preview only and expires after
 30 days. The demo profile disables RabbitMQ relay/consumer and email delivery,
