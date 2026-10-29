@@ -3,7 +3,7 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/tsconfig.json frontend/vite.config.ts frontend/index.html ./
-COPY frontend/server.ts frontend/notification-proxy.ts ./
+COPY frontend/server.ts frontend/backend-url.ts frontend/notification-proxy.ts ./
 COPY frontend/src ./src
 COPY docs/performance/results/finish-sellout-20-2.json /app/docs/performance/results/finish-sellout-20-2.json
 COPY docs/performance/results/finish-sellout-20-2-verify.json /app/docs/performance/results/finish-sellout-20-2-verify.json
@@ -16,7 +16,7 @@ WORKDIR /app/frontend
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000
 COPY --from=build /app/frontend/node_modules ./node_modules
 COPY --from=build /app/frontend/dist ./dist
-COPY frontend/package.json frontend/server.ts frontend/notification-proxy.ts ./
+COPY frontend/package.json frontend/server.ts frontend/backend-url.ts frontend/notification-proxy.ts ./
 USER node
 EXPOSE 3000
 CMD ["node", "--import", "tsx", "server.ts"]
