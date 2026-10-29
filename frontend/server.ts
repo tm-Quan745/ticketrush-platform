@@ -14,6 +14,8 @@ const server = http.createServer(app);
 const target = resolveBackendUrl(process.env.BACKEND_URL);
 if (!['http:', 'https:'].includes(target.protocol)) throw new Error('Invalid BACKEND_URL');
 attachNotificationProxy(server, target);
+// Keep platform liveness independent from downstream API and datastore health.
+app.get('/healthz', (_req, res) => res.status(200).json({ status: 'UP' }));
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api/') && req.path !== '/actuator/health') return next();
   const headers: http.OutgoingHttpHeaders = { ...req.headers, host: target.host };

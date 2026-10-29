@@ -8,7 +8,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile.frontend
     dockerContext: .
-    healthCheckPath: /actuator/health
+    healthCheckPath: /healthz
     autoDeployTrigger: checksPass
     envVars:
       - key: NODE_ENV
