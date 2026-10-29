@@ -8,6 +8,7 @@ interface PaginationProps {
   totalPages: number;
   totalElements: number;
   onPageChange: (page: number) => void;
+  itemLabel?: string;
 }
 
 export function paginationItems(page:number,totalPages:number):Array<number|'ellipsis'> {
@@ -21,11 +22,11 @@ export function paginationItems(page:number,totalPages:number):Array<number|'ell
   return result;
 }
 
-export function Pagination({ page, totalPages, totalElements, onPageChange }: PaginationProps) {
+export function Pagination({ page, totalPages, totalElements, onPageChange, itemLabel='sự kiện' }: PaginationProps) {
   const changePage=(target:number)=>{if(target>=0&&target<totalPages&&target!==page)onPageChange(target);};
-  return <nav aria-label="Phân trang sự kiện" className="mt-6 flex flex-wrap items-center justify-between gap-4">
+  return <nav aria-label={`Phân trang ${itemLabel}`} className="mt-6 flex flex-wrap items-center justify-between gap-4">
     <p className="text-sm text-slate-400" role="status">
-      {totalElements} sự kiện · Trang {totalPages === 0 ? 0 : page + 1} / {totalPages}
+      {totalElements} {itemLabel} · Trang {totalPages === 0 ? 0 : page + 1} / {totalPages}
     </p>
     <div className="flex flex-wrap items-center justify-center gap-1.5 w-full sm:w-auto">
       <IconButton label="Trang đầu" icon={ChevronsLeft} disabled={page<=0} onClick={()=>changePage(0)}/>

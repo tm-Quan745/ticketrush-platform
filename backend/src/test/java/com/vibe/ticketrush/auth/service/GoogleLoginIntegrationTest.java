@@ -97,6 +97,16 @@ class GoogleLoginIntegrationTest {
     ResponseEntity<String> google(String token) {
         return http.postForEntity("/api/v1/auth/google", Map.of("credential", token), String.class);
     }
+    @Test void browserGoogleLoginIssuesOnlyHttpOnlyRefreshCookie() throws Exception {
+        var headers = new HttpHeaders();
+        headers.set("X-Auth-Mode", "cookie"); headers.setOrigin("http://localhost:3000");
+        var response = http.postForEntity("/api/v1/auth/google", new HttpEntity<>(
+                Map.of("credential", credential("browser-google", "browser@gmail.com")), headers), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(mapper.readTree(response.getBody()).hasNonNull("refreshToken")).isFalse();
+        assertThat(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE)).contains("HttpOnly", "Secure", "SameSite=Lax");
+    }
+
     @Test void createsUserReusesSubjectAndSupportsRefreshLogout() throws Exception {
         var first = google(credential("google-1", "Person@gmail.com"));
         assertThat(first.getStatusCode().value()).isEqualTo(200);

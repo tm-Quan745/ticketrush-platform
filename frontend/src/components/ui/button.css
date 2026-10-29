@@ -1,0 +1,14 @@
+.brand-button { outline-offset: 3px; }
+.brand-button:focus-visible { outline: 2px solid #a58cde; }
+button.brand-button-primary { background: #6450b5; color: #fff; box-shadow: 0 4px 12px #6450b520; }
+button.brand-button-primary:hover { background: #514092; }
+button.brand-button-secondary { background: #302846; color: #e1d6f8; border: 1px solid #4b3d66; }
+button.brand-button-secondary:hover { background: #403359; }
+button.brand-button-outline { background: transparent; color: #d4c4f2; border: 1px solid #685582; }
+button.brand-button-outline:hover, button.brand-button-ghost:hover { background: #302846; color: #eee7fa; }
+button.brand-button-ghost { background: transparent; color: #c3b6d9; }
+html.light button.brand-button-secondary { background: #eee8f8; color: #62458e; border-color: #d9cde9; }
+html.light button.brand-button-secondary:hover { background: #e2d7f1; }
+html.light button.brand-button-outline { color: #62458e; border-color: #b9a2d3; }
+html.light button.brand-button-ghost { color: #62458e; }
+html.light button.brand-button-outline:hover, html.light button.brand-button-ghost:hover { background: #eee8f8; color: #513977; }

@@ -329,6 +329,42 @@ class OrderPaymentIntegrationTest {
         assertThat(request("GET","/api/v1/orders/me?size=101",null,regular,Map.of()).statusCode()).isEqualTo(400);
         assertThat(request("GET","/api/v1/orders/me?page=-1",null,regular,Map.of()).statusCode()).isEqualTo(400);invariant();
     }
+    @Test void ticketWalletPaginatesOwnedTicketsAndIncludesCancelledTickets() throws Exception {
+        List<UUID> owned=new ArrayList<>();
+        for(int i=0;i<3;i++) {
+            UUID id=order(user,4);owned.add(id);
+            assertThat(webhook(event(id,Type.SUCCEEDED,"wallet-paid-"+i)).statusCode()).isEqualTo(200);
+        }
+        UUID other=addUser(),otherOrder=order(other,2);
+        assertThat(webhook(event(otherOrder,Type.SUCCEEDED,"other-paid")).statusCode()).isEqualTo(200);
+        jdbc.update("UPDATE tickets SET status='CANCELLED' WHERE order_id=?",owned.get(2));
+        String auth=token(user,"USER"),root="/api/v1/orders/me/tickets";
+        var first=json.readTree(request("GET",root+"?page=0&size=9",null,auth,Map.of()).body());
+        var last=json.readTree(request("GET",root+"?page=1&size=9",null,auth,Map.of()).body());
+        assertThat(first.path("totalElements").asInt()).isEqualTo(12);
+        assertThat(first.path("totalPages").asInt()).isEqualTo(2);
+        assertThat(first.path("content").size()).isEqualTo(9);assertThat(last.path("content").size()).isEqualTo(3);
+        Set<String> ids=new HashSet<>();
+        for(var result:List.of(first,last)) for(var ticket:result.path("content")) {
+            assertThat(ids.add(ticket.path("id").asText())).isTrue();
+            assertThat(ticket.path("orderId").asText()).isIn(owned.stream().map(UUID::toString).toList());
+            assertThat(ticket.path("eventTitle").asText()).isEqualTo("Concert");
+        }
+        var cancelled=json.readTree(request("GET",root+"?status=CANCELLED",null,auth,Map.of()).body());
+        assertThat(cancelled.path("totalElements").asInt()).isEqualTo(4);
+        assertThat(json.readTree(request("GET",root+"?query="+owned.get(0),null,auth,Map.of()).body()).path("totalElements").asInt()).isEqualTo(4);
+        assertThat(json.readTree(request("GET",root+"?query=concert",null,auth,Map.of()).body()).path("totalElements").asInt()).isEqualTo(12);
+        assertThat(json.readTree(request("GET",root+"?query=%25",null,auth,Map.of()).body()).path("totalElements").asInt()).isZero();
+        assertThat(json.readTree(request("GET",root+"?page=99",null,auth,Map.of()).body()).path("content").size()).isZero();
+    }
+    @Test void ticketWalletRejectsInvalidFiltersAndEnforcesUserAccess() throws Exception {
+        String root="/api/v1/orders/me/tickets",auth=token(user,"USER");
+        assertThat(request("GET",root,null,null,Map.of()).statusCode()).isEqualTo(401);
+        for(String role:List.of("ADMIN","STAFF")) assertThat(request("GET",root,null,token(user,role),Map.of()).statusCode()).isEqualTo(403);
+        for(String query:List.of("page=-1","size=0","size=51","status=PAID","query="+"a".repeat(101)))
+            assertThat(request("GET",root+"?"+query,null,auth,Map.of()).statusCode()).isEqualTo(400);
+        assertThat(json.readTree(request("GET",root,null,auth,Map.of()).body()).path("totalElements").asInt()).isZero();
+    }
     @Test @Tag("concurrency") void activeLeaseCannotBeStolenAfterTimeout() throws Exception {
         var pool=Executors.newSingleThreadExecutor();var started=new CountDownLatch(1);var finish=new CountDownLatch(1);
         UUID key=UUID.randomUUID();

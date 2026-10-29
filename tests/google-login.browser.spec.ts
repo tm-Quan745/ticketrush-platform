@@ -11,6 +11,7 @@ const googleScript = `window.google = { accounts: { id: {
 } } };`;
 
 test.beforeEach(async ({ page }) => {
+  await page.route('**/api/v1/auth/refresh', route => route.fulfill({status:401,json:{}}));
   await page.route('**/api/v1/auth/google/config', route => route.fulfill({json:{clientId:'test-client'}}));
   await page.route('https://accounts.google.com/gsi/client', route => route.fulfill({contentType:'text/javascript',body:googleScript}));
 });
@@ -27,7 +28,7 @@ test('Google button completes application login and routes to the account', asyn
   await page.goto('/login?next=%2Faccount%2Fprofile');
   await page.getByRole('button', {name:'Continue with Google'}).click();
   await expect(page).toHaveURL(/\/account\/profile$/);
-  await expect(page.getByText('person@gmail.com', {exact:true})).toBeVisible();
+  await expect(page.getByRole('definition').filter({hasText:'person@gmail.com'})).toBeVisible();
 });
 
 test('existing email conflict explains password login without navigating', async ({ page }) => {

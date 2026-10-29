@@ -91,7 +91,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
           {event.waitingRoomEnabled ? (
             <button
               onClick={() => onJoinQueue(event)}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition shadow-lg shadow-rose-600/20 active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-2 brand-button brand-button-primary font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition  active:scale-[0.98]"
             >
               <Users className="w-4 h-4" />
               {vi.details}
@@ -99,7 +99,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
           ) : (
             <button
               onClick={() => onSelect(event)}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition shadow-lg shadow-indigo-600/20 active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-2 brand-button brand-button-primary font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition  active:scale-[0.98]"
             >
               <Zap className="w-4 h-4" />
               {vi.details}

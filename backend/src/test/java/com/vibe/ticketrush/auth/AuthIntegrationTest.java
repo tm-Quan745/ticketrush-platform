@@ -184,6 +184,73 @@ class AuthIntegrationTest {
         assertThat(json(get("/v3/api-docs", null)).path("paths").has("/api/v1/auth/login")).isTrue();
     }
 
+    @Test
+    void browserCookieSurvivesReloadRotatesAndLogoutRevokesIt() throws Exception {
+        register("browser@example.com");
+        var login = browserPost("login", Map.of("email", "browser@example.com", "password", PASSWORD), null, "http://localhost:3000", true);
+        assertThat(login.getStatusCode().value()).isEqualTo(200);
+        assertThat(json(login).hasNonNull("refreshToken")).isFalse();
+        String cookie = login.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
+        assertThat(cookie).contains("HttpOnly", "Secure", "SameSite=Lax", "Path=/api/v1/auth", "Max-Age=604800");
+        assertThat(login.getHeaders().getCacheControl()).contains("no-store");
+        String first = cookie.split(";", 2)[0];
+        // A fresh page has no access JWT and restores from its HttpOnly cookie only.
+        var restored = browserPost("refresh", null, first, "http://localhost:3000", true);
+        assertThat(restored.getStatusCode().value()).isEqualTo(200);
+        assertThat(json(restored).hasNonNull("refreshToken")).isFalse();
+        String next = restored.getHeaders().getFirst(HttpHeaders.SET_COOKIE).split(";", 2)[0];
+        assertThat(next).isNotEqualTo(first);
+        assertThat(get("/api/v1/auth/me", json(restored).path("accessToken").asText()).getStatusCode().value()).isEqualTo(200);
+        var replay = browserPost("refresh", null, first, "http://localhost:3000", true);
+        assertThat(replay.getStatusCode().value()).isEqualTo(401);
+        // A rejected replay must not overwrite a concurrent winner's rotated cookie.
+        assertThat(replay.getHeaders().getFirst(HttpHeaders.SET_COOKIE)).isNull();
+        var logout = browserPost("logout", null, next, "http://localhost:3000", true);
+        assertThat(logout.getStatusCode().value()).isEqualTo(204);
+        assertThat(logout.getHeaders().getFirst(HttpHeaders.SET_COOKIE)).contains("Max-Age=0", "HttpOnly", "Path=/api/v1/auth");
+        assertThat(browserPost("refresh", null, next, "http://localhost:3000", true).getStatusCode().value()).isEqualTo(401);
+        assertThat(browserPost("logout", null, null, "http://localhost:3000", true).getStatusCode().value()).isEqualTo(204);
+    }
+
+    @Test
+    void cookieAuthenticationRejectsCsrfAndMissingOrExpiredSessions() throws Exception {
+        register("csrf@example.com");
+        var credentials = Map.of("email", "csrf@example.com", "password", PASSWORD);
+        for (String origin : List.of("https://attacker.example", "null", "http://localhost:3000.attacker.example")) {
+            assertThat(browserPost("login", credentials, null, origin, true).getStatusCode().value()).isEqualTo(403);
+        }
+        assertThat(browserPost("login", credentials, null, null, true).getStatusCode().value()).isEqualTo(403);
+        var login = browserPost("login", credentials, null, "http://localhost:3000", true);
+        String cookie = login.getHeaders().getFirst(HttpHeaders.SET_COOKIE).split(";", 2)[0];
+        assertThat(browserPost("refresh", null, cookie, "https://attacker.example", true).getStatusCode().value()).isEqualTo(403);
+        assertThat(browserPost("logout", null, cookie, "https://attacker.example", true).getStatusCode().value()).isEqualTo(403);
+        assertThat(browserPost("refresh", null, cookie, "http://localhost:3000", false).getStatusCode().value()).isEqualTo(401);
+        assertThat(browserPost("refresh", null, null, "http://localhost:3000", true).getStatusCode().value()).isEqualTo(401);
+        jdbc.update("UPDATE refresh_tokens SET created_at=now()-interval '2 days', expires_at=now()-interval '1 day'");
+        assertThat(browserPost("refresh", null, cookie, "http://localhost:3000", true).getStatusCode().value()).isEqualTo(401);
+    }
+
+    @Test
+    void concurrentCookieRefreshHasOneWinnerWithoutClearingItsCookie() throws Exception {
+        register("tabs@example.com");
+        var login = browserPost("login", Map.of("email", "tabs@example.com", "password", PASSWORD), null, "http://localhost:3000", true);
+        String cookie = login.getHeaders().getFirst(HttpHeaders.SET_COOKIE).split(";", 2)[0];
+        var results = concurrently(8, () -> browserPost("refresh", null, cookie, "http://localhost:3000", true));
+        assertThat(results.stream().filter(response -> response.getStatusCode().value() == 200).count()).isEqualTo(1);
+        assertThat(results.stream().filter(response -> response.getStatusCode().value() == 401).count()).isEqualTo(7);
+        assertThat(results.stream().filter(response -> response.getStatusCode().value() == 401)
+                .allMatch(response -> response.getHeaders().getFirst(HttpHeaders.SET_COOKIE) == null)).isTrue();
+    }
+
+    private ResponseEntity<String> browserPost(String action, Object body, String cookie, String origin, boolean mode) {
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        if (mode) headers.set("X-Auth-Mode", "cookie");
+        if (origin != null) headers.setOrigin(origin);
+        if (cookie != null) headers.set(HttpHeaders.COOKIE, cookie);
+        return http.postForEntity("/api/v1/auth/" + action, new HttpEntity<>(body, headers), String.class);
+    }
+
     private List<ResponseEntity<String>> concurrently(int count, Callable<ResponseEntity<String>> operation) throws Exception {
         var ready = new CountDownLatch(count);
         var start = new CountDownLatch(1);

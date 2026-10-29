@@ -23,12 +23,12 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variants = {
     primary:
-      'bg-gradient-to-r from-indigo-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white shadow-lg shadow-indigo-600/25',
-    secondary: 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700',
+      'brand-button-primary',
+    secondary: 'brand-button-secondary',
     danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/20',
     success: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20',
-    outline: 'border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white bg-transparent',
-    ghost: 'text-slate-400 hover:text-white hover:bg-slate-800/60 bg-transparent',
+    outline: 'brand-button-outline',
+    ghost: 'brand-button-ghost',
   };
 
   const sizes = {
@@ -39,7 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={cn('brand-button', baseStyles, variants[variant], sizes[size], className)}
       disabled={disabled || isLoading}
       {...props}
     >

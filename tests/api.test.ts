@@ -38,7 +38,7 @@ test('login loads roles from /me rather than assuming embedded demo user', async
   assert.deepEqual(calls, ['/api/v1/auth/login', '/api/v1/auth/me']);
 });
 test('401 retry rotates tokens and preserves order body and idempotency key', async () => {
-  const api = new ApiClient(); api.setAuth('old', { id: 'u', email: 'e', role: 'USER' }, 'refresh');
+  const api = new ApiClient(); api.setAuth('old', { id: 'u', email: 'e', role: 'USER' });
   const keys: unknown[] = []; const bodies: unknown[] = [];
   globalThis.fetch = async (url, options) => {
     if (String(url).endsWith('/refresh')) return json({ accessToken: 'new', refreshToken: 'rotated' });
@@ -47,22 +47,22 @@ test('401 retry rotates tokens and preserves order body and idempotency key', as
   };
   assert.equal((await api.createOrder('reservation', 'stable-key')).id, 'order');
   assert.deepEqual(keys, ['stable-key', 'stable-key']); assert.equal(bodies[0], bodies[1]);
-  assert.equal(api.getRefreshToken(), 'rotated');
+  assert.equal(api.getToken(), 'new');
 });
 test('failed refresh clears session and never logs into a demo account', async () => {
-  const api = new ApiClient(); api.setAuth('old', null, 'invalid'); const calls: string[] = [];
+  const api = new ApiClient(); api.setAuth('old', null); const calls: string[] = [];
   globalThis.fetch = async url => { calls.push(String(url)); return json({ message: 'expired' }, 401); };
   await assert.rejects(api.getMe());
   assert.equal(api.getToken(), null);
   assert.deepEqual(calls, ['/api/v1/auth/me', '/api/v1/auth/refresh']);
 });
 test('logout revokes refresh token even though access tokens remain independently valid', async () => {
-  const api = new ApiClient(); api.setAuth('a', null, 'r');
+  const api = new ApiClient(); api.setAuth('a', null);
   globalThis.fetch = async (url, options) => {
-    assert.equal(url, '/api/v1/auth/logout'); assert.equal(options?.body, '{"refreshToken":"r"}');
+    assert.equal(url, '/api/v1/auth/logout'); assert.equal(options?.body, undefined); assert.equal((options?.headers as Record<string,string>)['X-Auth-Mode'], 'cookie');
     return new Response(null, { status: 204 });
   };
-  await api.logout(); assert.equal(api.getRefreshToken(), null);
+  await api.logout(); assert.equal(api.getToken(), null);
 });
 test('reservation forwards admission token and propagates backend errors', async () => {
   globalThis.fetch = async (_url, options) => {

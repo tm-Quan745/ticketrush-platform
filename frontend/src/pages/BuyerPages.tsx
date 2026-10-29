@@ -4,6 +4,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { GoogleSignInButton } from '../components/GoogleSignInButton';
 import { TicketPass } from '../features/tickets/components/TicketPass';
 import { TicketWallet } from '../components/TicketWallet';
+import { EventsHero } from '../components/user/EventsHero';
 import { ProfilePage } from '../components/user/ProfilePage';
 import { api, ApiError, pollDelay } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -41,15 +42,15 @@ export function AuthPage({ register = false }: { register?: boolean }) {
     }
     async function submit(e: React.FormEvent) { e.preventDefault(); setBusy(true); setError(''); try { if (register) await api.register(email, password); const user = await login(email, password); navigate(landing(user.role, new URLSearchParams(location.search).get('next')), true); } catch (e) { setError(message(e)); } finally { setBusy(false); } }
     return <section className="auth-layout" aria-labelledby="auth-title">
-        <aside className="auth-story bg-gradient-to-br from-indigo-50 via-white to-rose-50 dark:from-indigo-950 dark:via-slate-900 dark:to-rose-950">
-            <TicketIcon className="auth-story-mark text-indigo-500/10 dark:text-indigo-400/10" aria-hidden="true" />
-            <p className="text-indigo-600 dark:text-indigo-300 font-bold mb-3">Khám phá sự kiện cùng TicketRush</p>
-            <h2 className="text-slate-900 dark:text-white">Sự kiện yêu thích.<br />Trải nghiệm đáng nhớ.</h2>
-            <p className="auth-story-copy text-slate-600 dark:text-slate-400">Đăng nhập để đặt vé, theo dõi đơn hàng và lưu tất cả vé của bạn ở một nơi.</p>
+        <aside className="auth-story">
+            <TicketIcon className="auth-story-mark" aria-hidden="true" />
+            <p className="auth-story-eyebrow font-bold mb-3">Khám phá sự kiện cùng TicketRush</p>
+            <h2 >Sự kiện yêu thích.<br />Trải nghiệm đáng nhớ.</h2>
+            <p className="auth-story-copy">Đăng nhập để đặt vé, theo dõi đơn hàng và lưu tất cả vé của bạn ở một nơi.</p>
             <div className="auth-features">
-                <div><span className="auth-feature-icon bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-400"><Search size={22} aria-hidden="true" /></span><p><strong>Khám phá sự kiện</strong><span>Tìm trải nghiệm tiếp theo dành cho bạn.</span></p></div>
-                <div><span className="auth-feature-icon bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400"><TicketIcon size={22} aria-hidden="true" /></span><p><strong>Vé của bạn, trong tầm tay</strong><span>Xem vé và thông tin chỗ ngồi trong ví vé.</span></p></div>
-                <div><span className="auth-feature-icon bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-400"><Clock size={22} aria-hidden="true" /></span><p><strong>Theo dõi đơn hàng</strong><span>Kiểm tra trạng thái đặt vé và thanh toán.</span></p></div>
+                <div><span className="auth-feature-icon"><Search size={22} aria-hidden="true" /></span><p><strong>Khám phá sự kiện</strong><span>Tìm trải nghiệm tiếp theo dành cho bạn.</span></p></div>
+                <div><span className="auth-feature-icon"><TicketIcon size={22} aria-hidden="true" /></span><p><strong>Vé của bạn, trong tầm tay</strong><span>Xem vé và thông tin chỗ ngồi trong ví vé.</span></p></div>
+                <div><span className="auth-feature-icon"><Clock size={22} aria-hidden="true" /></span><p><strong>Theo dõi đơn hàng</strong><span>Kiểm tra trạng thái đặt vé và thanh toán.</span></p></div>
             </div>
             <Link href="/events" className="auth-explore">Khám phá sự kiện <ArrowRight size={18} aria-hidden="true" /></Link>
         </aside>
@@ -84,10 +85,10 @@ export function AuthPage({ register = false }: { register?: boolean }) {
 export function EventsPage() {
     const [keyword, setKeyword] = useState(''), [query, setQuery] = useState('');
     const [page, setPage] = useState(0);
-    const { value, error } = useLoad(JSON.stringify([query, page]), () => api.getEvents(query, false, page));
-    return <><section className="relative mb-8 rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-rose-50 border border-slate-200 dark:from-indigo-950 dark:via-slate-900 dark:to-rose-950 dark:border-slate-800 p-8 sm:p-12 overflow-hidden shadow-sm dark:shadow-none">
-        <TicketIcon className="absolute right-8 top-8 w-36 h-36 text-indigo-500/10 dark:text-indigo-400/10 rotate-12" /><p className="text-indigo-600 dark:text-indigo-300 font-bold mb-3">{vi.explore}</p><h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">{vi.discover}</h1><p className="text-slate-600 dark:text-slate-400 mt-5 max-w-xl">{vi.intro}</p>
-        <form className="flex items-center gap-3 max-w-lg mt-6" onSubmit={e => { e.preventDefault(); setQuery(keyword.trim()); setPage(0); }}><input aria-label={vi.search} className={fieldClass+' min-w-0 flex-1'} value={keyword} onChange={e => setKeyword(e.target.value)} /><IconButton type="submit" label={vi.search} icon={Search} variant="primary"/></form></section>
+    const [onSale, setOnSale] = useState(false);
+    const { value, error } = useLoad(JSON.stringify([query, page, onSale]), () => api.getEvents(query, onSale, page));
+    return <><EventsHero keyword={keyword} onKeyword={setKeyword} onSearch={()=>{setQuery(keyword.trim());setPage(0);}}/>
+        <div className="catalog-heading"><div><h2>{query?`Kết quả cho “${query}”`:'Khám phá sự kiện'}</h2><p>Chọn một cuộc hẹn đáng mong chờ.</p></div><div className="catalog-switch" aria-label="Lọc mở bán"><button aria-pressed={!onSale} onClick={()=>{setOnSale(false);setPage(0);}}>Tất cả sự kiện</button><button aria-pressed={onSale} onClick={()=>{setOnSale(true);setPage(0);}}>Đang mở bán</button></div></div>
         <ErrorMessage message={error ? vi.failure : ''} />
         {!value && !error && <p role="status">Đang tải sự kiện…</p>}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{value?.content.map(event => <EventCard key={event.id} event={event} onSelect={() => navigate(`/events/${event.id}`)} onJoinQueue={() => navigate(`/events/${event.id}`)} />)}</div>

@@ -15,7 +15,7 @@ WORKDIR /app
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/frontend/dist ./frontend/dist
-COPY package.json server.ts ./
+COPY package.json server.ts notification-proxy.ts ./
 USER node
 EXPOSE 3000
 CMD ["node", "--import", "tsx", "server.ts"]

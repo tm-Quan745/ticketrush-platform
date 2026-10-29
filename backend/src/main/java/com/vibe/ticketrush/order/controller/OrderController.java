@@ -41,6 +41,12 @@ public class OrderController {
     }
     @GetMapping("/{id}")
     public View get(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID id) { return orders.get(UUID.fromString(jwt.getSubject()),id); }
+    @GetMapping("/me/tickets")
+    public TicketPage wallet(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="9") int size,
+            @RequestParam(required=false) String status, @RequestParam(defaultValue="") String query) {
+        return orders.wallet(UUID.fromString(jwt.getSubject()),status,query,page,size);
+    }
     @PostMapping("/{id}/cancel")
     public View cancel(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID id) { return orders.cancel(UUID.fromString(jwt.getSubject()),id); }
     @GetMapping("/{id}/tickets")

@@ -19,11 +19,19 @@ export class ApiError extends Error {
   }
 }
 const base = import.meta.env?.VITE_API_BASE_URL || '/api/v1';
+// Cookies are shared across tabs; serialize rotation before the browser sends them.
+async function sessionLock<T>(action: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== 'undefined' && navigator.locks)
+    return navigator.locks.request('ticketrush:session', action);
+  return action();
+}
 export class ApiClient {
   private token: string | null = null;
-  private refreshToken: string | null = null;
   private user: User | null = null;
   private refreshPromise: Promise<boolean> | null = null;
+  private restorePromise: Promise<User | null> | null = null;
+  private sessionVersion = 0;
+  private loggingOut = false;
   constructor() {
     try {
       if (typeof localStorage !== 'undefined') {
@@ -31,35 +39,50 @@ export class ApiClient {
       }
     } catch { /* Storage can be disabled; authentication remains in memory. */ }
   }
-  setAuth(token: string | null, user: User | null, refreshToken?: string | null) {
+  setAuth(token: string | null, user: User | null) {
     this.token = token; this.user = user;
-    if (refreshToken !== undefined) this.refreshToken = refreshToken;
   }
   getToken() { return this.token; }
   getUser() { return this.user; }
-  getRefreshToken() { return this.refreshToken; }
   private expire() {
-    this.setAuth(null, null, null);
+    this.sessionVersion++;
+    this.setAuth(null, null);
     if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth:expired'));
   }
   async refreshSession(): Promise<boolean> {
+    if (this.loggingOut) return false;
     if (this.refreshPromise) return this.refreshPromise;
-    if (!this.refreshToken) return false;
-    this.refreshPromise = (async () => {
-      try {
+    const version = this.sessionVersion;
+    this.refreshPromise = sessionLock(async () => {
+        if (version !== this.sessionVersion || this.loggingOut) return false;
         const response = await fetch(base + '/auth/refresh', { method: 'POST', credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: this.refreshToken }) });
-        if (!response.ok) { this.expire(); return false; }
-        const data = await response.json(); this.setAuth(data.accessToken, this.user, data.refreshToken); return true;
-      } catch { this.expire(); return false; }
-    })().finally(() => { this.refreshPromise = null; });
+          headers: { 'X-Auth-Mode': 'cookie' }, signal: AbortSignal.timeout(15000) });
+        if (version !== this.sessionVersion) return false;
+        if (response.status === 401) { this.expire(); return false; }
+        if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => ({})), retryAfter(response.headers.get('Retry-After')));
+        const data = await response.json();
+        if (version !== this.sessionVersion) return false;
+        this.setAuth(data.accessToken, this.user); return true;
+    }).finally(() => { this.refreshPromise = null; });
     return this.refreshPromise;
+  }
+  restoreSession(): Promise<User | null> {
+    if (this.restorePromise) return this.restorePromise;
+    const version = this.sessionVersion;
+    this.restorePromise = (async () => {
+      if (!await this.refreshSession() || version !== this.sessionVersion) return null;
+      const user = await this.getMe();
+      if (version !== this.sessionVersion) return null;
+      this.user = user;
+      return user;
+    })().finally(() => { this.restorePromise = null; });
+    return this.restorePromise;
   }
   async request<T>(endpoint: string, options: RequestInit = {}, extraHeaders: Record<string, string> = {}, isRetry = false): Promise<T> {
     const headers: Record<string, string> = { ...(options.body instanceof FormData ? {} : {'Content-Type': 'application/json'}), ...extraHeaders, ...(options.headers as Record<string, string>) };
-    if (this.token) headers.Authorization = `Bearer ${this.token}`;
-    const response = await fetch(base + endpoint, { ...options, credentials: 'include', headers });
     const canRefresh = !['/auth/login', '/auth/google', '/auth/google/config', '/auth/register', '/auth/refresh', '/auth/logout'].includes(endpoint);
+    if (this.token && canRefresh) headers.Authorization = `Bearer ${this.token}`;
+    const response = await fetch(base + endpoint, { ...options, credentials: 'include', headers });
     if (response.status === 401 && canRefresh && !isRetry && await this.refreshSession())
       return this.request<T>(endpoint, options, extraHeaders, true);
     if (response.status === 304) return { notModified: true, etag: response.headers.get('ETag'), retryAfterMs: retryAfter(response.headers.get('Retry-After')) } as T;
@@ -92,30 +115,37 @@ export class ApiClient {
     return result.imageUrl;
   }
   async login(email: string, password: string) {
-    const tokens = await this.request<{ accessToken: string; refreshToken: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-    this.setAuth(tokens.accessToken, null, tokens.refreshToken);
-    try { const user = await this.getMe(); this.setAuth(tokens.accessToken, user, tokens.refreshToken); return { ...tokens, user }; }
+    this.sessionVersion++;
+    const tokens = await sessionLock(() => this.request<{ accessToken: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }), headers: { 'X-Auth-Mode': 'cookie' } }));
+    this.setAuth(tokens.accessToken, null);
+    try { const user = await this.getMe(); this.setAuth(this.token, user); return { ...tokens, user }; }
     catch (error) { this.expire(); throw error; }
   }
   googleConfig() { return this.request<{clientId: string}>('/auth/google/config'); }
   async loginWithGoogle(credential: string) {
-    const tokens = await this.request<{ accessToken: string; refreshToken: string }>('/auth/google', {
-      method: 'POST', body: JSON.stringify({ credential }),
-    });
-    this.setAuth(tokens.accessToken, null, tokens.refreshToken);
-    try { const user = await this.getMe(); this.setAuth(tokens.accessToken, user, tokens.refreshToken); return { ...tokens, user }; }
+    this.sessionVersion++;
+    const tokens = await sessionLock(() => this.request<{ accessToken: string }>('/auth/google', {
+      method: 'POST', body: JSON.stringify({ credential }), headers: { 'X-Auth-Mode': 'cookie' },
+    }));
+    this.setAuth(tokens.accessToken, null);
+    try { const user = await this.getMe(); this.setAuth(this.token, user); return { ...tokens, user }; }
     catch (error) { this.expire(); throw error; }
   }
   register(email: string, password: string) { return this.request<User>('/auth/register', { method: 'POST', body: JSON.stringify({ email, password }) }); }
   async getMe(): Promise<User> {
-    const data = await this.request<User & { roles?: string[] }>('/auth/me');
+    const data = await this.request<User & { roles?: string[] }>('/auth/me', { signal: AbortSignal.timeout(15000) });
     const role = data.roles?.includes('ADMIN') ? 'ADMIN' : data.roles?.includes('STAFF') ? 'STAFF' : 'USER';
     return { id: data.id, email: data.email, role };
   }
   async logout() {
-    const refreshToken = this.refreshToken;
-    try { if (refreshToken) await this.request('/auth/logout', { method: 'POST', body: JSON.stringify({ refreshToken }) }); }
-    finally { this.expire(); }
+    this.loggingOut = true;
+    this.sessionVersion++;
+    try {
+      // Wait for rotation to finish before revoking its successor, even without Web Locks.
+      await this.refreshPromise?.catch(() => false);
+      await sessionLock(() => this.request('/auth/logout', { method: 'POST', headers: { 'X-Auth-Mode': 'cookie' } }));
+      this.expire();
+    } finally { this.loggingOut = false; }
   }
   // --- Events ---
   async getEvents(keyword = '', onSale = false, page = 0, size = 12): Promise<Page<Event>> {
@@ -153,8 +183,8 @@ export class ApiClient {
     return this.call('POST /api/v1/reservations',{body:{tierId,quantity},headers:admissionToken?{'X-Admission-Token':admissionToken}:{}}) as Promise<Reservation>;
   }
 
-  async getMyReservations(page=0): Promise<Page<Reservation>> {
-    return this.call('GET /api/v1/reservations/me',{query:{page,size:50}}) as Promise<Page<Reservation>>;
+  async getMyReservations(page=0,size=50,status?:Reservation['status']): Promise<Page<Reservation>> {
+    return this.call('GET /api/v1/reservations/me',{query:{page,size,status}}) as Promise<Page<Reservation>>;
   }
 
   async cancelReservation(id: string): Promise<void> {
@@ -168,8 +198,13 @@ export class ApiClient {
     return this.call('POST /api/v1/orders',{body:{reservationId},headers:{'Idempotency-Key':idempotencyKey||crypto.randomUUID()}}) as Promise<Order>;
   }
 
-  async getMyOrders(page=0): Promise<Page<Order>> {
-    return this.call('GET /api/v1/orders/me',{query:{page,size:50}}) as Promise<Page<Order>>;
+  async getMyOrders(page=0,size=50): Promise<Page<Order>> {
+    return this.call('GET /api/v1/orders/me',{query:{page,size}}) as Promise<Page<Order>>;
+  }
+  getMyTickets(page=0,size=9,status='',query=''): Promise<Page<Ticket>> {
+    const params=new URLSearchParams({page:String(page),size:String(size),query});
+    if(status)params.set('status',status);
+    return this.request(`/orders/me/tickets?${params}`);
   }
   allMyOrders(){return allPages(page=>this.getMyOrders(page));}
   allMyReservations(){return allPages(page=>this.getMyReservations(page));}

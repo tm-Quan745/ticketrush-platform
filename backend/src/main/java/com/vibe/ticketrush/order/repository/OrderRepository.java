@@ -113,16 +113,40 @@ public class OrderRepository {
             FROM tickets t JOIN events e ON e.id=t.event_id JOIN order_items i ON i.order_id=t.order_id AND i.tier_id=t.tier_id
             LEFT JOIN event_seats es ON es.event_id=t.event_id AND es.seat_id=t.seat_id
             WHERE t.order_id=? ORDER BY t.ticket_index
-            """,(rs,n) -> {
-                var assignment=rs.getObject("seat_id")==null ? null : new com.vibe.ticketrush.inventory.service.SeatedInventory.Assignment(
-                    rs.getObject("event_seat_id",UUID.class),UUID.fromString(rs.getString("section_id")),rs.getString("section_code"),rs.getString("section_label"),rs.getString("row_label"),rs.getInt("seat_number"),rs.getBoolean("accessible"));
-                Timestamp used=rs.getTimestamp("used_at");
-                return new Ticket(rs.getObject("id",UUID.class),rs.getObject("event_id",UUID.class),rs.getObject("tier_id",UUID.class),
-                    rs.getString("ticket_code"),rs.getString("status"),rs.getTimestamp("issued_at").toInstant(),rs.getObject("order_id",UUID.class),
-                    rs.getString("title"),rs.getString("venue_name"),rs.getString("tier_name"),assignment,used==null?null:used.toInstant());
-            },order);
+            """,(rs,n) -> ticket(rs),order);
     }
 
+    public TicketPage wallet(UUID user,String status,String query,int page,int size) {
+        String pattern="%"+query.replace("!","!!").replace("%","!%").replace("_","!_")+"%";
+        // SQL remains static; all filters and pagination values are bound parameters.
+        long count=jdbc.queryForObject("""
+            SELECT count(*) FROM tickets t JOIN events e ON e.id=t.event_id
+            JOIN order_items i ON i.order_id=t.order_id AND i.tier_id=t.tier_id
+            WHERE t.user_id=? AND (?::varchar IS NULL OR t.status=?)
+            AND (e.title ILIKE ? ESCAPE '!' OR i.tier_name ILIKE ? ESCAPE '!' OR t.order_id::text ILIKE ? ESCAPE '!')
+            """,Long.class,user,status,status,pattern,pattern,pattern);
+        var content=jdbc.query("""
+            SELECT t.*,es.id AS event_seat_id,e.title,e.venue_name,i.tier_name,
+                t.seat_snapshot->>'section' AS section_label,t.seat_snapshot->>'row' AS row_label,
+                t.seat_snapshot->>'number' AS seat_number,t.seat_snapshot->>'sectionId' AS section_id,
+                t.seat_snapshot->>'sectionCode' AS section_code,t.seat_snapshot->>'accessible' AS accessible
+            FROM tickets t JOIN events e ON e.id=t.event_id
+            JOIN order_items i ON i.order_id=t.order_id AND i.tier_id=t.tier_id
+            LEFT JOIN event_seats es ON es.event_id=t.event_id AND es.seat_id=t.seat_id
+            WHERE t.user_id=? AND (?::varchar IS NULL OR t.status=?)
+            AND (e.title ILIKE ? ESCAPE '!' OR i.tier_name ILIKE ? ESCAPE '!' OR t.order_id::text ILIKE ? ESCAPE '!')
+            ORDER BY t.issued_at DESC,t.id DESC LIMIT ? OFFSET ?
+            """,(rs,n) -> ticket(rs),user,status,status,pattern,pattern,pattern,size,(long)page*size);
+        return new TicketPage(content,page,size,count,(count+size-1)/size);
+    }
+    private Ticket ticket(ResultSet rs) throws SQLException {
+        var assignment=rs.getObject("seat_id")==null ? null : new com.vibe.ticketrush.inventory.service.SeatedInventory.Assignment(
+            rs.getObject("event_seat_id",UUID.class),UUID.fromString(rs.getString("section_id")),rs.getString("section_code"),rs.getString("section_label"),rs.getString("row_label"),rs.getInt("seat_number"),rs.getBoolean("accessible"));
+        Timestamp used=rs.getTimestamp("used_at");
+        return new Ticket(rs.getObject("id",UUID.class),rs.getObject("event_id",UUID.class),rs.getObject("tier_id",UUID.class),
+            rs.getString("ticket_code"),rs.getString("status"),rs.getTimestamp("issued_at").toInstant(),rs.getObject("order_id",UUID.class),
+            rs.getString("title"),rs.getString("venue_name"),rs.getString("tier_name"),assignment,used==null?null:used.toInstant());
+    }
     public void cancelTickets(UUID order) { jdbc.update("UPDATE tickets SET status='CANCELLED' WHERE order_id=? AND status='VALID'",order); }
     public Map<UUID,Long> validTicketCounts(UUID event) {
         Map<UUID,Long> result=new HashMap<>();

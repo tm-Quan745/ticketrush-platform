@@ -32,7 +32,7 @@ export function TicketPass({ ticket }: { ticket: Ticket }) {
                 <TicketIcon className="text-indigo-600 dark:text-indigo-300 mb-3" />
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">{ticket.eventTitle}</h2>
                 <p className="mt-2 font-bold text-slate-800 dark:text-slate-200">{ticket.tierName}</p>
-                <p className="mt-3 font-bold text-emerald-600 dark:text-emerald-400">
+                <p className={`mt-3 font-bold ${ticket.status === 'VALID' ? 'text-emerald-600 dark:text-emerald-400' : ticket.status === 'USED' ? 'text-slate-600 dark:text-slate-400' : 'text-rose-600 dark:text-rose-400'}`}>
                     {ticket.status === 'VALID' ? '✓' : ticket.status === 'USED' ? '●' : '×'} {stateLabel(ticket.status)}
                 </p>
                 {ticket.venue && (

@@ -13,6 +13,7 @@ async function openDesigner(page:Page,options:{light?:boolean;conflict?:boolean}
  await page.route('https://**/*',route=>route.abort());
  await page.route('**/api/v1/**',async route=>{
   const path=new URL(route.request().url()).pathname;let body:unknown={};
+  if(path.endsWith('/auth/refresh')){await route.fulfill({status:401,json:{}});return;}
   if(path.endsWith('/auth/login'))body={accessToken:'ui-test',refreshToken:'ui-test-refresh'};
   else if(path.endsWith('/auth/me'))body={id:'admin',email:'admin@example.test',roles:['ADMIN']};
   else if(path.endsWith('/admin/venues')&&route.request().method()==='POST'){

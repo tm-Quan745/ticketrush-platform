@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Ticket as TicketIcon, Clock, Receipt, AlertCircle } from 'lucide-react';
+import { Ticket as TicketIcon, Clock, Receipt, Search, RefreshCw, ArrowUpRight } from 'lucide-react';
 import { api } from '../api/client';
 import type { Ticket, Order, Reservation } from '../types';
 import { navigate } from '../access/navigation';
 import { Button, Card, ErrorMessage, Link, money, useLoad } from '../pages/shared';
 import { TicketPass } from '../features/tickets/components/TicketPass';
+import { Pagination } from './Pagination';
 import { PrintableTicketModal } from './user/PrintableTicketModal';
 import { OrderInvoiceModal } from './user/OrderInvoiceModal';
 import { remainingSeconds } from '../features/seating/model';
@@ -12,7 +13,7 @@ import { vi, stateLabel } from '../i18n/vi';
 
 export function HoldCard({ hold, now, onResume, onDismiss }: { hold: Reservation; now: number; onResume: () => void; onDismiss?: () => void }) {
     const remaining = remainingSeconds(hold.expires_at, now);
-    const isExpired = remaining <= 0 || hold.status === 'EXPIRED';
+    const isExpired = hold.status === 'EXPIRED' || (hold.status === 'HELD' && remaining <= 0);
     return (
         <Card className={isExpired ? 'border-rose-300 dark:border-rose-900/60 bg-rose-50/40 dark:bg-rose-950/20' : ''}>
             <div className="flex items-center justify-between">
@@ -23,9 +24,9 @@ export function HoldCard({ hold, now, onResume, onDismiss }: { hold: Reservation
             </div>
             <h3 className="font-bold mt-3 text-lg">{hold.tierName}</h3>
             <p className="text-slate-600 dark:text-slate-300 mt-1">{vi.quantity}: {hold.quantity} · {isExpired ? vi.EXPIRED : stateLabel(hold.status)}</p>
-            <p role="timer" className={`my-3 font-mono ${isExpired ? 'text-rose-600 dark:text-rose-400 font-bold' : ''}`}>
+            {(hold.status === 'HELD' || isExpired) && <p role="timer" className={`my-3 font-mono ${isExpired ? 'text-rose-600 dark:text-rose-400 font-bold' : ''}`}>
                 {vi.ttl}: {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}
-            </p>
+            </p>}
             {isExpired && (
                 <div className="p-3 my-3 rounded-xl bg-rose-100/70 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/60 text-xs text-rose-800 dark:text-rose-300 space-y-1">
                     <p className="font-semibold">{vi.expired}</p>
@@ -52,63 +53,42 @@ export function HoldCard({ hold, now, onResume, onDismiss }: { hold: Reservation
 }
 
 export function TicketWallet({ onResumeReservation, initialTab = 'tickets' }: { onResumeReservation?: (r: Reservation) => void; initialTab?: 'tickets' | 'orders' }) {
-    const [tab, setTab] = useState<'tickets' | 'holds' | 'orders'>(initialTab), [revision, setRevision] = useState(0), [now, setNow] = useState(Date.now());
+    const [tab, setTab] = useState<'tickets' | 'holds' | 'orders'>(initialTab);
+    const [page, setPage] = useState(0), [size, setSize] = useState(9), [status, setStatus] = useState('');
+    const [search, setSearch] = useState(''), [query, setQuery] = useState(''), [revision, setRevision] = useState(0);
+    const [now, setNow] = useState(Date.now());
     const [ticket, setTicket] = useState<Ticket | null>(null), [invoice, setInvoice] = useState<Order | null>(null);
-    useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
-    const { value, error } = useLoad('wallet' + revision, async () => {
-        const [orders, holds] = await Promise.all([api.allMyOrders(), api.allMyReservations()]); const tickets: Ticket[] = [];
-        for (const order of orders) if (['PAID', 'REFUND_PENDING', 'REFUNDED'].includes(order.status)) tickets.push(...await api.getOrderTickets(order.id));
-        return { orders, holds, tickets };
+    useEffect(() => {
+        if (tab !== 'holds') return;
+        const timer = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(timer);
+    }, [tab]);
+    const { value, error } = useLoad(JSON.stringify(['wallet',tab,page,size,status,query,revision]), async () => {
+        if (tab === 'tickets') return {kind:'tickets' as const, data:await api.getMyTickets(page,size,status,query)};
+        if (tab === 'orders') return {kind:'orders' as const, data:await api.getMyOrders(page,size)};
+        return {kind:'holds' as const, data:await api.getMyReservations(page,size,status ? status as Reservation['status'] : undefined)};
     });
-    const paidReservationIds = new Set((value?.orders || []).filter(o => ['PAID', 'CONFIRMED', 'PENDING_PAYMENT'].includes(o.status)).map(o => o.reservationId));
-    const userHolds = (value?.holds || []).filter(h => !paidReservationIds.has(h.id));
-    const expiredHolds = userHolds.filter(h => h.status === 'EXPIRED' || remainingSeconds(h.expires_at, now) <= 0);
-
-    async function dismissHold(id: string) {
-        try { await api.cancelReservation(id); } catch { }
-        setRevision(n => n + 1);
-    }
-
-    async function clearExpiredHolds() {
-        try { await Promise.all(expiredHolds.map(h => api.cancelReservation(h.id))); } catch { }
-        setRevision(n => n + 1);
-    }
-
-    return <section className="space-y-6"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-indigo-300 font-bold">TicketRush</p><h1 className="text-3xl font-black">{initialTab === 'orders' ? vi.orders : vi.wallet}</h1></div><Button variant="secondary" onClick={() => setRevision(n => n + 1)}>{vi.refreshWallet}</Button></div>
-        <nav className="flex gap-2 flex-wrap">{(['tickets', 'holds', 'orders'] as const).map(t => <Button key={t} variant={tab === t ? 'primary' : 'secondary'} onClick={() => setTab(t)}>{t === 'tickets' ? vi.tickets : t === 'holds' ? vi.holds : vi.orders}</Button>)}</nav>
-        <ErrorMessage message={error} />{!value && !error && <p>{vi.loading}</p>}
-        {value && tab === 'tickets' && <><div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">{value.tickets.map(t => <div key={t.id}><TicketPass ticket={t} /><div className="flex flex-wrap gap-3 mt-3"><Button variant="secondary" onClick={() => setTicket(t)}>{vi.printTicket}</Button><Link href={`/orders/${t.orderId}`}>{vi.order}</Link></div></div>)}</div>{!value.tickets.length && <Card><TicketIcon /><p>{vi.noTickets}</p></Card>}</>}
-        {value && tab === 'holds' && (
-            <div className="space-y-4">
-                {expiredHolds.length > 0 && (
-                    <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-sm">
-                        <div>
-                            <p className="font-semibold text-amber-800 dark:text-amber-300">
-                                Bạn có {expiredHolds.length} lượt giữ vé đã hết thời gian giữ chỗ.
-                            </p>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                                Các vé này đã được hoàn trả về hệ thống. Bạn có thể xóa để dọn dẹp danh sách hoặc chọn đặt vé lại.
-                            </p>
-                        </div>
-                        <Button variant="secondary" onClick={clearExpiredHolds}>
-                            Dọn dẹp lượt hết hạn
-                        </Button>
-                    </div>
-                )}
-                <div className="grid md:grid-cols-2 gap-4">
-                    {userHolds.map(h => (
-                        <HoldCard
-                            key={h.id}
-                            hold={h}
-                            now={now}
-                            onResume={() => onResumeReservation ? onResumeReservation(h) : navigate(`/checkout/${h.id}`)}
-                            onDismiss={() => dismissHold(h.id)}
-                        />
-                    ))}
-                </div>
-                {!userHolds.length && <Card><Clock className="text-slate-400" /><p>{vi.noHolds}</p></Card>}
-            </div>
-        )}
-        {value && tab === 'orders' && <div className="space-y-4">{value.orders.map(o => <Card key={o.id}><Receipt className="text-indigo-300" /><p className="break-all text-xs my-3">{o.id}</p><p className="font-bold">{stateLabel(o.status)}</p><p className="text-xl my-3">{money(o.totalAmount, o.currency)}</p><div className="flex gap-4 items-center"><Link href={`/orders/${o.id}`}>{vi.details}</Link><Button variant="secondary" onClick={() => setInvoice(o)}>{vi.invoice}</Button></div></Card>)}{!value.orders.length && <p>{vi.noOrders}</p>}</div>}
-        <PrintableTicketModal ticket={ticket} onClose={() => setTicket(null)} /><OrderInvoiceModal order={invoice} onClose={() => setInvoice(null)} /></section>;
+    useEffect(() => {
+        if(value && page>0 && page>=value.data.totalPages) setPage(Math.max(0,value.data.totalPages-1));
+    },[value,page]);
+    function changeTab(next:typeof tab) { setTab(next);setPage(0);setStatus('');setSearch('');setQuery(''); }
+    return <section className="wallet-page">
+        <div className="wallet-heading"><div><p className="client-eyebrow">TÀI KHOẢN / TRẢI NGHIỆM CỦA BẠN</p><h1>{initialTab === 'orders' ? 'Đơn hàng của tôi' : 'Ví vé của tôi'}</h1><p>Những cuộc hẹn sắp tới, luôn trong tầm tay.</p></div><Button variant="secondary" onClick={()=>setRevision(n=>n+1)}><RefreshCw size={15} className="mr-2"/>{vi.refreshWallet}</Button></div>
+        <nav className="wallet-tabs" aria-label="Danh mục ví vé">{([
+            ['tickets','Vé của tôi',TicketIcon],['holds','Lượt giữ vé',Clock],['orders','Đơn hàng',Receipt],
+        ] as const).map(([key,label,Icon])=><button key={key} type="button" aria-current={tab===key?'page':undefined} onClick={()=>changeTab(key)}><Icon size={18}/>{label}</button>)}</nav>
+        <div className="wallet-toolbar">
+            {tab==='tickets' ? <form className="wallet-search" role="search" onSubmit={event=>{event.preventDefault();setQuery(search.trim());setPage(0);}}><Search size={17}/><input aria-label="Tìm vé" placeholder="Sự kiện, hạng vé hoặc mã đơn…" maxLength={100} value={search} onChange={event=>setSearch(event.target.value)}/><button type="submit">Tìm kiếm</button></form> : <p className="text-sm text-slate-500">{tab==='orders'?'Theo dõi thanh toán và xem hóa đơn.':'Theo dõi lượt giữ vé và thời hạn thanh toán.'}</p>}
+            <div className="wallet-filters">{tab!=='orders' && <label>Trạng thái<select aria-label="Trạng thái" value={status} onChange={event=>{setStatus(event.target.value);setPage(0);}}><option value="">Tất cả</option>{(tab==='tickets'?[['VALID','Còn hiệu lực'],['USED','Đã sử dụng'],['CANCELLED','Đã hủy']]:[['HELD','Đang giữ'],['EXPIRED','Hết hạn'],['CONFIRMED','Đã xác nhận'],['CANCELLED','Đã hủy']]).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label>}<label>Mỗi trang<select aria-label="Mỗi trang" value={size} onChange={event=>{setSize(Number(event.target.value));setPage(0);}}>{[9,18,36].map(number=><option key={number} value={number}>{number}</option>)}</select></label></div>
+        </div>
+        {query&&tab==='tickets'&&<div className="wallet-query">Kết quả cho “{query}” <button onClick={()=>{setQuery('');setSearch('');setPage(0);}}>Xóa tìm kiếm</button></div>}
+        <ErrorMessage message={error}/>{error&&<Button variant="secondary" onClick={()=>setRevision(n=>n+1)}>Thử lại</Button>}
+        {!value&&!error&&<div className="wallet-empty" role="status"><TicketIcon/><p>Đang tải {tab==='tickets'?'vé':tab==='holds'?'lượt giữ vé':'đơn hàng'}…</p></div>}
+        {value?.kind==='tickets'&&tab==='tickets'&&<div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">{value.data.content.map(item=><div className="wallet-ticket-wrap" key={item.id}><TicketPass ticket={item}/><div className="wallet-ticket-actions"><Button variant="secondary" onClick={()=>setTicket(item)}>{vi.printTicket}</Button><Link href={`/orders/${item.orderId}`} className="flex items-center gap-1 text-xs">Đơn hàng<ArrowUpRight size={14}/></Link></div></div>)}</div>}
+        {value?.kind==='holds'&&tab==='holds'&&<div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">{value.data.content.map(hold=><HoldCard key={hold.id} hold={hold} now={now} onResume={()=>onResumeReservation?onResumeReservation(hold):navigate(`/checkout/${hold.id}`)}/>)}</div>}
+        {value?.kind==='orders'&&tab==='orders'&&<div className="wallet-orders">{value.data.content.map(order=><article className="wallet-order" key={order.id}><div className="wallet-order-icon"><Receipt size={21}/></div><div className="wallet-order-info"><p>{order.items.map(item=>item.tierName).join(' · ')||'Đơn đặt vé'}</p><span>Mã đơn: {order.id}</span><strong>{stateLabel(order.status)}</strong></div><div className="wallet-order-amount"><strong>{money(order.totalAmount,order.currency)}</strong><Link href={`/orders/${order.id}`}>Chi tiết đơn <ArrowUpRight size={13}/></Link></div><Button variant="secondary" onClick={()=>setInvoice(order)}>{vi.invoice}</Button></article>)}</div>}
+        {value&&!value.data.content.length&&<div className="wallet-empty"><TicketIcon size={36}/><h2>{status||query?'Không tìm thấy kết quả phù hợp':'Chưa có dữ liệu trong mục này'}</h2><p>{status||query?'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.':'Vé và các giao dịch của bạn sẽ xuất hiện tại đây.'}</p>{status||query?<Button variant="secondary" onClick={()=>{setStatus('');setQuery('');setSearch('');setPage(0);}}>Xóa bộ lọc</Button>:<Link href="/events">Khám phá sự kiện →</Link>}</div>}
+        {value&&<Pagination page={value.data.page} totalPages={value.data.totalPages} totalElements={value.data.totalElements} itemLabel={tab==='tickets'?'vé':tab==='holds'?'lượt giữ vé':'đơn hàng'} onPageChange={setPage}/>}
+        <PrintableTicketModal ticket={ticket} onClose={()=>setTicket(null)}/><OrderInvoiceModal order={invoice} onClose={()=>setInvoice(null)}/>
+    </section>;
 }
