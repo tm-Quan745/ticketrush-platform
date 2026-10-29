@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   config:
     import:
       - "optional:file:../.env[.properties]"
@@ -91,7 +95,12 @@ management:
     rabbit:
       enabled: false
 app:
+  cloudinary:
+    url: ${CLOUDINARY_URL:}
   auth:
+    cookie-secure: ${AUTH_COOKIE_SECURE:true}
+    browser-origins: ${AUTH_BROWSER_ORIGINS:http://localhost:3000,http://127.0.0.1:3000,http://localhost:3100,http://127.0.0.1:3100}
+    google-client-id: ${GOOGLE_CLIENT_ID:}
     jwt-secret: ${JWT_SECRET}
     issuer: ticketrush
     access-ttl: 15m

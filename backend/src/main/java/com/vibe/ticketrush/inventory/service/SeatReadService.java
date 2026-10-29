@@ -145,7 +145,10 @@ public class SeatReadService {
                     result.put("geometryVersion",seated?geometry(event,id,tier.id(),seats).etag().replace("\"",""):null);
                     result.put("counts",seated?counts:null);result.put("seatCount",seats.size());result.put("rowCount",seats.stream().map(Seat::rowLabel).distinct().count());return result;
                 },event);
-            return Map.of("eventId",event,"venue",Map.of("id",detail.venueId(),"templateKey",venue.get("template_key"),"templateVersion",venue.get("template_version"),"name",venue.get("name"),"viewBox",viewBox),"sections",sections,"tiers",tiers,"observedAt",clock.instant());
+            List<Double> stage=new ArrayList<>();
+            if (geometry.path("stage").isArray() && geometry.path("stage").size()==4)
+                geometry.path("stage").forEach(coordinate->stage.add(safeNumber(coordinate,0)));
+            return Map.of("eventId",event,"venue",Map.of("id",detail.venueId(),"templateKey",venue.get("template_key"),"templateVersion",venue.get("template_version"),"name",venue.get("name"),"viewBox",viewBox,"stage",stage),"sections",sections,"tiers",tiers,"observedAt",clock.instant());
         });
     }
     private JsonNode parse(String value){try{return json.readTree(value);}catch(Exception ex){throw new IllegalStateException(ex);}}

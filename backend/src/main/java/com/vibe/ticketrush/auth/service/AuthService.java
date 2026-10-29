@@ -65,6 +65,23 @@ public class AuthService {
     }
 
     @Transactional
+    public TokenResponse googleLogin(GoogleTokenVerifier.Identity identity) {
+        User user = users.findByGoogleSubject(identity.subject()).orElseGet(() -> {
+            String email = normalize(identity.email());
+            if (users.findByEmail(email).isPresent()) {
+                throw new ApiException(HttpStatus.CONFLICT, "GOOGLE_ACCOUNT_CONFLICT",
+                        "Use your existing sign-in method; automatic account linking is disabled");
+            }
+            // An unguessable, undisclosed password preserves the existing database constraint.
+            User created = new User(email, passwords.encode(UUID.randomUUID().toString()),
+                    roles.findByName("USER").orElseThrow(), clock.instant());
+            created.setGoogleSubject(identity.subject());
+            return users.saveAndFlush(created);
+        });
+        return issue(user, clock.instant());
+    }
+
+    @Transactional
     public void logout(String rawToken) {
         refreshTokens.findForUpdate(TokenService.hash(rawToken)).ifPresent(t -> t.revoke(clock.instant()));
     }

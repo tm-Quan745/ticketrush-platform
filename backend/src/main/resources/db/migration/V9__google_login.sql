@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN google_subject VARCHAR(255) UNIQUE;

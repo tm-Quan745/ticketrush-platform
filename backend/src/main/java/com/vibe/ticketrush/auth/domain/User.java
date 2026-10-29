@@ -13,6 +13,7 @@ public class User {
     private UUID id;
     private String email;
     private String passwordHash;
+    private String googleSubject;
     private Instant createdAt;
     @ManyToMany
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
@@ -30,5 +31,7 @@ public class User {
     public UUID getId() { return id; }
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
+    public String getGoogleSubject() { return googleSubject; }
+    public void setGoogleSubject(String subject) { this.googleSubject = subject; }
     public Set<Role> getRoles() { return roles; }
 }

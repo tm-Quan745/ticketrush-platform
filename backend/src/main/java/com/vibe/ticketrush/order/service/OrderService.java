@@ -83,6 +83,13 @@ public class OrderService {
         return view(orders.get(id));
     }
     @Transactional(readOnly=true)
+    public TicketPage wallet(UUID user,String status,String query,int page,int size) {
+        if (page<0 || size<1 || size>50 || query==null || query.length()>100
+                || status!=null && !Set.of("VALID","USED","CANCELLED").contains(status))
+            throw new ApiException(HttpStatus.BAD_REQUEST,"INVALID_TICKET_FILTER","Invalid ticket page or filter");
+        return orders.wallet(user,status,query.trim(),page,size);
+    }
+    @Transactional(readOnly=true)
     public List<Ticket> tickets(UUID user,UUID id) {
         if (owned(user,id).status()!=OrderStatus.PAID) throw conflict("ORDER_NOT_PAID");
         return orders.tickets(id);

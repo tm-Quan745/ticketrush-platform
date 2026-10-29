@@ -65,8 +65,11 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
+                    // The WebSocket handler authenticates the first frame before subscribing.
+                    auth.requestMatchers(HttpMethod.GET, "/api/v1/notifications/ws").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login",
-                            "/api/v1/auth/refresh", "/api/v1/auth/logout").permitAll();
+                            "/api/v1/auth/refresh", "/api/v1/auth/logout", "/api/v1/auth/google").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/google/config").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
                             "/actuator/health/readiness").permitAll();
                     if (environment.matchesProfiles("loadtest", "test")) {

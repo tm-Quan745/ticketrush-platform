@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ApiClient, ApiError, pollDelay, retryAfter } from '../frontend/src/api/client';
 test('refresh is single flight and each original request retries only once', async () => {
-  const api = new ApiClient(); api.setAuth('old', null, 'refresh'); let refreshes = 0; let retries = 0;
+  const api = new ApiClient(); api.setAuth('old', null); let refreshes = 0; let retries = 0;
   globalThis.fetch = async (url, options) => {
     if (String(url).endsWith('/refresh')) { refreshes++; await new Promise(r => setTimeout(r, 10)); return Response.json({ accessToken: 'new', refreshToken: 'rotated' }); }
     if ((options?.headers as Record<string, string>).Authorization === 'Bearer old') return new Response(null, { status: 401 });
@@ -24,7 +24,7 @@ test('429 and 503 preserve retry metadata and friendly messages', async () => {
 });
 test('tokens are never written to browser storage', async () => {
   const writes: string[] = []; Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: { removeItem() {}, setItem(key: string) { writes.push(key); } } });
-  const api = new ApiClient(); api.setAuth('secret', { id: '1', email: 'u', role: 'STAFF' }, 'refresh');
+  const api = new ApiClient(); api.setAuth('secret', { id: '1', email: 'u', role: 'STAFF' });
   assert.deepEqual(writes, []); assert.equal(new ApiClient().getToken(), null);
 });
 

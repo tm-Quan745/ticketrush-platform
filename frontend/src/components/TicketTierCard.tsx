@@ -1,5 +1,6 @@
 import React from 'react';
 import { TicketTier } from '../types';
+import { formatCurrency } from '../lib/utils';
 import { Ticket, Users, Flame, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 interface TicketTierCardProps {
@@ -21,12 +22,6 @@ export const TicketTierCard: React.FC<TicketTierCardProps> = ({
   
   const isLowStock = !isSoldOut && remainingPercent <= 20;
 
-  const formatCurrency = (minor: number, curr = 'USD') => {
-    if (curr === 'VND') {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(minor);
-    }
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: curr }).format(minor / 100);
-  };
 
   return (
     <div

@@ -33,6 +33,7 @@ public class OrderPaymentService implements PaymentOrderOperations {
     public boolean matches(UUID id,long amount,String currency) { var o=orders.get(id); return o.total()==amount && o.currency().equals(currency); }
     public void mismatch(UUID id) {
         var order=orders.get(id); orders.review(id);
+        outbox.publish("order.review_required","order",id,new EventPayloads.Order(id,order.userId()));
         if (order.status()==OrderStatus.PENDING_PAYMENT) failed(id);
     }
     public void succeeded(UUID id) {
@@ -66,7 +67,11 @@ public class OrderPaymentService implements PaymentOrderOperations {
     public void refunded(UUID id) {
         var order=orders.get(id);
         if (order.status()!=OrderStatus.REFUND_PENDING) throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY,"UNEXPECTED_REFUND","Refund was not requested");
-        if (orders.hasUsedTickets(id)) { orders.review(id); return; }
+        if (orders.hasUsedTickets(id)) {
+            orders.review(id);
+            outbox.publish("order.review_required","order",id,new EventPayloads.Order(id,order.userId()));
+            return;
+        }
         var hold=reservations.lock(order.reservationId());
         orders.transition(id,OrderStatus.REFUND_PENDING,OrderStatus.REFUNDED,clock.instant());
         if (hold.status()==ReservationStatus.CONFIRMED) {

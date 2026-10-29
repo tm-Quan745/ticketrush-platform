@@ -5,11 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(minorUnits: number, currency = 'USD'): string {
-  if (currency === 'VND') {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(minorUnits);
-  }
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(minorUnits / 100);
+export function formatCurrency(minorUnits: number, currency = 'VND'): string {
+  const format = new Intl.NumberFormat('vi-VN', { style: 'currency', currency });
+  const scale = 10 ** (format.resolvedOptions().maximumFractionDigits ?? 2);
+  return format.format(minorUnits / scale);
 }
 
 export function formatDateTime(isoString: string): string {

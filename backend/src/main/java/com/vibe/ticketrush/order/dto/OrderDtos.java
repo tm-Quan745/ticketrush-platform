@@ -17,6 +17,7 @@ public final class OrderDtos {
                        boolean manualReview, List<Item> items) {}
     @io.swagger.v3.oas.annotations.media.Schema(name="OrderPage")
     public record Listing(List<View> content, int page, int size, long totalElements, long totalPages) {}
+    public record TicketPage(List<Ticket> content, int page, int size, long totalElements, long totalPages) {}
     @io.swagger.v3.oas.annotations.media.Schema(name="IssuedTicket")
     public record Ticket(UUID id, UUID eventId, UUID tierId, String ticketCode, String status, Instant issuedAt,
                          UUID orderId,String eventTitle,String venue,String tierName,

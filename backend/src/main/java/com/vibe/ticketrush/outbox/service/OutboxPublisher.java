@@ -14,13 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OutboxPublisher {
     private final OutboxRepository events; private final ObjectMapper json; private final Clock clock;
-    public OutboxPublisher(OutboxRepository events,ObjectMapper json,Clock clock) { this.events=events; this.json=json; this.clock=clock; }
+    private final org.springframework.context.ApplicationEventPublisher publisher;
+    public OutboxPublisher(OutboxRepository events,ObjectMapper json,Clock clock,org.springframework.context.ApplicationEventPublisher publisher) { this.events=events; this.json=json; this.clock=clock; this.publisher=publisher; }
     @Transactional(propagation=Propagation.MANDATORY)
     public UUID publish(String type,String aggregateType,UUID aggregateId,Object payload) {
         try {
             UUID id=UUID.randomUUID(); var now=clock.instant();
             String headers=json.writeValueAsString(java.util.Map.of("correlation_id",CorrelationId.current()));
             events.insert(new OutboxEvent(id,aggregateType,aggregateId,type,1,json.writeValueAsString(payload),headers,OutboxStatus.PENDING,0,now,now));
+            if (payload instanceof com.vibe.ticketrush.common.events.EventPayloads.Order order)
+                publisher.publishEvent(order);
+            if ("reservation.expired".equals(type)
+                    && payload instanceof com.vibe.ticketrush.common.events.EventPayloads.Reservation reservation)
+                publisher.publishEvent(reservation);
             return id;
         } catch (JsonProcessingException error) { throw new IllegalStateException("Cannot serialize outbox event",error); }
     }
