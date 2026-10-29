@@ -18,13 +18,16 @@ class DbeaverSeedIntegrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine");
 
     @Test void seedsBookableVndEventsAndResetsDataWithoutRemovingSchemaOrRoles() throws Exception {
-        Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load().migrate();
+        var flyway = Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load();
+        flyway.migrate();
         Path scripts = Path.of(System.getProperty("basedir", ".")).toAbsolutePath()
                 .resolve("../infrastructure/scripts/dbeaver").normalize();
         String seed = Files.readString(scripts.resolve("02-seed-vietnam-concerts.sql")).replace("\uFEFF", "");
         String reset = Files.readString(scripts.resolve("01-reset-all-data.sql")).replace("\uFEFF", "");
         try (Connection connection = DriverManager.getConnection(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
              var statement = connection.createStatement()) {
+            long appliedMigrations = count(connection, "SELECT count(*) FROM flyway_schema_history WHERE success");
+            assertThat(appliedMigrations).isPositive();
             statement.execute(seed);
             assertThat(count(connection, "SELECT count(*) FROM events WHERE status='PUBLISHED' AND sale_start_time<now() AND sale_end_time>now()")).isEqualTo(16);
             assertThat(count(connection, "SELECT count(*) FROM ticket_tiers WHERE currency='VND' AND price>=350000")).isEqualTo(48);
@@ -49,7 +52,9 @@ class DbeaverSeedIntegrationTest {
                      + (SELECT count(*) FROM users) + (SELECT count(*) FROM user_roles)
                 """)).isZero();
             assertThat(count(connection, "SELECT count(*) FROM roles")).isEqualTo(3);
-            assertThat(count(connection, "SELECT count(*) FROM flyway_schema_history WHERE success")).isEqualTo(9);
+            assertThat(count(connection, "SELECT count(*) FROM flyway_schema_history WHERE success")).isEqualTo(appliedMigrations);
+            assertThat(flyway.info().pending()).isEmpty();
+            flyway.validate();
             statement.execute(seed);
             assertThat(count(connection, "SELECT count(*) FROM events")).isEqualTo(16);
         }
