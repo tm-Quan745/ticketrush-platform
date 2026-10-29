@@ -2,12 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
-import {allPages} from '../frontend/src/api/pagination';
-import {GateResult} from '../frontend/src/features/tickets/components/GateResult';
-import {TicketPass} from '../frontend/src/features/tickets/components/TicketPass';
-import {HoldCard} from '../frontend/src/components/TicketWallet';
-import {OrderInvoiceModal} from '../frontend/src/components/user/OrderInvoiceModal';
-import type {Ticket,Order,Reservation} from '../frontend/src/types';
+import {allPages} from '../src/api/pagination';
+import {GateResult} from '../src/features/tickets/components/GateResult';
+import {TicketPass} from '../src/features/tickets/components/TicketPass';
+import {HoldCard} from '../src/components/TicketWallet';
+import {OrderInvoiceModal} from '../src/components/user/OrderInvoiceModal';
+import type {Ticket,Order,Reservation} from '../src/types';
 const ticket={id:'t',ticketCode:'ticket-code',status:'VALID',eventTitle:'Concert',tierName:'Stand A',issuedAt:'2026-01-01T00:00:00Z',seat:{sectionName:'Stand A',rowLabel:'R2',number:12}} as Ticket;
 test('pagination fetches every page including a partially filled last page',async()=>{
  const visited:number[]=[];assert.deepEqual(await allPages(async page=>{visited.push(page);return{page,totalPages:3,totalElements:5,content:page<2?[page*2,page*2+1]:[4]};}),[0,1,2,3,4]);assert.deepEqual(visited,[0,1,2]);

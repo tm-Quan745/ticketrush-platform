@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import http from 'node:http';
 import { once } from 'node:events';
 import { attachNotificationProxy } from '../notification-proxy';
-import { connectNotifications, notificationSocketUrl } from '../frontend/src/features/notifications/realtime';
+import { connectNotifications, notificationSocketUrl } from '../src/features/notifications/realtime';
 
 test('notification socket uses the API base and secure protocol without credentials in URL', () => {
   assert.equal(notificationSocketUrl('/api/v1', 'https://tickets.example/account'), 'wss://tickets.example/api/v1/notifications/ws');

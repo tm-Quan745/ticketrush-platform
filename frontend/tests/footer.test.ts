@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Footer } from '../frontend/src/components/Footer';
-import { ThemeProvider } from '../frontend/src/context/ThemeContext';
-import { can, roles } from '../frontend/src/access/permissions';
-import { matchRoute } from '../frontend/src/access/routes';
+import { Footer } from '../src/components/Footer';
+import { ThemeProvider } from '../src/context/ThemeContext';
+import { can, roles } from '../src/access/permissions';
+import { matchRoute } from '../src/access/routes';
 
 for (const role of roles) {
   test(`footer exposes working, authorized navigation for ${role}`, () => {

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiClient } from '../frontend/src/api/client';
+import { ApiClient } from '../src/api/client';
 
 test('fresh page restores only from cookies and reads server roles; StrictMode shares one bootstrap', async t => {
   const api = new ApiClient(); let refreshes = 0, profiles = 0;

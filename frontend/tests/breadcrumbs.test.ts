@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Breadcrumbs, pageBreadcrumbs } from '../frontend/src/components/user/Breadcrumbs';
-import { routes } from '../frontend/src/access/routes';
+import { Breadcrumbs, pageBreadcrumbs } from '../src/components/user/Breadcrumbs';
+import { routes } from '../src/access/routes';
 
 test('every registered route has exactly one current breadcrumb and valid parent routes', () => {
   for (const route of routes) {

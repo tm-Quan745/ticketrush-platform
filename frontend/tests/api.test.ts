@@ -7,7 +7,7 @@ const storage = () => { const values = new Map<string, string>(); return {
 }; };
 Object.defineProperty(globalThis, 'localStorage', { value: storage() });
 Object.defineProperty(globalThis, 'sessionStorage', { value: storage() });
-const { ApiClient } = await import('../frontend/src/api/client');
+const { ApiClient } = await import('../src/api/client');
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
 beforeEach(() => { localStorage.clear(); sessionStorage.clear(); });
 

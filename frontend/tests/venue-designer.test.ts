@@ -2,9 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {addSection,changeHistory,createPreset,moveRect,presets,seatCount,slugify,toRequest,validateDraft,type History} from '../frontend/src/features/venues/model';
-import {VenueCanvas} from '../frontend/src/features/venues/VenueCanvas';
-import {StadiumMap} from '../frontend/src/features/seating/SeatPicker';
+import {addSection,changeHistory,createPreset,moveRect,presets,seatCount,slugify,toRequest,validateDraft,type History} from '../src/features/venues/model';
+import {VenueCanvas} from '../src/features/venues/VenueCanvas';
+import {StadiumMap} from '../src/features/seating/SeatPicker';
 
 function named(){return {...createPreset('theatre'),name:'Nhà hát',templateKey:'nha-hat'};}
 for(const preset of presets)test(`${preset.id} starts with a valid layout ready for publication`,()=>{

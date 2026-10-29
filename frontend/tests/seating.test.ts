@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { StadiumMap } from '../frontend/src/features/seating/SeatPicker';
-import { toggleSelection, recoverSelection, seatState, remainingSeconds, validStatus } from '../frontend/src/features/seating/model';
-import { startPolling, jitterDelay, type PollEnvironment } from '../frontend/src/features/seating/polling';
-import { ApiClient } from '../frontend/src/api/client';
+import { StadiumMap } from '../src/features/seating/SeatPicker';
+import { toggleSelection, recoverSelection, seatState, remainingSeconds, validStatus } from '../src/features/seating/model';
+import { startPolling, jitterDelay, type PollEnvironment } from '../src/features/seating/polling';
+import { ApiClient } from '../src/api/client';
 
 test('seat selection enforces limit, toggles off and refuses unavailable seats', () => {
     assert.deepEqual(toggleSelection(['a', 'b'], 'c', 2, true), ['a', 'b']); assert.deepEqual(toggleSelection(['a'], 'a', 2, false), []); assert.deepEqual(toggleSelection([], 'b', 6, false), []);
@@ -45,8 +45,8 @@ test('stadium component uses server polygons, accessible section controls and no
     assert.match(html, /3,4 10,4 5,8/); assert.match(html, /tabindex="0"/); assert.match(html, /Sắp hết vé/); assert.doesNotMatch(html, /12345|availableQuantity|3D/);
 });
 
-import { money } from '../frontend/src/pages/shared';
-import { aisleBefore, sortedSeats, suggestAdjacentSeats } from '../frontend/src/features/seating/model';
+import { money } from '../src/pages/shared';
+import { aisleBefore, sortedSeats, suggestAdjacentSeats } from '../src/features/seating/model';
 test('aisle boundaries use server segments and never insert a gap between rows', () => {
     const seats = [{ rowLabel: 'A', number: 1, adjacencySegment: 0 }, { rowLabel: 'A', number: 2, adjacencySegment: 0 }, { rowLabel: 'A', number: 3, adjacencySegment: 1 }, { rowLabel: 'B', number: 1, adjacencySegment: 0 }] as any;
     assert.deepEqual(seats.map((_: unknown, i: number) => aisleBefore(seats, i)), [false, false, true, false]);

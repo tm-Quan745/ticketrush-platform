@@ -77,7 +77,7 @@ missing success responses. The client exposes generated typed operations and res
 compatibility adapters remain for inactive imported components.
 
 VITE_API_BASE_URL is a build-time origin/prefix (empty by default). Same-origin
-requests pass through server.ts to server-only BACKEND_URL. The server has no mock
+requests pass through frontend/server.ts to server-only BACKEND_URL. The server has no mock
 business endpoints and never falls back to fake data. Cross-origin deployment
 requires explicit Spring CORS configuration; the default Compose topology avoids it.
 
@@ -100,7 +100,7 @@ Inactive legacy screens remain inside frontend/src. The canonical App imports on
 
 1. Copy .env.example to .env and set secrets. Run docker compose up -d --build.
 2. Open http://localhost:3100 (FRONTEND_PORT); Spring remains at localhost:8080.
-3. npm ci; npm run lint; npm test; npm run build.
+3. cd frontend; npm ci; npm run lint; npm test; npm run build.
 4. Refresh docs/api/openapi.json from the dev backend /v3/api-docs, then npm run api:generate.
 5. npm run docs:access regenerates this document.
 6. npx playwright install chromium; npm run test:e2e runs against the real stack.

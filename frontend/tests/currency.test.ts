@@ -2,10 +2,10 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
-import {formatCurrency} from '../frontend/src/lib/utils';
-import {money} from '../frontend/src/pages/shared';
-import {TicketCard} from '../frontend/src/features/flash-sale/components/TicketCard';
-import type {FlashSaleTier} from '../frontend/src/features/flash-sale/types/flashSale.types';
+import {formatCurrency} from '../src/lib/utils';
+import {money} from '../src/pages/shared';
+import {TicketCard} from '../src/features/flash-sale/components/TicketCard';
+import type {FlashSaleTier} from '../src/features/flash-sale/types/flashSale.types';
 
 test('Vietnamese dong is the default and keeps the stored amount without dividing by 100',()=>{
  for(const amount of [0,1250,120000,1250000]){

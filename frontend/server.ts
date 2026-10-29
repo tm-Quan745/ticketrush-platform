@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
+config({ path: '../.env' });
 import express from 'express';
 import http from 'node:http';
 import https from 'node:https';
@@ -35,8 +36,8 @@ app.use((req, res, next) => {
   req.pipe(upstream);
 });
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve('frontend/dist')));
-  app.get('*', (_req, res) => res.sendFile(path.resolve('frontend/dist/index.html')));
+  app.use(express.static(path.resolve('dist')));
+  app.get('*', (_req, res) => res.sendFile(path.resolve('dist/index.html')));
 } else {
   const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
   app.use(vite.middlewares);

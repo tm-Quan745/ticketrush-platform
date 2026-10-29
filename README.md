@@ -188,7 +188,10 @@ or edits in progress. k6, dashboards and frontend remain outside Week 6.
 
 The active frontend is `frontend/src/` (React 19/Vite/TypeScript SPA). The duplicate
 root `src/` was removed at the user's request. Build output is `frontend/dist/`.
-The root Express server only proxies `/api/*` and `/actuator/health` to Spring
+Node manifests, configuration, tests and scripts live in `frontend/`. Shared env
+files remain at the repository root. Run npm commands from `frontend/` or use
+`npm --prefix frontend` from the repository root.
+The Express server in `frontend/server.ts` only proxies `/api/*` and `/actuator/health` to Spring
 Boot. M0b restores normal login, URL routes, role guards and the COUNTER purchase
 flow in this canonical app. Legacy map/seat components remain in source awaiting
 the seating milestone; they are not connected to a new seating backend. See
@@ -198,12 +201,13 @@ the seating milestone; they are not connected to a new seating backend. See
 1. Fill required secrets in `.env`, including `PAYMENT_WEBHOOK_SECRET` (32+ random
    characters); start the backend with `docker compose up --build -d --wait`.
 2. Set `BACKEND_URL=http://127.0.0.1:8080` and `PORT=3000` as needed in `.env`.
-3. Run `npm ci`, then `npm run dev`; open http://localhost:3000.
+3. Run `cd frontend`, `npm ci`, then `npm run dev`; open http://localhost:3000.
 4. Register/login normally. USER buys tickets, STAFF uses `/gate`, and ADMIN uses
    `/admin`. ADMIN/STAFF provisioning is not exposed by the frontend.
    The mock gateway sends a signed webhook; the browser only polls order status.
 
-Validation: `npm run lint`, `npm test`, `npm run build`, and
+From the repository root: `npm --prefix frontend run lint`,
+`npm --prefix frontend test`, `npm --prefix frontend run build`, and
 `mvn -B -ntp -f backend/pom.xml clean verify`. M0b results: 115 backend tests,
 35 frontend unit tests, lint/build and all 5 authored Playwright access/purchase
 tests pass against the real Compose stack. The historical **111-test execution
@@ -214,7 +218,7 @@ both `fcb976f` and M0 are now ancestors. The initial merge base was `13c36d9`.
 The additional four tests are three STAFF/gate tests and one inventory audit test.
 No benchmark profile was part of 111 or 115.
 For production static hosting, build first, set `NODE_ENV=production`, then
-`npm start`. Do not use `vite preview` as the API proxy.
+`npm --prefix frontend start` from the repository root. Do not use `vite preview` as the API proxy.
 
 Current limits: no real payment provider, seat assignment, ticket
 transfer, browser reseeding or profile-update API. Illustrative notification and
@@ -234,8 +238,8 @@ random secrets and an isolated `ticketrush-frontend` Compose project:
 
 ```powershell
 docker compose --env-file .env.frontend.local -p ticketrush-frontend -f docker-compose.yml -f infrastructure/frontend-compose.yml up -d --wait
-npm run dev:isolated
-npm run test:smoke
+npm --prefix frontend run dev:isolated
+npm --prefix frontend run test:smoke
 ```
 
 Compose frontend: http://localhost:3100; local dev server: http://localhost:3000;

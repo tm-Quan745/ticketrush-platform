@@ -9,7 +9,7 @@
     "lint": "tsc --noEmit",
     "start": "tsx server.ts",
     "test": "tsx --test tests/*.test.ts",
-    "dev:isolated": "node --env-file=.env.frontend.local --import tsx server.ts",
+    "dev:isolated": "node --env-file=../.env.frontend.local --import tsx server.ts",
     "test:smoke": "tsx tests/smoke.ts",
     "api:generate": "node scripts/generate-api.mjs",
     "test:e2e": "playwright test",

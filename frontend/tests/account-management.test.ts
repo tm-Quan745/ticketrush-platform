@@ -2,11 +2,11 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
-import {ProfilePage} from '../frontend/src/components/user/ProfilePage';
-import {ThemeProvider} from '../frontend/src/context/ThemeContext';
-import {EventOverview,EventManagementTabs} from '../frontend/src/components/admin/EventManagement';
-import {orderNotifications,notificationReadKey,parseReadNotifications} from '../frontend/src/features/notifications/model';
-import type {Event,Order} from '../frontend/src/types';
+import {ProfilePage} from '../src/components/user/ProfilePage';
+import {ThemeProvider} from '../src/context/ThemeContext';
+import {EventOverview,EventManagementTabs} from '../src/components/admin/EventManagement';
+import {orderNotifications,notificationReadKey,parseReadNotifications} from '../src/features/notifications/model';
+import type {Event,Order} from '../src/types';
 
 test('profile shows authenticated account data and working account links without invented identity',()=>{
  const html=render(React.createElement(ThemeProvider,null,React.createElement(ProfilePage,{user:{id:'user-1',email:'buyer@example.test',role:'USER'}})));

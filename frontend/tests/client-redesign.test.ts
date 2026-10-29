@@ -2,12 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
-import {EventsHero} from '../frontend/src/components/user/EventsHero';
-import {salePhase,EventHeader} from '../frontend/src/features/flash-sale/components/EventHeader';
-import {navigationItems,isNavigationActive} from '../frontend/src/components/user/SiteHeader';
-import {Pagination} from '../frontend/src/components/Pagination';
-import {ApiClient} from '../frontend/src/api/client';
-import type {FlashSaleEvent} from '../frontend/src/features/flash-sale/types/flashSale.types';
+import {EventsHero} from '../src/components/user/EventsHero';
+import {salePhase,EventHeader} from '../src/features/flash-sale/components/EventHeader';
+import {navigationItems,isNavigationActive} from '../src/components/user/SiteHeader';
+import {Pagination} from '../src/components/Pagination';
+import {ApiClient} from '../src/api/client';
+import type {FlashSaleEvent} from '../src/features/flash-sale/types/flashSale.types';
 
 test('discovery hero has an accessible search without fabricated sales statistics',()=>{
  const html=render(React.createElement(EventsHero,{keyword:'',onKeyword:()=>{},onSearch:()=>{}}));

@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 // Deliberately small generator for the checked-in Spring OpenAPI schema subset.
 // Fail on unsupported constructs instead of silently producing an untyped client.
-const spec = JSON.parse(await readFile('docs/api/openapi.json', 'utf8'));
+const spec = JSON.parse(await readFile('../docs/api/openapi.json', 'utf8'));
 function type(s = {}) {
   if (s.nullable) return `(${type({ ...s, nullable: false })}) | null`;
   if (s.$ref) return s.$ref.split('/').at(-1);
@@ -37,4 +37,4 @@ for (const [path, methods] of Object.entries(spec.paths)) for (const [method, op
 }
 out += '\nexport interface Operations {\n' + operations.map(o => `  ${JSON.stringify(o.key)}: { input: ${o.input}; output: ${o.output} };`).join('\n') + '\n}\n';
 out += 'export const endpoints = ' + JSON.stringify(Object.fromEntries(operations.map(o => [o.key, { method: o.method, path: o.path }])), null, 2) + ' as const;\n';
-await writeFile('frontend/src/api/generated.ts', out);
+await writeFile('src/api/generated.ts', out);

@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {EventImageField} from '../frontend/src/components/admin/EventImageField';
+import {EventImageField} from '../src/components/admin/EventImageField';
 
 test('event image previews Cloudinary images but not empty or untrusted URLs',()=>{
  const render=(value:string)=>renderToStaticMarkup(React.createElement(EventImageField,{value,onChange:()=>{}}));

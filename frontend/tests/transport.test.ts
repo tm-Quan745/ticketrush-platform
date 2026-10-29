@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiClient, ApiError, pollDelay, retryAfter } from '../frontend/src/api/client';
+import { ApiClient, ApiError, pollDelay, retryAfter } from '../src/api/client';
 test('refresh is single flight and each original request retries only once', async () => {
   const api = new ApiClient(); api.setAuth('old', null); let refreshes = 0; let retries = 0;
   globalThis.fetch = async (url, options) => {

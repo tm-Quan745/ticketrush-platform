@@ -13,7 +13,7 @@ for(const role of ['USER','STAFF','ADMIN']){
  if(!/^[0-9a-f-]{36}$/.test(user.id))throw new Error('Invalid fixture UUID');
  if(role!=='USER')execFileSync('docker',['exec',db,'psql','-U','ticketrush','-d','ticketrush','-v','ON_ERROR_STOP=1','-c',`BEGIN;DELETE FROM user_roles WHERE user_id='${user.id}';INSERT INTO user_roles(user_id,role_id) SELECT '${user.id}',id FROM roles WHERE name='${role}';COMMIT;`],{stdio:'pipe',windowsHide:true});accounts[role]=account;
 }
-const folder='docs/screenshots/m3b';await mkdir(folder,{recursive:true});const browser=await chromium.launch();
+const folder='../docs/screenshots/m3b';await mkdir(folder,{recursive:true});const browser=await chromium.launch();
 const spa=async(p:Page,path:string)=>p.evaluate(path=>{history.pushState({},'',path);dispatchEvent(new PopStateEvent('popstate'));},path);
 async function login(p:Page,role:string){await p.goto(base+'/login');await p.getByLabel('Email',{exact:true}).fill(accounts[role].email);await p.getByLabel('Mật khẩu',{exact:true}).fill(accounts[role].password);await p.getByRole('button',{name:'Đăng nhập',exact:true}).click();await expect(p).not.toHaveURL(/\/login/);}
 async function capture(p:Page,name:string,fullPage=true){await p.evaluate(()=>window.scrollTo(0,0));await p.screenshot({path:`${folder}/${name}.png`,fullPage,animations:'disabled'});}

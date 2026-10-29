@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { bookingNotifications } from '../frontend/src/features/notifications/model';
-import type { Order, Reservation } from '../frontend/src/types';
+import { bookingNotifications } from '../src/features/notifications/model';
+import type { Order, Reservation } from '../src/types';
 
 const expired = { id: 'hold-1', userId: 'user-1', eventId: 'event-1', quantity: 2,
   tierName: 'VIP', status: 'EXPIRED', expires_at: '2000-01-01T00:00:00Z' } as Reservation;

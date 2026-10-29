@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { can, roles, permissions, landing, safeNext } from '../frontend/src/access/permissions';
-import { routes, matchRoute } from '../frontend/src/access/routes';
+import { can, roles, permissions, landing, safeNext } from '../src/access/permissions';
+import { routes, matchRoute } from '../src/access/routes';
 const expected = { PUBLIC: [true, false, false, false, false], USER: [true, true, true, false, false], STAFF: [true, false, false, true, false], ADMIN: [true, false, false, true, true] };
 for (const role of roles) for (const [i, permission] of permissions.entries()) test(`${role}: ${permission}`, () => assert.equal(can(role, permission), expected[role][i]));
 test('next rejects off-origin, backslash, control and authentication loops', () => {

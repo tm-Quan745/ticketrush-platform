@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-import {createPreset,type VenueDetail,type VenueDraft} from '../frontend/src/features/venues/model';
+import {createPreset,type VenueDetail,type VenueDraft} from '../src/features/venues/model';
 
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
 function detail(draft:VenueDraft,id:string):VenueDetail {

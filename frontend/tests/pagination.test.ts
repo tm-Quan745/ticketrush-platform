@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Pagination, paginationItems } from '../frontend/src/components/Pagination';
-import { IconButton } from '../frontend/src/components/ui/IconButton';
+import { Pagination, paginationItems } from '../src/components/Pagination';
+import { IconButton } from '../src/components/ui/IconButton';
 import { RefreshCw } from 'lucide-react';
 
 test('pagination keeps page choices bounded and ordered for large lists',()=>{

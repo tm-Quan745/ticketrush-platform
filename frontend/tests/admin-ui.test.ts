@@ -2,9 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
-import {AdminSidebar} from '../frontend/src/components/admin/AdminLayout';
-import {AdminEventTable,AdminOrderTable,adminDate} from '../frontend/src/components/admin/AdminTables';
-import type {Event,Order} from '../frontend/src/types';
+import {AdminSidebar} from '../src/components/admin/AdminLayout';
+import {AdminEventTable,AdminOrderTable,adminDate} from '../src/components/admin/AdminTables';
+import type {Event,Order} from '../src/types';
 
 for(const path of ['/admin','/admin/events','/admin/events/new','/admin/events/abc','/admin/venues','/admin/orders','/admin/operations','/admin/results']) {
  test(`admin navigation selects exactly one section for ${path}`,()=>{

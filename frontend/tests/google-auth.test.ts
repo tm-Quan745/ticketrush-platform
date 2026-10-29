@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiClient } from '../frontend/src/api/client';
+import { ApiClient } from '../src/api/client';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 test('Google credentials are exchanged for application tokens and server roles', async () => {
