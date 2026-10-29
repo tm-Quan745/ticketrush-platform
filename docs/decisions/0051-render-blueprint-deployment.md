@@ -2,27 +2,29 @@
 
 ## Context
 
-TicketRush needs a reproducible portfolio deployment while preserving the
-same-origin frontend proxy, Spring Boot monolith, PostgreSQL, Redis admission
-gate, RabbitMQ outbox transport, and notification flow.
+TicketRush needs a reproducible free portfolio deployment. Render does not offer
+free Private Services, while the full application needs RabbitMQ, Redis, and an
+email test inbox in addition to the backend.
 
 ## Options
 
-- Deploy frontend and backend independently and manually copy connection URLs.
-- Use one Render Blueprint with private service references.
-- Move the backend to serverless functions or replace infrastructure services.
+- Pay for the full private-service stack.
+- Use free web services, Render Postgres and Key Value, and disable messaging.
+- Replace RabbitMQ/email with external services.
 
 ## Decision
 
-Use `render.yaml` to create a public frontend, private backend, managed
-Postgres, Redis 7.4, RabbitMQ, and Mailpit in one region. Render injects service
-addresses and generated secrets. The backend entrypoint translates the managed
-Postgres connection URL into the existing Spring variables.
+Use `render.yaml` to create a free frontend, free backend, free Postgres, and
+free Render Key Value in one region. The demo profile disables RabbitMQ relay,
+consumer and email delivery. Render injects service addresses and generated
+secrets. The backend entrypoint translates managed Postgres and Key Value URLs
+into the existing Spring variables.
 
 ## Consequences
 
-No credentials or public backend address are committed. The frontend retains
-same-origin cookies and WebSocket origin validation. Redis remains version 7.4
-in both local Compose and Render. Render Private Services have no free tier, so
-Redis, RabbitMQ, Mailpit, and the backend require a paid deployment; the free
-Postgres plan is suitable only for a temporary portfolio preview.
+No credentials are committed. The frontend retains same-origin cookies and
+WebSocket origin validation while its server-side proxy calls the backend's
+public URL. The demo uses Valkey rather than Redis 7.4 and intentionally omits
+asynchronous delivery. Free services can sleep, Key Value data is volatile, and
+the free Postgres database expires after 30 days. The paid deployment is still
+required to demonstrate RabbitMQ outbox delivery and email notifications.

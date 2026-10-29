@@ -6,8 +6,10 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Configuration
+@ConditionalOnProperty(name="ticketrush.messaging.enabled",havingValue="true",matchIfMissing=true)
 public class RabbitTopology {
     public static final String EVENTS="ticketrush.events", DLX="ticketrush.dlx", EMAIL_QUEUE="notification.email";
     @Bean TopicExchange eventsExchange() { return new TopicExchange(EVENTS,true,false); }

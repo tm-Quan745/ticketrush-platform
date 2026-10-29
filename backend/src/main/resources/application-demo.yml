@@ -1,0 +1,10 @@
+# Free Render demo: RabbitMQ and email delivery are intentionally disabled.
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+
+ticketrush:
+  messaging:
+    enabled: false

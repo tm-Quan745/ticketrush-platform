@@ -2,9 +2,9 @@
 
 ## Scope
 
-`render.yaml` deploys the existing modular monolith without publishing the
-backend, Postgres, RabbitMQ, Redis-compatible cache, or Mailpit to the public
-internet. The public frontend keeps the existing same-origin Node proxy.
+`render.yaml` deploys a free demo. The frontend and backend are public Render
+Web Services. Postgres and the Redis-compatible cache remain private. The public
+frontend keeps the existing same-origin Node proxy.
 
 ## Before creating the Blueprint
 
@@ -32,24 +32,22 @@ and database credentials. They are never stored in this repository.
 | Resource | Visibility | Purpose |
 |---|---|---|
 | `ticketrush-frontend` | Public | React assets and same-origin proxy |
-| `ticketrush-backend` | Private | Spring Boot API, scheduler, outbox consumer |
+| `ticketrush-backend` | Public | Spring Boot API and scheduler |
 | `ticketrush-postgres` | Private only | Transactional source of truth |
-| `ticketrush-redis` | Private only | Redis 7.4 admission gate |
-| `ticketrush-rabbitmq` | Private only | Outbox and notification messages |
-| `ticketrush-mailpit` | Private only | Demo email capture |
+| `ticketrush-redis` | Private only | Valkey, Redis-protocol-compatible admission gate |
 
 ## Operational notes
 
-The Blueprint runs Redis 7.4 as a Render Private Service to preserve the
-project's agreed stack. It uses the smallest private-service plan, which is
-currently paid. Redis is configured with `noeviction` because the waiting room
-uses it as an admission gate; silent eviction would weaken overload control.
+Render Key Value is free but currently runs Valkey, a Redis-protocol-compatible
+store. Its state is lost on restart because free instances have no persistence.
+Redis is configured with `noeviction` because the waiting room uses it as an
+admission gate; silent eviction would weaken overload control.
 
-The managed Postgres plan is free for a portfolio preview only. Upgrade the
-database and all private services before relying on this deployment for a public
-demo. Redis and RabbitMQ have persistent disks because losing their state can
-weaken admission control or discard unconsumed outbox messages. Mailpit is a
-test inbox, not a real outbound mail provider.
+The managed Postgres plan is free for a portfolio preview only and expires after
+30 days. The demo profile disables RabbitMQ relay/consumer and email delivery,
+so it preserves outbox writes but cannot demonstrate asynchronous outbox delivery
+or email notifications. Upgrade to the paid Blueprint before presenting those
+features. Mailpit is intentionally absent from the free deployment.
 
 The frontend receives the backend private host and port from Render. The backend
 receives the exact public frontend origin from Render for cookie and WebSocket
@@ -62,5 +60,4 @@ origin validation. Do not replace these references with hardcoded URLs.
 2. Register and log in. Reload the page to verify the secure refresh cookie.
 3. Create a test event using a provisioned admin account, then complete one mock
    payment and verify its order status.
-4. Check backend logs for successful Flyway migration, Redis connection, and
-   RabbitMQ topology declaration.
+4. Check backend logs for successful Flyway migration and Redis connection.

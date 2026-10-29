@@ -3,10 +3,12 @@ package com.vibe.ticketrush.notification.service;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /** Broker outage is represented as -1 rather than making application health DOWN. */
 @Component
+@ConditionalOnProperty(name="ticketrush.messaging.enabled",havingValue="true",matchIfMissing=true)
 public class DlqMetrics {
     private final RabbitTemplate rabbit;
     public DlqMetrics(RabbitTemplate rabbit,MeterRegistry meters) {

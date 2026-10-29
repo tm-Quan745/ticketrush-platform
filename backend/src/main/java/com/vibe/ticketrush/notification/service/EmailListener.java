@@ -8,9 +8,11 @@ import java.io.IOException;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name="ticketrush.messaging.enabled",havingValue="true",matchIfMissing=true)
 public class EmailListener {
     private final ObjectMapper json; private final EmailNotificationService notifications; private final RabbitTemplate rabbit; private final NotificationProperties properties;
     private final io.micrometer.core.instrument.Counter processed,duplicate,deadLetter;

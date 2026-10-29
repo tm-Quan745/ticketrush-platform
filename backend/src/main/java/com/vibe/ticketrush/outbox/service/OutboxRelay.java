@@ -13,12 +13,14 @@ import java.util.*;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Component
+@ConditionalOnProperty(name="ticketrush.messaging.enabled",havingValue="true",matchIfMissing=true)
 public class OutboxRelay {
     private final OutboxRepository repository; private final RabbitTemplate rabbit; private final ObjectMapper json;
     private final OutboxProperties properties; private final Clock clock; private final TransactionTemplate tx; private final Counter published; private final Counter failed;
