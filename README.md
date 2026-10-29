@@ -220,6 +220,12 @@ No benchmark profile was part of 111 or 115.
 For production static hosting, build first, set `NODE_ENV=production`, then
 `npm --prefix frontend start` from the repository root. Do not use `vite preview` as the API proxy.
 
+### Render deployment
+
+The repository includes [a Render Blueprint](render.yaml) for the complete demo
+stack and [deployment instructions](docs/deploy-render.md). It keeps the backend
+private and serves the browser through the existing same-origin frontend proxy.
+
 Current limits: no real payment provider, seat assignment, ticket
 transfer, browser reseeding or profile-update API. Illustrative notification and
 profile widgets are not persisted to the backend. Public inventory intentionally

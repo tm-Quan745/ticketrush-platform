@@ -6,11 +6,12 @@ import https from 'node:https';
 import path from 'node:path';
 import { createServer as createViteServer } from 'vite';
 import { attachNotificationProxy } from './notification-proxy';
+import { resolveBackendUrl } from './backend-url';
 
 // Forward API bytes unchanged: Spring owns authentication and all business state.
 const app = express();
 const server = http.createServer(app);
-const target = new URL(process.env.BACKEND_URL || 'http://127.0.0.1:8080');
+const target = resolveBackendUrl(process.env.BACKEND_URL);
 if (!['http:', 'https:'].includes(target.protocol)) throw new Error('Invalid BACKEND_URL');
 attachNotificationProxy(server, target);
 app.use((req, res, next) => {

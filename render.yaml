@@ -1,0 +1,158 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+# Portfolio deployment: frontend is public; application dependencies stay private.
+services:
+  - type: web
+    name: ticketrush-frontend
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: ./Dockerfile.frontend
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: "10000"
+      - key: BACKEND_URL
+        fromService:
+          type: pserv
+          name: ticketrush-backend
+          property: hostport
+
+  - type: pserv
+    name: ticketrush-backend
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    maxShutdownDelaySeconds: 60
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DEV_SEED_ENABLED
+        value: "false"
+      - key: AUTH_COOKIE_SECURE
+        value: "true"
+      - key: AUTH_BROWSER_ORIGINS
+        fromService:
+          type: web
+          name: ticketrush-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NOTIFICATION_WS_ORIGINS
+        fromService:
+          type: web
+          name: ticketrush-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ticketrush-postgres
+          property: connectionString
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: ticketrush-postgres
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: ticketrush-postgres
+          property: password
+      - key: REDIS_HOST
+        fromService:
+          type: pserv
+          name: ticketrush-redis
+          property: host
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_ENV
+        value: prod
+      - key: REDIS_PASSWORD
+        fromService:
+          type: pserv
+          name: ticketrush-redis
+          envVarKey: REDIS_PASSWORD
+      - key: RABBITMQ_HOST
+        fromService:
+          type: pserv
+          name: ticketrush-rabbitmq
+          property: host
+      - key: RABBITMQ_USER
+        value: ticketrush
+      - key: RABBITMQ_PASSWORD
+        fromService:
+          type: pserv
+          name: ticketrush-rabbitmq
+          envVarKey: RABBITMQ_DEFAULT_PASS
+      - key: MAIL_HOST
+        fromService:
+          type: pserv
+          name: ticketrush-mailpit
+          property: host
+      - key: MAIL_PORT
+        value: "1025"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+      - key: PAYMENT_WEBHOOK_URL
+        value: http://127.0.0.1:8080/api/v1/payments/webhook
+      - key: MOCK_PAYMENT_SCENARIOS_ENABLED
+        value: "false"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xms128m -Xmx320m
+
+  - type: pserv
+    name: ticketrush-rabbitmq
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: ./infrastructure/render/rabbitmq/Dockerfile
+    dockerContext: ./infrastructure/render/rabbitmq
+    disk:
+      name: rabbitmq-data
+      mountPath: /var/lib/rabbitmq/mnesia
+      sizeGB: 1
+    envVars:
+      - key: RABBITMQ_DEFAULT_USER
+        value: ticketrush
+      - key: RABBITMQ_DEFAULT_PASS
+        generateValue: true
+      - key: RABBITMQ_ERLANG_COOKIE
+        generateValue: true
+
+  - type: pserv
+    name: ticketrush-redis
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: ./infrastructure/render/redis/Dockerfile
+    dockerContext: ./infrastructure/render/redis
+    disk:
+      name: redis-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: REDIS_PASSWORD
+        generateValue: true
+
+  - type: pserv
+    name: ticketrush-mailpit
+    runtime: image
+    region: singapore
+    plan: 0.5c-512mb
+    image:
+      url: docker.io/axllent/mailpit:v1.26
+
+databases:
+  - name: ticketrush-postgres
+    region: singapore
+    plan: free
+    databaseName: ticketrush
+    user: ticketrush
+    postgresMajorVersion: "17"
+    ipAllowList: []

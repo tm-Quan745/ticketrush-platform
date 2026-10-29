@@ -11,6 +11,8 @@ LABEL org.opencontainers.image.revision=$VCS_REF
 RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
 COPY --from=build /workspace/target/ticketrush-0.0.1-SNAPSHOT.jar app.jar
+COPY docker-entrypoint.sh /usr/local/bin/ticketrush
+RUN chmod 0555 /usr/local/bin/ticketrush
 USER app
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["/usr/local/bin/ticketrush"]
