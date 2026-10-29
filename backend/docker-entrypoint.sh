@@ -5,10 +5,14 @@ set -eu
 # so normalize those URLs here without persisting any credentials in the image.
 if [ -z "${DB_URL:-}" ] && [ -n "${DATABASE_URL:-}" ]; then
   case "$DATABASE_URL" in
-    postgresql://*) export DB_URL="jdbc:$DATABASE_URL" ;;
-    postgres://*) export DB_URL="jdbc:postgresql://${DATABASE_URL#postgres://}" ;;
+    postgresql://*) database_endpoint="${DATABASE_URL#postgresql://}" ;;
+    postgres://*) database_endpoint="${DATABASE_URL#postgres://}" ;;
     *) echo "DATABASE_URL must use a PostgreSQL URL" >&2; exit 64 ;;
   esac
+  # Render connection strings contain userinfo (user:password@host). JDBC URLs
+  # must not: Spring receives credentials through POSTGRES_USER/PASSWORD.
+  database_endpoint="${database_endpoint#*@}"
+  export DB_URL="jdbc:postgresql://${database_endpoint}"
 fi
 
 if [ -z "${REDIS_HOST:-}" ] && [ -n "${REDIS_URL:-}" ]; then
