@@ -63,7 +63,7 @@ test('temporary bootstrap failure shows retry without redirecting a protected UR
     return route.fulfill({ json: { content: [], page: 0, totalPages: 0, totalElements: 0 } });
   });
   await page.goto('/account/profile');
-  await expect(page.getByRole('alert')).toContainText('Chưa thể khôi phục');
+  await expect(page.getByRole('alert')).toContainText('Máy chủ đang khởi động');
   await expect(page).toHaveURL(/\/account\/profile$/);
   unavailable = false;
   await page.getByRole('button', { name: 'Thử lại', exact: true }).click();

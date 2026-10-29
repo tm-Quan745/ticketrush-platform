@@ -24,9 +24,16 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
 
   const now = new Date().toISOString();
   const isOnSale = event.saleStartTime <= now && now <= event.saleEndTime;
+  const openDetail = () => onSelect(event);
 
   return (
-    <div className="group bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between">
+    <article className="group relative cursor-pointer bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between">
+      <button
+        aria-label={`Xem sự kiện ${event.title}`}
+        className="absolute inset-0 z-10 rounded-3xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-400"
+        onClick={openDetail}
+        type="button"
+      />
       {/* Event Image Banner */}
       <div className="relative h-52 overflow-hidden bg-slate-950">
         {event.imageUrl ? (
@@ -91,15 +98,15 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
           {event.waitingRoomEnabled ? (
             <button
               onClick={() => onJoinQueue(event)}
-              className="w-full flex items-center justify-center gap-2 brand-button brand-button-primary font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition  active:scale-[0.98]"
+              className="relative z-20 w-full flex items-center justify-center gap-2 brand-button brand-button-primary font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition active:scale-[0.98]"
             >
               <Users className="w-4 h-4" />
               {vi.details}
             </button>
           ) : (
             <button
-              onClick={() => onSelect(event)}
-              className="w-full flex items-center justify-center gap-2 brand-button brand-button-primary font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition  active:scale-[0.98]"
+              onClick={openDetail}
+              className="relative z-20 w-full flex items-center justify-center gap-2 brand-button brand-button-primary font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl transition active:scale-[0.98]"
             >
               <Zap className="w-4 h-4" />
               {vi.details}
@@ -107,6 +114,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, onJoinQue
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 };

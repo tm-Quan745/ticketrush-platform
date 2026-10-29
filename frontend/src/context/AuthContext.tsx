@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '../types';
 import { api } from '../api/client';
+import { backendUnavailableMessage, isBackendUnavailable } from '../api/availability';
 interface AuthContextType {
   user: User | null; isAdmin: boolean; loading: boolean;
   sessionError: string; retrySession: () => void;
@@ -25,7 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let alive = true;
     setLoading(true); setSessionError('');
     void api.restoreSession().then(() => { if (alive) setUser(api.getUser()); })
-      .catch(() => { if (alive) setSessionError('Chưa thể khôi phục phiên đăng nhập. Kiểm tra kết nối và thử lại.'); })
+      .catch(error => { if (alive) setSessionError(isBackendUnavailable(error)
+        ? backendUnavailableMessage
+        : 'Chưa thể khôi phục phiên đăng nhập. Vui lòng thử lại.'); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [attempt]);

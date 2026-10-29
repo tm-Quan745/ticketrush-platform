@@ -33,7 +33,14 @@ function Router() {
     return () => removeEventListener('auth:forbidden', deny);
   }, []);
   if (loading) return <main className="p-8" role="status">Đang khôi phục phiên đăng nhập…</main>;
-  if (sessionError) return <main className="p-8"><p role="alert">{sessionError}</p><button type="button" className="mt-4 underline" onClick={retrySession}>Thử lại</button></main>;
+  if (sessionError) return <main className="mx-auto flex min-h-screen max-w-xl items-center px-6 py-12">
+    <section className="w-full rounded-3xl border border-amber-400/30 bg-slate-900 p-7 shadow-2xl" role="alert">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">Kết nối dịch vụ</p>
+      <h1 className="mt-3 text-2xl font-black">Đang chờ máy chủ sẵn sàng</h1>
+      <p className="mt-3 leading-7 text-slate-300">{sessionError}</p>
+      <button type="button" className="mt-6 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-400" onClick={retrySession}>Thử lại</button>
+    </section>
+  </main>;
   const id = pathname.split('/')[2];
   let page: React.ReactNode;
   if ((route.path === '/login' || route.path === '/register') && user) page = <Redirect to={landing(user.role, new URLSearchParams(address.split('?')[1] || '').get('next'))} />;
