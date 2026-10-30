@@ -22,6 +22,7 @@ let backendWakePromise: Promise<void> | undefined;
 // independently of the browser request, which the browser cancels after its own timeout.
 function wakeBackend() {
   if (backendWakePromise) return backendWakePromise;
+  console.info(`Waking backend at ${target.origin}`);
   backendWakePromise = new Promise<void>(resolve => {
     const upstream = (target.protocol === 'https:' ? https : http).request({
       hostname: target.hostname,
@@ -33,10 +34,13 @@ function wakeBackend() {
       timeout: backendWakeTimeoutMs,
     }, response => {
       response.resume();
-      response.once('end', resolve);
+      response.once('end', () => {
+        console.info(`Backend wake-up response: ${response.statusCode}`);
+        resolve();
+      });
     });
-    upstream.once('timeout', () => { upstream.destroy(); resolve(); });
-    upstream.once('error', resolve);
+    upstream.once('timeout', () => { console.warn('Backend wake-up timed out'); upstream.destroy(); resolve(); });
+    upstream.once('error', () => { console.warn('Backend wake-up request failed'); resolve(); });
     upstream.end();
   }).finally(() => { backendWakePromise = undefined; });
   return backendWakePromise;
@@ -74,5 +78,5 @@ if (process.env.NODE_ENV === 'production') {
   app.use(vite.middlewares);
 }
 server.listen(Number(process.env.PORT || 3000), process.env.HOST || '127.0.0.1', () => {
-  console.log('TicketRush frontend ready; API forwarded to Spring Boot');
+  console.log(`TicketRush frontend ready; API forwarded to ${target.origin}`);
 });

@@ -62,12 +62,12 @@ function Router() {
     return <main className="auth-page bg-slate-950 text-slate-100" key={pathname}><Breadcrumbs pathname={pathname}/>{page}</main>;
   }
   const adminLayout = can(role, 'admin') && route.layout === 'admin';
-  return <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+  return <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
     <SiteHeader user={user} pathname={pathname} onLogout={logout}/>
     {sessionError && <section className="mx-auto mt-4 w-full max-w-7xl px-3 sm:px-6" role="status" aria-live="polite">
-      <div className="flex flex-col gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-50 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-50 sm:flex-row sm:items-center sm:justify-between">
         <p><strong>Kết nối dịch vụ:</strong> {sessionError}</p>
-        <button type="button" className="shrink-0 font-bold text-amber-200 underline hover:text-white" onClick={retrySession}>Thử lại</button>
+        <button type="button" className="shrink-0 font-bold text-amber-800 underline hover:text-amber-950 dark:text-amber-200 dark:hover:text-white" onClick={retrySession}>Thử lại</button>
       </div>
     </section>}
     <div className="w-full max-w-7xl mx-auto flex flex-1 flex-col md:flex-row">

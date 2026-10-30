@@ -18,10 +18,7 @@ services:
       - key: PORT
         value: "10000"
       - key: BACKEND_URL
-        fromService:
-          type: web
-          name: ticketrush-backend
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://ticketrush-backend.onrender.com
 
   - type: web
     name: ticketrush-backend
