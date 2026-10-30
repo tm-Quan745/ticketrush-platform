@@ -14,10 +14,38 @@ const server = http.createServer(app);
 const target = resolveBackendUrl(process.env.BACKEND_URL);
 if (!['http:', 'https:'].includes(target.protocol)) throw new Error('Invalid BACKEND_URL');
 attachNotificationProxy(server, target);
+
+const backendWakeTimeoutMs = 4 * 60 * 1000;
+let backendWakePromise: Promise<void> | undefined;
+
+// Render's free instances can take a few minutes to resume. Keep a request alive
+// independently of the browser request, which the browser cancels after its own timeout.
+function wakeBackend() {
+  if (backendWakePromise) return backendWakePromise;
+  backendWakePromise = new Promise<void>(resolve => {
+    const upstream = (target.protocol === 'https:' ? https : http).request({
+      hostname: target.hostname,
+      port: target.port,
+      protocol: target.protocol,
+      path: '/actuator/health',
+      method: 'GET',
+      headers: { host: target.host },
+      timeout: backendWakeTimeoutMs,
+    }, response => {
+      response.resume();
+      response.once('end', resolve);
+    });
+    upstream.once('timeout', () => { upstream.destroy(); resolve(); });
+    upstream.once('error', resolve);
+    upstream.end();
+  }).finally(() => { backendWakePromise = undefined; });
+  return backendWakePromise;
+}
 // Keep platform liveness independent from downstream API and datastore health.
 app.get('/healthz', (_req, res) => res.status(200).json({ status: 'UP' }));
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api/') && req.path !== '/actuator/health') return next();
+  void wakeBackend();
   const headers: http.OutgoingHttpHeaders = { ...req.headers, host: target.host };
   delete headers['forwarded'];
   delete headers['x-forwarded-for'];

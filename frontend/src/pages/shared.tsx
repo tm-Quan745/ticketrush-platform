@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { navigate } from '../access/navigation';
+import { isBackendUnavailable } from '../api/availability';
 export { Button } from '../components/ui/Button';
 export { Card } from '../components/ui/Card';
 export function Link({ href, children, className = '', title }: { href: string; children: React.ReactNode; className?: string; title?: string }) {
@@ -13,9 +14,18 @@ export function useLoad<T>(key: string, loader: () => Promise<T>) {
   const [value, setValue] = useState<T>();
   const [error, setError] = useState('');
   useEffect(() => {
-    let alive = true; setValue(undefined); setError('');
-    loader().then(data => { if (alive) setValue(data); }).catch(e => { if (alive) setError(e.message); });
-    return () => { alive = false; };
+    let alive = true;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    setValue(undefined); setError('');
+    const load = () => loader().then(data => {
+      if (alive) { setValue(data); setError(''); }
+    }).catch(e => {
+      if (!alive) return;
+      setError(e.message);
+      if (isBackendUnavailable(e)) retryTimer = setTimeout(load, 10_000);
+    });
+    void load();
+    return () => { alive = false; if (retryTimer) clearTimeout(retryTimer); };
   }, [key]);
   return { value, error };
 }

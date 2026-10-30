@@ -24,13 +24,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let alive = true;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
     setLoading(true); setSessionError('');
     void api.restoreSession().then(() => { if (alive) setUser(api.getUser()); })
-      .catch(error => { if (alive) setSessionError(isBackendUnavailable(error)
-        ? backendUnavailableMessage
-        : 'Chưa thể khôi phục phiên đăng nhập. Vui lòng thử lại.'); })
+      .catch(error => {
+        if (!alive) return;
+        const backendUnavailable = isBackendUnavailable(error);
+        setSessionError(backendUnavailable
+          ? backendUnavailableMessage
+          : 'Chưa thể khôi phục phiên đăng nhập. Vui lòng thử lại.');
+        if (backendUnavailable) retryTimer = setTimeout(() => setAttempt(value => value + 1), 10_000);
+      })
       .finally(() => { if (alive) setLoading(false); });
-    return () => { alive = false; };
+    return () => { alive = false; if (retryTimer) clearTimeout(retryTimer); };
   }, [attempt]);
   useEffect(() => {
     const expired = () => setUser(null);

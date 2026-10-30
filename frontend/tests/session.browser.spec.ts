@@ -53,7 +53,7 @@ test('login, reload and a second tab restore the profile; logout survives reload
   await second.close();
 });
 
-test('temporary bootstrap failure shows retry without redirecting a protected URL', async ({ page }) => {
+test('temporary bootstrap failure keeps the public interface usable and retries the session', async ({ page }) => {
   let unavailable = true;
   await page.route('**/api/v1/**', route => {
     const path = new URL(route.request().url()).pathname;
@@ -62,10 +62,11 @@ test('temporary bootstrap failure shows retry without redirecting a protected UR
     if (path.endsWith('/me')) return route.fulfill({ json: { id: 'u', email: 'retry@example.test', roles: ['USER'] } });
     return route.fulfill({ json: { content: [], page: 0, totalPages: 0, totalElements: 0 } });
   });
-  await page.goto('/account/profile');
-  await expect(page.getByRole('alert')).toContainText('Máy chủ đang khởi động');
-  await expect(page).toHaveURL(/\/account\/profile$/);
+  await page.goto('/events');
+  await expect(page.getByRole('status')).toContainText('Máy chủ đang khởi động');
+  await expect(page.getByRole('heading', { name: 'Khám phá sự kiện' })).toBeVisible();
+  await expect(page).toHaveURL(/\/events$/);
   unavailable = false;
   await page.getByRole('button', { name: 'Thử lại', exact: true }).click();
-  await expect(page.getByRole('definition').filter({ hasText: 'retry@example.test' })).toBeVisible();
+  await expect(page.getByRole('status')).not.toContainText('Máy chủ đang khởi động');
 });

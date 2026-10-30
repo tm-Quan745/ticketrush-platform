@@ -6,7 +6,14 @@ import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 
 test('real HTTP proxy preserves request, status, response headers and fails closed on outage', { timeout: 30000 }, async () => {
+  let backendWasWoken = false;
   const upstream = http.createServer((req, res) => {
+    if (req.url === '/actuator/health') {
+      backendWasWoken = true;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'UP' }));
+      return;
+    }
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
@@ -33,6 +40,8 @@ test('real HTTP proxy preserves request, status, response headers and fails clos
       body: '{"reservationId":"reservation"}' });
     assert.equal(response.status, 409); assert.equal(response.headers.get('Retry-After'), '2');
     assert.deepEqual(await response.json(), { path: '/api/v1/orders?test=true', body: '{"reservationId":"reservation"}', authorization: 'Bearer test-only', key: 'stable' });
+    for (let i = 0; i < 20 && !backendWasWoken; i++) await delay(10);
+    assert.equal(backendWasWoken, true, 'an API request keeps an independent backend wake-up request alive');
     upstream.closeAllConnections(); await new Promise<void>(resolve => upstream.close(() => resolve()));
     const unavailable = await fetch(url + '/api/v1/events');
     assert.equal(unavailable.status, 502); assert.equal((await unavailable.json()).code, 'BACKEND_UNAVAILABLE');

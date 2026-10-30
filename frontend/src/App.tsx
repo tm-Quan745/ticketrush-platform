@@ -25,22 +25,13 @@ function Redirect({ to }: { to: string }) {
 }
 function Router() {
   const address = useLocation(); const pathname = address.split('?')[0]; const route = matchRoute(pathname);
-  const { user, logout, loading, sessionError, retrySession } = useAuth(); const role = user?.role || 'PUBLIC';
+  const { user, logout, sessionError, retrySession } = useAuth(); const role = user?.role || 'PUBLIC';
   const [forbidden, setForbidden] = useState(false);
   useEffect(() => { setForbidden(false); }, [address, user?.id]);
   useEffect(() => {
     const deny = () => setForbidden(true); addEventListener('auth:forbidden', deny);
     return () => removeEventListener('auth:forbidden', deny);
   }, []);
-  if (loading) return <main className="p-8" role="status">Đang khôi phục phiên đăng nhập…</main>;
-  if (sessionError) return <main className="mx-auto flex min-h-screen max-w-xl items-center px-6 py-12">
-    <section className="w-full rounded-3xl border border-amber-400/30 bg-slate-900 p-7 shadow-2xl" role="alert">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">Kết nối dịch vụ</p>
-      <h1 className="mt-3 text-2xl font-black">Đang chờ máy chủ sẵn sàng</h1>
-      <p className="mt-3 leading-7 text-slate-300">{sessionError}</p>
-      <button type="button" className="mt-6 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-400" onClick={retrySession}>Thử lại</button>
-    </section>
-  </main>;
   const id = pathname.split('/')[2];
   let page: React.ReactNode;
   if ((route.path === '/login' || route.path === '/register') && user) page = <Redirect to={landing(user.role, new URLSearchParams(address.split('?')[1] || '').get('next'))} />;
@@ -73,6 +64,12 @@ function Router() {
   const adminLayout = can(role, 'admin') && route.layout === 'admin';
   return <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
     <SiteHeader user={user} pathname={pathname} onLogout={logout}/>
+    {sessionError && <section className="mx-auto mt-4 w-full max-w-7xl px-3 sm:px-6" role="status" aria-live="polite">
+      <div className="flex flex-col gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-50 sm:flex-row sm:items-center sm:justify-between">
+        <p><strong>Kết nối dịch vụ:</strong> {sessionError}</p>
+        <button type="button" className="shrink-0 font-bold text-amber-200 underline hover:text-white" onClick={retrySession}>Thử lại</button>
+      </div>
+    </section>}
     <div className="w-full max-w-7xl mx-auto flex flex-1 flex-col md:flex-row">
       {adminLayout && <AdminSidebar pathname={pathname} />}
       <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 px-3 sm:px-6 py-6 sm:py-10" key={pathname}><Breadcrumbs pathname={forbidden || (route.permission && !can(role, route.permission)) ? '/403' : pathname}/>{page}</main>
