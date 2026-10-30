@@ -18,7 +18,7 @@ services:
       - key: PORT
         value: "10000"
       - key: BACKEND_URL
-        value: https://ticketrush-backend.onrender.com
+        value: https://ticketrush-backend-5n77.onrender.com
 
   - type: web
     name: ticketrush-backend
