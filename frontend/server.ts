@@ -16,14 +16,16 @@ if (!['http:', 'https:'].includes(target.protocol)) throw new Error('Invalid BAC
 attachNotificationProxy(server, target);
 
 const backendWakeTimeoutMs = 4 * 60 * 1000;
+const configuredBackendWakeRetryMs = Number(process.env.BACKEND_WAKE_RETRY_MS || 5000);
+const backendWakeRetryMs = Number.isFinite(configuredBackendWakeRetryMs) && configuredBackendWakeRetryMs > 0
+  ? configuredBackendWakeRetryMs
+  : 5000;
 let backendWakePromise: Promise<void> | undefined;
 
 // Render's free instances can take a few minutes to resume. Keep a request alive
 // independently of the browser request, which the browser cancels after its own timeout.
-function wakeBackend() {
-  if (backendWakePromise) return backendWakePromise;
-  console.info(`Waking backend at ${target.origin}`);
-  backendWakePromise = new Promise<void>(resolve => {
+function probeBackend(): Promise<number | undefined> {
+  return new Promise(resolve => {
     const upstream = (target.protocol === 'https:' ? https : http).request({
       hostname: target.hostname,
       port: target.port,
@@ -36,13 +38,28 @@ function wakeBackend() {
       response.resume();
       response.once('end', () => {
         console.info(`Backend wake-up response: ${response.statusCode}`);
-        resolve();
+        resolve(response.statusCode);
       });
     });
-    upstream.once('timeout', () => { console.warn('Backend wake-up timed out'); upstream.destroy(); resolve(); });
-    upstream.once('error', () => { console.warn('Backend wake-up request failed'); resolve(); });
+    upstream.once('timeout', () => { console.warn('Backend wake-up timed out'); upstream.destroy(); resolve(undefined); });
+    upstream.once('error', () => { console.warn('Backend wake-up request failed'); resolve(undefined); });
     upstream.end();
-  }).finally(() => { backendWakePromise = undefined; });
+  });
+}
+
+function wakeBackend() {
+  if (backendWakePromise) return backendWakePromise;
+  console.info(`Waking backend at ${target.origin}`);
+  backendWakePromise = (async () => {
+    const deadline = Date.now() + backendWakeTimeoutMs;
+    while (Date.now() < deadline) {
+      const status = await probeBackend();
+      if (status !== undefined && status < 500) return;
+      if (Date.now() + backendWakeRetryMs >= deadline) break;
+      await new Promise(resolve => setTimeout(resolve, backendWakeRetryMs));
+    }
+    console.warn('Backend did not become ready before the wake-up deadline');
+  })().finally(() => { backendWakePromise = undefined; });
   return backendWakePromise;
 }
 // Keep platform liveness independent from downstream API and datastore health.
